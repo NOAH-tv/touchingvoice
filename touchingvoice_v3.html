@@ -1,0 +1,2825 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>터칭보이스 — 보이스 매트릭스</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;900&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f3ef;
+  --surface: #ffffff;
+  --surface2: #eeebe5;
+  --border: rgba(0,0,0,0.08);
+  --border2: rgba(0,0,0,0.13);
+  --text: #1c1a17;
+  --muted: #8a8278;
+  --accent: #1b4332;
+  --accent-light: #e8f0eb;
+  --accent2: #40916c;
+  --accent-btn: #2d6a4f;
+  --radius: 16px;
+  --c-E: #e05c3a; --c-C: #d4a017; --c-A: #3a86c8; --c-N: #9b59b6; --c-O: #27ae60;
+  --c-V: #e07a2a;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;min-height:100vh;}
+
+/* STEPS */
+.step{display:none;}
+.step.active{display:block;animation:stepIn .4s cubic-bezier(.16,1,.3,1);}
+@keyframes stepIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* HEADER */
+.site-header{padding:28px 24px 0;display:flex;align-items:center;justify-content:space-between;max-width:680px;margin:0 auto;}
+.logo-mark{display:flex;flex-direction:column;gap:1px;}
+.logo-en{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--accent2);text-transform:uppercase;}
+.logo-kr{font-size:18px;font-weight:600;}
+.step-badge{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:1px;}
+
+/* HERO */
+.hero{max-width:680px;margin:0 auto;padding:44px 24px 32px;}
+.hero-eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--accent2);text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.hero-eyebrow::before{content:'';width:24px;height:1px;background:var(--accent2);}
+.hero-title{font-size:clamp(26px,6vw,46px);font-weight:900;line-height:1.15;letter-spacing:-1px;margin-bottom:16px;}
+.hero-title em{font-style:italic;color:var(--accent);}
+.hero-sub{font-size:14px;color:var(--muted);font-weight:300;line-height:1.9;}
+.hero-divider{width:40px;height:2px;background:var(--accent2);margin:20px 0;}
+
+/* WRAP */
+.wrap{max-width:680px;margin:0 auto;padding:0 24px 80px;}
+
+/* CARD */
+.card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:28px;margin-bottom:16px;}
+.card-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2.5px;color:var(--muted);text-transform:uppercase;margin-bottom:14px;}
+
+/* FORM */
+.form-group{margin-bottom:20px;}
+.form-label{display:block;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--accent2);margin-bottom:8px;text-transform:uppercase;}
+.form-input{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:13px 16px;color:var(--text);font-family:'Noto Serif KR',serif;font-size:14px;outline:none;transition:border-color .2s;-webkit-appearance:none;}
+.form-input:focus{border-color:var(--accent2);}
+
+/* FILE UPLOAD */
+.file-zone{border:2px dashed var(--border2);border-radius:var(--radius);padding:48px 24px;text-align:center;cursor:pointer;transition:all .25s;position:relative;background:var(--surface);}
+.file-zone:hover,.file-zone.over{border-color:var(--accent2);background:var(--accent-light);}
+.file-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.fz-icon{width:60px;height:60px;border-radius:50%;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 18px;transition:transform .3s;}
+.file-zone:hover .fz-icon{transform:scale(1.08);}
+.fz-title{font-size:16px;font-weight:600;margin-bottom:6px;}
+.fz-sub{font-size:12px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:.5px;line-height:1.7;}
+.file-bar{display:none;background:var(--accent-light);border:1px solid rgba(64,145,108,.3);border-radius:10px;padding:13px 18px;margin-top:14px;align-items:center;gap:12px;}
+.file-bar.show{display:flex;}
+.fb-name{font-size:13px;font-weight:600;flex:1;}
+.fb-size{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);}
+
+/* PROGRESS BAR (sticky) */
+.prog-wrap{position:sticky;top:0;z-index:50;background:rgba(245,243,239,.92);backdrop-filter:blur(12px);padding:12px 24px;border-bottom:1px solid var(--border);}
+.prog-inner{max-width:680px;margin:0 auto;display:flex;align-items:center;gap:14px;}
+.prog-bar-track{flex:1;height:3px;background:var(--border2);border-radius:2px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;transition:width .4s cubic-bezier(.16,1,.3,1);width:0%;}
+.prog-label{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);white-space:nowrap;letter-spacing:.5px;}
+
+/* DOMAIN HEADER */
+.domain-head{display:flex;align-items:center;gap:12px;padding:28px 0 14px;}
+.d-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.d-info{}
+.d-code{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:2px;}
+.d-name{font-size:15px;font-weight:700;}
+.d-desc{font-size:12px;color:var(--muted);font-weight:300;margin-top:2px;}
+
+/* Q CARD */
+.q-card{background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:20px 20px 16px;margin-bottom:8px;transition:border-color .2s;}
+.q-card.answered{border-left:3px solid var(--accent2);}
+.q-num{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;color:var(--muted);margin-bottom:8px;}
+.q-text{font-size:14px;line-height:1.75;font-weight:300;margin-bottom:16px;}
+.lk-row{display:flex;gap:5px;}
+.lk-btn{flex:1;height:36px;border:1px solid var(--border2);border-radius:7px;background:var(--surface2);color:var(--muted);font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent;}
+.lk-btn:hover{border-color:var(--accent2);color:var(--accent2);}
+.lk-btn.sel{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600;}
+.lk-labs{display:flex;justify-content:space-between;margin-top:5px;}
+.lk-lab{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);}
+
+/* BUTTONS */
+.btn-primary{width:100%;padding:16px;background:var(--accent-btn);color:#fff;border:none;border-radius:12px;font-family:'Noto Serif KR',serif;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;letter-spacing:.5px;}
+.btn-primary:hover{background:var(--accent);transform:translateY(-1px);box-shadow:0 8px 24px rgba(27,67,50,.25);}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none;}
+.btn-outline{width:100%;padding:14px;background:transparent;color:var(--accent-btn);border:1.5px solid var(--accent-btn);border-radius:12px;font-family:'Noto Serif KR',serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;margin-top:10px;}
+.btn-outline:hover{background:var(--accent-light);}
+.btn-ghost{background:none;border:none;color:var(--muted);font-family:'Noto Serif KR',serif;font-size:13px;cursor:pointer;text-decoration:underline;padding:0;}
+
+/* CONSENT MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .2s;}
+.modal-overlay.hidden{display:none;}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal-sheet{background:var(--surface);border-radius:20px 20px 0 0;padding:32px 24px 40px;width:100%;max-width:680px;max-height:85vh;overflow-y:auto;animation:slideUp .3s cubic-bezier(.16,1,.3,1);}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-handle{width:36px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 24px;}
+.modal-title{font-size:20px;font-weight:700;margin-bottom:6px;}
+.modal-sub{font-size:13px;color:var(--muted);font-weight:300;margin-bottom:24px;line-height:1.7;}
+.consent-box{background:var(--surface2);border-radius:10px;padding:18px;margin-bottom:18px;font-size:12px;line-height:1.85;color:var(--muted);font-weight:300;}
+.consent-box strong{color:var(--text);font-weight:600;}
+.consent-check-row{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;}
+.consent-check-row input{width:18px;height:18px;accent-color:var(--accent-btn);margin-top:2px;flex-shrink:0;}
+.consent-check-row span{font-size:13px;line-height:1.65;font-weight:300;}
+
+/* RESULTS */
+.res-top-card{background:var(--accent);border-radius:var(--radius);padding:36px 28px;color:#fff;margin-bottom:20px;}
+.rtc-eyebrow{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;opacity:.7;margin-bottom:10px;text-transform:uppercase;}
+.rtc-dominant{font-size:11px;font-weight:300;opacity:.8;margin-bottom:4px;font-family:'DM Mono',monospace;letter-spacing:1px;}
+.rtc-type{font-size:32px;font-weight:900;letter-spacing:-1px;margin-bottom:12px;}
+.rtc-desc{font-size:14px;opacity:.88;line-height:1.8;font-weight:300;}
+.rtc-more-btn{margin-top:18px;padding:10px 22px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:8px;color:#fff;font-family:'Noto Serif KR',serif;font-size:13px;cursor:pointer;transition:all .2s;font-weight:600;}
+.rtc-more-btn:hover{background:rgba(255,255,255,.25);}
+
+.res-section-title{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.res-section-title::after{content:'';flex:1;height:1px;background:var(--border2);}
+
+/* SCORE LIST (personality.co style) */
+.score-list-card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:24px;margin-bottom:20px;}
+.score-row{display:flex;align-items:center;gap:14px;margin-bottom:16px;cursor:pointer;transition:opacity .2s;}
+.score-row:last-child{margin-bottom:0;}
+.score-row:hover{opacity:.75;}
+.score-rank{width:24px;height:24px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);flex-shrink:0;}
+.score-name{width:72px;font-size:14px;font-weight:600;flex-shrink:0;}
+.score-bar-track{flex:1;height:10px;background:var(--surface2);border-radius:5px;overflow:hidden;}
+.score-bar-fill{height:100%;border-radius:5px;width:0%;transition:width 1.1s cubic-bezier(.16,1,.3,1);}
+.score-pct{width:40px;text-align:right;font-family:'DM Mono',monospace;font-size:13px;font-weight:600;flex-shrink:0;}
+.score-arrow{font-size:14px;color:var(--muted);flex-shrink:0;}
+
+/* DOMAIN DETAIL MODAL */
+.detail-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:300;display:flex;align-items:flex-end;justify-content:center;}
+.detail-modal-overlay.hidden{display:none;}
+.detail-sheet{background:var(--surface);border-radius:20px 20px 0 0;padding:0;width:100%;max-width:680px;max-height:90vh;overflow-y:auto;animation:slideUp .3s cubic-bezier(.16,1,.3,1);}
+.detail-tabs{display:flex;border-bottom:1px solid var(--border2);position:sticky;top:0;background:var(--surface);z-index:5;}
+.detail-tab{flex:1;padding:14px 8px;font-size:12px;font-weight:600;text-align:center;cursor:pointer;border:none;background:none;color:var(--muted);transition:all .2s;font-family:'Noto Serif KR',serif;border-bottom:2px solid transparent;}
+.detail-tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.detail-content{padding:24px 24px 40px;}
+.detail-handle{width:36px;height:4px;background:var(--border2);border-radius:2px;margin:16px auto 0;}
+.detail-close{position:absolute;top:16px;right:20px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);z-index:6;}
+.detail-header{padding:24px 24px 0;position:relative;}
+.detail-score-tag{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;font-family:'DM Mono',monospace;font-size:12px;font-weight:600;margin-bottom:16px;}
+.detail-domain-name{font-size:26px;font-weight:900;margin-bottom:8px;}
+.detail-domain-intro{font-size:14px;line-height:1.85;font-weight:300;color:var(--muted);}
+.detail-section-text{font-size:14px;line-height:1.9;font-weight:300;color:var(--text);}
+.detail-bullets{margin:12px 0 0;}
+.detail-bullet{display:flex;gap:12px;margin-bottom:12px;}
+.bullet-dot{width:6px;height:6px;border-radius:50%;background:var(--accent2);flex-shrink:0;margin-top:8px;}
+.bullet-text{font-size:13px;line-height:1.8;font-weight:300;}
+.detail-sub-title{font-size:15px;font-weight:700;margin:20px 0 10px;}
+
+/* VOICE SPECIAL */
+.voice-card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:24px;margin-bottom:14px;}
+.vc-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;gap:12px;}
+.vc-title{font-size:17px;font-weight:700;}
+.vc-badge{padding:5px 12px;border-radius:999px;font-family:'DM Mono',monospace;font-size:11px;font-weight:600;background:rgba(224,122,42,.12);color:var(--c-V);flex-shrink:0;}
+.vc-desc{font-size:13px;line-height:1.85;font-weight:300;color:var(--text);}
+.vc-tip{margin-top:14px;padding:12px 14px;border-radius:8px;background:rgba(224,122,42,.07);border-left:3px solid var(--c-V);font-size:12px;line-height:1.75;font-weight:300;}
+
+/* VOICE FILE ROW */
+.vf-row{background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:18px 20px;display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+.vf-icon{width:40px;height:40px;border-radius:10px;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.vf-info{}
+.vf-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--accent2);margin-bottom:3px;text-transform:uppercase;}
+.vf-name{font-size:13px;font-weight:600;}
+
+.divider{height:1px;background:var(--border2);margin:24px 0;}
+
+/* DISCLAIMER */
+.disclaimer{background:var(--surface2);border-radius:10px;padding:16px 18px;font-size:12px;color:var(--muted);line-height:1.8;font-weight:300;margin-bottom:20px;}
+.disclaimer strong{color:var(--text);font-weight:600;}
+
+/* CROSS ANALYSIS CARD */
+.cross-card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);overflow:hidden;margin-bottom:14px;}
+.cross-header{padding:20px 22px 16px;border-bottom:1px solid var(--border);}
+.cross-match-row{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+.cross-match-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.cross-match-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;}
+.cross-match-pct{font-family:'DM Mono',monospace;font-size:11px;font-weight:600;}
+.cross-title{font-size:16px;font-weight:700;line-height:1.3;}
+.cross-body{padding:18px 22px;}
+.cross-insight{font-size:13px;line-height:1.9;font-weight:300;color:var(--text);margin-bottom:14px;}
+.cross-tag-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;}
+.cross-tag{padding:4px 12px;border-radius:999px;font-size:11px;font-weight:600;font-family:'DM Mono',monospace;}
+.cross-callout{padding:13px 16px;border-radius:8px;font-size:12px;line-height:1.8;font-weight:300;border-left:3px solid;}
+
+/* SYNTH CARD */
+.synth-card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);overflow:hidden;margin-bottom:20px;}
+.synth-top{background:linear-gradient(135deg,var(--accent) 0%,#2d6a4f 100%);padding:28px 28px 24px;color:#fff;}
+.synth-eyebrow{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;opacity:.7;text-transform:uppercase;margin-bottom:10px;}
+.synth-type-name{font-size:26px;font-weight:900;letter-spacing:-0.5px;margin-bottom:8px;line-height:1.2;}
+.synth-type-sub{font-size:13px;opacity:.88;line-height:1.75;font-weight:300;}
+.synth-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px;}
+.synth-tag{padding:4px 12px;border-radius:999px;font-size:11px;font-weight:600;background:rgba(255,255,255,.18);color:#fff;font-family:'DM Mono',monospace;letter-spacing:.5px;}
+.synth-body{padding:24px 28px;}
+.synth-section{margin-bottom:20px;}
+.synth-section:last-child{margin-bottom:0;}
+.synth-section-title{font-size:13px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+.synth-section-text{font-size:13px;line-height:1.9;font-weight:300;color:var(--text);}
+.synth-pill-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+.synth-pill{padding:5px 14px;border-radius:999px;font-size:12px;font-weight:600;font-family:'DM Mono',monospace;}
+
+/* VOICE TAB BAR */
+.voice-tab-bar{display:flex;gap:6px;margin-bottom:14px;}
+.voice-tab{flex:1;padding:13px 8px;border-radius:12px;font-family:'Noto Serif KR',serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;border:1.5px solid var(--border2);background:var(--surface);color:var(--muted);}
+.voice-tab.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+.voice-panel{}
+
+/* REC ZONE */
+.rec-zone{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);overflow:hidden;}
+.rec-script{background:var(--surface2);border-bottom:1px solid var(--border);padding:18px 20px;}
+.rec-script-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--accent2);text-transform:uppercase;margin-bottom:8px;}
+.rec-script-text{font-size:13px;line-height:2.1;font-weight:300;color:var(--text);}
+.rec-blank{display:inline-block;border-bottom:1.5px dashed var(--accent2);color:var(--accent2);font-weight:600;padding:0 2px;font-style:italic;}
+.rec-script-tip{margin-top:12px;font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:.5px;line-height:1.6;}
+.rec-controls{display:flex;flex-direction:column;align-items:center;padding:28px 20px 20px;}
+.rec-orb{width:110px;height:110px;position:relative;cursor:pointer;margin-bottom:16px;flex-shrink:0;}
+.rec-orb-inner{position:absolute;inset:8px;border-radius:50%;background:var(--surface2);border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;transition:all .3s;z-index:1;}
+.rec-orb-inner:hover{border-color:var(--accent2);box-shadow:0 0 24px rgba(64,145,108,.2);}
+.rec-orb-inner.recording{background:rgba(192,74,122,.08);border-color:#c04a7a;animation:orbPulse 1.5s ease-out infinite;}
+@keyframes orbPulse{0%{box-shadow:0 0 0 0 rgba(192,74,122,.35)}70%{box-shadow:0 0 0 18px rgba(192,74,122,0)}100%{box-shadow:0 0 0 0 rgba(192,74,122,0)}}
+.rec-orb-icon{font-size:30px;z-index:2;}
+.rec-progress-ring{position:absolute;inset:0;transform:rotate(-90deg);}
+.rec-ring-bg{fill:none;stroke:var(--border2);stroke-width:3;}
+.rec-ring-fill{fill:none;stroke:var(--accent2);stroke-width:3;stroke-linecap:round;stroke-dasharray:301.6;stroke-dashoffset:301.6;transition:stroke-dashoffset .5s linear;}
+.rec-ring-fill.recording{stroke:#c04a7a;}
+.rec-status{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:6px;}
+.rec-timer{font-family:'DM Mono',monospace;font-size:28px;font-weight:300;letter-spacing:2px;color:var(--text);margin-bottom:14px;}
+.rec-waveform{width:100%;height:44px;display:flex;align-items:center;justify-content:center;gap:2px;}
+.rec-wv-bar{width:3px;border-radius:2px;background:var(--accent2);transition:height .1s;}
+.rec-hint{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:.5px;}
+#recDoneBar{padding:0 20px 20px;}
+.rec-btn-redo{flex:1;padding:11px;background:var(--surface2);border:1px solid var(--border2);border-radius:9px;font-family:'Noto Serif KR',serif;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .2s;}
+.rec-btn-use{flex:1;padding:11px;background:var(--accent2);border:none;border-radius:9px;font-family:'Noto Serif KR',serif;font-size:13px;font-weight:600;color:#fff;cursor:pointer;transition:all .2s;}
+.rec-btn-use:hover{background:var(--accent);}
+
+/* GENDER BUTTONS */
+.gender-btn{flex:1;padding:11px 4px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;font-family:'Noto Serif KR',serif;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent;}
+.gender-btn:hover{border-color:var(--accent2);color:var(--accent2);}
+.gender-btn.sel{background:var(--accent);border-color:var(--accent);color:#fff;}
+
+/* SPECTRUM */
+.freq-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.freq-bar-label{width:80px;flex-shrink:0;font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:.5px;text-align:right;}
+.freq-bar-track{flex:1;height:20px;background:var(--surface2);border-radius:4px;overflow:hidden;position:relative;}
+.freq-bar-fill{height:100%;border-radius:4px;transition:width 1.2s cubic-bezier(.16,1,.3,1);min-width:2px;}
+.freq-bar-pct{width:38px;flex-shrink:0;font-family:'DM Mono',monospace;font-size:10px;font-weight:600;text-align:right;}
+.freq-level-tag{width:38px;flex-shrink:0;font-family:'DM Mono',monospace;font-size:9px;text-align:center;padding:2px 0;border-radius:3px;}
+
+@media(max-width:600px){
+  .hero{padding:36px 20px 24px;}
+  .wrap{padding:0 16px 60px;}
+}
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ STEP 1: UPLOAD ═══════════ -->
+<div class="step active" id="step-1">
+  <header class="site-header">
+    <div class="logo-mark">
+      <span class="logo-en">TouchingVoice</span>
+      <span class="logo-kr">터칭보이스</span>
+    </div>
+    <span class="step-badge">01 / 03</span>
+  </header>
+
+  <div class="hero">
+    <div class="hero-eyebrow">Voice Matrix · 보이스 매트릭스</div>
+    <h1 class="hero-title">당신의 목소리를<br><em>보여주세요</em></h1>
+    <div class="hero-divider"></div>
+    <p class="hero-sub">
+      터칭보이스는 당신의 목소리를 듣고,<br>당신의 마음을 보여줍니다.<br><br>
+      아래 자기소개 대본을 읽고 녹음해 주세요.
+    </p>
+  </div>
+
+  <div class="wrap">
+    <div class="card">
+      <div class="card-label">참여자 정보</div>
+      <div class="form-group">
+        <label class="form-label">이름</label>
+        <input type="text" class="form-input" id="user-name" placeholder="성함을 입력해 주세요">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">나이</label>
+          <input type="number" class="form-input" id="user-age" placeholder="예: 28" min="10" max="90">
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">성별</label>
+          <div style="display:flex;gap:8px;margin-top:2px">
+            <button class="gender-btn" id="gender-m" onclick="selectGender('남성')">남성</button>
+            <button class="gender-btn" id="gender-f" onclick="selectGender('여성')">여성</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 탭 선택 -->
+    <div class="voice-tab-bar">
+      <button class="voice-tab active" id="vtab-rec" onclick="switchVoiceTab('rec')">🎙 음성 녹음하기</button>
+      <button class="voice-tab" id="vtab-file" onclick="switchVoiceTab('file')">📁 파일 선택</button>
+    </div>
+
+    <!-- 녹음 탭 -->
+    <div id="vpanel-rec" class="voice-panel">
+      <div class="rec-zone" id="recZone">
+        <!-- 대본 -->
+        <div class="rec-script">
+          <div class="rec-script-label">📖 자기소개 대본 — 자연스럽게 읽어주세요</div>
+          <p class="rec-script-text">
+            안녕하세요, 저는 <span class="rec-blank">[이름]</span>입니다.<br>
+            저는 지금 <span class="rec-blank">[나이]</span>살이고, <span class="rec-blank">[사는 곳]</span>에 살고 있어요.<br><br>
+            요즘 가장 관심 있는 건 <span class="rec-blank">[관심사]</span>인데,<br>
+            그게 저한테 꽤 중요한 의미를 가지고 있거든요.<br><br>
+            사람들이 저를 처음 만날 때 이런 말을 자주 해요 —<br>
+            "<span class="rec-blank">[자신을 표현하는 한 마디]</span>"
+          </p>
+          <div class="rec-script-tip">💡 괄호 안은 본인 내용으로 바꿔서 읽어주세요. 자연스러운 억양이 좋습니다.</div>
+        </div>
+        <!-- 녹음 컨트롤 -->
+        <div class="rec-controls">
+          <div class="rec-orb" id="recOrb" onclick="toggleRec()">
+            <div class="rec-orb-inner" id="recOrbInner">
+              <span class="rec-orb-icon" id="recOrbIcon">🎙</span>
+            </div>
+            <svg class="rec-progress-ring" id="recRing" viewBox="0 0 110 110">
+              <circle class="rec-ring-bg" cx="55" cy="55" r="48"/>
+              <circle class="rec-ring-fill" id="recRingFill" cx="55" cy="55" r="48"/>
+            </svg>
+          </div>
+          <div class="rec-status" id="recStatus">탭하여 녹음 시작</div>
+          <div class="rec-timer" id="recTimer">00:00</div>
+          <div class="rec-waveform" id="recWaveform">
+            <div class="rec-hint">최대 2분 · 30초 이상 권장</div>
+          </div>
+        </div>
+        <!-- 녹음 후 컨트롤 -->
+        <div id="recDoneBar" style="display:none">
+          <audio id="recPlayback" controls style="width:100%;margin-bottom:12px;accent-color:var(--accent2)"></audio>
+          <div style="display:flex;gap:10px">
+            <button class="rec-btn-redo" onclick="redoRec()">↩ 다시 녹음</button>
+            <button class="rec-btn-use" onclick="useRec()">✓ 이 녹음 사용</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 파일 선택 탭 -->
+    <div id="vpanel-file" class="voice-panel" style="display:none">
+      <div class="file-zone" id="uploadZone">
+        <input type="file" id="voiceFile" accept="audio/*,.m4a,.mp3,.wav,.aac,.ogg,.flac" onchange="handleFile(this)">
+        <div class="fz-icon">📁</div>
+        <div class="fz-title">파일을 탭하여 선택</div>
+        <div class="fz-sub">아이폰 음성 메모 · 카카오 보이스 · 녹음 앱<br>M4A · MP3 · WAV · AAC · FLAC</div>
+      </div>
+      <div class="file-bar" id="fileBar">
+        <span style="font-size:18px">🎵</span>
+        <span class="fb-name" id="fbName">—</span>
+        <span class="fb-size" id="fbSize">—</span>
+      </div>
+    </div>
+
+    <!-- 공통 준비 완료 상태 -->
+    <div id="voiceReadyBar" style="display:none;margin-top:12px;background:rgba(64,145,108,.1);border:1px solid rgba(64,145,108,.3);border-radius:10px;padding:12px 16px;display:none;align-items:center;gap:10px">
+      <span style="font-size:18px">✅</span>
+      <span style="font-size:13px;font-weight:600;color:var(--accent2)" id="voiceReadyText">준비 완료</span>
+    </div>
+
+    <!-- 스펙트럼 분석 패널 -->
+    <div id="spectrumPanel" style="display:none;margin-top:20px">
+      <div class="card" style="padding:24px">
+        <div class="card-label">🔬 음성 스펙트럼 분석</div>
+        <div id="spectrumLoading" style="text-align:center;padding:24px 0;color:var(--muted);font-size:13px;font-family:'DM Mono',monospace;letter-spacing:1px">
+          분석 중...
+        </div>
+        <div id="spectrumResult" style="display:none">
+          <!-- 스펙트로그램 -->
+          <div style="margin-bottom:20px">
+            <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:8px">시간축 스펙트로그램</div>
+            <canvas id="spectrogramCanvas" style="width:100%;height:120px;border-radius:8px;display:block"></canvas>
+          </div>
+          <!-- 주파수 대역 바 차트 -->
+          <div style="margin-bottom:20px">
+            <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:12px">주파수 대역별 에너지 분포</div>
+            <div id="freqBars"></div>
+          </div>
+          <!-- 고급 지표 -->
+          <div id="advancedMetrics" style="margin-bottom:20px"></div>
+          <!-- 주파수 코멘트 -->
+          <div id="freqComment" style="background:var(--accent-light);border-left:3px solid var(--accent2);border-radius:0 8px 8px 0;padding:14px 16px;font-size:13px;line-height:1.85;font-weight:300"></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:16px">
+      <button class="btn-primary" id="btnStep1" onclick="goStep2()" disabled>다음 — 성격 검사 시작 →</button>
+    </div>
+    <p style="text-align:center;margin-top:16px">
+      <button class="btn-ghost" onclick="skipVoice()">음성 파일 없이 검사만 진행하기 →</button>
+    </p>
+  </div>
+</div>
+
+
+
+<!-- ═══════════ STEP 1.5: 음역대 테스트 ═══════════ -->
+<div class="step" id="step-1b">
+  <header class="site-header">
+    <div class="logo-mark">
+      <span class="logo-en">TouchingVoice</span>
+      <span class="logo-kr">터칭보이스</span>
+    </div>
+    <span class="step-badge">01.5 / 03</span>
+  </header>
+
+  <div class="hero">
+    <div class="hero-eyebrow">음역대 테스트 · Range Test</div>
+    <h1 class="hero-title">음역대를<br><em>테스트해 볼게요</em></h1>
+    <div class="hero-divider"></div>
+    <p class="hero-sub" id="range-hero-sub">
+      재생 버튼을 누르면 가이드 음원이 흘러나옵니다.<br>
+      <strong>이어폰을 착용한 상태</strong>에서 들리는 음을 따라 소리 내주세요.<br>
+      할 수 없는 음역대는 자연스럽게 넘어가셔도 됩니다.
+    </p>
+  </div>
+
+  <div class="wrap">
+
+    <!-- 성별 확인 배지 -->
+    <div id="rangeGenderBadge" class="card" style="margin-bottom:16px;display:flex;align-items:center;gap:14px;padding:18px 22px">
+      <div style="font-size:28px" id="rangeGenderIcon">—</div>
+      <div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:3px">선택된 성별 · 음원 자동 분기</div>
+        <div style="font-size:16px;font-weight:700" id="rangeGenderText">—</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px;font-family:'DM Mono',monospace" id="rangeGenderFile">—</div>
+      </div>
+    </div>
+
+    <!-- 이어폰 안내 -->
+    <div style="background:rgba(212,160,23,.08);border:1px solid rgba(212,160,23,.25);border-radius:10px;padding:13px 16px;display:flex;align-items:center;gap:10px;margin-bottom:16px">
+      <span style="font-size:20px">🎧</span>
+      <div style="font-size:12px;line-height:1.7;font-weight:300">
+        <strong style="font-weight:600;color:var(--c-C)">이어폰 착용 권장</strong> — 이어폰을 쓰면 음원과 내 목소리가 완전히 분리되어 더 정확한 데이터가 수집됩니다.
+      </div>
+    </div>
+
+    <!-- 플레이어 + 동시 녹음 -->
+    <div class="card">
+      <div class="card-label">🎵 음역대 테스트</div>
+
+      <!-- 숨겨진 오디오 엘리먼트 (재생용 — 녹음에 포함 안됨) -->
+      <audio id="rangeAudio" style="display:none"></audio>
+
+      <!-- 진행 바 -->
+      <div id="rangeProgressWrap" style="margin-bottom:20px;display:none">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+          <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">진행</span>
+          <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)" id="rangeProgressLabel">0:00 / 0:00</span>
+        </div>
+        <div style="height:4px;background:var(--surface2);border-radius:2px;overflow:hidden">
+          <div id="rangeProgressBar" style="height:100%;background:linear-gradient(90deg,var(--accent2),#6ec89e);border-radius:2px;width:0%;transition:width .5s linear"></div>
+        </div>
+      </div>
+
+      <!-- 컨트롤 -->
+      <div style="display:flex;flex-direction:column;align-items:center;padding:8px 0 16px">
+        <div class="rec-orb" id="rangeOrb" onclick="toggleRangeRec()">
+          <div class="rec-orb-inner" id="rangeOrbInner">
+            <span id="rangeOrbIcon" style="font-size:26px">▶</span>
+          </div>
+          <svg class="rec-progress-ring" viewBox="0 0 110 110">
+            <circle class="rec-ring-bg" cx="55" cy="55" r="48"/>
+            <circle class="rec-ring-fill" id="rangeRingFill" cx="55" cy="55" r="48" style="stroke:var(--accent2)"/>
+          </svg>
+        </div>
+        <div style="font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin:14px 0 6px" id="rangeStatusText">탭하여 시작</div>
+        <div style="font-family:'DM Mono',monospace;font-size:24px;font-weight:300;letter-spacing:2px;color:var(--text)" id="rangeTimer">00:00</div>
+      </div>
+
+      <!-- 실시간 파형 (마이크만) -->
+      <div class="rec-waveform" id="rangeWaveform" style="margin-bottom:20px">
+        <div class="rec-hint" id="rangeHintText">음원에 맞춰 소리를 내주세요</div>
+      </div>
+
+      <!-- 완료 후 -->
+      <div id="rangeDoneBar" style="display:none">
+        <div style="background:rgba(64,145,108,.1);border:1px solid rgba(64,145,108,.3);border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:10px;margin-bottom:14px">
+          <span style="font-size:20px">✅</span>
+          <div>
+            <div style="font-size:13px;font-weight:600;color:var(--accent2)">음역대 테스트 완료</div>
+            <div style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;margin-top:2px" id="rangeDoneDesc">녹음이 저장되었습니다</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px">
+          <button class="rec-btn-redo" onclick="redoRange()">↩ 다시 테스트</button>
+          <button class="rec-btn-use" onclick="goStep2Survey()">성격 검사로 이동 →</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:14px">
+      <button class="btn-ghost" style="width:100%;text-align:center;display:block" onclick="skipRange()">음역대 테스트 건너뛰기 →</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════ STEP 2: SURVEY ═══════════ -->
+<div class="step" id="step-2">
+  <header class="site-header">
+    <div class="logo-mark">
+      <span class="logo-en">TouchingVoice</span>
+      <span class="logo-kr">터칭보이스</span>
+    </div>
+    <span class="step-badge">02 / 03</span>
+  </header>
+  <div class="hero" style="padding-bottom:16px">
+    <div class="hero-eyebrow">터칭보이스 성격 검사</div>
+    <h1 class="hero-title">나는 어떤<br><em>사람인가요?</em></h1>
+    <p class="hero-sub">1(전혀 아님) ~ 5(매우 그렇다) · 총 70문항 · 약 7~10분</p>
+  </div>
+
+  <div class="prog-wrap">
+    <div class="prog-inner">
+      <div class="prog-bar-track"><div class="prog-fill" id="progFill"></div></div>
+      <div class="prog-label" id="progLabel">0 / 70</div>
+    </div>
+  </div>
+
+  <div class="wrap" id="surveyBody" style="padding-top:8px"></div>
+
+  <div style="max-width:680px;margin:0 auto;padding:0 24px 80px">
+    <button class="btn-primary" id="btnSubmit" onclick="showConsent()" disabled>결과 확인하기 →</button>
+  </div>
+</div>
+
+
+<!-- ═══════════ STEP 3: RESULTS ═══════════ -->
+<div class="step" id="step-3">
+  <header class="site-header">
+    <div class="logo-mark">
+      <span class="logo-en">TouchingVoice</span>
+      <span class="logo-kr">터칭보이스</span>
+    </div>
+    <span class="step-badge">결과</span>
+  </header>
+
+  <div class="wrap" style="padding-top:28px">
+    <!-- voice file -->
+    <div class="vf-row" id="vfRow" style="display:none">
+      <div class="vf-icon">🎵</div>
+      <div class="vf-info">
+        <div class="vf-label">업로드된 음성 파일</div>
+        <div class="vf-name" id="vfName">—</div>
+      </div>
+    </div>
+
+    <!-- dominant trait card -->
+    <div class="res-top-card" id="resTopCard">
+      <div class="rtc-eyebrow">당신의 지배적인 특성</div>
+      <div class="rtc-dominant" id="rtcDominant">—</div>
+      <div class="rtc-type" id="rtcType">—</div>
+      <div class="rtc-desc" id="rtcDesc">—</div>
+      <button class="rtc-more-btn" onclick="openDetailModal(currentDominant)">더 보기 →</button>
+    </div>
+
+    <!-- score list -->
+    <div class="res-section-title">총 점수</div>
+    <div class="score-list-card" id="scoreListCard">
+      <!-- injected by JS -->
+    </div>
+
+    <!-- 종합 진단 -->
+    <div class="res-section-title" style="margin-top:4px">종합 성격 진단</div>
+    <div id="synthCard"></div>
+
+    <!-- 음성 × 성격 교차 분석 (음성 파일 있을 때만) -->
+    <div id="crossSection" style="display:none">
+      <div class="res-section-title" style="margin-top:4px">🔬 음성 샘플 심화 분석</div>
+      <div id="crossCard"></div>
+    </div>
+
+    <div class="disclaimer">
+      <strong>참고 사항</strong> — 이 결과는 Big Five 성격 모델 기반의 자기 보고식 검사 결과입니다. 음성 샘플은 추가 연구 데이터로 수집되며, 아래 결과의 성격 진단과는 직접적인 인과관계가 없습니다. 결과는 참고용으로만 활용하시기 바랍니다.
+    </div>
+
+    <div class="res-section-title" style="margin-top:28px">🎙 음성 샘플 분석</div>
+    <div id="voiceSpecialSection"></div>
+
+    <div class="divider"></div>
+
+    <!-- 공유 버튼 -->
+    <div class="res-section-title">결과 공유하기</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+      <button onclick="shareKakao()" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;background:#FEE500;border:none;border-radius:12px;font-family:'Noto Serif KR',serif;font-size:14px;font-weight:600;color:#191919;cursor:pointer;transition:all .2s" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''">
+        <span style="font-size:18px">💬</span> 카카오톡 공유
+      </button>
+      <button onclick="copyLink()" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;background:var(--surface);border:1px solid var(--border2);border-radius:12px;font-family:'Noto Serif KR',serif;font-size:14px;font-weight:600;color:var(--text);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='var(--accent2)'" onmouseout="this.style.borderColor='var(--border2)'">
+        <span style="font-size:18px">🔗</span> 링크 복사
+      </button>
+    </div>
+    <button onclick="shareNative()" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;width:100%;background:var(--surface);border:1px solid var(--border2);border-radius:12px;font-family:'Noto Serif KR',serif;font-size:14px;font-weight:600;color:var(--text);cursor:pointer;transition:all .2s;margin-bottom:10px" onmouseover="this.style.borderColor='var(--accent2)'" onmouseout="this.style.borderColor='var(--border2)'">
+      <span style="font-size:18px">📤</span> 더 많은 공유 옵션
+    </button>
+    <div id="copyToast" style="display:none;text-align:center;padding:10px;background:var(--accent);color:#fff;border-radius:8px;font-size:13px;margin-bottom:10px;animation:stepIn .3s ease">🔗 링크가 복사되었습니다!</div>
+
+    <button class="btn-outline" onclick="restart()">처음으로 돌아가기</button>
+  </div>
+</div>
+
+
+<!-- ═══════════ CONSENT MODAL ═══════════ -->
+<div class="modal-overlay hidden" id="consentModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">수집 및 이용 동의</div>
+    <div class="modal-sub">결과를 확인하기 전에 아래 내용을 읽고 동의해 주세요.</div>
+
+    <div class="consent-box">
+      <strong>수집하는 정보</strong><br>
+      이름, 성격 검사 응답 데이터, 업로드된 음성 파일 (있는 경우)<br><br>
+      <strong>이용 목적</strong><br>
+      터칭보이스의 AI 음성-성격 상관관계 연구 및 보이스 데이터베이스 구축에 활용됩니다. 수집된 데이터는 연구 목적 외에 사용되지 않으며, 제3자에게 제공되지 않습니다.<br><br>
+      <strong>보관 기간</strong><br>
+      AI 음성-성격 연구 및 DB 구축 목적이 지속되는 동안 보관합니다. 이용자의 삭제 요청 시 즉시 파기합니다.<br><br>
+      <strong>비고</strong><br>
+      음성 데이터는 발성 특성 분석 목적으로만 사용되며, 암호화하여 보관합니다.
+    </div>
+
+    <div class="consent-check-row" style="background:var(--accent-light);border-radius:10px;padding:12px 14px;margin-bottom:8px">
+      <input type="checkbox" id="consent1" onchange="handleMasterConsent(this)">
+      <span style="font-weight:600">아래 항목 전체에 동의합니다. <span style="color:var(--accent-btn);font-size:11px">(전체 동의)</span></span>
+    </div>
+    <div style="border-left:2px solid var(--border2);margin-left:9px;padding-left:16px">
+      <div class="consent-check-row">
+        <input type="checkbox" id="consent2" onchange="checkConsent()">
+        <span>개인정보 수집 및 이용에 동의합니다. <span style="color:var(--c-E);font-size:11px">(필수)</span></span>
+      </div>
+      <div class="consent-check-row">
+        <input type="checkbox" id="consent3" onchange="checkConsent()">
+        <span>음성 데이터를 연구 목적으로 활용하는 것에 동의합니다. <span style="color:var(--c-E);font-size:11px">(필수)</span></span>
+      </div>
+      <div class="consent-check-row" style="margin-bottom:0">
+        <input type="checkbox" id="consent4" onchange="checkConsent()">
+        <span>검사 결과가 마케팅·교육 자료로 익명 활용될 수 있음에 동의합니다. <span style="color:var(--c-E);font-size:11px">(필수)</span></span>
+      </div>
+    </div>
+
+    <button class="btn-primary" id="consentConfirmBtn" onclick="confirmConsent()" style="margin-top:16px" disabled>동의하고 결과 보기 →</button>
+    <button class="btn-ghost" style="width:100%;text-align:center;margin-top:12px;display:block" onclick="closeConsent()">취소</button>
+  </div>
+</div>
+
+
+<!-- ═══════════ DOMAIN DETAIL MODAL ═══════════ -->
+<div class="detail-modal-overlay hidden" id="detailModal">
+  <div class="detail-sheet">
+    <div class="detail-header">
+      <div class="detail-handle"></div>
+      <button class="detail-close" onclick="closeDetailModal()">✕</button>
+      <div id="detailScoreTag" class="detail-score-tag">—</div>
+      <div id="detailDomainName" class="detail-domain-name">—</div>
+      <div id="detailDomainIntro" class="detail-domain-intro">—</div>
+    </div>
+    <div class="detail-tabs" id="detailTabs">
+      <button class="detail-tab active" onclick="switchDetailTab(0)">기초</button>
+      <button class="detail-tab" onclick="switchDetailTab(1)">행동</button>
+      <button class="detail-tab" onclick="switchDetailTab(2)">강점</button>
+      <button class="detail-tab" onclick="switchDetailTab(3)">도전 과제</button>
+    </div>
+    <div class="detail-content" id="detailContent">—</div>
+  </div>
+</div>
+
+
+<script>
+// ═══════════════════════════
+// BIG FIVE IPIP-STYLE QUESTIONS (60문항, 12/domain)
+// ═══════════════════════════
+const BIG5 = [
+  { code:'E', name:'외향성', color:'var(--c-E)', desc:'에너지와 사교성, 목소리의 투사력',
+    qs:[
+      '나는 모르는 사람에게도 쉽게 말을 건다.',
+      '나는 파티나 모임에서 주목받는 것을 즐긴다.',
+      '나는 대화를 주도하는 편이다.',
+      '나는 여럿이 함께할 때 에너지가 올라간다.',
+      '나는 사람들 앞에 나서는 것이 자연스럽다.',
+      '나는 목소리가 크고 활달하다는 말을 자주 듣는다.',
+      '나는 새로운 사람을 만나는 것이 즐겁다.',
+      '나는 조용한 것보다 활기찬 환경이 더 편하다.',
+      '나는 내 감정과 생각을 목소리에 적극적으로 담는다.',
+      '나는 침묵보다는 대화가 더 편하다.',
+      '나는 군중 속에서 오히려 기운이 난다.',
+      '나는 솔선수범해서 분위기를 만드는 편이다.',
+    ]},
+  { code:'C', name:'성실성', color:'var(--c-C)', desc:'계획성과 자기통제, 배음의 안정도',
+    qs:[
+      '나는 항상 미리 계획을 세운다.',
+      '나는 물건을 항상 제자리에 둔다.',
+      '나는 계획이 갑자기 바뀌면 불편하다.',
+      '나는 세세한 부분까지 꼼꼼하게 챙기는 편이다.',
+      '나는 목표를 정하면 끝까지 밀고 나간다.',
+      '나는 약속이나 마감을 어기는 일이 거의 없다.',
+      '나는 규칙과 절차를 지키는 것이 편하다.',
+      '나는 충동적으로 행동하는 일이 드물다.',
+      '나는 스스로를 단단히 통제할 수 있다고 생각한다.',
+      '나는 오늘 할 일을 내일로 미루지 않는다.',
+      '나는 일을 시작하면 완성도 있게 마무리한다.',
+      '나는 정리정돈이 잘 된 환경을 선호한다.',
+    ]},
+  { code:'A', name:'우호성', color:'var(--c-A)', desc:'공감과 협력, 목소리의 부드러운 질감',
+    qs:[
+      '나는 다른 사람의 감정에 쉽게 공감한다.',
+      '나는 갈등 상황에서 먼저 양보하는 편이다.',
+      '나는 타인을 돕는 일에서 보람을 느낀다.',
+      '나는 사람들의 좋은 점을 먼저 보려 한다.',
+      '나는 상처 주는 말을 하지 않으려 노력한다.',
+      '나는 경쟁보다 협력을 선호한다.',
+      '나는 주변으로부터 친절하다는 말을 자주 듣는다.',
+      '나는 의견이 다른 사람도 끝까지 경청한다.',
+      '나는 다른 사람의 필요에 민감하게 반응한다.',
+      '나는 타인에 대한 나쁜 생각을 잘 품지 않는다.',
+      '나는 팀에서 조율자 역할을 하는 편이다.',
+      '나는 나보다 어려운 사람을 보면 도와주고 싶다.',
+    ]},
+  { code:'N', name:'신경성', color:'var(--c-N)', desc:'감정 민감도와 안정성, 호흡의 불규칙성',
+    qs:[
+      '나는 사소한 일에도 쉽게 걱정에 빠진다.',
+      '나는 기분이 자주 바뀌는 편이다.',
+      '나는 스트레스를 받으면 몸이 바로 긴장된다.',
+      '나는 타인이 나를 어떻게 생각할지 자주 신경 쓴다.',
+      '나는 쉽게 우울해지거나 무기력해질 때가 있다.',
+      '나는 예기치 못한 일이 생기면 당황해서 목소리가 떨리곤 한다.',
+      '나는 작은 실수에도 자책하는 편이다.',
+      '나는 감정적으로 예민하다는 말을 듣곤 한다.',
+      '나는 불안할 때 호흡이 빨라지거나 얕아진다.',
+      '나는 좋지 않은 일이 생길 것 같은 예감이 자주 든다.',
+      '나는 비판을 받으면 오래 마음에 남는다.',
+      '나는 큰 결정 앞에서 과도하게 걱정하는 편이다.',
+    ]},
+  { code:'O', name:'개방성', color:'var(--c-O)', desc:'창의성과 호기심, 목소리의 색채와 즉흥성',
+    qs:[
+      '나는 새로운 아이디어를 내는 것이 즐겁다.',
+      '나는 예술이나 철학적 대화에 관심이 많다.',
+      '나는 익숙한 방식보다 새로운 방식을 시도하는 것을 즐긴다.',
+      '나는 상상력이 풍부하다는 말을 자주 듣는다.',
+      '나는 다양한 장르의 음악이나 예술 작품을 감상하는 것을 좋아한다.',
+      '나는 변화를 두려워하기보다 설렘으로 받아들인다.',
+      '나는 복잡하고 추상적인 개념을 이해하는 과정이 즐겁다.',
+      '나는 창의적인 활동을 할 때 가장 행복하다.',
+      '나는 기존의 틀을 깨는 방식으로 생각하는 편이다.',
+      '나는 아름다움이나 미적 감각에 민감하다.',
+      '나는 낯선 문화나 경험에 호기심이 많다.',
+      '나는 동시에 여러 관심사를 갖고 있는 편이다.',
+    ]},
+];
+
+const VOICE_SPECIAL = {
+  code:'V', name:'보이스 스페셜', color:'var(--c-V)',
+  qs:[
+    '나는 노래할 때 감정 표현보다 음정과 박자를 더 신경 쓴다.',
+    '나는 목소리가 상대방에게 어떻게 들릴지 의식적으로 조절한다.',
+    '나는 긴장하면 목이 조이거나 숨이 짧아지는 것을 느낀다.',
+    '나는 말할 때 끝맺음을 확실하게 마무리하려 한다.',
+    '나는 목소리 톤이 상황에 따라 카멜레온처럼 변한다.',
+    '나는 감정이 격해지면 목소리가 갈라지거나 섞인 소리가 나온다.',
+    '나는 소리를 낼 때 부드러운 호흡보다 단단하고 힘 있는 소리가 편하다.',
+    '나는 평소 내 목소리가 내면 상태를 그대로 드러낸다고 생각한다.',
+    '나는 악보에 없는 즉흥 애드립이 어색하게 느껴진다.',
+    '나는 테크닉보다 소리에 담긴 진심이 더 중요하다고 믿는다.',
+  ]
+};
+
+// ═══════════════════════════
+// DOMAIN DETAIL COPY — 5단계 섬세 진단
+// ═══════════════════════════
+// level: 'vhigh'(80+) / 'high'(65+) / 'mid'(40+) / 'low'(25+) / 'vlow'(<25)
+function getLevelKey(pct) {
+  if (pct >= 80) return 'vhigh';
+  if (pct >= 65) return 'high';
+  if (pct >= 40) return 'mid';
+  if (pct >= 25) return 'low';
+  return 'vlow';
+}
+const levelMeta = {
+  vhigh: { label:'매우 높음', emoji:'🔴' },
+  high:  { label:'높음',     emoji:'🟠' },
+  mid:   { label:'보통',     emoji:'🟡' },
+  low:   { label:'낮음',     emoji:'🟢' },
+  vlow:  { label:'매우 낮음',emoji:'🔵' },
+};
+
+const domainDetails = {
+  E: {
+    intro: '외향성은 에너지가 어디를 향하는지를 나타냅니다. 사람과 활동에서 에너지를 얻는 정도입니다.',
+    byLevel: {
+      vhigh: {
+        기초: { text: '당신은 매우 강한 외향성을 가진 사람입니다. 사회적 상호작용이 단순히 즐거운 것을 넘어, 당신을 살아있게 만드는 근본 에너지원입니다. 혼자 있는 시간이 지나치게 길어지면 무기력해지는 경험을 할 수 있습니다.', bullets:['집단 속에서 즉각적으로 활성화됩니다','말을 통해 생각이 정리됩니다','침묵이 불편하게 느껴질 수 있습니다','타인의 에너지를 자신의 것으로 전환합니다'] },
+        행동: { text: '일상에서 당신의 외향성은 이렇게 드러납니다:', bullets:['어디서든 대화를 먼저 시작합니다','그룹 활동과 팀 프로젝트를 선호합니다','빠른 의사결정과 즉각적인 행동을 좋아합니다','에너지가 넘쳐 주변 분위기를 주도합니다'] },
+        강점: { text: '매우 높은 외향성이 만들어내는 특별한 강점입니다:', bullets:['카리스마 있는 리더십과 압도적인 무대 존재감','청중을 즉각적으로 사로잡는 투사력 있는 목소리','어떤 환경에서도 관계를 빠르게 구축하는 능력','에너지를 전달하고 분위기를 만드는 천재적 감각'] },
+        도전과제: { text: '이 강점이 오히려 걸림돌이 될 수 있는 부분입니다:', bullets:['경청보다 말하는 데 집중될 수 있습니다','혼자만의 깊은 성찰 시간 확보가 어렵습니다','내향적인 사람에게 압도적으로 느껴질 수 있습니다','과자극 상태에서 번아웃이 올 수 있습니다'] },
+      },
+      high: {
+        기초: { text: '높은 외향성을 가진 당신은 사람들과의 상호작용에서 자연스럽게 에너지를 얻습니다. 사교적이고 적극적이지만, 완전히 혼자 있는 시간도 필요할 때가 있습니다.', bullets:['사회적 상황에서 에너지가 올라갑니다','목소리에 자연스러운 투사력이 있습니다','감정 표현이 솔직하고 즉각적입니다','새로운 관계를 빠르게 형성합니다'] },
+        행동: { text: '일상에서 외향성은 이런 방식으로 나타납니다:', bullets:['모임에서 자연스럽게 이야기를 시작합니다','혼자 있는 시간이 길어지면 에너지가 떨어집니다','생각이 입 밖으로 나오면서 정리됩니다','빠른 피드백과 즉각적인 반응을 선호합니다'] },
+        강점: { text: '높은 외향성이 발휘될 때 나타나는 강점입니다:', bullets:['자연스러운 리더십과 무대 존재감','청중과의 즉각적인 감정 연결 능력','에너지를 전달하는 목소리 투사력','팀 분위기를 활성화하는 능력'] },
+        도전과제: { text: '외향성이 높을수록 주의해야 할 부분입니다:', bullets:['경청보다 말하는 것에 집중될 수 있습니다','혼자만의 깊은 성찰 시간이 부족해질 수 있습니다','내향적인 사람과의 소통 방식을 맞추는 연습 필요','자극이 없으면 지루함을 빠르게 느낄 수 있습니다'] },
+      },
+      mid: {
+        기초: { text: '당신은 외향성과 내향성 사이 균형 잡힌 지점에 있습니다. 상황에 따라 사교적이기도 하고 혼자만의 시간을 즐기기도 합니다. 이 유연성이 가장 큰 자산입니다.', bullets:['상황에 따라 외향/내향 모드 전환이 자연스럽습니다','사람과의 시간과 혼자만의 시간 모두 필요합니다','다양한 유형의 사람과 폭넓게 소통합니다','목소리 에너지가 상황에 따라 달라집니다'] },
+        행동: { text: '당신의 일상 행동 패턴:', bullets:['모임에서 편안하지만 항상 주도하지는 않습니다','혼자 있는 시간이 충전의 시간이 될 수 있습니다','소규모 그룹과 대규모 모임 모두 즐깁니다','에너지 수준이 컨디션에 따라 변합니다'] },
+        강점: { text: '균형 잡힌 외향성의 강점:', bullets:['다양한 상황에 유연하게 적응하는 능력','외향적/내향적 사람 모두와 잘 어울림','상황을 읽고 적절한 에너지를 조율하는 능력','목소리 에너지의 자연스러운 조절'] },
+        도전과제: { text: '중간 지점에서의 과제:', bullets:['어느 방향으로도 완전히 몰입하기 어려울 수 있습니다','자신이 어떤 유형인지 확신이 서지 않을 수 있습니다','일관된 에너지 관리 전략이 필요합니다','필요할 때 에너지를 의도적으로 높이는 연습이 도움됩니다'] },
+      },
+      low: {
+        기초: { text: '낮은 외향성(내향성 우세)을 가진 당신은 혼자 있는 시간과 깊은 사고에서 에너지를 얻습니다. 소수와의 깊은 연결을 대규모 사교보다 선호합니다. 이것은 내성적인 목소리와 깊이 있는 표현력의 토대가 됩니다.', bullets:['혼자만의 시간이 에너지를 충전시킵니다','깊이 있는 소수와의 관계를 선호합니다','말보다 생각이 먼저인 편입니다','소리가 조용하고 집중적인 에너지를 가집니다'] },
+        행동: { text: '내향성이 우세한 일상:', bullets:['대화보다 듣는 쪽을 선호합니다','대규모 모임 후 혼자 회복 시간이 필요합니다','말을 내뱉기 전에 충분히 생각합니다','조용하고 집중된 환경에서 가장 잘 발휘됩니다'] },
+        강점: { text: '낮은 외향성이 가져다주는 강점:', bullets:['깊이 있는 사고와 성찰 능력','소수와의 신뢰 깊은 관계 형성','차분하고 안정적인 목소리 에너지','디테일과 뉘앙스에 집중하는 표현력'] },
+        도전과제: { text: '낮은 외향성에서의 과제:', bullets:['목소리를 크게 내거나 공간을 채우는 것이 어색할 수 있습니다','의도적인 투사력 훈련이 도움됩니다','무대나 발표 상황에서 에너지 관리가 필요합니다','자신을 드러내는 연습을 꾸준히 하는 것이 중요합니다'] },
+      },
+      vlow: {
+        기초: { text: '매우 낮은 외향성을 가진 당신은 깊은 내향성을 지니고 있습니다. 혼자 있는 시간이 생명줄과 같으며, 사회적 상황은 에너지를 크게 소모합니다. 이 내향적 깊이는 소리에 특별한 질감과 진정성을 더할 수 있습니다.', bullets:['사회적 상호작용은 에너지를 크게 소모합니다','매우 소수의 신뢰하는 사람과의 관계를 중시합니다','내면 세계가 외부 세계만큼 풍부합니다','목소리에 조용한 무게감이 있습니다'] },
+        행동: { text: '매우 낮은 외향성의 일상:', bullets:['가능하면 대규모 사교 상황을 피합니다','혼자 있는 시간이 충분하지 않으면 피로가 쌓입니다','생각을 충분히 정리한 후에만 말합니다','1:1 또는 소규모 환경에서 가장 자연스럽습니다'] },
+        강점: { text: '깊은 내향성만이 가진 강점:', bullets:['소리에 담기는 진정성과 깊이','섣불리 말하지 않기에 더 강력한 한 마디','작은 디테일에 민감한 청각적 감수성','혼자 집중적으로 연습하는 능력'] },
+        도전과제: { text: '매우 낮은 외향성에서의 현실적 과제:', bullets:['무대나 퍼포먼스 상황이 극도로 소모적일 수 있습니다','의도적인 에너지 루틴 설계가 필수입니다','목소리 투사력 개발을 위한 꾸준한 훈련이 필요합니다','자신을 드러내는 것 자체에 심리적 저항이 있을 수 있습니다'] },
+      },
+    }
+  },
+  C: {
+    intro: '성실성은 목표를 향해 나아가는 자기 통제력, 계획성, 신뢰성의 척도입니다.',
+    byLevel: {
+      vhigh: {
+        기초: { text: '매우 높은 성실성을 가진 당신은 극도로 체계적이고 자기 규율이 강합니다. 계획 없이 움직이는 것이 불안하며, 완벽에 대한 기준이 매우 높습니다. 이 완벽주의는 탁월한 완성도를 만들지만, 때로는 자신을 너무 몰아붙이기도 합니다.', bullets:['모든 것을 체계적으로 준비합니다','실수를 용납하지 못하는 경향이 있습니다','목소리에 높은 정확도와 안정성이 있습니다','완성도 있는 결과물을 만들어냅니다'] },
+        행동: { text: '극도의 성실성이 일상에서 나타나는 방식:', bullets:['계획표와 체크리스트가 삶의 중심입니다','예측 불가능한 상황이 매우 스트레스입니다','마감보다 훨씬 일찍 준비를 완료합니다','다른 사람의 불성실함에 예민하게 반응합니다'] },
+        강점: { text: '매우 높은 성실성의 특별한 강점:', bullets:['타의 추종을 불허하는 기술적 완성도','어떤 상황에서도 흔들리지 않는 발성 안정성','장기 훈련과 루틴을 철저하게 지속하는 능력','청중에게 신뢰와 안정감을 주는 소리'] },
+        도전과제: { text: '매우 높은 성실성의 그림자:', bullets:['완벽주의로 인한 극심한 자기 비판','즉흥 표현이나 실수 허용이 매우 어렵습니다','규칙에 너무 얽매여 창의적 돌파가 힘들 수 있습니다','번아웃 위험이 높습니다 — 쉬는 것도 계획하세요'] },
+      },
+      high: {
+        기초: { text: '높은 성실성을 가진 당신은 체계적이고 목표 지향적입니다. 약속을 지키고 책임감이 강하며, 완성도 있는 결과물을 만들어냅니다.', bullets:['체계적이고 조직적인 사고방식','높은 자기 통제력과 책임감','지속적인 노력과 완성도 추구','신뢰할 수 있는 안정적인 인상'] },
+        행동: { text: '일상 속 성실성의 모습:', bullets:['할 일 목록을 작성하고 체크합니다','마감 전에 충분히 준비를 마칩니다','정리정돈된 환경을 선호합니다','돌발 상황에도 체계적으로 대응합니다'] },
+        강점: { text: '높은 성실성이 가져다주는 강점:', bullets:['꾸준한 노력으로 쌓이는 기술과 신뢰감','안정적이고 예측 가능한 목소리 퍼포먼스','장기 목표를 향한 지속력','타인에게 믿음을 주는 책임감'] },
+        도전과제: { text: '성실성이 높을 때 주의할 점:', bullets:['과도한 자기 비판과 완벽주의','즉흥성과 유연성 발휘가 어려울 수 있음','규칙에 얽매여 창의적 실험을 피할 수 있음','번아웃 위험 — 쉬어가는 것도 능력입니다'] },
+      },
+      mid: {
+        기초: { text: '균형 잡힌 성실성을 가진 당신은 체계와 유연성 사이에서 실용적으로 움직입니다. 필요할 때 계획을 세우고, 상황에 따라 즉흥적으로 대응하기도 합니다.', bullets:['상황에 따라 계획적이기도, 즉흥적이기도 합니다','완벽보다는 완성을 추구합니다','적당한 수준의 자기 통제력을 가집니다','목소리 안정성이 컨디션에 따라 변합니다'] },
+        행동: { text: '균형 잡힌 성실성의 일상:', bullets:['때로는 계획대로, 때로는 즉흥적으로 움직입니다','마감에 맞추기는 하지만 아슬아슬할 때도 있습니다','완벽하지 않아도 괜찮다고 느낍니다','환경이 정리되지 않아도 잘 기능합니다'] },
+        강점: { text: '균형 잡힌 성실성의 강점:', bullets:['계획성과 즉흥성을 모두 활용하는 유연함','완벽주의에 얽매이지 않는 자유로운 표현','다양한 상황에 적응하는 실용적인 능력','기술과 감성의 균형 잡힌 발성'] },
+        도전과제: { text: '중간 수준의 성실성에서 발생하는 과제:', bullets:['일관성이 다소 부족할 수 있습니다','체계적인 장기 훈련 계획이 필요합니다','루틴 형성에 의도적인 노력이 필요합니다','기준을 명확히 설정하는 연습이 도움됩니다'] },
+      },
+      low: {
+        기초: { text: '낮은 성실성을 가진 당신은 계획보다 흐름을, 규칙보다 직관을 따릅니다. 이것은 창의적이고 즉흥적인 표현의 토대가 되지만, 지속적인 기술 개발에는 의도적인 노력이 필요합니다.', bullets:['직관과 즉흥성으로 움직입니다','엄격한 규칙과 계획이 답답하게 느껴집니다','자유로운 환경에서 가장 창의적입니다','목소리가 상황에 따라 다르게 표현됩니다'] },
+        행동: { text: '낮은 성실성의 일상 패턴:', bullets:['마감이 가까워야 집중이 잘 됩니다','계획보다 흥미와 직관을 따릅니다','정리정돈보다 창의적 혼돈 속에 있을 때도 있습니다','일을 시작은 잘 하지만 마무리가 어려울 수 있습니다'] },
+        강점: { text: '낮은 성실성이 가진 독특한 강점:', bullets:['자유롭고 즉흥적인 발성 표현력','규칙에 얽매이지 않는 창의적 시도','자연스럽고 꾸밈없는 소리의 진정성','새로운 방식을 두려움 없이 실험하는 용기'] },
+        도전과제: { text: '낮은 성실성에서 발생하는 현실적 과제:', bullets:['꾸준한 발성 훈련 루틴 유지가 어렵습니다','장기 기술 개발에 의도적인 구조가 필요합니다','퍼포먼스의 일관성이 떨어질 수 있습니다','작은 목표를 설정하고 축적하는 습관이 도움됩니다'] },
+      },
+      vlow: {
+        기초: { text: '매우 낮은 성실성을 가진 당신은 매우 자유로운 영혼입니다. 구조와 계획은 창의성을 가로막는 장벽처럼 느껴질 수 있습니다. 이 자유로움은 소리에 독특한 즉흥성을 부여하지만, 기술적 토대를 쌓는 데는 의도적인 전략이 필요합니다.', bullets:['어떤 계획도 없이 순간에 반응합니다','구조화된 훈련이 매우 부담스럽습니다','자유롭고 예측 불가능한 발성 에너지','소리가 그날의 상태를 그대로 반영합니다'] },
+        행동: { text: '매우 낮은 성실성의 일상:', bullets:['계획은 세우지만 따르지 않을 때가 많습니다','흥미가 사라지면 금방 방향을 바꿉니다','시작은 열정적이지만 완주가 어렵습니다','여러 가지를 동시에 시작하는 경향이 있습니다'] },
+        강점: { text: '매우 낮은 성실성만의 강점:', bullets:['완전히 자유로운 즉흥적 표현력','규칙 없는 소리 실험과 발견의 즐거움','매 순간 살아있는 듯한 퍼포먼스 에너지','정해진 틀 밖에서 새로운 것을 만드는 능력'] },
+        도전과제: { text: '매우 낮은 성실성의 현실적 도전:', bullets:['기본기 훈련을 지속하는 것이 가장 큰 과제입니다','파트너나 코치와 함께 구조를 만드는 것이 도움됩니다','짧고 강렬한 훈련 세션이 긴 루틴보다 효과적입니다','성취감을 자주 경험할 수 있는 소목표 설정이 필요합니다'] },
+      },
+    }
+  },
+  A: {
+    intro: '우호성은 타인과의 관계에서 얼마나 협력적이고 공감 능력이 높은지를 나타냅니다.',
+    byLevel: {
+      vhigh: {
+        기초: { text: '매우 높은 우호성을 가진 당신은 타인의 감정에 극도로 민감하게 반응합니다. 다른 사람의 필요와 감정을 자신의 것처럼 느끼며, 갈등을 불편하게 여깁니다. 소리에는 놀라운 따뜻함과 공감의 온기가 담겨 있습니다.', bullets:['타인의 감정을 자신의 것처럼 느낍니다','갈등 상황이 신체적으로도 불편합니다','소리에 따뜻함과 배려가 자연스럽게 배어납니다','모두를 행복하게 해주고 싶은 마음이 강합니다'] },
+        행동: { text: '매우 높은 우호성의 일상:', bullets:['거절을 매우 어렵게 느낍니다','다른 사람의 감정을 먼저 살핀 후 행동합니다','분쟁에서 항상 중재자 역할을 맡습니다','자신의 필요보다 타인의 필요를 먼저 채웁니다'] },
+        강점: { text: '매우 높은 우호성의 특별한 강점:', bullets:['청중의 마음을 즉각적으로 여는 따뜻한 소리','공감과 위로가 소리에 자연스럽게 담김','깊은 신뢰 관계를 빠르게 형성하는 능력','발라드·CCM·힐링 장르에서 타의 추종을 불허하는 진정성'] },
+        도전과제: { text: '매우 높은 우호성에서 주의해야 할 것:', bullets:['자신의 필요와 경계를 지키는 것이 어렵습니다','지나치게 순응하여 진짜 감정이 억압될 수 있습니다','강렬하거나 날카로운 표현이 부자연스럽습니다','타인의 기대에 부응하려다 자신을 잃을 수 있습니다'] },
+      },
+      high: {
+        기초: { text: '높은 우호성을 가진 당신은 따뜻하고 협력적입니다. 공감 능력이 뛰어나며 소리에 그 온기가 자연스럽게 담깁니다.', bullets:['깊은 공감 능력과 정서적 민감성','조화와 협력을 우선하는 성향','배려 깊은 의사소통 방식','따뜻하고 부드러운 소리 질감'] },
+        행동: { text: '높은 우호성의 일상적 표현:', bullets:['다른 사람의 감정을 먼저 살핍니다','갈등보다 타협을 선호합니다','부탁을 거절하기가 어렵습니다','소리가 상대에게 어떻게 들릴지 신경 씁니다'] },
+        강점: { text: '높은 우호성이 만들어내는 강점:', bullets:['청중의 마음을 여는 따뜻한 목소리','자연스러운 감정적 연결과 공감','팀에서 갈등을 중재하는 능력','발라드·R&B·CCM에서의 진정성'] },
+        도전과제: { text: '높은 우호성에서 주의할 점:', bullets:['타인의 필요를 자신보다 먼저 챙길 수 있음','경계 설정이 어려울 수 있습니다','지나치게 순응적이 될 위험','강렬하고 날카로운 표현이 부자연스러울 수 있음'] },
+      },
+      mid: {
+        기초: { text: '균형 잡힌 우호성을 가진 당신은 공감과 독립성 사이에서 실용적으로 움직입니다. 필요할 때는 협력적이고, 필요할 때는 단호합니다.', bullets:['상황에 따라 협력적이기도, 단호하기도 합니다','공감하지만 자신의 입장도 지킵니다','목소리 질감이 상황에 따라 달라집니다','거절도 할 수 있지만 부담스러울 때가 있습니다'] },
+        행동: { text: '균형 잡힌 우호성의 일상:', bullets:['팀에서 협력과 자기주장을 모두 사용합니다','갈등 상황에서 중간 입장을 취합니다','다른 사람의 감정을 고려하되 자신도 챙깁니다','거절 후 약간의 죄책감을 느낄 수 있습니다'] },
+        강점: { text: '균형 잡힌 우호성의 강점:', bullets:['협력과 독립성을 상황에 맞게 발휘','다양한 유형의 사람과 원활한 소통','목소리 질감의 자연스러운 변화 능력','공감하면서도 자신을 잃지 않는 균형감'] },
+        도전과제: { text: '균형 지점에서의 과제:', bullets:['완전한 공감과 완전한 단호함 모두 어색할 수 있습니다','경계 설정의 기준을 명확히 하는 연습이 필요합니다','감정 표현의 풍부함을 더욱 키우는 것이 도움됩니다','자신의 필요를 명확히 표현하는 연습이 필요합니다'] },
+      },
+      low: {
+        기초: { text: '낮은 우호성을 가진 당신은 독립적이고 자기 주관이 강합니다. 타인의 감정보다 사실과 논리를 중시하며, 필요하면 어려운 말도 직접적으로 할 수 있습니다. 소리에는 힘과 날카로움이 있습니다.', bullets:['독립적이고 자기 주관이 강합니다','감정보다 사실을 기반으로 소통합니다','목소리에 힘과 날카로움이 있습니다','직접적이고 솔직한 표현을 선호합니다'] },
+        행동: { text: '낮은 우호성의 일상 패턴:', bullets:['거절을 어렵지 않게 할 수 있습니다','팀보다 개인 작업을 선호할 수 있습니다','감정적 위로보다 실용적 해결책을 제시합니다','다른 사람의 기분보다 진실을 말합니다'] },
+        강점: { text: '낮은 우호성의 독특한 강점:', bullets:['소리에 담기는 힘과 날카로운 존재감','필요한 말을 두려움 없이 하는 용기','강렬하고 드라마틱한 퍼포먼스 에너지','락·힙합·퍼포먼스 장르에서의 강점'] },
+        도전과제: { text: '낮은 우호성에서 발생하는 과제:', bullets:['소리의 부드럽고 따뜻한 질감 개발이 필요합니다','청중과의 감정적 연결이 어색하게 느껴질 수 있습니다','공감 표현을 의식적으로 연습하는 것이 도움됩니다','발라드나 감성적 장르 소화에 추가 훈련이 필요합니다'] },
+      },
+      vlow: {
+        기초: { text: '매우 낮은 우호성을 가진 당신은 경쟁적이고 독립적인 사고방식을 가지고 있습니다. 타인의 감정보다 자신의 기준과 목표를 우선시합니다. 소리에는 강렬한 에너지와 날카로운 존재감이 있습니다.', bullets:['강한 자기 주관과 독립성','감정적 공감보다 논리적 판단을 우선합니다','목소리에 강렬하고 날카로운 에너지가 있습니다','자신의 기준을 타협하지 않습니다'] },
+        행동: { text: '매우 낮은 우호성의 일상:', bullets:['경쟁적 환경에서 동기가 올라갑니다','타인의 감정에 큰 영향을 받지 않습니다','직설적이고 때로 거칠게 느껴지는 소통 방식','자신의 목표를 위해 독립적으로 움직입니다'] },
+        강점: { text: '매우 낮은 우호성만의 강점:', bullets:['타협 없는 강렬한 퍼포먼스 에너지','비판에 흔들리지 않는 심리적 강인함','음악에서 강력한 존재감과 임팩트','자신만의 독특한 소리 세계를 구축하는 능력'] },
+        도전과제: { text: '매우 낮은 우호성의 현실적 과제:', bullets:['청중과의 감정적 연결에 의식적인 노력이 필요합니다','협업 시 상대방의 감정을 이해하는 연습이 중요합니다','소리의 부드러운 레이어를 개발하는 훈련이 필요합니다','공감 어린 표현을 의도적으로 연습하는 것이 도움됩니다'] },
+      },
+    }
+  },
+  N: {
+    intro: '신경성은 감정의 민감도와 심리적 안정성의 척도입니다. 높을수록 감정이 풍부하고 예민하며, 낮을수록 안정적입니다.',
+    byLevel: {
+      vhigh: {
+        기초: { text: '매우 높은 신경성을 가진 당신은 감정의 파도가 매우 크고 빠릅니다. 작은 자극에도 강하게 반응하며, 걱정과 불안이 일상적인 동반자입니다. 하지만 이 예민함이 소리에는 타의 추종을 불허하는 감정적 깊이를 선사합니다.', bullets:['감정의 진폭이 매우 크고 빠릅니다','사소한 일도 오래 마음에 남습니다','목소리에 감정의 떨림이 자연스럽게 실립니다','예민한 감각이 예술적 표현의 토대가 됩니다'] },
+        행동: { text: '매우 높은 신경성의 일상:', bullets:['걱정과 불안이 자주 찾아옵니다','타인의 말과 표정에 과도하게 의미를 부여합니다','퍼포먼스 전 극심한 무대 불안을 경험할 수 있습니다','기분이 외부 환경에 크게 영향을 받습니다'] },
+        강점: { text: '매우 높은 신경성만이 가진 강점:', bullets:['소리에 담기는 진정성과 날것의 감정 표현','청중이 즉각적으로 느끼는 감정적 진정성','예민한 감각으로 음악의 뉘앙스를 포착하는 능력','깊은 감정 경험이 소리에 자연스럽게 배어나옴'] },
+        도전과제: { text: '매우 높은 신경성의 현실적 과제:', bullets:['4-7-8 호흡법 등 안정화 루틴이 필수입니다','퍼포먼스 전 충분한 준비로 불안을 줄이세요','무대 경험을 쌓아 익숙함으로 불안을 극복하세요','전문가의 도움으로 불안을 관리하는 것도 좋습니다'] },
+      },
+      high: {
+        기초: { text: '높은 신경성을 가진 당신은 감정이 풍부하고 예민합니다. 이 예민함이 소리에 깊이와 감정적 진정성을 더합니다.', bullets:['감정적 반응이 빠르고 깊습니다','스트레스 상황에서 즉각적으로 반응합니다','목소리에 감정의 떨림이 자연스럽게 담깁니다','심리적 섬세함을 가집니다'] },
+        행동: { text: '높은 신경성의 일상적 모습:', bullets:['감정 기복이 있을 수 있습니다','타인의 반응에 민감합니다','실수를 오래 생각하는 편입니다','긴장 시 호흡이나 목소리가 영향을 받습니다'] },
+        강점: { text: '높은 신경성이 가져다주는 의외의 강점:', bullets:['소리에 담기는 "떨림"과 진정성','감정 표현의 깊이와 풍부함','타인의 고통에 진심으로 공감하는 능력','예술적 예민함과 섬세한 표현력'] },
+        도전과제: { text: '높은 신경성을 관리하기 위한 실천 방법:', bullets:['호흡 안정화 루틴을 일상화하세요','퍼포먼스 전 충분한 워밍업이 중요합니다','걱정이 과도해지는 것을 알아차리기','자기 비판의 목소리를 다정하게 다루기'] },
+      },
+      mid: {
+        기초: { text: '균형 잡힌 신경성을 가진 당신은 감정적으로 안정적이면서도 충분한 감수성을 가지고 있습니다. 극단적인 감정 기복 없이 일상을 유지하면서도 감정적 깊이를 표현할 수 있습니다.', bullets:['감정이 안정적이면서도 충분히 풍부합니다','스트레스에 적당히 반응하고 회복합니다','목소리가 안정적이면서도 감정을 담을 수 있습니다','일상적인 불안보다는 안정감이 베이스입니다'] },
+        행동: { text: '균형 잡힌 신경성의 일상:', bullets:['대부분의 상황에서 차분하게 대응합니다','가끔 스트레스를 받지만 빠르게 회복합니다','감정을 느끼되 압도당하지 않습니다','퍼포먼스 불안이 있지만 관리 가능합니다'] },
+        강점: { text: '균형 잡힌 신경성의 강점:', bullets:['안정적인 퍼포먼스와 충분한 감정 표현의 균형','다양한 상황에서 일관된 소리 품질','압박 상황에서도 크게 흔들리지 않는 안정감','감정과 기술을 모두 활용하는 발성'] },
+        도전과제: { text: '균형 지점에서의 과제:', bullets:['더 깊은 감정 표현을 위한 의도적 연습이 필요합니다','감정적으로 완전히 몰입하는 경험을 쌓아보세요','때로는 "통제를 내려놓는" 연습이 도움됩니다','감정의 진폭을 의도적으로 키우는 훈련을 해보세요'] },
+      },
+      low: {
+        기초: { text: '낮은 신경성(심리적 안정)을 가진 당신은 감정적으로 매우 안정적입니다. 스트레스와 압박에 잘 흔들리지 않으며, 이 안정감이 소리에 신뢰감과 권위감을 부여합니다.', bullets:['심리적으로 안정적이고 회복력이 강합니다','스트레스 상황에서도 크게 흔들리지 않습니다','목소리에 신뢰감과 안정감이 자연스럽게 담깁니다','감정적 압박에도 일관된 퍼포먼스를 유지합니다'] },
+        행동: { text: '낮은 신경성의 일상 패턴:', bullets:['위기 상황에서도 침착하게 대응합니다','과도한 걱정이나 반추가 드뭅니다','무대 불안보다는 집중력이 앞섭니다','타인의 비판에 크게 흔들리지 않습니다'] },
+        강점: { text: '낮은 신경성의 강점:', bullets:['어떤 상황에서도 안정적인 퍼포먼스','청중에게 신뢰감과 권위감을 주는 소리','지속적이고 일관된 발성 품질 유지','강의·리더십·내레이션에서 특히 두드러지는 강점'] },
+        도전과제: { text: '낮은 신경성에서 발생하는 과제:', bullets:['소리에 감정적 깊이를 더하는 연습이 필요합니다','"완벽하게 통제된 소리"가 때로 차갑게 느껴질 수 있습니다','의도적으로 감정적 취약성을 허용하는 연습이 도움됩니다','발라드나 감성 장르에서 감정 몰입 훈련이 필요합니다'] },
+      },
+      vlow: {
+        기초: { text: '매우 낮은 신경성을 가진 당신은 거의 어떤 상황에서도 흔들리지 않는 심리적 안정성을 가지고 있습니다. 이 강인함이 소리에 강력한 권위감과 신뢰감을 부여합니다.', bullets:['극한의 상황에서도 심리적으로 안정됩니다','걱정이나 불안이 거의 없습니다','목소리에 흔들림 없는 권위와 신뢰가 있습니다','어떤 환경에서도 일관된 퍼포먼스를 유지합니다'] },
+        행동: { text: '매우 낮은 신경성의 일상:', bullets:['위기 상황이 오히려 당신을 각성시킵니다','감정적 동요 없이 냉정하게 판단합니다','무대나 발표 상황이 전혀 두렵지 않습니다','다른 사람의 불안을 안정시키는 역할을 합니다'] },
+        강점: { text: '매우 낮은 신경성의 특별한 강점:', bullets:['완전히 흔들림 없는 무대 존재감','위기 상황에서 더 빛나는 퍼포먼스','청중에게 안도감과 신뢰를 주는 목소리','오랜 시간 일관된 퍼포먼스를 유지하는 능력'] },
+        도전과제: { text: '매우 낮은 신경성의 과제:', bullets:['소리에 감정적 취약성과 인간적 따뜻함을 더하는 것이 필요합니다','지나치게 차갑거나 로봇처럼 느껴질 수 있습니다','청중의 감정에 더 민감하게 반응하는 연습이 도움됩니다','의도적으로 감정의 진폭을 키우는 훈련을 해보세요'] },
+      },
+    }
+  },
+  O: {
+    intro: '개방성은 새로운 경험, 아이디어, 감각에 얼마나 열려 있는지를 나타냅니다.',
+    byLevel: {
+      vhigh: {
+        기초: { text: '매우 높은 개방성을 가진 당신은 경험의 경계가 거의 없습니다. 모든 것이 탐구와 연결의 대상이며, 창의성이 삶의 방식 자체입니다. 소리에는 놀라운 즉흥성과 다채로운 색채가 넘칩니다.', bullets:['어떤 새로운 것도 두렵지 않고 설렙니다','상상력이 경계를 모릅니다','목소리에 예측 불가능한 창의성이 담깁니다','예술·철학·음악이 삶의 본질입니다'] },
+        행동: { text: '매우 높은 개방성의 일상:', bullets:['매일 새로운 것을 탐구하고 시도합니다','한 가지에 집중하기 어려울 수 있습니다','추상적이고 철학적인 대화를 즐깁니다','일상의 모든 것에서 의미와 아름다움을 찾습니다'] },
+        강점: { text: '매우 높은 개방성의 특별한 강점:', bullets:['어떤 장르도 소화하는 놀라운 다재다능함','매 순간 살아있는 즉흥 표현력','소리에 담기는 예측 불가능한 창의성','예술적 실험과 새로운 소리의 개척'] },
+        도전과제: { text: '매우 높은 개방성의 그림자:', bullets:['너무 많은 방향으로 에너지가 분산됩니다','하나를 깊이 완성하는 것이 매우 어렵습니다','완성도보다 새로운 시작에 치우칩니다','일상의 루틴과 반복이 고통스럽게 느껴집니다'] },
+      },
+      high: {
+        기초: { text: '높은 개방성을 가진 당신은 창의적이고 호기심이 넘칩니다. 소리에도 다양한 색채와 즉흥성이 나타납니다.', bullets:['창의적 사고와 풍부한 상상력','다양한 예술·문화에 대한 감수성','즉흥적 표현에 대한 개방성','목소리의 풍부한 색채 변화'] },
+        행동: { text: '높은 개방성의 일상적 표현:', bullets:['동시에 여러 관심사를 가집니다','장르를 넘나드는 감상 취향','일상에서도 새로운 방식을 실험합니다','추상적이고 철학적인 대화를 즐깁니다'] },
+        강점: { text: '높은 개방성이 만들어내는 강점:', bullets:['매 퍼포먼스에서 새로운 색채를 더하는 능력','장르와 형식을 초월한 표현 범위','창의적 문제 해결 능력','다양한 음악 장르를 소화하는 유연성'] },
+        도전과제: { text: '높은 개방성에서 주의할 점:', bullets:['너무 많은 방향으로 에너지가 분산될 수 있습니다','하나의 기술을 깊이 다듬는 것이 어려울 수 있음','현실적 완성도보다 새로운 시도에 치우칠 위험','루틴과 반복 연습에서 지루함을 느낄 수 있습니다'] },
+      },
+      mid: {
+        기초: { text: '균형 잡힌 개방성을 가진 당신은 창의성과 실용성을 모두 활용합니다. 새로운 것에 열려 있지만 효과가 있는 방식도 유지합니다.', bullets:['열린 사고와 실용성을 균형 있게 갖춥니다','새로운 것에 호기심이 있지만 신중합니다','창의성과 안정성을 모두 발휘합니다','다양한 표현 방식을 탐구합니다'] },
+        행동: { text: '균형 잡힌 개방성의 일상:', bullets:['관심사가 다양하지만 집중할 수 있습니다','새로운 장르나 스타일도 도전합니다','실험과 안정 사이에서 균형을 찾습니다','기존 방식을 유지하면서 새로운 것을 시도합니다'] },
+        강점: { text: '균형 잡힌 개방성의 강점:', bullets:['창의성과 완성도를 동시에 추구','다양한 장르에 적응하는 유연성','새로운 시도와 기본기의 균형','청중을 놀라게 하면서도 안정감을 주는 소리'] },
+        도전과제: { text: '균형 지점에서의 과제:', bullets:['완전히 새로운 실험에 더 과감해져도 좋습니다','창의적 표현의 폭을 더 넓히는 도전이 필요합니다','한 달에 한 번 완전히 낯선 장르를 시도해 보세요','상상력의 한계를 일부러 밀어붙이는 연습이 도움됩니다'] },
+      },
+      low: {
+        기초: { text: '낮은 개방성을 가진 당신은 실용적이고 현실에 집중합니다. 검증된 방식을 선호하며, 안정적이고 완성도 있는 소리를 냅니다.', bullets:['검증된 방식과 전통을 신뢰합니다','실용적이고 현실적인 접근법을 취합니다','목소리에 안정감과 완성도가 있습니다','일관되고 신뢰할 수 있는 퍼포먼스'] },
+        행동: { text: '낮은 개방성의 일상 패턴:', bullets:['친숙한 음악과 방식을 선호합니다','새로운 것보다 잘 아는 것에 집중합니다','루틴이 주는 안정감을 중시합니다','검증된 훈련 방식을 꾸준히 실천합니다'] },
+        강점: { text: '낮은 개방성의 강점:', bullets:['흔들림 없는 기본기와 완성도','일관되고 신뢰할 수 있는 소리','꾸준한 루틴으로 쌓인 기술적 완성도','안정적이고 예측 가능한 퍼포먼스'] },
+        도전과제: { text: '낮은 개방성에서 발생하는 과제:', bullets:['새로운 장르나 스타일에 도전하는 것이 어렵습니다','즉흥 표현이 어색할 수 있습니다','목소리에 색채와 변화를 더하는 연습이 필요합니다','작은 실험부터 시작하는 것이 도움됩니다'] },
+      },
+      vlow: {
+        기초: { text: '매우 낮은 개방성을 가진 당신은 전통과 검증된 방식에 강한 신뢰를 두고 있습니다. 변화보다는 완성도를, 실험보다는 안정을 추구합니다. 소리에는 단단하고 신뢰할 수 있는 일관성이 있습니다.', bullets:['전통적인 방식을 강하게 선호합니다','변화와 실험이 불편하게 느껴집니다','목소리에 강한 일관성과 안정감이 있습니다','검증된 방법 외에는 쉽게 시도하지 않습니다'] },
+        행동: { text: '매우 낮은 개방성의 일상:', bullets:['오랫동안 해온 방식을 고수합니다','새로운 음악 장르에 노출이 적습니다','훈련에서도 정해진 방식을 따릅니다','예측 가능하고 일관된 패턴 속에서 편안함을 느낍니다'] },
+        강점: { text: '매우 낮은 개방성만의 강점:', bullets:['타의 추종을 불허하는 기술적 일관성','어떤 상황에서도 흔들리지 않는 소리 안정성','장기간의 꾸준한 훈련으로 쌓인 완성도','자신만의 명확하고 일관된 소리 정체성'] },
+        도전과제: { text: '매우 낮은 개방성의 현실적 과제:', bullets:['소리에 더 많은 색채와 변화를 더하는 훈련이 필요합니다','다양한 장르의 음악을 듣는 것부터 시작하세요','즉흥 허밍 5분으로 일상에서 작은 실험을 해보세요','새로운 것에 대한 저항을 조금씩 낮추는 연습이 도움됩니다'] },
+      },
+    }
+  },
+};
+
+// ═══════════════════════════
+// VOICE SPECIAL INTERPRETATIONS
+// ═══════════════════════════
+function getVoiceSpecialInterpretation(pct) {
+  if (pct >= 75) return {
+    label: '기술 지향형',
+    desc: '소리를 다루는 데 있어 구조와 정확성을 중시하는 유형입니다. 음정, 박자, 발성 기술에 높은 의식이 있으며, 목소리를 의도적으로 조절하는 능력이 있습니다. 이 유형은 훈련으로 만들어진 소리에 강점이 있습니다.',
+    tip: '💡 이미 좋은 그릇을 가지고 있어요. 이제 그 그릇 안에 "통제되지 않은 감정 한 숟가락"을 의도적으로 담아보세요. 테크닉이 진심을 만날 때 목소리가 살아납니다.',
+    traits: ['음정·박자 의식이 높음', '목소리를 상황에 맞게 조절함', '즉흥 표현보다 완성도 선호', '긴장 시 발성이 경직될 수 있음']
+  };
+  if (pct >= 50) return {
+    label: '균형 탐색형',
+    desc: '기술과 감정, 조절과 자연스러움 사이에서 균형을 찾고 있는 유형입니다. 상황에 따라 때로는 정확성을, 때로는 즉흥성을 발휘합니다. 가장 유연한 발성 잠재력을 가진 유형이기도 합니다.',
+    tip: '💡 두 세계를 모두 아는 사람입니다. 의도적으로 "지금은 느낌으로만 간다"는 결정을 내릴 때 가장 강한 소리가 나옵니다.',
+    traits: ['상황에 따라 다른 발성 전략 사용', '감정 표현과 기술 사이를 오감', '카멜레온처럼 변하는 목소리 톤', '퍼포먼스 스타일이 다채로움']
+  };
+  return {
+    label: '감정 주도형',
+    desc: '테크닉보다 소리에 담긴 진심을 우선하는 유형입니다. 목소리가 내면 상태를 여과 없이 드러내며, 이 날것의 진정성이 가장 강력한 무기입니다. 소리를 "만드는" 것이 아니라 소리가 "흘러나오는" 느낌을 받습니다.',
+    tip: '💡 이 진정성은 훈련으로 얻을 수 없는 자산입니다. 다만 호흡 지지와 기본 발성 훈련으로 이 진심을 더 오래, 더 안정적으로 담을 그릇을 키워보세요.',
+    traits: ['감정이 소리에 바로 실림', '즉흥 표현이 자연스러움', '목소리가 내면 상태를 그대로 드러냄', '구조보다 흐름을 따라가는 발성']
+  };
+}
+
+// ═══════════════════════════
+// STATE
+// ═══════════════════════════
+let answers = {};
+let totalAnswered = 0;
+const totalQ = 70;
+let voiceFileName = null;
+let currentDominant = 'O';
+let currentDomainDetail = null;
+let currentDetailTab = 0;
+
+// ═══════════════════════════
+// SPECTRUM ANALYSIS
+// ═══════════════════════════
+let freqBandData = null; // 나중에 성격 결과와 연결용
+
+const FREQ_BANDS = [
+  { label: '저음\n63Hz',    min: 20,    max: 125,   color: '#4a7fe0', desc: '흉성 공명·묵직함' },
+  { label: '중저음\n250Hz', min: 125,   max: 500,   color: '#40916c', desc: '말소리 핵심 대역' },
+  { label: '중음\n1kHz',    min: 500,   max: 2000,  color: '#d4a017', desc: '음성 명료도' },
+  { label: '고중음\n4kHz',  min: 2000,  max: 6000,  color: '#e05c3a', desc: '존재감·투사력' },
+  { label: '고음\n8kHz',    min: 6000,  max: 12000, color: '#9b59b6', desc: '밝기·배음' },
+  { label: '초고음\n16kHz', min: 12000, max: 20000, color: '#e07a2a', desc: '공기감·마찰음' },
+];
+
+async function analyzeSpectrum(file) {
+  document.getElementById('spectrumPanel').style.display = 'block';
+  document.getElementById('spectrumLoading').style.display = 'block';
+  document.getElementById('spectrumResult').style.display = 'none';
+
+  try {
+    const arrayBuffer = await file.arrayBuffer();
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+    const channelData = audioBuffer.getChannelData(0);
+    const sampleRate = audioBuffer.sampleRate;
+    const fftSize = 4096;
+    const duration = audioBuffer.duration;
+    const numSamples = Math.min(60, Math.floor(duration * 6));
+
+    const realAnalyser = audioCtx.createAnalyser();
+    realAnalyser.fftSize = fftSize;
+    realAnalyser.smoothingTimeConstant = 0.2;
+
+    const offBuffer = audioCtx.createBuffer(1, channelData.length, sampleRate);
+    offBuffer.copyToChannel(channelData, 0);
+    const offSource = audioCtx.createBufferSource();
+    offSource.buffer = offBuffer;
+    offSource.connect(realAnalyser);
+    realAnalyser.connect(audioCtx.destination);
+
+    const binCount = realAnalyser.frequencyBinCount;
+    const freqBinHz = sampleRate / fftSize;
+    const snapFreq = new Uint8Array(binCount);
+    const snapAccum = new Array(FREQ_BANDS.length).fill(0);
+
+    // 배음 분석용 누적
+    let harmonicRichnessAccum = 0;
+    // 발음 명확도 분석용 (이전 에너지 추적)
+    let prevRMS = 0;
+    const onsetStrengths = [];
+    const spectroRows = [];
+    let snapCount = 0;
+
+    offSource.start();
+
+    await new Promise(resolve => {
+      const snapInterval = Math.max(80, (duration * 1000) / numSamples);
+      let elapsed = 0;
+      const timer = setInterval(() => {
+        realAnalyser.getByteFrequencyData(snapFreq);
+        const row = Array.from(snapFreq.slice(0, Math.min(binCount, 256)));
+        spectroRows.push(row);
+
+        // ── 대역별 에너지 누적
+        FREQ_BANDS.forEach((band, bi) => {
+          let sum = 0, count = 0;
+          const minBin = Math.floor(band.min / freqBinHz);
+          const maxBin = Math.min(Math.ceil(band.max / freqBinHz), binCount - 1);
+          for (let b = minBin; b <= maxBin; b++) { sum += snapFreq[b]; count++; }
+          snapAccum[bi] += count > 0 ? sum / count : 0;
+        });
+
+        // ── 배음 풍부도 계산
+        // 가장 에너지 강한 bin (기음 추정)
+        let peakBin = 0, peakVal = 0;
+        const fundamentalSearchMax = Math.min(Math.floor(800 / freqBinHz), binCount - 1);
+        for (let b = 5; b < fundamentalSearchMax; b++) {
+          if (snapFreq[b] > peakVal) { peakVal = snapFreq[b]; peakBin = b; }
+        }
+        if (peakBin > 0 && peakVal > 30) {
+          let harmonicSum = 0, harmonicCount = 0;
+          for (let h = 2; h <= 6; h++) {
+            const hBin = peakBin * h;
+            if (hBin < binCount) {
+              harmonicSum += snapFreq[hBin];
+              harmonicCount++;
+            }
+          }
+          const richness = harmonicCount > 0 ? (harmonicSum / harmonicCount) / peakVal : 0;
+          harmonicRichnessAccum += richness;
+        }
+
+        // ── 발음 명확도 (Onset Detection)
+        let rmsSum = 0;
+        const rmsRange = Math.min(binCount, 400);
+        for (let b = 0; b < rmsRange; b++) rmsSum += (snapFreq[b] / 255) ** 2;
+        const rms = Math.sqrt(rmsSum / rmsRange);
+        const diff = rms - prevRMS;
+        if (diff > 0.04) onsetStrengths.push(diff); // 양의 급등 = onset
+        prevRMS = rms;
+
+        snapCount++;
+        elapsed += snapInterval;
+        if (elapsed >= duration * 1000 - snapInterval) {
+          clearInterval(timer);
+          offSource.stop();
+          try { audioCtx.close(); } catch(e) {}
+          resolve();
+        }
+      }, snapInterval);
+      setTimeout(() => { clearInterval(timer); offSource.stop(); try{audioCtx.close();}catch(e){} resolve(); }, duration * 1000 + 600);
+    });
+
+    // ── 최종 지표 계산
+    const bandEnergy = snapAccum.map(v =>
+      snapCount > 0 ? Math.min(100, Math.round(v / snapCount / 255 * 100 * 1.6)) : 0
+    );
+    freqBandData = bandEnergy;
+
+    // 배음 풍부도 (0~100)
+    const harmonicRichness = Math.min(100, Math.round((harmonicRichnessAccum / Math.max(snapCount, 1)) * 200));
+
+    // 발음 명확도 (onset 평균 강도 → 0~100)
+    const articulationScore = onsetStrengths.length > 0
+      ? Math.min(100, Math.round((onsetStrengths.reduce((a,b)=>a+b,0) / onsetStrengths.length) * 600))
+      : 20;
+
+    // 스펙트럼 밸런스 (저음 vs 고음 비율)
+    const lowEnergy = (bandEnergy[0] + bandEnergy[1]) / 2;
+    const highEnergy = (bandEnergy[4] + bandEnergy[5]) / 2;
+    const spectralBalance = Math.round(highEnergy / Math.max(lowEnergy, 1) * 50); // 50 = 균형
+
+    renderSpectrogram(spectroRows, binCount);
+    renderFreqBars(bandEnergy);
+    renderAdvancedMetrics(harmonicRichness, articulationScore, spectralBalance);
+    renderFreqComment(bandEnergy, harmonicRichness, articulationScore);
+
+    // 전역 저장 (Sheets 업로드 시 활용)
+    window._harmonicRichness  = harmonicRichness;
+    window._articulationScore = articulationScore;
+    window._spectralBalance   = Math.min(100, spectralBalance);
+
+    document.getElementById('spectrumLoading').style.display = 'none';
+    document.getElementById('spectrumResult').style.display = 'block';
+
+    // 결과 페이지가 이미 열려있으면 교차 분석 업데이트
+    if (document.getElementById('step-3').classList.contains('active')) {
+      const scores = {};
+      BIG5.forEach(d=>{ scores[d.code]=calcScore(d.code); });
+      document.getElementById('crossSection').style.display = 'block';
+      buildCrossCard(scores, freqBandData);
+    }
+
+  } catch (err) {
+    console.error('Spectrum analysis error:', err);
+    document.getElementById('spectrumLoading').textContent = '⚠️ 이 파일 형식은 브라우저에서 바로 분석이 어렵습니다. 검사는 계속 진행하실 수 있습니다.';
+  }
+}
+
+function renderSpectrogram(rows, binCount) {
+  const canvas = document.getElementById('spectrogramCanvas');
+  const dpr = window.devicePixelRatio || 1;
+  const W = canvas.parentElement.offsetWidth || 300;
+  const H = 120;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  if (!rows.length) return;
+  const colW = W / rows.length;
+  const useBins = Math.min(rows[0].length, 180); // ~8kHz range
+
+  rows.forEach((row, xi) => {
+    for (let yi = 0; yi < useBins; yi++) {
+      const val = row[yi] / 255;
+      const y = H - (yi / useBins) * H;
+      const h = H / useBins + 1;
+      // Color: dark green → yellow-green → warm orange → white
+      const r = Math.floor(val < 0.5 ? val*2*100 : 100 + (val-0.5)*2*155);
+      const g = Math.floor(val < 0.3 ? val/0.3*150 : val < 0.7 ? 150 : 150-(val-0.7)/0.3*80);
+      const b = Math.floor(val < 0.4 ? val/0.4*50 : 0);
+      const a = 0.15 + val * 0.85;
+      ctx.fillStyle = `rgba(${r},${g},${b},${a})`;
+      ctx.fillRect(xi * colW, y, colW + 0.5, h + 0.5);
+    }
+  });
+
+  // Y-axis labels
+  const freqLabels = ['0','1k','2k','4k','8k'];
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.font = `${8}px 'DM Mono', monospace`;
+  freqLabels.forEach((lbl, i) => {
+    const y = H - (i / (freqLabels.length-1)) * H;
+    ctx.fillText(lbl + 'Hz', 4, Math.max(10, y - 2));
+  });
+}
+
+function renderFreqBars(bandEnergy) {
+  const container = document.getElementById('freqBars');
+  container.innerHTML = '';
+  const maxE = Math.max(...bandEnergy, 1);
+
+  bandEnergy.forEach((e, i) => {
+    const band = FREQ_BANDS[i];
+    const pct = Math.round((e / 100) * 100);
+    const level = pct >= 55 ? '강' : pct >= 30 ? '중' : '약';
+    const lvlColor = pct >= 55 ? band.color : pct >= 30 ? band.color + '99' : '#ccc';
+    const row = document.createElement('div');
+    row.className = 'freq-bar-row';
+    row.innerHTML = `
+      <div class="freq-bar-label">${band.label.replace('\n','<br>')}</div>
+      <div class="freq-bar-track">
+        <div class="freq-bar-fill" style="background:${band.color};width:0%" id="fbar-${i}"></div>
+      </div>
+      <div class="freq-bar-pct" style="color:${band.color}">${pct}%</div>
+      <div class="freq-level-tag" style="background:${lvlColor}22;color:${lvlColor};border:1px solid ${lvlColor}44">${level}</div>
+    `;
+    container.appendChild(row);
+    setTimeout(() => {
+      document.getElementById(`fbar-${i}`).style.width = pct + '%';
+    }, 100 + i * 80);
+  });
+}
+
+const freqPersonalityMap = [
+  { // 저음 63Hz
+    high: { trait: '외향성(E) · 성실성(C)', comment: '저음역 에너지가 풍부합니다. 목소리에 무게감과 신뢰감이 실려 있으며, 공간을 채우는 흉성 공명이 잘 발달되어 있습니다.' },
+    mid:  { trait: '균형', comment: '저음역이 안정적입니다. 흉성 공명이 자연스럽게 활용되고 있습니다.' },
+    low:  { trait: '개방성(O) · 신경성(N)', comment: '저음역 에너지가 낮습니다. 두성 위주의 발성이거나, 긴장 시 가슴 울림이 닫히는 패턴일 수 있습니다.' }
+  },
+  { // 중저음 250Hz
+    high: { trait: '우호성(A) · 성실성(C)', comment: '말소리의 핵심 대역인 250Hz가 발달해 있습니다. 따뜻하고 안정적인 음색으로 신뢰를 주는 목소리입니다.' },
+    mid:  { trait: '균형', comment: '중저음역이 고른 편입니다. 대화에서 편안함을 전달하는 소리입니다.' },
+    low:  { trait: '신경성(N)', comment: '중저음역 에너지가 약합니다. 가늘거나 얇은 소리가 날 수 있으며, 복식호흡 훈련으로 이 대역을 키울 수 있습니다.' }
+  },
+  { // 중음 1kHz
+    high: { trait: '외향성(E) · 우호성(A)', comment: '음성 명료도의 핵심인 1kHz 대역이 강합니다. 청중에게 가장 선명하게 들리는 소리로, 전달력이 뛰어납니다.' },
+    mid:  { trait: '균형', comment: '중음역 명료도가 적절합니다.' },
+    low:  { trait: '성실성(C) 낮음', comment: '중음역 에너지가 부족합니다. 딕션이나 공명 연습으로 말소리의 선명도를 높일 수 있습니다.' }
+  },
+  { // 고중음 4kHz
+    high: { trait: '외향성(E)', comment: '4kHz 가창자 포먼트(Singer\'s Formant)가 강합니다. 악기 소리 위에서도 목소리가 묻히지 않는 투사력의 핵심 대역입니다.' },
+    mid:  { trait: '균형', comment: '고중음 투사 에너지가 안정적입니다.' },
+    low:  { trait: '신경성(N) 주의', comment: '4kHz 에너지가 낮습니다. 존재감이 약해 보일 수 있으며, 이 대역을 의식적으로 여는 발성 훈련이 효과적입니다.' }
+  },
+  { // 고음 8kHz
+    high: { trait: '개방성(O)', comment: '8kHz 이상의 고주파 배음이 풍부합니다. 소리가 반짝이고 밝으며, 즉흥성과 창의적 표현력이 소리에 담겨 있습니다.' },
+    mid:  { trait: '균형', comment: '고음 배음이 자연스럽습니다.' },
+    low:  { trait: '성실성(C) 강함', comment: '고주파 배음이 적습니다. 소리가 차분하고 안정적이지만, 가끔 밋밋하게 들릴 수 있습니다.' }
+  },
+  { // 초고음 16kHz
+    high: { trait: '개방성(O) · 보이스 스페셜', comment: '초고음역 공기감이 살아있습니다. 소리에 "숨결"이 느껴지는 에어리(airy) 텍스처로, 감성적 깊이를 더합니다.' },
+    mid:  { trait: '균형', comment: '초고음역이 자연스럽게 존재합니다.' },
+    low:  { trait: '성실성(C)', comment: '초고음역이 차단된 편입니다. 단단하고 집중된 소리이지만, 공기감 훈련으로 소리의 레이어를 더할 수 있습니다.' }
+  },
+];
+
+function renderAdvancedMetrics(harmonicRichness, articulationScore, spectralBalance) {
+  const container = document.getElementById('advancedMetrics');
+  container.innerHTML = `
+    <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:12px">고급 음성 지표</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+      ${[
+        { label:'배음 풍부도', val: harmonicRichness, color:'#9b59b6',
+          desc: harmonicRichness >= 60 ? '풍부함' : harmonicRichness >= 35 ? '보통' : '단순함',
+          tip: '기음 대비 배음(2배·3배음)의 에너지 비율' },
+        { label:'발음 명확도', val: articulationScore, color:'#e05c3a',
+          desc: articulationScore >= 60 ? '선명함' : articulationScore >= 35 ? '보통' : '부드러움',
+          tip: '소리 시작(Attack)의 에너지 기울기' },
+        { label:'스펙트럼 밸런스', val: Math.min(100, spectralBalance), color:'#27ae60',
+          desc: spectralBalance >= 45 ? '고음 풍부' : spectralBalance >= 20 ? '균형' : '저음 우세',
+          tip: '저음 대비 고음 에너지 비율' },
+      ].map(m => `
+        <div style="background:var(--surface2);border-radius:10px;padding:14px 12px;text-align:center">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;color:var(--muted);margin-bottom:8px;text-transform:uppercase">${m.label}</div>
+          <div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:600;color:${m.color};margin-bottom:4px">${m.val}%</div>
+          <div style="font-size:11px;font-weight:600;color:${m.color};margin-bottom:6px">${m.desc}</div>
+          <div style="font-size:10px;color:var(--muted);line-height:1.5;font-family:'DM Mono',monospace">${m.tip}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderFreqComment(bandEnergy, harmonicRichness = 50, articulationScore = 50) {
+  const container = document.getElementById('freqComment');
+  const dominant = bandEnergy.indexOf(Math.max(...bandEnergy));
+  const weak = bandEnergy.indexOf(Math.min(...bandEnergy));
+
+  const domBand = FREQ_BANDS[dominant];
+  const domLevel = bandEnergy[dominant] >= 55 ? 'high' : bandEnergy[dominant] >= 30 ? 'mid' : 'low';
+  const domMap = freqPersonalityMap[dominant][domLevel];
+
+  const weakBand = FREQ_BANDS[weak];
+  const weakMap = freqPersonalityMap[weak]['low'];
+
+  container.innerHTML = `
+    <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--accent2);text-transform:uppercase;margin-bottom:8px">주파수 성격 코멘트</div>
+    <div style="margin-bottom:12px">
+      <span style="display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;background:${domBand.color}22;color:${domBand.color};font-family:'DM Mono',monospace;margin-bottom:6px">🔊 가장 발달한 대역 · ${domBand.label.replace('\n',' ')}</span>
+      <div style="font-size:13px;line-height:1.8;font-weight:300"><strong style="font-weight:600">[${domMap.trait}]</strong> ${domMap.comment}</div>
+    </div>
+    <div>
+      <span style="display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;background:rgba(0,0,0,.06);color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:6px">📉 성장 가능 대역 · ${weakBand.label.replace('\n',' ')}</span>
+      <div style="font-size:13px;line-height:1.8;font-weight:300">${weakMap.comment}</div>
+    </div>
+    <div style="margin-top:10px;font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;line-height:1.6">※ 주파수-성격 연결은 현재 연구 데이터 축적 중입니다. 참고용으로만 활용해 주세요.</div>
+  `;
+}
+
+// ═══════════════════════════
+// 음역대 테스트 — 성별 자동 분기 + 마이크 완전 분리
+// ═══════════════════════════
+// MP3는 Web Audio API → 스피커 출력 전용 (녹음 스트림에 포함 안 됨)
+// 마이크는 별도 MediaRecorder 스트림 → 녹음 전용
+
+const RANGE_MP3 = {
+  '남성': '01_발성기초_남자.mp3',
+  '여성': '01_발성기초_여자.mp3',
+};
+
+let rangeAudioCtx = null;
+let rangeSource = null;
+let rangeAudioBuffer = null;
+let rangeMediaRecorder = null;
+let rangeChunks = [];
+let rangeTimerInterval = null;
+let rangeProgressInterval = null;
+let rangeSeconds = 0;
+let rangeIsRecording = false;
+let rangeBlob = null;
+let rangeFileName = null;
+let rangeStartedAt = 0;
+
+function initRangeWaveform() {
+  const wf = document.getElementById('rangeWaveform');
+  if (!wf) return;
+  wf.innerHTML = '';
+  for (let i = 0; i < 36; i++) {
+    const bar = document.createElement('div');
+    bar.className = 'rec-wv-bar';
+    bar.style.height = '4px';
+    bar.style.opacity = '0.3';
+    bar.style.background = 'var(--accent2)';
+    wf.appendChild(bar);
+  }
+  const hint = document.createElement('div');
+  hint.className = 'rec-hint';
+  hint.id = 'rangeHintText';
+  hint.textContent = '음원에 맞춰 소리를 내주세요';
+  wf.appendChild(hint);
+}
+
+async function loadRangeForGender() {
+  const gender = selectedGender;
+  const mp3File = RANGE_MP3[gender];
+
+  // 성별 배지 업데이트
+  document.getElementById('rangeGenderIcon').textContent = gender === '남성' ? '👨' : gender === '여성' ? '👩' : '👤';
+  document.getElementById('rangeGenderText').textContent = gender === '무응답' ? '공통 테스트' : `${gender}용 음역대 테스트`;
+  document.getElementById('rangeGenderFile').textContent = mp3File || '공통 파일';
+
+  if (!mp3File) {
+    document.getElementById('rangeStatusText').textContent = '성별 미선택 — 건너뛰기를 눌러주세요';
+    return;
+  }
+
+  try {
+    document.getElementById('rangeStatusText').textContent = '음원 로딩 중...';
+    const response = await fetch(mp3File);
+    if (!response.ok) throw new Error('파일을 찾을 수 없습니다');
+    const arrayBuffer = await response.arrayBuffer();
+
+    // AudioContext 생성 (재사용)
+    if (rangeAudioCtx) rangeAudioCtx.close();
+    rangeAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    rangeAudioBuffer = await rangeAudioCtx.decodeAudioData(arrayBuffer);
+
+    // 진행 바 표시
+    const dur = rangeAudioBuffer.duration;
+    document.getElementById('rangeProgressWrap').style.display = 'block';
+    document.getElementById('rangeProgressLabel').textContent = `0:00 / ${fmt(dur)}`;
+    document.getElementById('rangeStatusText').textContent = '탭하여 시작';
+
+  } catch (err) {
+    console.warn('Range MP3 로드 실패:', err);
+    document.getElementById('rangeStatusText').textContent = '음원 로드 실패 — 건너뛰기를 눌러주세요';
+  }
+}
+
+function fmt(sec) {
+  return `${Math.floor(sec/60)}:${String(Math.floor(sec%60)).padStart(2,'0')}`;
+}
+
+async function toggleRangeRec() {
+  if (rangeIsRecording) {
+    stopRangeRec(false);
+  } else {
+    await startRangeRec();
+  }
+}
+
+async function startRangeRec() {
+  if (!rangeAudioBuffer) {
+    skipRange(); return;
+  }
+  try {
+    // ── 마이크 스트림 (녹음 전용 — 스피커 출력 없음)
+    const micStream = await navigator.mediaDevices.getUserMedia({
+      audio: {
+        sampleRate: 44100,
+        channelCount: 1,
+        echoCancellation: false,  // 끄기: 자연스러운 목소리
+        noiseSuppression: false,  // 끄기: 원본 목소리 보존
+        autoGainControl: false,
+      }
+    });
+
+    const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+      ? 'audio/webm;codecs=opus' : 'audio/webm';
+    rangeMediaRecorder = new MediaRecorder(micStream, { mimeType });
+    rangeChunks = [];
+    rangeMediaRecorder.ondataavailable = e => { if (e.data.size > 0) rangeChunks.push(e.data); };
+    rangeMediaRecorder.onstop = () => {
+      rangeBlob = new Blob(rangeChunks, { type: mimeType });
+      rangeFileName = `음역대테스트_${selectedGender}_${new Date().toLocaleDateString('ko-KR').replace(/\. /g,'-').replace('.','')}.webm`;
+      micStream.getTracks().forEach(t => t.stop());
+      stopRangeWaveformAnim();
+      showRangeDone();
+    };
+    rangeMediaRecorder.start(100);
+
+    // ── MP3 재생 (AudioContext → 스피커만 — 마이크 스트림과 완전 분리)
+    if (rangeSource) { try { rangeSource.stop(); } catch(e) {} }
+    rangeSource = rangeAudioCtx.createBufferSource();
+    rangeSource.buffer = rangeAudioBuffer;
+    rangeSource.connect(rangeAudioCtx.destination); // 스피커로만
+    rangeSource.start(0);
+    rangeStartedAt = rangeAudioCtx.currentTime;
+
+    // 음원 종료 → 자동 녹음 중지
+    rangeSource.onended = () => {
+      if (rangeIsRecording) stopRangeRec(true);
+    };
+
+    rangeIsRecording = true;
+    rangeSeconds = 0;
+
+    // UI
+    document.getElementById('rangeOrbInner').classList.add('recording');
+    document.getElementById('rangeRingFill').style.stroke = '#c04a7a';
+    document.getElementById('rangeOrbIcon').textContent = '⏹';
+    document.getElementById('rangeStatusText').textContent = '녹음 중 · 음원 재생 중';
+    document.getElementById('rangeDoneBar').style.display = 'none';
+    document.getElementById('rangeHintText') && (document.getElementById('rangeHintText').style.display = 'none');
+
+    const dur = rangeAudioBuffer.duration;
+
+    // 타이머 + 파형
+    rangeTimerInterval = setInterval(() => {
+      rangeSeconds++;
+      document.getElementById('rangeTimer').textContent =
+        `${String(Math.floor(rangeSeconds/60)).padStart(2,'0')}:${String(rangeSeconds%60).padStart(2,'0')}`;
+      rangeAnimateWaveform();
+    }, 1000);
+
+    // 진행 바
+    rangeProgressInterval = setInterval(() => {
+      const elapsed = rangeAudioCtx.currentTime - rangeStartedAt;
+      const pct = Math.min((elapsed / dur) * 100, 100);
+      document.getElementById('rangeProgressBar').style.width = pct + '%';
+      document.getElementById('rangeProgressLabel').textContent = `${fmt(elapsed)} / ${fmt(dur)}`;
+    }, 300);
+
+    // 링 애니메이션
+    const ringInterval = setInterval(() => {
+      if (!rangeIsRecording) { clearInterval(ringInterval); return; }
+      const elapsed = rangeAudioCtx.currentTime - rangeStartedAt;
+      const offset = 301.6 * (1 - Math.min(elapsed / dur, 1));
+      document.getElementById('rangeRingFill').style.strokeDashoffset = offset;
+    }, 500);
+
+  } catch (err) {
+    alert('마이크 접근 권한이 필요합니다.\n브라우저 설정에서 마이크를 허용해 주세요.');
+  }
+}
+
+function stopRangeRec(auto) {
+  if (!rangeIsRecording) return;
+  clearInterval(rangeTimerInterval);
+  clearInterval(rangeProgressInterval);
+  rangeIsRecording = false;
+  if (rangeMediaRecorder && rangeMediaRecorder.state !== 'inactive') rangeMediaRecorder.stop();
+  if (rangeSource) { try { rangeSource.stop(); } catch(e) {} }
+  document.getElementById('rangeOrbInner').classList.remove('recording');
+  document.getElementById('rangeRingFill').style.stroke = 'var(--accent2)';
+  document.getElementById('rangeOrbIcon').textContent = '✓';
+  document.getElementById('rangeStatusText').textContent = auto ? '완료!' : '중지됨';
+}
+
+function showRangeDone() {
+  document.getElementById('rangeDoneDesc').textContent =
+    `${selectedGender}용 음역대 녹음 완료 · ${Math.floor(rangeSeconds/60)}분 ${rangeSeconds%60}초`;
+  document.getElementById('rangeDoneBar').style.display = 'block';
+}
+
+function redoRange() {
+  rangeBlob = null; rangeSeconds = 0; rangeIsRecording = false;
+  clearInterval(rangeTimerInterval); clearInterval(rangeProgressInterval);
+  document.getElementById('rangeDoneBar').style.display = 'none';
+  document.getElementById('rangeOrbIcon').textContent = '▶';
+  document.getElementById('rangeStatusText').textContent = '탭하여 시작';
+  document.getElementById('rangeTimer').textContent = '00:00';
+  document.getElementById('rangeRingFill').style.strokeDashoffset = '301.6';
+  document.getElementById('rangeRingFill').style.stroke = 'var(--accent2)';
+  document.getElementById('rangeOrbInner').classList.remove('recording');
+  document.getElementById('rangeProgressBar').style.width = '0%';
+  stopRangeWaveformAnim();
+  const hint = document.getElementById('rangeHintText');
+  if (hint) hint.style.display = '';
+}
+
+function rangeAnimateWaveform() {
+  document.querySelectorAll('#rangeWaveform .rec-wv-bar').forEach(bar => {
+    bar.style.height = (Math.random() * 38 + 4) + 'px';
+    bar.style.opacity = (Math.random() * 0.5 + 0.5).toString();
+  });
+}
+function stopRangeWaveformAnim() {
+  document.querySelectorAll('#rangeWaveform .rec-wv-bar').forEach(bar => {
+    bar.style.height = '4px'; bar.style.opacity = '0.3';
+  });
+}
+
+function skipRange() { goStep2Survey(); }
+function goStep2Survey() {
+  switchStep('step-2');
+  if (!document.getElementById('surveyBody').children.length) buildSurvey();
+}
+
+// ═══════════════════════════
+// VOICE TAB + RECORDER
+// ═══════════════════════════
+let selectedGender = null;
+let recMediaRecorder = null;
+let recChunks = [];
+let recTimerInterval = null;
+let recSeconds = 0;
+let recBlob = null;
+let recIsRecording = false;
+const REC_MAX = 120; // 2분
+
+function switchVoiceTab(tab) {
+  ['rec','file'].forEach(t => {
+    document.getElementById(`vtab-${t}`).classList.toggle('active', t === tab);
+    document.getElementById(`vpanel-${t}`).style.display = t === tab ? 'block' : 'none';
+  });
+}
+
+// 녹음 파형 바 생성
+(function initWaveform() {
+  const wf = document.getElementById('recWaveform');
+  if (!wf) return;
+  wf.innerHTML = '';
+  for (let i = 0; i < 36; i++) {
+    const bar = document.createElement('div');
+    bar.className = 'rec-wv-bar';
+    bar.style.height = '4px';
+    bar.style.opacity = '0.3';
+    wf.appendChild(bar);
+  }
+})();
+
+async function toggleRec() {
+  if (recIsRecording) stopRec();
+  else await startRec();
+}
+
+async function startRec() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: { sampleRate: 44100, channelCount: 1, echoCancellation: true }
+    });
+    const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+      ? 'audio/webm;codecs=opus' : 'audio/webm';
+    recMediaRecorder = new MediaRecorder(stream, { mimeType });
+    recChunks = [];
+    recMediaRecorder.ondataavailable = e => { if (e.data.size > 0) recChunks.push(e.data); };
+    recMediaRecorder.onstop = () => {
+      recBlob = new Blob(recChunks, { type: mimeType });
+      const url = URL.createObjectURL(recBlob);
+      document.getElementById('recPlayback').src = url;
+      document.getElementById('recDoneBar').style.display = 'block';
+      stream.getTracks().forEach(t => t.stop());
+      stopWaveformAnim();
+    };
+    recMediaRecorder.start(100);
+    recIsRecording = true;
+    recSeconds = 0;
+
+    // UI 전환
+    document.getElementById('recOrbInner').classList.add('recording');
+    document.getElementById('recRingFill').classList.add('recording');
+    document.getElementById('recOrbIcon').textContent = '⏹';
+    document.getElementById('recStatus').textContent = '녹음 중...';
+    document.getElementById('recDoneBar').style.display = 'none';
+    setReadyBar(false);
+
+    // 타이머
+    recTimerInterval = setInterval(() => {
+      recSeconds++;
+      const m = String(Math.floor(recSeconds / 60)).padStart(2, '0');
+      const s = String(recSeconds % 60).padStart(2, '0');
+      document.getElementById('recTimer').textContent = `${m}:${s}`;
+      // 링 진행
+      const pct = recSeconds / REC_MAX;
+      const offset = 301.6 * (1 - pct);
+      document.getElementById('recRingFill').style.strokeDashoffset = offset;
+      // 파형 애니메이션
+      animateWaveform();
+      if (recSeconds >= REC_MAX) stopRec();
+    }, 1000);
+
+  } catch (err) {
+    alert('마이크 접근 권한이 필요합니다.\n브라우저 설정에서 마이크를 허용해 주세요.');
+  }
+}
+
+function stopRec() {
+  if (!recMediaRecorder || !recIsRecording) return;
+  recMediaRecorder.stop();
+  recIsRecording = false;
+  clearInterval(recTimerInterval);
+
+  document.getElementById('recOrbInner').classList.remove('recording');
+  document.getElementById('recRingFill').classList.remove('recording');
+  document.getElementById('recOrbIcon').textContent = '✓';
+  document.getElementById('recStatus').textContent = '녹음 완료';
+}
+
+function redoRec() {
+  recBlob = null;
+  recIsRecording = false;
+  document.getElementById('recDoneBar').style.display = 'none';
+  document.getElementById('recOrbIcon').textContent = '🎙';
+  document.getElementById('recStatus').textContent = '탭하여 녹음 시작';
+  document.getElementById('recTimer').textContent = '00:00';
+  document.getElementById('recRingFill').style.strokeDashoffset = '301.6';
+  document.getElementById('recRingFill').classList.remove('recording');
+  document.getElementById('recOrbInner').classList.remove('recording');
+  stopWaveformAnim();
+  setReadyBar(false);
+  checkStep1Ready();
+}
+
+function useRec() {
+  if (!recBlob) return;
+  voiceFileName = `녹음_${new Date().toLocaleDateString('ko-KR').replace(/\. /g,'-').replace('.','')}.webm`;
+  setReadyBar(true, `🎙 ${voiceFileName}`);
+  document.getElementById('btnStep1').disabled = false;
+  const fakeFile = new File([recBlob], voiceFileName, { type: recBlob.type });
+  analyzeSpectrum(fakeFile);
+  // 잠깐 후 음역대 테스트로 이동
+  setTimeout(() => goStep1b(), 600);
+}
+
+function skipVoice() {
+  voiceFileName = null;
+  document.getElementById('btnStep1').disabled = false;
+  goStep1b();
+}
+
+function animateWaveform() {
+  document.querySelectorAll('.rec-wv-bar').forEach(bar => {
+    bar.style.height = (Math.random() * 36 + 4) + 'px';
+    bar.style.opacity = (Math.random() * 0.5 + 0.5).toString();
+  });
+}
+function stopWaveformAnim() {
+  document.querySelectorAll('.rec-wv-bar').forEach(bar => {
+    bar.style.height = '4px';
+    bar.style.opacity = '0.3';
+  });
+}
+
+function setReadyBar(show, text) {
+  const bar = document.getElementById('voiceReadyBar');
+  if (show) {
+    bar.style.display = 'flex';
+    document.getElementById('voiceReadyText').textContent = text || '준비 완료';
+  } else {
+    bar.style.display = 'none';
+  }
+}
+
+function checkStep1Ready() {
+  const hasVoice = !!voiceFileName;
+  document.getElementById('btnStep1').disabled = !hasVoice;
+}
+
+function selectGender(g) {
+  selectedGender = g;
+  document.getElementById('gender-m').classList.toggle('sel', g === '남성');
+  document.getElementById('gender-f').classList.toggle('sel', g === '여성');
+}
+
+function handleFile(input) {
+  if (!input.files.length) return;
+  const f = input.files[0];
+  voiceFileName = f.name;
+  document.getElementById('fbName').textContent = f.name;
+  document.getElementById('fbSize').textContent = (f.size/1024/1024).toFixed(1) + ' MB';
+  document.getElementById('fileBar').classList.add('show');
+  const z = document.getElementById('uploadZone');
+  z.style.borderColor='var(--accent2)'; z.style.background='var(--accent-light)';
+  z.querySelector('.fz-icon').textContent='✅'; z.querySelector('.fz-title').textContent='파일 선택 완료';
+  setReadyBar(true, `📁 ${f.name}`);
+  document.getElementById('btnStep1').disabled = false;
+  analyzeSpectrum(f);
+  setTimeout(() => goStep1b(), 800);
+}
+
+function goStep1b() {
+  switchStep('step-1b');
+  initRangeWaveform();
+  // 성별에 따라 음원 자동 로드
+  loadRangeForGender();
+}
+
+function skipRange() {
+  goStep2Survey();
+}
+
+function goStep2() {
+  // 음역대 테스트에서 성격 검사로
+  goStep2Survey();
+}
+
+function goStep2Survey() {
+  switchStep('step-2');
+  if (!document.getElementById('surveyBody').children.length) buildSurvey();
+}
+
+function goStep2() {
+  const name = document.getElementById('user-name').value.trim();
+  if (!name) { alert('이름을 입력해 주세요'); return; }
+  const age = document.getElementById('user-age').value;
+  if (!age) { alert('나이를 입력해 주세요'); return; }
+  if (!selectedGender) { alert('성별을 선택해 주세요'); return; }
+  switchStep('step-2');
+  if (!document.getElementById('surveyBody').children.length) buildSurvey();
+}
+
+// ═══════════════════════════
+// BUILD SURVEY
+// ═══════════════════════════
+function buildSurvey() {
+  const body = document.getElementById('surveyBody');
+  let globalN = 0;
+  BIG5.forEach(d => {
+    const dh = document.createElement('div');
+    dh.innerHTML = `<div class="domain-head"><div class="d-dot" style="background:${d.color}"></div><div class="d-info"><div class="d-code">도메인 · ${d.code}</div><div class="d-name">${d.name}</div><div class="d-desc">${d.desc}</div></div></div>`;
+    body.appendChild(dh);
+    d.qs.forEach((q, i) => {
+      globalN++;
+      const key = `${d.code}_${i}`;
+      body.appendChild(makeQCard(key, globalN, d.code, q));
+    });
+  });
+  // Voice special
+  const vh = document.createElement('div');
+  vh.innerHTML = `<div class="domain-head"><div class="d-dot" style="background:${VOICE_SPECIAL.color}"></div><div class="d-info"><div class="d-code">보이스 스페셜 · V</div><div class="d-name">${VOICE_SPECIAL.name}</div><div class="d-desc">목소리와 인격의 직접 연결 지수</div></div></div>`;
+  body.appendChild(vh);
+  VOICE_SPECIAL.qs.forEach((q, i) => {
+    globalN++;
+    const key = `V_${i}`;
+    body.appendChild(makeQCard(key, globalN, 'V', q));
+  });
+}
+
+function makeQCard(key, n, code, q) {
+  const div = document.createElement('div');
+  div.className = 'q-card'; div.id = `qc-${key}`;
+  div.innerHTML = `<div class="q-num">Q${String(n).padStart(2,'0')} · ${code}</div><div class="q-text">${q}</div><div class="lk-row" id="lk-${key}">${[1,2,3,4,5].map(v=>`<button class="lk-btn" onclick="pick('${key}',${v},this)">${v}</button>`).join('')}</div><div class="lk-labs"><span class="lk-lab">전혀 아님</span><span class="lk-lab">매우 그렇다</span></div>`;
+  return div;
+}
+
+function pick(key, val, btn) {
+  const was = answers[key] !== undefined;
+  answers[key] = val;
+  document.querySelectorAll(`#lk-${key} .lk-btn`).forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  document.getElementById(`qc-${key}`).classList.add('answered');
+  if (!was) { totalAnswered++; updateProg(); }
+}
+function updateProg() {
+  const p = (totalAnswered/totalQ)*100;
+  document.getElementById('progFill').style.width = p+'%';
+  document.getElementById('progLabel').textContent = `${totalAnswered} / ${totalQ}`;
+  document.getElementById('btnSubmit').disabled = totalAnswered < totalQ;
+}
+
+// ═══════════════════════════
+// CONSENT
+// ═══════════════════════════
+function showConsent() {
+  if (totalAnswered < totalQ) { alert(`아직 ${totalQ-totalAnswered}문항이 남았습니다.`); return; }
+  document.getElementById('consentModal').classList.remove('hidden');
+}
+function closeConsent() { document.getElementById('consentModal').classList.add('hidden'); }
+function handleMasterConsent(master) {
+  const checked = master.checked;
+  ['consent2','consent3','consent4'].forEach(id => {
+    document.getElementById(id).checked = checked;
+  });
+  checkConsent();
+}
+function checkConsent() {
+  const all = ['consent2','consent3','consent4'].every(id => document.getElementById(id).checked);
+  // sync master
+  document.getElementById('consent1').checked = all;
+  document.getElementById('consentConfirmBtn').disabled = !all;
+}
+function confirmConsent() {
+  closeConsent();
+  buildResults();
+  switchStep('step-3');
+  setTimeout(animateBars, 300);
+}
+
+// ═══════════════════════════
+// RESULTS
+// ═══════════════════════════
+function calcScore(code) {
+  const qs = code === 'V' ? VOICE_SPECIAL.qs : BIG5.find(d=>d.code===code).qs;
+  let sum = 0; qs.forEach((_,i)=>{ sum += answers[`${code}_${i}`]||0; });
+  return Math.round((sum/(qs.length*5))*100);
+}
+
+function buildResults() {
+  const name = document.getElementById('user-name').value.trim();
+  const scores = {};
+  BIG5.forEach(d=>{ scores[d.code]=calcScore(d.code); });
+  scores.V = calcScore('V');
+
+  // voice file
+  if (voiceFileName) {
+    document.getElementById('vfRow').style.display='flex';
+    document.getElementById('vfName').textContent = voiceFileName;
+  }
+
+  // dominant
+  const big5scores = BIG5.map(d=>({code:d.code,name:d.name,score:scores[d.code],color:d.color}));
+  big5scores.sort((a,b)=>b.score-a.score);
+  const dom = big5scores[0];
+  currentDominant = dom.code;
+
+  document.getElementById('rtcDominant').textContent = `당신의 지배적인 특성`;
+  document.getElementById('rtcType').textContent = dom.name;
+  document.getElementById('rtcDesc').textContent = getDomainOneLiner(dom.code, dom.score);
+  document.getElementById('resTopCard').style.background = dom.color.replace('var(--c-','').replace(')','');
+  const colorMap = { E:'var(--c-E)', C:'var(--c-C)', A:'var(--c-A)', N:'var(--c-N)', O:'var(--c-O)' };
+  document.getElementById('resTopCard').style.background = colorMap[dom.code];
+
+  // score list
+  const scoreListCard = document.getElementById('scoreListCard');
+  scoreListCard.innerHTML = '';
+  big5scores.forEach((d, idx) => {
+    const row = document.createElement('div');
+    row.className = 'score-row';
+    row.onclick = () => openDetailModal(d.code);
+    const lk = getLevelKey(d.score);
+    const lm = levelMeta[lk];
+    row.innerHTML = `
+      <div class="score-rank">${idx+1}</div>
+      <div class="score-name">${d.name}</div>
+      <div class="score-bar-track"><div class="score-bar-fill" id="bar-${d.code}" style="background:${colorMap[d.code]}"></div></div>
+      <div class="score-pct" style="color:${colorMap[d.code]}">${d.score}%</div>
+      <div style="width:52px;flex-shrink:0;font-family:'DM Mono',monospace;font-size:9px;text-align:center;padding:3px 0;border-radius:4px;background:${colorMap[d.code]}15;color:${colorMap[d.code]}">${lm.emoji} ${lm.label}</div>
+      <div class="score-arrow">›</div>
+    `;
+    scoreListCard.appendChild(row);
+  });
+
+  // voice special
+  buildVoiceSpecial(scores.V);
+
+  // 종합 진단
+  buildSynthCard(scores, name);
+
+  // 음성 × 성격 교차 분석 (음성 파일 + 스펙트럼 데이터 있을 때)
+  if (voiceFileName && freqBandData) {
+    document.getElementById('crossSection').style.display = 'block';
+    buildCrossCard(scores, freqBandData);
+  }
+
+  // Google Sheets 저장
+  saveToSheets(scores, name);
+}
+
+// ═══════════════════════════
+// GOOGLE DRIVE + SHEETS 저장
+// ═══════════════════════════
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzl5QU7_oOSlnslT1oWRtNJ9OP6aOsx97XQwXeVNtUc97q_Uj9qpuEGTelvjtCqV_UcZA/exec';
+
+// 전역 Drive 파일 URL (업로드 완료 후 채워짐)
+let introFileUrl  = '';  // 자기소개 녹음
+let rangeFileUrl  = '';  // 음역대 테스트 녹음
+
+// Blob → Base64 변환
+function blobToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload  = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
+// 음성 파일 Drive 업로드
+async function uploadAudioToDrive(blob, fileName, category) {
+  if (!blob) return '';
+  try {
+    const base64 = await blobToBase64(blob);
+    const name   = document.getElementById('user-name').value.trim();
+    const date   = new Date().toLocaleDateString('ko-KR').replace(/\. /g,'-').replace('.','');
+    const finalName = `${date}_${name}_${selectedGender || ''}_${category === 'range' ? '음역대' : '자기소개'}.webm`;
+
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method : 'POST',
+      body   : JSON.stringify({
+        type      : 'audio',
+        base64,
+        mimeType  : blob.type || 'audio/webm',
+        fileName  : finalName,
+        category,
+        name, gender: selectedGender || '',
+        timestamp : new Date().toISOString(),
+      }),
+      headers: { 'Content-Type': 'text/plain' },
+    });
+    const json = await res.json();
+    return json.success ? json.fileUrl : '';
+  } catch (err) {
+    console.error('Drive 업로드 오류:', err);
+    return '';
+  }
+}
+
+// 성격 검사 결과 + 음성 링크 Sheets 저장
+async function saveToSheets(scores, name) {
+  showSaveStatus('saving');
+  try {
+    // 1. 음성 파일들 Drive 업로드 (병렬)
+    const [iUrl, rUrl] = await Promise.all([
+      recBlob   ? uploadAudioToDrive(recBlob,   voiceFileName,  'intro') : Promise.resolve(''),
+      rangeBlob ? uploadAudioToDrive(rangeBlob, rangeFileName,  'range') : Promise.resolve(''),
+    ]);
+    introFileUrl = iUrl;
+    rangeFileUrl = rUrl;
+
+    // 2. Sheets 저장
+    const syn        = getSynthType(scores);
+    const matchScore = (voiceFileName && freqBandData) ? calcMatchScore(scores, freqBandData) : null;
+
+    const payload = {
+      type: 'sheet',
+      name,
+      age    : document.getElementById('user-age')?.value || '',
+      gender : selectedGender || '',
+      scores : { E:scores.E, C:scores.C, A:scores.A, N:scores.N, O:scores.O, V:scores.V },
+      synthType     : syn.typeName,
+      voiceFileName : voiceFileName || '',
+      introFileUrl,
+      rangeFileUrl,
+      freqBands        : freqBandData || [],
+      harmonicRichness : window._harmonicRichness || '',
+      articulationScore: window._articulationScore || '',
+      spectralBalance  : window._spectralBalance || '',
+      matchScore,
+      consent: {
+        personal : document.getElementById('consent2')?.checked || false,
+        research : document.getElementById('consent3')?.checked || false,
+        marketing: document.getElementById('consent4')?.checked || false,
+      },
+    };
+
+    const res  = await fetch(APPS_SCRIPT_URL, {
+      method : 'POST',
+      body   : JSON.stringify(payload),
+      headers: { 'Content-Type': 'text/plain' },
+    });
+    const json = await res.json();
+    json.success ? showSaveStatus('success') : showSaveStatus('error');
+    console.log('[터칭보이스] 저장 완료:', json);
+
+  } catch (err) {
+    showSaveStatus('error');
+    console.error('[터칭보이스] 저장 오류:', err);
+  }
+}
+
+function showSaveStatus(state) {
+  let el = document.getElementById('saveStatusBar');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'saveStatusBar';
+    el.style.cssText = `position:fixed;bottom:24px;right:24px;z-index:9999;padding:10px 18px;border-radius:10px;font-size:12px;font-family:'DM Mono',monospace;letter-spacing:.5px;display:flex;align-items:center;gap:8px;box-shadow:0 4px 20px rgba(0,0,0,.15);transition:all .3s;`;
+    document.body.appendChild(el);
+  }
+  const s = {
+    saving : { bg:'#1b4332', icon:'⏳', text:'Drive + Sheets 저장 중...' },
+    success: { bg:'#40916c', icon:'✓',  text:'저장 완료!' },
+    error  : { bg:'#c05a3a', icon:'⚠️', text:'저장 실패 — 콘솔 확인' },
+  }[state];
+  el.style.background = s.bg;
+  el.style.color = '#fff';
+  el.innerHTML = `<span>${s.icon}</span><span>${s.text}</span>`;
+  el.style.display = 'flex';
+  if (state !== 'saving') setTimeout(() => { el.style.display = 'none'; }, 5000);
+}
+
+// ═══════════════════════════
+// 음성 × 성격 교차 분석
+// ═══════════════════════════
+// freqBands: [저음63, 중저음250, 중음1k, 고중음4k, 고음8k, 초고음16k]
+// scores: { E, C, A, N, O }
+
+function buildCrossCard(scores, freq) {
+  const insights = getCrossInsights(scores, freq);
+  const container = document.getElementById('crossCard');
+  container.innerHTML = '';
+
+  // 일치도 계산 (성격 예측과 음성 실제의 방향성 일치 여부)
+  const matchScore = calcMatchScore(scores, freq);
+  const matchLabel = matchScore >= 75 ? '높은 일치도' : matchScore >= 50 ? '보통 일치도' : '흥미로운 불일치';
+  const matchColor = matchScore >= 75 ? 'var(--accent2)' : matchScore >= 50 ? 'var(--c-C)' : 'var(--c-E)';
+  const matchDesc = matchScore >= 75
+    ? '성격 검사 결과와 실제 목소리의 방향성이 잘 맞습니다. 내면과 소리가 일치하는 유형입니다.'
+    : matchScore >= 50
+    ? '성격과 목소리가 대체로 맞지만 일부 흥미로운 차이가 있습니다.'
+    : '성격 검사 결과와 실제 목소리 사이에 흥미로운 차이가 있습니다. 내면과 표현이 다른 유형일 수 있습니다.';
+
+  // 총괄 카드
+  const summary = document.createElement('div');
+  summary.className = 'cross-card';
+  summary.innerHTML = `
+    <div class="cross-header">
+      <div class="cross-match-row">
+        <div class="cross-match-dot" style="background:${matchColor}"></div>
+        <div class="cross-match-label">성격–음성 일치도</div>
+        <div class="cross-match-pct" style="color:${matchColor}">${matchScore}% · ${matchLabel}</div>
+      </div>
+      <div class="cross-title">당신의 성격과 목소리는<br>${matchScore >= 65 ? '같은 방향을 가리키고 있습니다' : '흥미로운 대화를 나누고 있습니다'}</div>
+    </div>
+    <div class="cross-body">
+      <div class="cross-insight">${matchDesc}</div>
+      <div class="cross-callout" style="background:${matchColor}0d;border-color:${matchColor}">
+        <strong style="font-weight:600">💡 해석</strong> — 일치도가 높을수록 내면의 상태가 소리에 그대로 드러나는 유형입니다. 낮을수록 의식적으로 소리를 조절하거나, 내면과 다른 모습을 표현하는 경향이 있습니다. 둘 다 가치 있는 특성입니다.
+      </div>
+    </div>
+  `;
+  container.appendChild(summary);
+
+  // 개별 교차 인사이트 카드들
+  insights.forEach((ins, i) => {
+    const card = document.createElement('div');
+    card.className = 'cross-card';
+    card.style.animationDelay = (i * 0.06) + 's';
+    card.innerHTML = `
+      <div class="cross-header">
+        <div class="cross-match-row">
+          <div class="cross-match-dot" style="background:${ins.color}"></div>
+          <div class="cross-match-label">${ins.category}</div>
+        </div>
+        <div class="cross-title">${ins.title}</div>
+      </div>
+      <div class="cross-body">
+        <div class="cross-insight">${ins.insight}</div>
+        <div class="cross-tag-row">
+          ${ins.tags.map(t => `<div class="cross-tag" style="background:${ins.color}12;color:${ins.color};border:1px solid ${ins.color}28">${t}</div>`).join('')}
+        </div>
+        <div class="cross-callout" style="background:${ins.color}0d;border-color:${ins.color}">
+          ${ins.action}
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+
+  // 면책 문구
+  const note = document.createElement('div');
+  note.style.cssText = 'padding:12px 16px;background:var(--surface2);border-radius:8px;font-size:11px;color:var(--muted);line-height:1.75;font-family:DM Mono,monospace;margin-top:4px;';
+  note.innerHTML = '※ 음성 샘플 분석은 터칭보이스의 연구 데이터 수집 목적입니다. 위 성격 검사 결과와 음성 분석은 현재 독립적으로 해석하시기 바랍니다. 추후 데이터가 충분히 축적되면 상관관계 분석 결과를 공개할 예정입니다.';
+  container.appendChild(note);
+}
+
+function calcMatchScore(S, freq) {
+  // 각 도메인의 이론적 주파수 방향성과 실제 음성 에너지를 비교
+  // E ↔ 4kHz(고중음), C ↔ 250Hz(중저음) 안정도, A ↔ 어택 부드러움(저중음), N ↔ 불규칙성(역방향), O ↔ 8kHz(고음)
+  const pairs = [
+    { score: S.E, freqVal: freq[3], direction: 1  }, // E ↔ 4kHz
+    { score: S.C, freqVal: freq[1], direction: 1  }, // C ↔ 250Hz
+    { score: S.A, freqVal: freq[0], direction: 1  }, // A ↔ 저음(따뜻함)
+    { score: S.N, freqVal: freq[3], direction: -1 }, // N ↔ 4kHz 역방향(긴장시 줄어듦)
+    { score: S.O, freqVal: freq[4], direction: 1  }, // O ↔ 8kHz
+  ];
+  let totalMatch = 0;
+  pairs.forEach(p => {
+    const personalityHigh = p.score >= 55;
+    const voiceHigh = p.freqVal >= 35;
+    const match = p.direction === 1
+      ? (personalityHigh === voiceHigh)
+      : (personalityHigh !== voiceHigh); // 역방향
+    totalMatch += match ? 1 : 0;
+  });
+  return Math.round((totalMatch / pairs.length) * 100);
+}
+
+function getCrossInsights(S, freq) {
+  // freq: [저63, 중저250, 중1k, 고중4k, 고8k, 초고16k]
+  const F = { bass: freq[0], midLow: freq[1], mid: freq[2], hiMid: freq[3], hi: freq[4], air: freq[5] };
+  const insights = [];
+
+  // 1. 외향성 vs 4kHz 투사 에너지
+  (() => {
+    const eHigh = S.E >= 60, fHigh = F.hiMid >= 38;
+    if (eHigh && fHigh) insights.push({
+      category: '외향성 × 4kHz 투사력',
+      color: 'var(--c-E)',
+      title: '성격과 소리 모두 앞으로 나아갑니다',
+      insight: `외향적 성격(${S.E}%)과 강한 4kHz 투사 에너지(${F.hiMid}%)가 일치합니다. 당신은 내면의 에너지가 그대로 소리로 투사되는 유형입니다. 청중을 사로잡는 존재감이 자연스럽게 만들어집니다.`,
+      tags: ['에너지 일치', '자연스러운 투사', '무대 친화형'],
+      action: '🎯 이 강점을 극대화하려면 복식호흡으로 투사 에너지의 지속력을 키워보세요. 롱폼 퍼포먼스에서 더욱 빛날 수 있습니다.'
+    });
+    else if (eHigh && !fHigh) insights.push({
+      category: '외향성 × 4kHz 투사력',
+      color: 'var(--c-E)',
+      title: '하고 싶은 말이 소리보다 많습니다',
+      insight: `외향적 성격(${S.E}%)에 비해 4kHz 투사 에너지(${F.hiMid}%)가 낮습니다. 내면의 에너지와 열정이 크지만, 그것이 소리로 충분히 나오지 못하고 있을 수 있습니다. 긴장, 호흡 부족, 또는 습관적 발성 패턴이 원인일 수 있습니다.`,
+      tags: ['내면-소리 불일치', '투사력 개발 필요', '잠재 에너지형'],
+      action: '🎯 "하!" 발성으로 복부에서 소리를 밀어내는 훈련을 해보세요. 성격의 에너지를 소리에 담는 연결 고리를 만드는 것이 핵심입니다.'
+    });
+    else if (!eHigh && fHigh) insights.push({
+      category: '외향성 × 4kHz 투사력',
+      color: 'var(--c-E)',
+      title: '소리가 성격보다 앞서 나갑니다',
+      insight: `내향적 성향(${S.E}%)에 비해 4kHz 투사 에너지(${F.hiMid}%)가 강합니다. 이것은 훈련의 결과이거나, 퍼포먼스 모드에서 의식적으로 소리를 조절하는 능력을 가진 유형입니다. 무대 위의 나와 일상의 나가 다를 수 있습니다.`,
+      tags: ['의식적 투사형', '퍼포먼스 모드', '훈련된 소리'],
+      action: '🎯 일상 대화에서도 이 소리를 유지하면 리더십과 설득력이 크게 올라갑니다. 무대 밖에서도 연습해 보세요.'
+    });
+    else insights.push({
+      category: '외향성 × 4kHz 투사력',
+      color: 'var(--c-E)',
+      title: '내향적 에너지가 소리에도 담깁니다',
+      insight: `내향적 성향(${S.E}%)과 낮은 4kHz 에너지(${F.hiMid}%)가 일치합니다. 소리가 조용하고 집중적이며, 크게 공간을 채우기보다 가까이서 깊이 전달하는 스타일입니다. 이것은 약점이 아니라 친밀감을 만드는 특별한 능력입니다.`,
+      tags: ['내향형 일치', '친밀한 소리', '깊이 전달형'],
+      action: '🎯 마이크를 가까이 쓰는 인티밋 보컬 스타일이 당신에게 잘 어울립니다. 작은 공간에서의 퍼포먼스가 최고의 효과를 냅니다.'
+    });
+  })();
+
+  // 2. 성실성 vs 중저음 안정도
+  (() => {
+    const cHigh = S.C >= 60, fHigh = F.midLow >= 35;
+    if (cHigh && fHigh) insights.push({
+      category: '성실성 × 중저음 안정도',
+      color: 'var(--c-C)',
+      title: '단단한 기반이 소리에도 있습니다',
+      insight: `높은 성실성(${S.C}%)과 안정적인 중저음(${F.midLow}%)이 일치합니다. 체계적인 훈련이 소리의 기반을 단단하게 만들었습니다. 배음이 규칙적이고 안정적이며, 청중에게 신뢰감을 줍니다.`,
+      tags: ['기반 일치', '훈련의 결과', '안정적 배음'],
+      action: '🎯 이 안정적인 기반 위에 감정적 즉흥성을 올려보세요. 기술과 감성의 결합이 당신의 소리를 한 단계 높일 것입니다.'
+    });
+    else if (cHigh && !fHigh) insights.push({
+      category: '성실성 × 중저음 안정도',
+      color: 'var(--c-C)',
+      title: '체계는 있지만 뿌리가 더 필요합니다',
+      insight: `높은 성실성(${S.C}%)에 비해 중저음 에너지(${F.midLow}%)가 낮습니다. 계획적이고 꼼꼼한 성향이지만, 소리의 흉성 공명이 충분히 열리지 않은 상태일 수 있습니다. 복식호흡과 흉성 공명 훈련이 특히 효과적일 것입니다.`,
+      tags: ['공명 개발 필요', '흉성 공명 잠재력', '훈련 방향 명확'],
+      action: '🎯 "음~" 허밍으로 가슴 울림을 느끼는 연습부터 시작하세요. 성실한 성격이 이 훈련을 꾸준히 할 수 있는 가장 큰 자산입니다.'
+    });
+    else if (!cHigh && fHigh) insights.push({
+      category: '성실성 × 중저음 안정도',
+      color: 'var(--c-C)',
+      title: '소리의 안정감이 성격을 앞섭니다',
+      insight: `성실성(${S.C}%)은 보통 수준이지만 중저음 안정도(${F.midLow}%)는 높습니다. 타고난 성대 구조나 이전 훈련의 영향으로 소리 자체는 안정적입니다. 의식적 노력 없이도 안정감 있는 소리를 내는 유형입니다.`,
+      tags: ['타고난 안정감', '자연스러운 중저음', '잠재된 실력'],
+      action: '🎯 이 타고난 안정감에 의식적인 훈련을 더하면 훨씬 빠르게 성장할 수 있습니다. 꾸준한 루틴을 만드는 것이 도전 과제입니다.'
+    });
+    else insights.push({
+      category: '성실성 × 중저음 안정도',
+      color: 'var(--c-C)',
+      title: '자유로운 성격, 유연한 소리',
+      insight: `성실성(${S.C}%)과 중저음 에너지(${F.midLow}%) 모두 낮은 편입니다. 규칙적인 훈련보다 즉흥적인 표현을 선호하는 성향이 소리에도 반영됩니다. 소리가 가볍고 유동적이며, 특정 대역에 집중되지 않습니다.`,
+      tags: ['유동적 소리', '즉흥형 일치', '자유로운 표현'],
+      action: '🎯 짧은 스케일 연습(5분/일)으로 소리의 뿌리를 만들어 보세요. 자유로움 위에 기반이 생기면 표현의 폭이 크게 넓어집니다.'
+    });
+  })();
+
+  // 3. 신경성 vs 고주파 안정성 (N 높으면 떨림 가능성)
+  (() => {
+    const nHigh = S.N >= 55, airHigh = F.air >= 30;
+    if (nHigh && airHigh) insights.push({
+      category: '신경성 × 초고음 공기감',
+      color: 'var(--c-N)',
+      title: '감정이 숨결까지 담깁니다',
+      insight: `높은 감수성(${S.N}%)과 풍부한 초고음 공기감(${F.air}%)이 결합되어 있습니다. 소리에 숨결과 감정적 떨림이 자연스럽게 담기며, 이것이 청중에게 강한 진정성으로 전달됩니다. Billie Eilish의 귀속말 같은 소리 스타일과 유사합니다.`,
+      tags: ['감정 숨결형', '에어리 텍스처', '날것의 진정성'],
+      action: '🎯 이 공기감을 살리면서 호흡 지지를 더하면 소리가 더 오래갑니다. 지금의 질감을 잃지 않는 것이 핵심입니다.'
+    });
+    else if (nHigh && !airHigh) insights.push({
+      category: '신경성 × 초고음 공기감',
+      color: 'var(--c-N)',
+      title: '감정은 크지만 소리는 꽉 쥐고 있습니다',
+      insight: `높은 감수성(${S.N}%)에 비해 초고음 공기감(${F.air}%)이 낮습니다. 내면에 큰 감정이 있지만, 발성 시 그것을 충분히 내보내지 못하고 있을 수 있습니다. 긴장이나 성대 수축이 공기의 흐름을 막고 있을 가능성이 있습니다.`,
+      tags: ['감정 억제 패턴', '성대 긴장 가능성', '표현 해방 필요'],
+      action: '🎯 "흐~" 발성으로 성대를 부드럽게 열어보세요. 감정이 공기와 함께 자연스럽게 흘러나오도록 허용하는 연습이 중요합니다.'
+    });
+    else insights.push({
+      category: '신경성 × 초고음 공기감',
+      color: 'var(--c-N)',
+      title: '안정적인 감성이 소리에 담깁니다',
+      insight: `심리적 안정성(신경성 ${S.N}%)과 초고음 에너지(${F.air}%)가 균형 있습니다. 과도한 감정의 파도 없이 안정적이면서도 충분한 감성적 색채를 가진 소리입니다.`,
+      tags: ['감성-안정 균형', '일관된 소리', '신뢰감'],
+      action: '🎯 이 안정감을 바탕으로 의도적인 감정 표현 연습을 더하면 소리에 더 많은 색채가 생깁니다.'
+    });
+  })();
+
+  // 4. 개방성 vs 고음 배음
+  (() => {
+    const oHigh = S.O >= 60, hiHigh = F.hi >= 35;
+    if (oHigh && hiHigh) insights.push({
+      category: '개방성 × 고음 배음',
+      color: 'var(--c-O)',
+      title: '창의성이 소리의 색채로 피어납니다',
+      insight: `높은 개방성(${S.O}%)과 풍부한 고음 배음(${F.hi}%)이 일치합니다. 창의적이고 열린 마음이 소리에 반짝임과 다양한 색채로 나타납니다. 매 순간 조금씩 다른 소리를 내는 유형으로, 청중이 질리지 않는 소리입니다.`,
+      tags: ['창의성 일치', '반짝이는 배음', '색채 다양'],
+      action: '🎯 이 풍부한 배음을 살려 즉흥 애드립을 자주 시도해 보세요. 당신의 가장 자연스러운 강점입니다.'
+    });
+    else if (oHigh && !hiHigh) insights.push({
+      category: '개방성 × 고음 배음',
+      color: 'var(--c-O)',
+      title: '마음속 창의성이 소리에서 더 열릴 수 있습니다',
+      insight: `높은 개방성(${S.O}%)에 비해 고음 배음(${F.hi}%)이 낮습니다. 내면의 창의성과 호기심이 크지만, 소리에서 그 다양한 색채가 충분히 표현되지 않고 있습니다. 발성 시 고음역이 닫혀있거나 어두운 소리를 내는 경향이 있을 수 있습니다.`,
+      tags: ['창의성-소리 불일치', '배음 개발 잠재력', '고음역 훈련 필요'],
+      action: '🎯 밝은 "이~" 모음 발성과 허밍으로 고음역을 열어보세요. 소리에 창의성이 담기면 전혀 다른 표현이 가능해집니다.'
+    });
+    else insights.push({
+      category: '개방성 × 고음 배음',
+      color: 'var(--c-O)',
+      title: '안정된 소리, 깊은 완성도',
+      insight: `실용적 성향(개방성 ${S.O}%)과 차분한 고음 배음(${F.hi}%)이 일치합니다. 화려한 색채보다 완성도 있고 안정적인 소리를 냅니다. 정확하고 신뢰할 수 있는 소리가 강점입니다.`,
+      tags: ['안정형 일치', '완성도 우선', '신뢰 소리'],
+      action: '🎯 일부러 "틀린 음"을 내보는 연습으로 소리의 경계를 조금씩 넓혀보세요. 완성도에 다양성이 더해지면 강력해집니다.'
+    });
+  })();
+
+  // 5. 우호성 vs 저음 따뜻함
+  (() => {
+    const aHigh = S.A >= 60, bassHigh = F.bass >= 30;
+    if (aHigh && bassHigh) insights.push({
+      category: '우호성 × 저음 따뜻함',
+      color: 'var(--c-A)',
+      title: '따뜻한 마음이 소리의 온기가 됩니다',
+      insight: `높은 우호성(${S.A}%)과 풍부한 저음 에너지(${F.bass}%)가 결합됩니다. 공감 능력과 따뜻함이 소리의 온기로 나타납니다. 사람들이 당신의 소리에서 "포근함"을 느끼는 이유가 여기에 있습니다.`,
+      tags: ['온기 일치', '따뜻한 저음', '공감 소리'],
+      action: '🎯 이 따뜻함이 당신의 가장 큰 무기입니다. 감정 곡선이 뚜렷한 곡으로 이 강점을 극대화해 보세요.'
+    });
+    else if (!aHigh && bassHigh) insights.push({
+      category: '우호성 × 저음 따뜻함',
+      color: 'var(--c-A)',
+      title: '소리가 성격보다 더 따뜻합니다',
+      insight: `독립적 성향(우호성 ${S.A}%)에 비해 저음 따뜻함(${F.bass}%)이 풍부합니다. 일상에서는 독립적이고 단호하지만, 소리에는 예상외의 온기와 포근함이 담깁니다. 청중이 처음 소리를 듣는 순간 의외의 따뜻함을 경험할 수 있습니다.`,
+      tags: ['소리의 반전', '예상외 따뜻함', '내면의 온기'],
+      action: '🎯 이 소리의 따뜻함을 의식적으로 활용해 보세요. 발라드·CCM 장르에서 예상치 못한 강점이 드러날 수 있습니다.'
+    });
+    else if (aHigh && !bassHigh) insights.push({
+      category: '우호성 × 저음 따뜻함',
+      color: 'var(--c-A)',
+      title: '따뜻한 마음, 밝은 소리',
+      insight: `높은 우호성(${S.A}%)이지만 저음 따뜻함(${F.bass}%)은 낮습니다. 마음은 따뜻하지만 소리가 중고음 위주로 밝고 가볍게 나오는 유형입니다. 친근하고 밝은 에너지가 소리의 매력입니다.`,
+      tags: ['밝은 온기', '중고음 친화형', '친근한 에너지'],
+      action: '🎯 흉성 공명 훈련으로 저음역을 더하면 소리에 무게감과 신뢰감이 추가됩니다. 밝음에 깊이가 더해지는 것입니다.'
+    });
+  })();
+
+  return insights.slice(0, 4); // 최대 4개 인사이트
+}
+
+// ═══════════════════════════
+// 종합 성격 진단 로직
+// ═══════════════════════════
+function buildSynthCard(scores, name) {
+  const S = scores; // E, C, A, N, O
+  const syn = getSynthType(S);
+  const container = document.getElementById('synthCard');
+
+  container.innerHTML = `
+    <div class="synth-card">
+      <div class="synth-top" style="background:linear-gradient(135deg,${syn.color1} 0%,${syn.color2} 100%)">
+        <div class="synth-eyebrow">종합 성격 진단 · ${name}</div>
+        <div class="synth-type-name">${syn.typeName}</div>
+        <div class="synth-type-sub">${syn.typeDesc}</div>
+        <div class="synth-tags">
+          ${syn.tags.map(t=>`<div class="synth-tag">${t}</div>`).join('')}
+        </div>
+      </div>
+      <div class="synth-body">
+        <div class="synth-section">
+          <div class="synth-section-title">🧭 당신은 어떤 사람인가요?</div>
+          <div class="synth-section-text">${syn.whoYouAre}</div>
+        </div>
+        <div class="synth-section">
+          <div class="synth-section-title">💪 당신의 핵심 강점</div>
+          <div class="synth-section-text">${syn.coreStrength}</div>
+          <div class="synth-pill-row">
+            ${syn.strengthPills.map(p=>`<div class="synth-pill" style="background:${syn.color1}15;color:${syn.color1};border:1px solid ${syn.color1}30">${p}</div>`).join('')}
+          </div>
+        </div>
+        <div class="synth-section">
+          <div class="synth-section-title">🎙 목소리와의 연결</div>
+          <div class="synth-section-text">${syn.voiceConnection}</div>
+        </div>
+        <div class="synth-section">
+          <div class="synth-section-title">🌱 성장 방향</div>
+          <div class="synth-section-text">${syn.growthPath}</div>
+        </div>
+        <div style="margin-top:20px;padding:16px;background:var(--surface2);border-radius:10px;">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:8px">점수 조합 요약</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.85;font-weight:300">
+            ${['E','C','A','N','O'].map(c=>{
+              const lk = getLevelKey(S[c]);
+              const lm = levelMeta[lk];
+              const names = {E:'외향성',C:'성실성',A:'우호성',N:'신경성',O:'개방성'};
+              const cols = {E:'var(--c-E)',C:'var(--c-C)',A:'var(--c-A)',N:'var(--c-N)',O:'var(--c-O)'};
+              return `<span style="display:inline-flex;align-items:center;gap:4px;margin:2px 4px 2px 0;padding:3px 10px;border-radius:999px;background:${cols[c]}12;color:${cols[c]};font-weight:600;font-family:'DM Mono',monospace;font-size:10px">${names[c]} ${S[c]}% ${lm.emoji}</span>`;
+            }).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function getSynthType(S) {
+  const E=S.E, C=S.C, A=S.A, N=S.N, O=S.O;
+
+  // 패턴 매칭 — 가장 두드러진 조합 기준으로 28가지 유형
+  // E높음 계열
+  if (E>=70 && O>=70 && A>=65) return {
+    typeName:'빛나는 연결자', typeDesc:'에너지가 넘치고 창의적이며 따뜻합니다. 어디서든 중심이 되는 동시에 모든 사람을 품습니다.',
+    tags:['사교적','창의적','공감형','에너지 발산형'],
+    whoYouAre:`${name || '당신'}은 방 안에 들어서는 순간 분위기를 바꾸는 사람입니다. 높은 외향성과 개방성, 따뜻한 우호성이 결합된 당신은 새로운 아이디어를 들고 사람들과 연결되는 것을 삶의 방식으로 삼습니다. 에너지가 넘치고 창의적이면서도 타인을 진심으로 배려합니다.`,
+    coreStrength:'사람을 끌어당기는 자연스러운 매력과 창의적 아이디어를 현실로 만드는 실행력이 결합되어 있습니다. 어떤 그룹에서도 분위기를 만들고, 낯선 환경에서도 빠르게 연결됩니다.',
+    strengthPills:['무대 장악력','감성적 연결','즉흥 창의성','공감 리더십'],
+    voiceConnection:'목소리에 강한 투사 에너지와 따뜻한 온기가 동시에 담깁니다. 청중을 사로잡는 힘이 있으면서도 가까이 다가오는 느낌을 줍니다. 뮤지컬·팝·CCM 등 다양한 장르에서 강점을 발휘합니다.',
+    growthPath:'에너지가 많은 만큼 방향이 흩어지기 쉽습니다. 하나에 깊이 집중하는 훈련으로 강점을 더 날카롭게 다듬어 보세요.',
+    color1:'#e05c3a', color2:'#d4a017'
+  };
+
+  if (E>=70 && O>=70 && A<50) return {
+    typeName:'선구적 개척자', typeDesc:'에너지가 넘치고 새로운 것을 향해 돌진합니다. 개성이 강하고 기존 틀을 깨는 것을 즐깁니다.',
+    tags:['독창적','주도적','에너지형','실험가'],
+    whoYouAre:`강한 외향성과 높은 개방성의 조합으로, 당신은 새로운 방향을 먼저 개척하고 사람들을 이끄는 유형입니다. 협력보다는 자신의 비전을 중심으로 움직이며, 기존의 방식에 도전하는 것을 즐깁니다.`,
+    coreStrength:'아무도 가지 않은 길을 먼저 가는 용기와 에너지가 있습니다. 새로운 장르를 만들거나 기존 형식을 파괴하는 혁신적인 아티스트 유형입니다.',
+    strengthPills:['장르 개척','강한 존재감','독창적 표현','리더십'],
+    voiceConnection:'소리에 날카롭고 독창적인 에너지가 담깁니다. 예측 불가능한 즉흥성과 강한 투사력이 결합됩니다. 힙합·실험음악·얼터너티브 장르에서 특히 강합니다.',
+    growthPath:'독립적인 성향이 강해 협력에서 마찰이 생길 수 있습니다. 공감 어린 경청을 의식적으로 연습하면 더 큰 영향력을 발휘할 수 있습니다.',
+    color1:'#e05c3a', color2:'#9b59b6'
+  };
+
+  if (E>=70 && C>=65 && N<45) return {
+    typeName:'완성된 퍼포머', typeDesc:'에너지와 체계가 결합된 가장 안정적인 무대형 인물입니다.',
+    tags:['퍼포먼스형','계획적','에너지형','안정적'],
+    whoYouAre:`높은 외향성과 성실성, 낮은 신경성의 조합인 당신은 무대 위에서 가장 빛나는 유형입니다. 충분한 준비로 만들어진 완성도와 타고난 에너지가 결합되어 청중을 사로잡습니다.`,
+    coreStrength:'철저한 준비와 자연스러운 퍼포먼스 에너지의 결합은 보기 드문 조합입니다. 무대 불안 없이 최고의 기량을 발휘합니다.',
+    strengthPills:['무대 완성도','안정적 에너지','지속적 실력','신뢰감'],
+    voiceConnection:'기술적으로 안정적이면서도 청중과의 연결이 자연스럽습니다. 어떤 상황에서도 흔들리지 않는 목소리 안정성이 강점입니다.',
+    growthPath:'완성도 높은 퍼포먼스 뒤에 "통제되지 않은 감정의 한 순간"을 허용해 보세요. 예측 불가능한 진정성이 청중의 가슴을 더 깊이 건드립니다.',
+    color1:'#e05c3a', color2:'#d4a017'
+  };
+
+  if (E>=65 && A>=65 && N>=55) return {
+    typeName:'감성적 연결가', typeDesc:'따뜻한 에너지와 깊은 감정이 결합된, 사람의 마음을 여는 유형입니다.',
+    tags:['공감형','감성적','사교적','진정성'],
+    whoYouAre:`외향적이면서도 감성이 풍부한 당신은 사람들과의 감정적 연결에서 가장 큰 의미를 찾습니다. 따뜻한 에너지로 주변을 채우면서도 타인의 아픔에 진심으로 공명합니다.`,
+    coreStrength:'사람의 마음을 읽고 그것을 소리로 표현하는 능력이 탁월합니다. 청중이 "이 노래가 내 이야기 같다"고 느끼게 만드는 힘이 있습니다.',
+    strengthPills:['감정 공명','공감 표현력','따뜻한 에너지','진정성'],
+    voiceConnection:'목소리에 온기와 감정적 깊이가 함께 담깁니다. 발라드·R&B·CCM에서 청중의 눈물을 이끌어내는 힘이 있습니다.',
+    growthPath:'감정이 너무 강할 때 목소리를 잃지 않도록 호흡 지지 훈련이 중요합니다. 감정의 그릇을 키우는 것이 핵심입니다.',
+    color1:'#3a86c8', color2:'#c04a7a'
+  };
+
+  // C높음 계열
+  if (C>=70 && A>=65 && E<50) return {
+    typeName:'신뢰의 장인', typeDesc:'묵묵히 실력을 쌓고 따뜻함으로 사람을 대하는, 진정한 장인 유형입니다.',
+    tags:['성실형','따뜻함','기술적 완성','신뢰감'],
+    whoYouAre:`높은 성실성과 우호성, 낮은 외향성의 조합으로 당신은 화려하지 않지만 깊이 있는 실력자입니다. 오랜 시간 꾸준히 연습하고 사람들을 진심으로 대합니다.`,
+    coreStrength:'누군가와 함께할 때 가장 빛나는 유형입니다. 기술적 완성도 위에 따뜻한 인간적 매력이 올라가 신뢰 깊은 관계를 형성합니다.',
+    strengthPills:['기술적 완성도','따뜻한 신뢰감','꾸준한 성장','협력'],
+    voiceConnection:'정확하고 안정적인 발성에 따뜻한 음색이 더해집니다. 클래식·CCM·성인가요 등 완성도 높은 장르에서 두드러집니다.',
+    growthPath:'자신을 더 표현하는 연습이 필요합니다. 실력은 충분합니다 — 이제는 자신을 드러내는 용기를 키워보세요.',
+    color1:'#d4a017', color2:'#3a86c8'
+  };
+
+  if (C>=70 && N<40) return {
+    typeName:'안정의 기둥', typeDesc:'흔들리지 않는 기반 위에 서 있는, 누구에게나 의지가 되는 유형입니다.',
+    tags:['안정형','신뢰감','계획적','일관성'],
+    whoYouAre:`높은 성실성과 낮은 신경성의 조합으로 당신은 가장 안정적이고 신뢰할 수 있는 유형입니다. 감정의 파도에 흔들리지 않고 꾸준히 실력을 쌓아갑니다.`,
+    coreStrength:'어떤 상황에서도 일관된 퍼포먼스를 유지하는 능력이 최고의 강점입니다. 오랜 기간 신뢰를 쌓아 진정한 권위자가 될 수 있는 유형입니다.',
+    strengthPills:['일관성','신뢰 권위','기술적 안정','장기 지속력'],
+    voiceConnection:'소리에 흔들림 없는 안정감과 권위가 담깁니다. 내레이션·강의·클래식·OST 등 정확성이 중요한 장르에서 최강입니다.',
+    growthPath:'감정 표현의 폭을 의도적으로 넓히는 연습이 필요합니다. 테크닉과 감정이 만나는 지점에서 당신의 소리는 완성됩니다.',
+    color1:'#d4a017', color2:'#40916c'
+  };
+
+  // O높음 계열
+  if (O>=70 && N>=55 && E<55) return {
+    typeName:'내면의 탐험가', typeDesc:'조용하지만 깊이 있는 세계를 가진, 예술적 감수성이 넘치는 유형입니다.',
+    tags:['예술적','내면형','감성적','창의적'],
+    whoYouAre:`높은 개방성과 신경성, 내향적 성향이 결합된 당신은 조용히 내면에서 세계를 만들어가는 예술가 유형입니다. 외부보다 내면의 세계가 훨씬 풍부하고 복잡합니다.`,
+    coreStrength:'소리에 담기는 깊이와 감성적 진정성이 타의 추종을 불허합니다. 표면적이지 않은, 오래 남는 음악을 만드는 능력이 있습니다.',
+    strengthPills:['감성적 깊이','예술적 진정성','독창적 세계관','내면의 풍부함'],
+    voiceConnection:'목소리에 날것의 진정성과 예술적 색채가 담깁니다. 인디·포크·발라드·재즈 등 개성 있는 장르에서 독보적입니다. Frank Ocean, 아이유 계열의 소리 감성입니다.',
+    growthPath:'내면의 세계를 외부로 표현하는 용기가 필요합니다. 무대 경험을 꾸준히 쌓아 자신의 소리가 청중에게 닿는 경험을 반복하세요.',
+    color1:'#27ae60', color2:'#9b59b6'
+  };
+
+  if (O>=70 && E>=60 && N<50) return {
+    typeName:'창의적 탐험가', typeDesc:'호기심과 에너지가 결합된, 매 순간 새로운 것을 발견하는 유형입니다.',
+    tags:['창의적','실험적','에너지형','개방적'],
+    whoYouAre:`높은 개방성과 외향성, 안정적인 심리가 결합된 당신은 새로운 것을 실험하면서도 그 에너지를 적극적으로 표현하는 유형입니다. 아이디어가 넘치고 그것을 현실로 만드는 힘도 있습니다.`,
+    coreStrength:'창의성과 실행력이 결합된 드문 조합입니다. 새로운 장르를 만들거나 기존 장르를 재해석하는 능력이 탁월합니다.',
+    strengthPills:['창의적 실행력','장르 융합','즉흥성','실험적 도전'],
+    voiceConnection:'소리가 매 순간 새롭습니다. 즉흥 애드립과 색채 변화가 자연스럽고, 다양한 스타일을 소화하는 유연성이 있습니다.',
+    growthPath:'너무 많은 방향으로 에너지가 분산될 수 있습니다. 하나의 프로젝트를 완성하는 경험을 반복하며 깊이를 더해보세요.',
+    color1:'#27ae60', color2:'#e05c3a'
+  };
+
+  // A높음 계열
+  if (A>=70 && N>=55 && O>=55) return {
+    typeName:'공감하는 예술가', typeDesc:'타인의 감정을 소리로 담아내는 타고난 감성 예술가입니다.',
+    tags:['공감형','감성적','예술적','치유형'],
+    whoYouAre:`높은 우호성, 풍부한 감정, 창의적 개방성이 결합된 당신은 다른 사람의 마음을 소리로 대신 표현하는 유형입니다. 상대의 감정을 읽고 그것을 예술로 승화시키는 능력이 있습니다.`,
+    coreStrength:'청중의 마음속 이야기를 노래로 불러주는 능력입니다. "이 노래가 나를 위한 것 같다"는 반응을 자연스럽게 이끌어냅니다.',
+    strengthPills:['감정 공명','치유의 소리','따뜻한 표현','공감 예술가'],
+    voiceConnection:'부드럽고 따뜻하면서도 감정적 깊이가 있는 소리입니다. CCM·발라드·힐링 음악에서 특히 강한 임팩트를 줍니다.',
+    growthPath:'자신의 감정도 충분히 표현할 수 있는 공간을 만드세요. 타인을 위한 음악과 자신을 위한 음악 사이의 균형이 중요합니다.',
+    color1:'#3a86c8', color2:'#27ae60'
+  };
+
+  if (A>=70 && N<45 && E<55) return {
+    typeName:'조용한 치유자', typeDesc:'말 없이도 따뜻함으로 주변을 채우는, 깊은 신뢰를 주는 유형입니다.',
+    tags:['치유형','안정적','따뜻함','신뢰'],
+    whoYouAre:`높은 우호성과 심리적 안정성, 내향적 성향의 조합으로 당신은 조용하지만 강력한 안정감을 주는 유형입니다. 말보다 태도로, 소리로 사람들에게 쉼을 줍니다.`,
+    coreStrength:'소란하지 않아도 신뢰를 얻습니다. 오랫동안 한결같은 따뜻함으로 사람들의 곁에 있는 능력이 최고의 강점입니다.',
+    strengthPills:['깊은 신뢰감','치유의 안정감','일관된 따뜻함','경청 능력'],
+    voiceConnection:'소리에 편안함과 신뢰감이 자연스럽게 담깁니다. ASMR·명상음악·조용한 발라드 등 마음을 쉬게 하는 소리에서 강점이 있습니다.',
+    growthPath:'자신을 더 표현하는 용기를 키워보세요. 이미 충분히 따뜻합니다 — 이제는 그 따뜻함을 더 큰 무대에서 나눌 때입니다.',
+    color1:'#3a86c8', color2:'#40916c'
+  };
+
+  // N높음 계열
+  if (N>=70 && O>=60) return {
+    typeName:'날것의 예술혼', typeDesc:'감정과 창의성이 폭발하는, 가장 진정성 있는 예술가 유형입니다.',
+    tags:['감정적','예술혼','진정성','창의적'],
+    whoYouAre:`높은 신경성과 개방성이 결합된 당신은 감정과 창의성이 동시에 폭발하는 유형입니다. 인생의 경험이 그대로 소리가 되며, 이 진정성이 사람들의 마음을 꿰뚫습니다.`,
+    coreStrength:'훈련으로 만들 수 없는 날것의 진정성입니다. 소리에서 삶의 무게와 아름다움이 동시에 느껴집니다.',
+    strengthPills:['날것의 진정성','감정적 깊이','예술적 감수성','독창성'],
+    voiceConnection:'목소리에 감정의 떨림과 창의적 색채가 동시에 담깁니다. 재즈·블루스·인디·실험음악 등 진정성이 생명인 장르에서 빛납니다.',
+    growthPath:'이 강렬한 에너지를 담을 기술적 토대가 필요합니다. 호흡 훈련으로 감정을 더 오래, 더 안정적으로 표현할 수 있는 그릇을 키워보세요.',
+    color1:'#c04a7a', color2:'#27ae60'
+  };
+
+  if (N>=65 && A>=60 && O<50) return {
+    typeName:'따뜻한 감수성인', typeDesc:'예민한 감각과 따뜻한 마음이 결합된, 깊이 공감하는 유형입니다.',
+    tags:['감수성','공감형','감정풍부','따뜻함'],
+    whoYouAre:`높은 감수성과 우호성이 결합된 당신은 타인의 감정을 가장 깊이 느끼고 그것에 반응합니다. 예민함이 약점이 아니라 가장 강력한 무기입니다.`,
+    coreStrength:'감정 표현의 진정성과 깊이가 타의 추종을 불허합니다. 청중이 소리에서 자신의 감정을 발견하게 만드는 능력이 있습니다.',
+    strengthPills:['감정 진정성','공감 표현','따뜻한 깊이','감수성'],
+    voiceConnection:'소리에 감정의 결이 세밀하게 담깁니다. 발라드·CCM·포크 등 감성적 장르에서 청중의 마음에 오래 남는 소리를 냅니다.',
+    growthPath:'자기 자신을 돌보는 시간이 필요합니다. 너무 많이 공감하면 소진될 수 있습니다. 경계를 지키면서 감수성을 유지하는 균형을 찾아보세요.',
+    color1:'#c04a7a', color2:'#3a86c8'
+  };
+
+  // 균형형
+  if (Math.max(E,C,A,N,O) - Math.min(E,C,A,N,O) < 25) return {
+    typeName:'균형 잡힌 다재다능인', typeDesc:'어느 한쪽으로 치우치지 않은 유연하고 적응력 강한 유형입니다.',
+    tags:['균형형','적응력','다재다능','유연성'],
+    whoYouAre:`당신의 5가지 특성이 고르게 발달되어 있습니다. 어느 상황에서도 잘 적응하고, 다양한 유형의 사람들과 원활하게 소통합니다. 한 가지 색으로 정의되지 않는 다채로운 사람입니다.`,
+    coreStrength:'특정 유형에 갇히지 않는 유연성이 최고의 강점입니다. 다양한 장르와 스타일을 소화할 수 있는 가장 넓은 그릇을 가지고 있습니다.',
+    strengthPills:['높은 적응력','다양한 표현','유연성','다재다능'],
+    voiceConnection:'소리의 스펙트럼이 넓습니다. 발라드부터 록까지, 감성부터 에너지까지 다양한 음악을 소화할 수 있는 유연한 목소리입니다.',
+    growthPath:'한 가지 방향을 깊이 탐구하는 경험도 필요합니다. 넓은 기반 위에 하나의 뾰족한 강점을 더하면 더욱 강력해집니다.',
+    color1:'#40916c', color2:'#2d6a4f'
+  };
+
+  // 기본 fallback — 가장 높은 도메인 기반
+  const dominated = ['E','C','A','N','O'].sort((a,b)=>S[b]-S[a])[0];
+  const fallbacks = {
+    E: { typeName:'에너지 주도형', typeDesc:'외향적 에너지로 주변을 이끄는 유형입니다.', tags:['에너지형','사교적','주도적'], whoYouAre:'외향적 에너지가 가장 두드러지는 당신은 사람과 상황을 이끄는 데 탁월합니다.', coreStrength:'자연스러운 리더십과 존재감으로 어떤 상황에서도 주목받습니다.', strengthPills:['리더십','존재감','에너지'], voiceConnection:'투사력 있고 공간을 채우는 목소리를 가지고 있습니다.', growthPath:'경청과 깊이 있는 성찰을 통해 더 완성된 리더가 될 수 있습니다.', color1:'#e05c3a', color2:'#d4a017'},
+    C: { typeName:'신뢰의 안정자형', typeDesc:'체계와 완성도로 신뢰를 쌓는 유형입니다.', tags:['성실형','신뢰감','완성도'], whoYouAre:'성실성이 가장 두드러지는 당신은 꾸준한 노력으로 실력을 쌓고 신뢰를 얻습니다.', coreStrength:'일관된 노력과 높은 완성도가 결합된 진정한 실력자입니다.', strengthPills:['완성도','신뢰감','지속성'], voiceConnection:'안정적이고 정확한 발성으로 신뢰감 있는 소리를 냅니다.', growthPath:'감정 표현의 폭을 넓히면 기술과 감성이 만나는 완성된 소리가 됩니다.', color1:'#d4a017', color2:'#40916c'},
+    A: { typeName:'공감하는 연결자형', typeDesc:'따뜻한 공감으로 사람의 마음을 여는 유형입니다.', tags:['공감형','따뜻함','연결'], whoYouAre:'우호성이 가장 높은 당신은 사람의 마음을 가장 잘 이해하고 연결하는 유형입니다.', coreStrength:'청중의 마음을 여는 따뜻한 목소리와 감정적 연결 능력이 강점입니다.', strengthPills:['공감력','따뜻함','연결'], voiceConnection:'따뜻하고 부드러운 음색으로 청중의 마음에 다가가는 소리입니다.', growthPath:'자신의 필요와 경계도 지키면서 더 오래 공감 능력을 유지하세요.', color1:'#3a86c8', color2:'#27ae60'},
+    N: { typeName:'날것의 진심형', typeDesc:'감정을 여과 없이 소리에 담는 진정성의 유형입니다.', tags:['감정형','진정성','예민함'], whoYouAre:'높은 감수성을 가진 당신은 감정이 여과 없이 소리에 담기는 가장 진정성 있는 유형입니다.', coreStrength:'날것의 감정적 진정성이 청중의 마음을 꿰뚫습니다.', strengthPills:['진정성','감정깊이','예민함'], voiceConnection:'소리에 감정의 떨림이 자연스럽게 실려 청중이 즉각적으로 공명합니다.', growthPath:'호흡 훈련으로 감정을 담는 그릇을 키우면 더 오래, 더 안정적으로 표현할 수 있습니다.', color1:'#c04a7a', color2:'#9b59b6'},
+    O: { typeName:'창의적 개척자형', typeDesc:'호기심과 창의성으로 새로운 것을 탐구하는 유형입니다.', tags:['창의적','개방적','탐구형'], whoYouAre:'개방성이 가장 높은 당신은 새로운 것에 대한 호기심이 삶의 원동력입니다.', coreStrength:'목소리에 다양한 색채와 즉흥성이 담기며, 실험적 표현에서 두드러집니다.', strengthPills:['창의성','즉흥성','실험정신'], voiceConnection:'고주파 배음이 풍부하고 매 순간 새로운 색채를 더하는 소리입니다.', growthPath:'창의성을 하나의 방향으로 집중시키는 연습으로 더 강력한 표현을 만들어보세요.', color1:'#27ae60', color2:'#3a86c8'},
+  };
+  return fallbacks[dominated];
+}
+
+function getDomainOneLiner(code, pct) {
+  const level = pct >= 65 ? 'high' : pct >= 40 ? 'mid' : 'low';
+  const map = {
+    E: { high:'외부 세계에서 에너지를 얻고, 목소리로 공간을 자연스럽게 채웁니다.', mid:'상황에 따라 사교적이고 내향적인 면을 모두 가집니다.', low:'깊은 내면에서 에너지를 얻고, 소수와의 깊은 연결을 선호합니다.' },
+    C: { high:'체계적이고 신뢰할 수 있으며, 목소리에 안정감이 배어납니다.', mid:'계획성과 유연성 사이에서 균형을 맞춥니다.', low:'직관과 즉흥성으로 움직이며, 규칙보다 흐름을 따릅니다.' },
+    A: { high:'따뜻하고 공감 능력이 높으며, 소리에 그 온기가 담깁니다.', mid:'협력과 자기주장 사이에서 균형을 잡습니다.', low:'독립적이고 단호하며, 소리에 힘과 날카로움이 있습니다.' },
+    N: { high:'감정이 풍부하고 예민하며, 소리에 그 진동이 담깁니다.', mid:'감정적으로 안정적이지만 충분한 깊이를 가집니다.', low:'심리적으로 안정되어 있으며, 소리에 신뢰감이 깃듭니다.' },
+    O: { high:'창의적이고 호기심이 넘치며, 목소리에 다양한 색채가 있습니다.', mid:'열린 사고와 실용성을 균형 있게 갖추고 있습니다.', low:'실용적이고 현실에 집중하며, 완성도 있는 소리를 냅니다.' },
+  };
+  return map[code][level];
+}
+
+function animateBars() {
+  const colorMap = { E:'var(--c-E)', C:'var(--c-C)', A:'var(--c-A)', N:'var(--c-N)', O:'var(--c-O)' };
+  BIG5.forEach(d=>{
+    const fill = document.getElementById(`bar-${d.code}`);
+    if (fill) fill.style.width = calcScore(d.code) + '%';
+  });
+}
+
+// ═══════════════════════════
+// SIMILAR ARTIST MAP
+// ═══════════════════════════
+const artistMap = {
+  // [E_level][O_level][A_level] → artists
+  // key: dominant trait + voice type
+  E_high_O_high: { kr: ['지코', '박재범', 'G-DRAGON', '청하'], intl: ['Bruno Mars', 'Justin Timberlake', 'Ariana Grande'] },
+  E_high_O_low:  { kr: ['이찬원', '임영웅', '나훈아', '박현빈'], intl: ['Ed Sheeran', 'Sam Smith', 'Adele'] },
+  E_low_O_high:  { kr: ['아이유', '빈지노', '우원재', 'Dean'], intl: ['Frank Ocean', 'Billie Eilish', 'Lana Del Rey'] },
+  E_low_O_low:   { kr: ['성시경', '조용필', '이소라', '김광석'], intl: ['Leonard Cohen', 'Norah Jones', 'Johnny Cash'] },
+  A_high_N_high: { kr: ['아이유', '백예린', '태연', '폴킴'], intl: ['Adele', 'Billie Eilish', 'Amy Winehouse'] },
+  A_high_N_low:  { kr: ['성시경', '폴킴', '박효신', '이적'], intl: ['John Mayer', 'Jack Johnson', 'Jason Mraz'] },
+  C_high:        { kr: ['보아', '이하이', '비', '씨스타'], intl: ['Beyoncé', 'Michael Jackson', 'Whitney Houston'] },
+  N_high_V_high: { kr: ['박효신', '임재범', '나얼', '이선희'], intl: ['Jeff Buckley', 'Radiohead', 'Bon Iver'] },
+  default:       { kr: ['이문세', '신승훈', '노을', '버스커버스커'], intl: ['Coldplay', 'The Beatles', 'Sting'] },
+};
+
+function getSimilarArtists(scores) {
+  const E = scores.E >= 60, O = scores.O >= 60, A = scores.A >= 60;
+  const N = scores.N >= 60, C = scores.C >= 65, V = scores.V >= 65;
+  if (C && scores.C >= 70) return artistMap.C_high;
+  if (N && V) return artistMap.N_high_V_high;
+  if (A && N) return artistMap.A_high_N_high;
+  if (A && !N) return artistMap.A_high_N_low;
+  if (E && O) return artistMap.E_high_O_high;
+  if (E && !O) return artistMap.E_high_O_low;
+  if (!E && O) return artistMap.E_low_O_high;
+  if (!E && !O) return artistMap.E_low_O_low;
+  return artistMap.default;
+}
+
+function buildVoiceSpecial(pct) {
+  const interp = getVoiceSpecialInterpretation(pct);
+  const scores = {};
+  BIG5.forEach(d=>{ scores[d.code]=calcScore(d.code); });
+  scores.V = pct;
+  const artists = getSimilarArtists(scores);
+
+  const container = document.getElementById('voiceSpecialSection');
+  container.innerHTML = `
+    <div class="voice-card">
+      <div class="vc-header">
+        <div>
+          <div class="vc-title">보이스 스페셜</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:3px;font-family:'DM Mono',monospace;">${pct}% · ${interp.label}</div>
+        </div>
+        <div class="vc-badge">${interp.label}</div>
+      </div>
+      <div style="margin-bottom:14px">
+        ${interp.traits.map(t=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="width:5px;height:5px;border-radius:50%;background:var(--c-V);flex-shrink:0"></div><span style="font-size:13px;font-weight:300">${t}</span></div>`).join('')}
+      </div>
+      <div class="vc-desc">${interp.desc}</div>
+      <div class="vc-tip">${interp.tip}</div>
+    </div>
+
+    <div class="voice-card" style="border-left:4px solid var(--c-V)">
+      <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:12px">🎤 나와 목소리·성격이 비슷한 가수는?</div>
+      <div style="font-size:13px;color:var(--muted);font-weight:300;line-height:1.75;margin-bottom:18px">성격 검사 결과와 보이스 스페셜 수치를 바탕으로 비슷한 발성 에너지와 감성을 가진 가수들을 매칭했어요.</div>
+
+      <div style="margin-bottom:16px">
+        <div style="font-size:11px;font-family:'DM Mono',monospace;letter-spacing:1.5px;color:var(--accent2);margin-bottom:10px;text-transform:uppercase">🇰🇷 국내 가수</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          ${artists.kr.map(a=>`<div style="padding:7px 14px;background:var(--surface2);border-radius:999px;font-size:13px;font-weight:600">${a}</div>`).join('')}
+        </div>
+      </div>
+
+      <div>
+        <div style="font-size:11px;font-family:'DM Mono',monospace;letter-spacing:1.5px;color:var(--accent2);margin-bottom:10px;text-transform:uppercase">🌍 해외 가수</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          ${artists.intl.map(a=>`<div style="padding:7px 14px;background:var(--surface2);border-radius:999px;font-size:13px;font-weight:600">${a}</div>`).join('')}
+        </div>
+      </div>
+
+      <div style="margin-top:16px;padding:12px 14px;border-radius:8px;background:rgba(224,122,42,.07);font-size:11px;color:var(--muted);line-height:1.75;font-family:'DM Mono',monospace">
+        ※ 이 매칭은 성격-발성 상관관계 연구를 기반으로 한 재미 요소입니다. 더 많은 데이터가 쌓일수록 정확도가 높아집니다.
+      </div>
+    </div>
+  `;
+}
+
+// ═══════════════════════════
+// DOMAIN DETAIL MODAL
+// ═══════════════════════════
+function openDetailModal(code) {
+  currentDomainDetail = code;
+  currentDetailTab = 0;
+  const d = BIG5.find(x=>x.code===code);
+  const detail = domainDetails[code];
+  const colorMap = { E:'var(--c-E)', C:'var(--c-C)', A:'var(--c-A)', N:'var(--c-N)', O:'var(--c-O)' };
+  const pct = calcScore(code);
+  const lk = getLevelKey(pct);
+  const lm = levelMeta[lk];
+
+  document.getElementById('detailDomainName').textContent = d.name;
+  document.getElementById('detailDomainIntro').textContent = detail.intro;
+  const tag = document.getElementById('detailScoreTag');
+  tag.innerHTML = `${lm.emoji} ${pct}% · ${lm.label}`;
+  tag.style.background = `${colorMap[code]}18`;
+  tag.style.color = colorMap[code];
+  tag.style.border = `1px solid ${colorMap[code]}44`;
+
+  // reset tabs
+  document.querySelectorAll('.detail-tab').forEach((t,i)=>t.classList.toggle('active',i===0));
+  renderDetailTab(0);
+  document.getElementById('detailModal').classList.remove('hidden');
+}
+function closeDetailModal() { document.getElementById('detailModal').classList.add('hidden'); }
+
+function switchDetailTab(i) {
+  currentDetailTab = i;
+  document.querySelectorAll('.detail-tab').forEach((t,idx)=>t.classList.toggle('active', idx===i));
+  renderDetailTab(i);
+}
+
+function renderDetailTab(i) {
+  const detail = domainDetails[currentDomainDetail];
+  const pct = calcScore(currentDomainDetail);
+  const lk = getLevelKey(pct);
+  const tabs = ['기초','행동','강점','도전과제'];
+  const tabKey = tabs[i];
+  const tabTitles = ['특성 기초 및 심리학','일상생활과 행동 패턴','심층적인 강점','도전과 공통적인 어려움'];
+  const data = detail.byLevel[lk][tabKey];
+  const colorMap = { E:'var(--c-E)', C:'var(--c-C)', A:'var(--c-A)', N:'var(--c-N)', O:'var(--c-O)' };
+  const col = colorMap[currentDomainDetail];
+
+  document.getElementById('detailContent').innerHTML = `
+    <div class="detail-sub-title">${tabTitles[i]}</div>
+    <div class="detail-section-text">${data.text}</div>
+    <div class="detail-bullets">
+      ${data.bullets.map(b=>`<div class="detail-bullet"><div class="bullet-dot" style="background:${col}"></div><div class="bullet-text">${b}</div></div>`).join('')}
+    </div>
+  `;
+}
+
+// ═══════════════════════════
+// UTIL
+// ═══════════════════════════
+function switchStep(id) {
+  document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function restart() {
+  answers={}; totalAnswered=0; voiceFileName=null; currentDominant='O';
+  recBlob=null; recIsRecording=false;
+  clearInterval(recTimerInterval);
+  document.getElementById('surveyBody').innerHTML='';
+  document.getElementById('user-name').value='';
+  document.getElementById('user-age').value='';
+  selectedGender=null;
+  ['gender-m','gender-f'].forEach(id=>document.getElementById(id)?.classList.remove('sel'));
+  document.getElementById('voiceFile').value='';
+  document.getElementById('fileBar').classList.remove('show');
+  // 녹음 UI 초기화
+  document.getElementById('recOrbIcon').textContent='🎙';
+  document.getElementById('recStatus').textContent='탭하여 녹음 시작';
+  document.getElementById('recTimer').textContent='00:00';
+  document.getElementById('recRingFill').style.strokeDashoffset='301.6';
+  document.getElementById('recOrbInner').classList.remove('recording');
+  document.getElementById('recDoneBar').style.display='none';
+  stopWaveformAnim();
+  // 파일존 UI 초기화
+  const z=document.getElementById('uploadZone');
+  z.style.borderColor=''; z.style.background='';
+  z.querySelector('.fz-icon').textContent='📁'; z.querySelector('.fz-title').textContent='파일을 탭하여 선택';
+  setReadyBar(false);
+  document.getElementById('btnStep1').disabled=true;
+  // 음역대 테스트 초기화
+  rangeBlob=null; rangeSeconds=0; rangeIsRecording=false;
+  clearInterval(rangeTimerInterval); clearInterval(rangeProgressInterval);
+  if (rangeSource) { try { rangeSource.stop(); } catch(e) {} }
+  document.getElementById('rangeDoneBar').style.display='none';
+  document.getElementById('rangeOrbIcon').textContent='▶';
+  document.getElementById('rangeStatusText').textContent='탭하여 시작';
+  document.getElementById('rangeTimer').textContent='00:00';
+  document.getElementById('rangeRingFill').style.strokeDashoffset='301.6';
+  document.getElementById('rangeRingFill').style.stroke='var(--accent2)';
+  document.getElementById('rangeProgressBar').style.width='0%';
+  stopRangeWaveformAnim();
+  // 스펙트럼 패널 초기화
+  document.getElementById('spectrumPanel').style.display='none';
+  switchVoiceTab('rec');
+  updateProg();
+  switchStep('step-1');
+}
+
+// Drag
+const zone = document.getElementById('uploadZone');
+zone.addEventListener('dragover', e=>{e.preventDefault();zone.classList.add('over');});
+zone.addEventListener('dragleave',()=>zone.classList.remove('over'));
+zone.addEventListener('drop',e=>{e.preventDefault();zone.classList.remove('over');if(e.dataTransfer.files.length){const dt=new DataTransfer();dt.items.add(e.dataTransfer.files[0]);const input=document.getElementById('voiceFile');input.files=dt.files;handleFile(input);}});
+
+// ═══════════════════════════
+// SHARE FUNCTIONS
+// ═══════════════════════════
+function getShareText() {
+  const name = document.getElementById('user-name').value.trim();
+  const domName = document.getElementById('rtcType').textContent;
+  const scores = {};
+  BIG5.forEach(d=>{ scores[d.code]=calcScore(d.code); });
+  const big5sorted = BIG5.map(d=>({name:d.name,score:scores[d.code]})).sort((a,b)=>b.score-a.score);
+  return `[터칭보이스 보이스 매트릭스]\n${name}의 지배적 특성: ${domName} ${big5sorted[0].score}%\n\n${big5sorted.map(d=>`${d.name} ${d.score}%`).join(' · ')}\n\n나와 비슷한 가수는 누구일까? 터칭보이스에서 확인해보세요 🎙`;
+}
+
+function shareKakao() {
+  const text = getShareText();
+  // Kakao SDK가 없으면 클립보드 복사 + 카카오 앱으로 유도
+  if (typeof Kakao !== 'undefined' && Kakao.isInitialized()) {
+    Kakao.Share.sendDefault({
+      objectType: 'text',
+      text: text,
+      link: { mobileWebUrl: location.href, webUrl: location.href }
+    });
+  } else {
+    // 카카오톡 앱 공유 (모바일)
+    const kakaoUrl = `kakaotalk://send?text=${encodeURIComponent(text)}`;
+    const fallback = `https://story.kakao.com/share?url=${encodeURIComponent(location.href)}&text=${encodeURIComponent(text)}`;
+    const win = window.open(kakaoUrl, '_blank');
+    setTimeout(() => {
+      if (!win || win.closed) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast('카카오톡 앱으로 공유하려면 복사된 내용을 붙여넣기 해주세요 📋');
+        });
+      }
+    }, 500);
+  }
+}
+
+function copyLink() {
+  const text = getShareText();
+  navigator.clipboard.writeText(text + '\n' + location.href).then(() => {
+    showToast('🔗 결과가 클립보드에 복사되었습니다!');
+  }).catch(() => {
+    // fallback
+    const el = document.createElement('textarea');
+    el.value = text;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    showToast('🔗 결과가 클립보드에 복사되었습니다!');
+  });
+}
+
+function shareNative() {
+  const text = getShareText();
+  if (navigator.share) {
+    navigator.share({ title: '터칭보이스 보이스 매트릭스 결과', text, url: location.href });
+  } else {
+    copyLink();
+  }
+}
+
+function showToast(msg) {
+  const t = document.getElementById('copyToast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  setTimeout(() => { t.style.display = 'none'; }, 3000);
+}
+
+// Modal backdrop close
+document.getElementById('consentModal').addEventListener('click', e=>{if(e.target===document.getElementById('consentModal')) closeConsent();});
+document.getElementById('detailModal').addEventListener('click', e=>{if(e.target===document.getElementById('detailModal')) closeDetailModal();});
+</script>
+</body>
+</html>
