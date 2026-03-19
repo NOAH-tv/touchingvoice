@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>터칭보이스 — 보컬 레슨 플랫폼</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;900&family=DM+Mono:ital,wght@0,300;0,400;1,300&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  /* ── 터칭보이스 딥 퍼플 다크 테마 ── */
+  --bg: #2a1558;            /* 딥 퍼플 메인 배경 */
+  --surface: #3f2378;       /* 명함 메인 퍼플 (카드) */
+  --surface2: #341a6a;      /* 조금 더 어두운 퍼플 */
+  --border: rgba(241,231,195,0.10);
+  --border2: rgba(241,231,195,0.18);
+  --text: #f1e7c3;          /* 아이보리 크림 (명함 배경색) */
+  --muted: rgba(241,231,195,0.55);  /* 반투명 크림 */
+  --accent: #f1e7c3;        /* 아이보리 크림 (주요 포인트) */
+  --accent2: #e8d9a8;       /* 조금 어두운 크림 */
+  --accent-light: rgba(241,231,195,0.12); /* 크림 반투명 배경 */
+  --accent-btn: #fffcf0;    /* 밝은 크림 (버튼 hover) */
+  --warm: #d4aa3a;          /* 골드 */
+  --warm-light: rgba(212,170,58,0.15);
+  --coral: #c47ab0;         /* 연보라-핑크 */
+  --coral-light: rgba(196,122,176,0.15);
+  --blue: #9d8aa1;          /* 연보라 */
+  --blue-light: rgba(157,138,161,0.15);
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { background:var(--bg); color:#f1e7c3; font-family:'Noto Serif KR',serif; min-height:100vh; }
+
+/* ── NAV ── */
+.nav {
+  position:sticky; top:0; z-index:100;
+  background:rgba(30,12,70,0.97);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(241,231,195,0.10);
+  padding:0 24px;
+}
+.nav-inner {
+  max-width:1080px; margin:0 auto;
+  height:60px; display:flex; align-items:center; justify-content:space-between;
+}
+.nav-logo { display:flex; flex-direction:column; gap:1px; text-decoration:none; }
+.nav-logo-en { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:3px; color:rgba(241,231,195,0.6); text-transform:uppercase; }
+.nav-logo-kr { font-size:17px; font-weight:600; color:#f1e7c3; }
+.nav-links { display:flex; align-items:center; gap:8px; }
+.nav-link {
+  padding:7px 14px; border-radius:8px;
+  font-size:13px; font-weight:400; color:rgba(241,231,195,0.55);
+  text-decoration:none; transition:all .15s; cursor:pointer; border:none; background:none;
+}
+.nav-link:hover { background:rgba(241,231,195,0.10); color:#f1e7c3; }
+.nav-link.active { color:#f1e7c3; background:rgba(241,231,195,0.15); font-weight:600; }
+.nav-btn {
+  padding:8px 18px; border-radius:8px;
+  background:#f1e7c3; color:#2a1558; border:none;
+  font-family:'Noto Serif KR',serif; font-size:13px; font-weight:700;
+  cursor:pointer; transition:all .2s;
+}
+.nav-btn:hover { background:#fff; transform:translateY(-1px); }
+
+/* ── PAGES ── */
+.page { display:none; }
+.page.active { display:block; animation:fadeIn .3s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── WRAP ── */
+.wrap { max-width:1080px; margin:0 auto; padding:0 24px; }
+.wrap-sm { max-width:680px; margin:0 auto; padding:0 24px; }
+
+/* ── HERO ── */
+.hero {
+  padding:80px 24px 60px;
+  max-width:1080px; margin:0 auto;
+}
+.hero-eyebrow {
+  font-family:'DM Mono',monospace; font-size:10px; letter-spacing:3px;
+  color:#f1e7c3; text-transform:uppercase;
+  display:flex; align-items:center; gap:10px; margin-bottom:20px;
+}
+.hero-eyebrow::before { content:''; width:24px; height:1px; background:var(--accent); }
+.hero-title {
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(44px,7vw,80px); font-weight:300; line-height:1.1;
+  letter-spacing:-1px; margin-bottom:24px; color:#f1e7c3;
+}
+.hero-title em { font-style:italic; color:var(--accent); }
+.hero-sub { font-size:15px; color:var(--muted); font-weight:300; line-height:1.9; max-width:480px; margin-bottom:36px; }
+
+/* ── CARDS ── */
+.card {
+  background:var(--surface); border:1px solid var(--border2);
+  border-radius:var(--radius); padding:24px; margin-bottom:16px;
+}
+.card-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:2px; color:rgba(241,231,195,0.6); text-transform:uppercase; margin-bottom:12px; }
+.section-title { font-size:22px; font-weight:600; margin-bottom:4px; color:#f1e7c3; }
+.section-sub { font-size:13px; color:var(--muted); font-weight:300; line-height:1.7; margin-bottom:24px; }
+
+/* ── GRID ── */
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+@media(max-width:640px) { .grid-2,.grid-3 { grid-template-columns:1fr; } }
+
+/* ── MENU CARDS ── */
+.menu-card {
+  background:var(--surface); border:1px solid var(--border2);
+  border-radius:var(--radius); padding:28px 24px;
+  cursor:pointer; transition:all .2s; text-decoration:none; display:block;
+}
+.menu-card:hover { border-color:rgba(241,231,195,0.45); transform:translateY(-2px); box-shadow:0 8px 32px rgba(0,0,0,.3); }
+.menu-card-icon { font-size:28px; margin-bottom:14px; }
+.menu-card-title { font-size:17px; font-weight:600; margin-bottom:6px; color:#f1e7c3; }
+.menu-card-desc { font-size:13px; color:var(--muted); font-weight:300; line-height:1.7; }
+.menu-card-badge {
+  display:inline-block; margin-top:10px;
+  padding:3px 10px; border-radius:999px;
+  font-family:'DM Mono',monospace; font-size:10px; font-weight:600;
+  background:rgba(241,231,195,0.15); color:#f1e7c3;
+}
+.menu-card-badge.warm { background:rgba(212,170,58,0.15); color:var(--warm); }
+.menu-card-badge.coral { background:var(--coral-light); color:var(--coral); }
+.menu-card-badge.blue { background:rgba(157,138,161,0.15); color:rgba(157,138,161,0.9); }
+
+/* ── QR / 출석 ── */
+.qr-wrap { text-align:center; padding:40px 24px; }
+.qr-code {
+  width:200px; height:200px; margin:0 auto 24px;
+  background:var(--surface2); border-radius:16px;
+  display:flex; align-items:center; justify-content:center;
+  border:2px dashed rgba(241,231,195,0.25);
+}
+.form-group { margin-bottom:16px; }
+.form-label { font-size:12px; font-weight:600; color:rgba(241,231,195,0.6); letter-spacing:.5px; display:block; margin-bottom:6px; }
+.form-input {
+  width:100%; padding:13px 16px;
+  background:rgba(255,255,255,0.06); border:1px solid rgba(241,231,195,0.2);
+  border-radius:var(--radius-sm); font-family:'Noto Serif KR',serif;
+  font-size:15px; color:#f1e7c3; transition:all .2s;
+}
+.form-input::placeholder { color:rgba(241,231,195,0.3); }
+.form-input:focus { outline:none; border-color:rgba(241,231,195,0.5); background:rgba(255,255,255,0.10); }
+.form-select {
+  width:100%; padding:13px 16px;
+  background:rgba(255,255,255,0.06); border:1px solid rgba(241,231,195,0.2);
+  border-radius:var(--radius-sm); font-family:'Noto Serif KR',serif;
+  font-size:15px; color:#f1e7c3; cursor:pointer;
+}
+.form-select option { background:#3f2378; color:#f1e7c3; }
+.btn-primary {
+  width:100%; padding:16px; background:#f1e7c3;
+  color:#2a1558; border:none; border-radius:var(--radius-sm);
+  font-family:'Noto Serif KR',serif; font-size:15px; font-weight:700;
+  cursor:pointer; transition:all .2s;
+}
+.btn-primary:hover { background:#fff; transform:translateY(-1px); box-shadow:0 6px 20px rgba(0,0,0,.25); }
+.btn-primary:disabled { opacity:.4; cursor:not-allowed; transform:none; box-shadow:none; }
+.btn-outline {
+  width:100%; padding:14px; background:transparent;
+  color:#f1e7c3; border:1.5px solid rgba(241,231,195,0.35);
+  border-radius:var(--radius-sm); font-family:'Noto Serif KR',serif;
+  font-size:14px; font-weight:600; cursor:pointer; transition:all .2s; margin-top:10px;
+}
+.btn-outline:hover { background:rgba(241,231,195,0.10); border-color:rgba(241,231,195,0.55); }
+
+/* ── 출석 카운터 ── */
+.lesson-counter {
+  display:flex; gap:10px; margin:20px 0; justify-content:center;
+}
+.lesson-dot {
+  width:44px; height:44px; border-radius:50%;
+  border:2px solid rgba(241,231,195,0.2);
+  display:flex; align-items:center; justify-content:center;
+  font-family:'DM Mono',monospace; font-size:12px; font-weight:600;
+  color:rgba(241,231,195,0.3); transition:all .3s;
+}
+.lesson-dot.done { background:rgba(241,231,195,0.25); border-color:rgba(241,231,195,0.4); color:#f1e7c3; }
+.lesson-dot.current { background:#f1e7c3; border-color:#f1e7c3; color:#2a1558; animation:pulse 1.5s ease-out infinite; }
+@keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(241,231,195,.4)} 70%{box-shadow:0 0 0 12px rgba(241,231,195,0)} 100%{box-shadow:0 0 0 0 rgba(241,231,195,0)} }
+
+/* ── 입금 안내 ── */
+.payment-alert {
+  background:linear-gradient(135deg,#4a1a7a 0%,#2e1860 100%);
+  border:1px solid rgba(241,231,195,0.2);
+  border-radius:var(--radius); padding:28px; color:#f1e7c3; text-align:center;
+  animation:slideUp .4s ease;
+}
+@keyframes slideUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+.payment-alert h3 { font-size:20px; font-weight:700; margin-bottom:8px; color:#f1e7c3; }
+.payment-alert p { font-size:13px; opacity:.85; line-height:1.7; margin-bottom:16px; }
+.payment-info { background:rgba(241,231,195,0.12); border-radius:10px; padding:14px; font-family:'DM Mono',monospace; font-size:14px; color:#f1e7c3; }
+
+/* ── 수강생 테이블 ── */
+.student-table { width:100%; border-collapse:collapse; }
+.student-table th {
+  text-align:left; padding:10px 14px;
+  font-family:'DM Mono',monospace; font-size:9px; letter-spacing:2px;
+  color:rgba(241,231,195,0.4); text-transform:uppercase; border-bottom:1px solid rgba(241,231,195,0.12);
+}
+.student-table td { padding:13px 14px; border-bottom:1px solid rgba(241,231,195,0.07); font-size:13px; color:#f1e7c3; }
+.student-table tr:last-child td { border-bottom:none; }
+.student-table tr:hover td { background:rgba(255,255,255,0.04); }
+.lesson-pills { display:flex; gap:4px; }
+.lesson-pill {
+  width:20px; height:20px; border-radius:50%;
+  background:rgba(241,231,195,0.1); display:flex; align-items:center; justify-content:center;
+  font-size:9px; font-weight:600; font-family:'DM Mono',monospace; color:rgba(241,231,195,0.35);
+}
+.lesson-pill.done { background:rgba(241,231,195,0.28); color:#f1e7c3; }
+.lesson-pill.due { background:#f1e7c3; color:#2a1558; }
+
+/* ── 공지사항 ── */
+.notice-item { padding:18px 0; border-bottom:1px solid rgba(241,231,195,0.09); cursor:pointer; transition:all .15s; }
+.notice-item:last-child { border-bottom:none; }
+.notice-item:hover { padding-left:8px; }
+.notice-badge {
+  display:inline-block; padding:2px 8px; border-radius:4px;
+  font-family:'DM Mono',monospace; font-size:9px; font-weight:600;
+  background:rgba(196,122,176,0.2); color:var(--coral); margin-bottom:6px;
+}
+.notice-badge.info { background:rgba(157,138,161,0.2); color:rgba(157,138,161,0.9); }
+.notice-title { font-size:15px; font-weight:600; margin-bottom:4px; color:#f1e7c3; }
+.notice-meta { font-size:11px; color:rgba(241,231,195,0.4); font-family:'DM Mono',monospace; }
+
+/* ── 유튜브 피드 ── */
+.yt-card { background:var(--surface); border:1px solid var(--border2); border-radius:var(--radius); overflow:hidden; cursor:pointer; transition:all .2s; }
+.yt-card:hover { transform:translateY(-2px); box-shadow:0 8px 32px rgba(0,0,0,.35); border-color:rgba(241,231,195,0.3); }
+.yt-thumb { width:100%; aspect-ratio:16/9; background:var(--surface2); display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; }
+.yt-play { width:48px; height:48px; border-radius:50%; background:rgba(241,231,195,.88); display:flex; align-items:center; justify-content:center; }
+.yt-play::after { content:''; border-style:solid; border-width:9px 0 9px 18px; border-color:transparent transparent transparent #2a1558; margin-left:3px; }
+.yt-info { padding:14px 16px; }
+.yt-title { font-size:13px; font-weight:600; margin-bottom:4px; line-height:1.5; color:#f1e7c3; }
+.yt-meta { font-size:11px; color:rgba(241,231,195,0.4); font-family:'DM Mono',monospace; }
+
+/* ── 검사 카드 ── */
+.test-card { background:linear-gradient(135deg,#4a1a8a 0%,#2e1070 100%); border:1px solid rgba(241,231,195,0.15); border-radius:var(--radius); padding:36px 28px; }
+.test-card h3 { font-size:22px; font-weight:700; margin-bottom:8px; color:#f1e7c3; }
+.test-card p { font-size:13px; color:rgba(241,231,195,0.8); line-height:1.8; margin-bottom:24px; }
+.test-btn { padding:14px 28px; background:#f1e7c3; color:#2a1558; border:none; border-radius:10px; font-family:'Noto Serif KR',serif; font-size:14px; font-weight:700; cursor:pointer; transition:all .2s; }
+.test-btn:hover { background:#fff; transform:translateY(-1px); box-shadow:0 6px 20px rgba(0,0,0,.3); }
+
+/* ── TOAST ── */
+.toast {
+  position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
+  background:#f1e7c3; color:#2a1558; padding:12px 24px; border-radius:10px;
+  font-size:13px; font-weight:700; z-index:999;
+  animation:toastIn .3s ease; display:none;
+}
+.toast.show { display:block; }
+@keyframes toastIn { from{opacity:0;transform:translateX(-50%) translateY(12px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+
+/* ── LESSON TYPE TABS ── */
+.lesson-tabs { display:flex; gap:8px; margin-bottom:24px; }
+.lesson-tab {
+  flex:1; padding:12px; border-radius:10px;
+  font-family:'Noto Serif KR',serif; font-size:14px; font-weight:600;
+  cursor:pointer; border:1.5px solid rgba(241,231,195,0.2);
+  background:rgba(255,255,255,0.05); color:rgba(241,231,195,0.5); transition:all .2s;
+}
+.lesson-tab.active { background:#f1e7c3; border-color:#f1e7c3; color:#2a1558; }
+
+/* ── ADMIN ── */
+.admin-header {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:24px;
+}
+.admin-stat { text-align:center; }
+.admin-stat-num { font-family:'DM Mono',monospace; font-size:28px; font-weight:600; color:var(--accent); }
+.admin-stat-label { font-size:11px; color:var(--muted); margin-top:2px; }
+.admin-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:24px; }
+.admin-stat-card {
+  background:var(--surface); border:1px solid var(--border2); border-radius:12px;
+  padding:16px; text-align:center;
+}
+
+/* ── TABS (관리자 내부) ── */
+.tab-bar { display:flex; gap:4px; border-bottom:1px solid rgba(241,231,195,0.12); margin-bottom:24px; }
+.tab-btn {
+  padding:10px 16px; border:none; background:none;
+  font-family:'Noto Serif KR',serif; font-size:13px;
+  color:rgba(241,231,195,0.45); cursor:pointer; border-bottom:2px solid transparent;
+  margin-bottom:-1px; transition:all .15s;
+}
+.tab-btn.active { color:#f1e7c3; border-bottom-color:#f1e7c3; font-weight:600; }
+
+.page-section { padding:40px 0; }
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="nav-logo" onclick="showPage('home')">
+      <span class="nav-logo-en">TouchingVoice</span>
+      <span class="nav-logo-kr">터칭보이스</span>
+    </a>
+    <div class="nav-links">
+      <button class="nav-link active" id="nav-home" onclick="showPage('home')">홈</button>
+      <button class="nav-link" id="nav-checkin" onclick="showPage('checkin')">출석 체크</button>
+      <button class="nav-link" id="nav-notice" onclick="showPage('notice')">공지사항</button>
+      <button class="nav-link" id="nav-test" onclick="showPage('test')">성격 검사</button>
+      <button class="nav-link" id="nav-feed" onclick="showPage('feed')">콘텐츠</button>
+      <button class="nav-link" onclick="window.open('https://www.youtube.com/@Touchin9Voice','_blank')" title="유튜브" style="font-size:16px;padding:7px 10px">▶</button>
+      <button class="nav-link" onclick="window.open('https://www.instagram.com/touchingvoice_official','_blank')" title="인스타그램" style="font-size:16px;padding:7px 10px">📸</button>
+      <button class="nav-btn" onclick="showPage('admin')">관리자 ›</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ════════════ HOME ════════════ -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <div class="hero-eyebrow">Voice · 터칭보이스 보컬 레슨</div>
+    <h1 class="hero-title">목소리로<br><em>마음을 잇는</em><br>보컬 레슨</h1>
+    <p class="hero-sub">터칭보이스는 목소리를 통해 당신의 성격과 감성을 발견합니다. 개인 · 그룹 레슨, 성격 분석, 발성 루틴까지.</p>
+  </div>
+
+  <div class="wrap" style="padding-bottom:60px">
+    <div class="grid-2" style="margin-bottom:16px">
+      <!-- QR 출석 -->
+      <div class="menu-card" onclick="showPage('checkin')">
+        <div class="menu-card-icon">📍</div>
+        <div class="menu-card-title">출석 체크</div>
+        <div class="menu-card-desc">QR 스캔 후 이름 입력만 하면 수업이 자동 기록됩니다. 4회 완료 시 다음 수업 안내가 표시됩니다.</div>
+        <span class="menu-card-badge">바로 출석 →</span>
+      </div>
+      <!-- 성격+음성 검사 -->
+      <div class="menu-card" onclick="showPage('test')">
+        <div class="menu-card-icon">🎙</div>
+        <div class="menu-card-title">성격 + 음성 검사</div>
+        <div class="menu-card-desc">Big Five 성격 검사와 음성 분석을 통해 당신만의 보이스 매트릭스를 발견합니다.</div>
+        <span class="menu-card-badge">검사 시작 →</span>
+      </div>
+    </div>
+
+    <div class="grid-3">
+      <!-- 공지사항 -->
+      <div class="menu-card" onclick="showPage('notice')">
+        <div class="menu-card-icon">📋</div>
+        <div class="menu-card-title">공지사항</div>
+        <div class="menu-card-desc">수업 일정, 휴강 안내, 중요 공지를 확인하세요.</div>
+        <span class="menu-card-badge warm">공지 3건</span>
+      </div>
+      <!-- 발성 루틴 -->
+      <div class="menu-card" onclick="showPage('feed')">
+        <div class="menu-card-icon">🎵</div>
+        <div class="menu-card-title">발성 루틴</div>
+        <div class="menu-card-desc">터칭보이스 유튜브 채널의 발성 연습 영상과 최신 콘텐츠를 확인하세요.</div>
+        <span class="menu-card-badge coral">유튜브 연동</span>
+      </div>
+      <!-- 커뮤니티 (예정) -->
+      <div class="menu-card" style="opacity:.6">
+        <div class="menu-card-icon">🎤</div>
+        <div class="menu-card-title">노래 커뮤니티</div>
+        <div class="menu-card-desc">노래를 녹음해서 올리고 피드백을 받는 공간입니다. 곧 오픈 예정입니다.</div>
+        <span class="menu-card-badge blue">준비 중</span>
+      </div>
+    </div>
+
+    <!-- ── 강사 섹션 ── -->
+    <div style="margin-top:48px;padding-top:48px;border-top:1px solid rgba(241,231,195,0.1)">
+      <div class="card-label" style="margin-bottom:8px;text-align:center">Our Teachers · 강사 소개</div>
+      <h2 style="font-family:'Cormorant Garamond',serif;font-size:clamp(28px,5vw,44px);font-weight:300;text-align:center;margin-bottom:8px;color:#f1e7c3">터칭보이스와 함께하는<br><em style="font-style:italic;color:rgba(241,231,195,0.6)">보이스 아티스트</em></h2>
+      <div style="height:1px;width:40px;background:rgba(241,231,195,0.3);margin:20px auto 40px"></div>
+
+      <div class="grid-2" style="gap:20px;max-width:800px;margin:0 auto">
+
+        <!-- 천우경 -->
+        <div onclick="window.open('https://www.instagram.com/lubere12/','_blank')" style="background:var(--surface);border:1px solid rgba(241,231,195,0.15);border-radius:var(--radius);padding:28px;display:flex;gap:20px;align-items:flex-start;transition:all .2s;cursor:pointer" onmouseover="this.style.borderColor='rgba(241,231,195,0.45)';this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 32px rgba(0,0,0,.3)'" onmouseout="this.style.borderColor='rgba(241,231,195,0.15)';this.style.transform='';this.style.boxShadow=''">
+          <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#6b3fa0,#3f2378);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:#f1e7c3;flex-shrink:0;letter-spacing:-1px">우경</div>
+          <div style="flex:1">
+            <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(241,231,195,0.45);margin-bottom:6px">VOCAL · DIRECTOR</div>
+            <div style="font-size:18px;font-weight:700;color:#f1e7c3;margin-bottom:6px">천우경</div>
+            <div style="font-size:12px;color:rgba(241,231,195,0.6);line-height:1.8;font-weight:300;margin-bottom:10px">터칭보이스 대표 · 보컬 디렉터<br>성격 기반 보이스 트레이닝 개발자</div>
+            <div style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;background:rgba(241,231,195,0.1);border:1px solid rgba(241,231,195,0.2)">
+              <span style="font-size:12px">📸</span>
+              <span style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(241,231,195,0.7)">@lubere12</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 김수종 -->
+        <div onclick="window.open('https://www.instagram.com/vocal_s.j_/','_blank')" style="background:var(--surface);border:1px solid rgba(241,231,195,0.15);border-radius:var(--radius);padding:28px;display:flex;gap:20px;align-items:flex-start;transition:all .2s;cursor:pointer" onmouseover="this.style.borderColor='rgba(241,231,195,0.45)';this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 32px rgba(0,0,0,.3)'" onmouseout="this.style.borderColor='rgba(241,231,195,0.15)';this.style.transform='';this.style.boxShadow=''">
+          <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#4a1a8a,#2e1070);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:#f1e7c3;flex-shrink:0;letter-spacing:-1px">수종</div>
+          <div style="flex:1">
+            <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(241,231,195,0.45);margin-bottom:6px">VOCAL · COACH</div>
+            <div style="font-size:18px;font-weight:700;color:#f1e7c3;margin-bottom:6px">김수종</div>
+            <div style="font-size:12px;color:rgba(241,231,195,0.6);line-height:1.8;font-weight:300;margin-bottom:10px">보컬 코치 · 개인 레슨 전문<br>발성 테크닉 · 음역대 개발</div>
+            <div style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;background:rgba(241,231,195,0.1);border:1px solid rgba(241,231,195,0.2)">
+              <span style="font-size:12px">📸</span>
+              <span style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(241,231,195,0.7)">@vocal_s.j_</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 방건주 -->
+        <div onclick="window.open('https://www.instagram.com/touchingvoice_geonjoo/','_blank')" style="background:var(--surface);border:1px solid rgba(241,231,195,0.15);border-radius:var(--radius);padding:28px;display:flex;gap:20px;align-items:flex-start;transition:all .2s;cursor:pointer" onmouseover="this.style.borderColor='rgba(241,231,195,0.45)';this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 32px rgba(0,0,0,.3)'" onmouseout="this.style.borderColor='rgba(241,231,195,0.15)';this.style.transform='';this.style.boxShadow=''">
+          <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#3d1a6e,#6b2fa0);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:#f1e7c3;flex-shrink:0;letter-spacing:-1px">건주</div>
+          <div style="flex:1">
+            <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(241,231,195,0.45);margin-bottom:6px">ARTIST · COACH</div>
+            <div style="font-size:18px;font-weight:700;color:#f1e7c3;margin-bottom:6px">방건주</div>
+            <div style="font-size:12px;color:rgba(241,231,195,0.6);line-height:1.8;font-weight:300;margin-bottom:10px">아티스트 · 보컬 코치<br>감성 표현 · 음악적 해석 전문</div>
+            <div style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;background:rgba(241,231,195,0.1);border:1px solid rgba(241,231,195,0.2)">
+              <span style="font-size:12px">📸</span>
+              <span style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(241,231,195,0.7)">@touchingvoice_geonjoo</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 탁상우 -->
+        <div style="background:var(--surface);border:1px solid rgba(241,231,195,0.15);border-radius:var(--radius);padding:28px;display:flex;gap:20px;align-items:flex-start;transition:all .2s;cursor:default" onmouseover="this.style.borderColor='rgba(241,231,195,0.35)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='rgba(241,231,195,0.15)';this.style.transform=''">
+          <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#2a1558,#4a1a8a);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:#f1e7c3;flex-shrink:0;letter-spacing:-1px">상우</div>
+          <div style="flex:1">
+            <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(241,231,195,0.45);margin-bottom:6px">VOCAL · COACH</div>
+            <div style="font-size:18px;font-weight:700;color:#f1e7c3;margin-bottom:6px">탁상우</div>
+            <div style="font-size:12px;color:rgba(241,231,195,0.6);line-height:1.8;font-weight:300;margin-bottom:10px">보컬 코치 · 그룹 레슨 전문<br>앙상블 · 하모니 트레이닝</div>
+            <div style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;background:rgba(241,231,195,0.06);border:1px solid rgba(241,231,195,0.1)">
+              <span style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(241,231,195,0.35)">SNS 준비 중</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── 소셜 링크 ── -->
+    <div style="margin-top:48px;padding-top:36px;border-top:1px solid rgba(241,231,195,0.08);display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <button onclick="window.open('https://www.youtube.com/@Touchin9Voice','_blank')" style="display:flex;align-items:center;gap:8px;padding:11px 20px;background:rgba(241,231,195,0.08);border:1px solid rgba(241,231,195,0.18);border-radius:999px;color:#f1e7c3;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;transition:all .2s" onmouseover="this.style.background='rgba(241,231,195,0.16)'" onmouseout="this.style.background='rgba(241,231,195,0.08)'">
+        <span style="font-size:16px">▶</span> YouTube @Touchin9Voice
+      </button>
+      <button onclick="window.open('https://www.instagram.com/touchingvoice_official','_blank')" style="display:flex;align-items:center;gap:8px;padding:11px 20px;background:rgba(241,231,195,0.08);border:1px solid rgba(241,231,195,0.18);border-radius:999px;color:#f1e7c3;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;transition:all .2s" onmouseover="this.style.background='rgba(241,231,195,0.16)'" onmouseout="this.style.background='rgba(241,231,195,0.08)'">
+        <span style="font-size:16px">📸</span> Instagram @touchingvoice_official
+      </button>
+    </div>
+
+    <div style="height:60px"></div>
+  </div>
+</div>
+<div class="page" id="page-checkin">
+  <div class="wrap-sm" style="padding-top:40px;padding-bottom:60px">
+    <div class="card-label" style="margin-bottom:8px">출석 체크 · Attendance</div>
+    <h2 class="section-title">수업 출석하기</h2>
+    <p class="section-sub">이름과 레슨 유형을 선택하면 오늘 수업이 자동으로 기록됩니다.</p>
+
+    <!-- 레슨 타입 -->
+    <div class="lesson-tabs">
+      <button class="lesson-tab active" id="tab-private" onclick="selectLessonType('개인')">👤 개인 레슨</button>
+      <button class="lesson-tab" id="tab-group" onclick="selectLessonType('그룹')">👥 그룹 레슨</button>
+    </div>
+
+    <div class="card">
+      <div class="form-group">
+        <label class="form-label">이름</label>
+        <input type="text" class="form-input" id="checkin-name" placeholder="성함을 입력해 주세요">
+      </div>
+      <div class="form-group">
+        <label class="form-label">오늘 날짜</label>
+        <input type="text" class="form-input" id="checkin-date" readonly>
+      </div>
+      <button class="btn-primary" onclick="doCheckin()">출석 확인 →</button>
+    </div>
+
+    <!-- 출석 결과 -->
+    <div id="checkin-result" style="display:none">
+      <div class="card" id="checkin-result-card">
+        <div style="text-align:center;padding:16px 0">
+          <div style="font-size:48px;margin-bottom:12px">✅</div>
+          <div style="font-size:20px;font-weight:700;margin-bottom:4px" id="result-name">이름님</div>
+          <div style="font-size:13px;color:var(--muted);margin-bottom:20px" id="result-type">개인 레슨</div>
+          <div class="lesson-counter" id="lesson-counter"></div>
+          <div style="font-size:13px;color:var(--muted);margin-top:12px" id="result-lesson-info">이번이 2번째 수업입니다</div>
+        </div>
+      </div>
+
+      <div id="payment-alert" style="display:none" class="payment-alert">
+        <div style="font-size:32px;margin-bottom:12px">🎉</div>
+        <h3>4회 수업이 완료되었습니다!</h3>
+        <p>다음 4회 레슨을 위한 수강료 안내입니다.<br>입금 확인 후 다음 수업 일정이 확정됩니다.</p>
+        <div class="payment-info">
+          <div style="margin-bottom:6px;opacity:.8;font-size:11px">입금 안내</div>
+          <div style="font-size:16px;font-weight:700" id="payment-info-text">개인 레슨 4회 · ₩200,000</div>
+          <div style="margin-top:8px;font-size:12px;opacity:.8">카카오뱅크 · 3333-00-0000000 · 예금주: 노아</div>
+        </div>
+      </div>
+
+      <button class="btn-outline" onclick="resetCheckin()">처음으로 돌아가기</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ NOTICE ════════════ -->
+<div class="page" id="page-notice">
+  <div class="wrap-sm" style="padding-top:40px;padding-bottom:60px">
+    <div class="card-label" style="margin-bottom:8px">공지사항 · Notice</div>
+    <h2 class="section-title">공지사항</h2>
+    <p class="section-sub">수업 일정 및 중요 공지를 확인하세요.</p>
+
+    <div class="card" id="notice-list">
+      <!-- 공지 목록 JS로 렌더링 -->
+    </div>
+
+    <!-- 공지 상세 -->
+    <div id="notice-detail" style="display:none">
+      <button onclick="document.getElementById('notice-list').style.display='block';document.getElementById('notice-detail').style.display='none'" style="background:none;border:none;color:rgba(241,231,195,0.5);font-size:13px;cursor:pointer;margin-bottom:16px;font-family:'Noto Serif KR',serif">← 목록으로</button>
+      <div class="card">
+        <div class="notice-badge" id="detail-badge">공지</div>
+        <h3 id="detail-title" style="font-size:20px;font-weight:700;margin:8px 0 12px"></h3>
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:20px" id="detail-date"></div>
+        <div style="font-size:14px;line-height:2;font-weight:300" id="detail-content"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ TEST ════════════ -->
+<div class="page" id="page-test">
+  <div class="wrap-sm" style="padding-top:40px;padding-bottom:60px">
+    <div class="card-label" style="margin-bottom:8px">성격 + 음성 검사 · Voice Matrix</div>
+    <h2 class="section-title">보이스 매트릭스 검사</h2>
+    <p class="section-sub">터칭보이스의 핵심 프로그램입니다. Big Five 성격 검사와 음성 분석을 통해 당신의 목소리 유형을 발견합니다.</p>
+
+    <div class="test-card" style="margin-bottom:16px">
+      <h3>지금 바로 검사 시작하기</h3>
+      <p>자기소개 녹음 → 음역대 테스트 → 성격 검사 70문항<br>소요 시간: 약 10~15분 · 결과는 Google Drive에 자동 저장됩니다.</p>
+      <button class="test-btn" onclick="window.open('https://noah-tv.github.io/touchingvoice/touchingvoice_v3.html','_blank')">
+        검사 시작하기 →
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="card-label">검사 항목</div>
+      <div style="display:flex;flex-direction:column;gap:12px;margin-top:4px">
+        <div style="display:flex;gap:14px;align-items:flex-start">
+          <div style="width:36px;height:36px;border-radius:50%;background:rgba(241,231,195,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px">🎙</div>
+          <div>
+            <div style="font-size:14px;font-weight:600;margin-bottom:2px;color:#f1e7c3">자기소개 녹음</div>
+            <div style="font-size:12px;color:rgba(241,231,195,0.55);line-height:1.6">30초~2분 분량의 자기소개를 녹음하거나 파일을 업로드합니다.</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:flex-start">
+          <div style="width:36px;height:36px;border-radius:50%;background:rgba(212,170,58,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px">🎵</div>
+          <div>
+            <div style="font-size:14px;font-weight:600;margin-bottom:2px;color:#f1e7c3">음역대 테스트</div>
+            <div style="font-size:12px;color:rgba(241,231,195,0.55);line-height:1.6">성별에 맞는 음역대 가이드 음원에 맞춰 발성하고 녹음합니다.</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:flex-start">
+          <div style="width:36px;height:36px;border-radius:50%;background:rgba(157,138,161,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px">📊</div>
+          <div>
+            <div style="font-size:14px;font-weight:600;margin-bottom:2px;color:#f1e7c3">Big Five 성격 검사</div>
+            <div style="font-size:12px;color:rgba(241,231,195,0.55);line-height:1.6">IPIP 60문항 + 보이스 스페셜 10문항 = 총 70문항. 14가지 성격 유형으로 분석됩니다.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ FEED ════════════ -->
+<div class="page" id="page-feed">
+  <div class="wrap" style="padding-top:40px;padding-bottom:60px">
+    <div class="card-label" style="margin-bottom:8px">콘텐츠 · Content</div>
+    <h2 class="section-title">발성 루틴 & 콘텐츠</h2>
+    <p class="section-sub">터칭보이스 유튜브 채널의 최신 영상과 발성 연습 루틴을 확인하세요.</p>
+
+    <!-- 유튜브 채널 배너 -->
+    <div style="background:linear-gradient(135deg,#3f2378 0%,#2e1860 100%);border-radius:var(--radius);padding:24px 28px;color:#f1e7c3;margin-bottom:24px;display:flex;align-items:center;gap:20px">
+      <div style="font-size:36px">▶</div>
+      <div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;opacity:.7;margin-bottom:4px">YOUTUBE</div>
+        <div style="font-size:18px;font-weight:700;margin-bottom:4px">터칭보이스 — @Touchin9Voice</div>
+        <div style="font-size:12px;opacity:.8">발성 루틴, 보컬 테크닉, 성격별 노래 분석</div>
+      </div>
+      <button onclick="window.open('https://www.youtube.com/@Touchin9Voice','_blank')" style="margin-left:auto;padding:10px 20px;background:#f1e7c3;color:#2a1558;border:none;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;flex-shrink:0">구독하기</button>
+    </div>
+
+    <!-- 발성 루틴 카드 -->
+    <div class="card-label" style="margin-bottom:12px">🎯 발성 루틴 추천</div>
+    <div class="grid-3" style="margin-bottom:32px">
+      <div class="yt-card">
+        <div class="yt-thumb" style="background:linear-gradient(135deg,#3f2378,#6b3fa0)">
+          <div style="color:#f1e7c3;font-size:28px">🌿</div>
+          <div class="yt-play" style="position:absolute;right:10px;bottom:10px;width:36px;height:36px"></div>
+        </div>
+        <div class="yt-info">
+          <div class="yt-title">아침 5분 발성 루틴 — 기초 워밍업</div>
+          <div class="yt-meta">기초 · 5분 · 매일 권장</div>
+        </div>
+      </div>
+      <div class="yt-card">
+        <div class="yt-thumb" style="background:linear-gradient(135deg,#6b3fa0,#9d8aa1)">
+          <div style="color:#f1e7c3;font-size:28px">🔥</div>
+          <div class="yt-play" style="position:absolute;right:10px;bottom:10px;width:36px;height:36px"></div>
+        </div>
+        <div class="yt-info">
+          <div class="yt-title">혼성 음역대 개발 — 믹스보이스 기초</div>
+          <div class="yt-meta">중급 · 15분 · 주 3회 권장</div>
+        </div>
+      </div>
+      <div class="yt-card">
+        <div class="yt-thumb" style="background:linear-gradient(135deg,#2e1860,#3f2378)">
+          <div style="color:#f1e7c3;font-size:28px">💎</div>
+          <div class="yt-play" style="position:absolute;right:10px;bottom:10px;width:36px;height:36px"></div>
+        </div>
+        <div class="yt-info">
+          <div class="yt-title">감성 표현력 향상 — 성격별 보컬 접근</div>
+          <div class="yt-meta">고급 · 20분 · 레슨 전 권장</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 인스타그램 섹션 -->
+    <div style="background:linear-gradient(135deg,#3d1a6e,#6b2fa0);border:1px solid rgba(241,231,195,0.15);border-radius:var(--radius);padding:24px 28px;display:flex;align-items:center;gap:20px">
+      <div style="font-size:36px">📸</div>
+      <div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;opacity:.7;margin-bottom:4px;color:#f1e7c3">INSTAGRAM</div>
+        <div style="font-size:18px;font-weight:700;margin-bottom:4px;color:#f1e7c3">@touchingvoice_official</div>
+        <div style="font-size:12px;color:rgba(241,231,195,0.75)">레슨 비하인드, 수강생 후기, 보컬 팁 업데이트</div>
+      </div>
+      <button onclick="window.open('https://www.instagram.com/touchingvoice_official','_blank')" style="margin-left:auto;padding:10px 20px;background:#f1e7c3;color:#2a1558;border:none;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;flex-shrink:0">팔로우하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ ADMIN ════════════ -->
+<div class="page" id="page-admin">
+  <div class="wrap" style="padding-top:40px;padding-bottom:60px">
+    <div class="admin-header">
+      <div>
+        <div class="card-label" style="margin-bottom:4px">관리자 · Admin Dashboard</div>
+        <h2 class="section-title">수강 관리</h2>
+      </div>
+      <button onclick="showPage('home')" style="padding:8px 16px;border:1px solid rgba(241,231,195,0.25);border-radius:8px;background:rgba(241,231,195,0.08);font-size:13px;cursor:pointer;font-family:'Noto Serif KR',serif;color:#f1e7c3">← 메인으로</button>
+    </div>
+
+    <!-- 통계 카드 -->
+    <div class="admin-stats">
+      <div class="admin-stat-card">
+        <div class="admin-stat-num" id="stat-total">0</div>
+        <div class="admin-stat-label">총 수강생</div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="admin-stat-num" id="stat-private">0</div>
+        <div class="admin-stat-label">개인 레슨</div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="admin-stat-num" id="stat-group">0</div>
+        <div class="admin-stat-label">그룹 레슨</div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="admin-stat-num" style="color:var(--warm);font-family:'DM Mono',monospace;font-size:28px;font-weight:600" id="stat-due">0</div>
+        <div class="admin-stat-label">입금 예정</div>
+      </div>
+    </div>
+
+    <!-- 탭 -->
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="showAdminTab('students')">수강생 목록</button>
+      <button class="tab-btn" onclick="showAdminTab('notices')">공지 관리</button>
+      <button class="tab-btn" onclick="showAdminTab('settings')">설정</button>
+    </div>
+
+    <!-- 수강생 목록 탭 -->
+    <div id="admin-students">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <div style="font-size:13px;color:var(--muted)" id="student-count-label">수강생 0명</div>
+        <button onclick="showAddStudent()" style="padding:8px 16px;background:#f1e7c3;color:#2a1558;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-family:'Noto Serif KR',serif">+ 수강생 추가</button>
+      </div>
+
+      <!-- 수강생 추가 폼 -->
+      <div id="add-student-form" style="display:none" class="card" style="margin-bottom:16px">
+        <div class="card-label">새 수강생 등록</div>
+        <div class="grid-2" style="margin-top:8px">
+          <div class="form-group">
+            <label class="form-label">이름</label>
+            <input type="text" class="form-input" id="new-student-name" placeholder="성함">
+          </div>
+          <div class="form-group">
+            <label class="form-label">레슨 유형</label>
+            <select class="form-select" id="new-student-type">
+              <option value="개인">개인 레슨</option>
+              <option value="그룹">그룹 레슨</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">연락처 (선택)</label>
+            <input type="text" class="form-input" id="new-student-phone" placeholder="010-0000-0000">
+          </div>
+          <div class="form-group">
+            <label class="form-label">메모 (선택)</label>
+            <input type="text" class="form-input" id="new-student-memo" placeholder="특이사항">
+          </div>
+        </div>
+        <div style="display:flex;gap:10px">
+          <button onclick="addStudent()" style="flex:1;padding:12px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:'Noto Serif KR',serif;font-size:14px;font-weight:600;cursor:pointer">등록하기</button>
+          <button onclick="document.getElementById('add-student-form').style.display='none'" style="padding:12px 20px;border:1px solid rgba(241,231,195,0.2);background:rgba(241,231,195,0.06);border-radius:8px;font-family:'Noto Serif KR',serif;font-size:14px;cursor:pointer;color:#f1e7c3">취소</button>
+        </div>
+      </div>
+
+      <div class="card" style="padding:0;overflow:hidden">
+        <table class="student-table" id="student-table">
+          <thead>
+            <tr>
+              <th>이름</th>
+              <th>레슨 유형</th>
+              <th>수업 현황</th>
+              <th>마지막 수업</th>
+              <th>상태</th>
+            </tr>
+          </thead>
+          <tbody id="student-tbody">
+            <tr><td colspan="5" style="text-align:center;color:rgba(241,231,195,0.4);padding:32px">등록된 수강생이 없습니다</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 공지 관리 탭 -->
+    <div id="admin-notices" style="display:none">
+      <div style="margin-bottom:16px">
+        <button onclick="showAddNotice()" style="padding:8px 16px;background:#f1e7c3;color:#2a1558;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-family:'Noto Serif KR',serif">+ 공지 작성</button>
+      </div>
+      <div id="add-notice-form" style="display:none" class="card">
+        <div class="card-label">새 공지 작성</div>
+        <div class="form-group" style="margin-top:8px">
+          <label class="form-label">유형</label>
+          <select class="form-select" id="notice-type-select">
+            <option value="공지">공지</option>
+            <option value="안내">안내</option>
+            <option value="긴급">긴급</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">제목</label>
+          <input type="text" class="form-input" id="notice-title-input" placeholder="공지 제목">
+        </div>
+        <div class="form-group">
+          <label class="form-label">내용</label>
+          <textarea class="form-input" id="notice-content-input" rows="5" placeholder="공지 내용을 입력해 주세요" style="resize:vertical"></textarea>
+        </div>
+        <div style="display:flex;gap:10px">
+          <button onclick="addNotice()" style="flex:1;padding:12px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:'Noto Serif KR',serif;font-size:14px;font-weight:600;cursor:pointer">게시하기</button>
+          <button onclick="document.getElementById('add-notice-form').style.display='none'" style="padding:12px 20px;border:1px solid rgba(241,231,195,0.2);background:rgba(241,231,195,0.06);border-radius:8px;font-family:'Noto Serif KR',serif;font-size:14px;cursor:pointer;color:#f1e7c3">취소</button>
+        </div>
+      </div>
+      <div class="card" id="admin-notice-list"></div>
+    </div>
+
+    <!-- 설정 탭 -->
+    <div id="admin-settings" style="display:none">
+      <div class="card">
+        <div class="card-label">결제 정보</div>
+        <div class="form-group" style="margin-top:8px">
+          <label class="form-label">개인 레슨 4회 수강료</label>
+          <input type="text" class="form-input" id="price-private" value="₩200,000">
+        </div>
+        <div class="form-group">
+          <label class="form-label">그룹 레슨 4회 수강료</label>
+          <input type="text" class="form-input" id="price-group" value="₩120,000">
+        </div>
+        <div class="form-group">
+          <label class="form-label">입금 계좌</label>
+          <input type="text" class="form-input" id="bank-info" value="카카오뱅크 3333-00-0000000 · 예금주: 노아">
+        </div>
+        <button onclick="saveSettings()" style="padding:12px 24px;background:#f1e7c3;color:#2a1558;border:none;border-radius:8px;font-family:'Noto Serif KR',serif;font-size:14px;font-weight:700;cursor:pointer">저장</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ─────────────── 상태 관리 ───────────────
+let state = {
+  lessonType: '개인',
+  students: JSON.parse(localStorage.getItem('tv_students') || '[]'),
+  notices: JSON.parse(localStorage.getItem('tv_notices') || JSON.stringify([
+    { id:1, type:'공지', title:'3월 수업 일정 안내', content:'3월 25일(화)은 정상 수업입니다.\n4월 첫째 주 일정은 별도 공지 예정입니다.\n문의는 카카오톡으로 연락해 주세요.', date:'2026-03-19' },
+    { id:2, type:'안내', title:'보이스 매트릭스 검사 오픈!', content:'터칭보이스의 성격+음성 검사가 오픈되었습니다.\n검사 탭에서 바로 시작하실 수 있습니다.\n검사 결과는 선생님과 함께 피드백 세션에서 활용됩니다.', date:'2026-03-19' },
+    { id:3, type:'공지', title:'개인 레슨 / 그룹 레슨 선택 안내', content:'이번 학기부터 개인 레슨과 그룹 레슨이 분리 운영됩니다.\n출석 시 레슨 유형을 선택해 주세요.\n자세한 내용은 첫 수업 시 안내드립니다.', date:'2026-03-15' },
+  ])),
+  settings: JSON.parse(localStorage.getItem('tv_settings') || JSON.stringify({
+    pricePrivate: '₩200,000',
+    priceGroup: '₩120,000',
+    bankInfo: '카카오뱅크 3333-00-0000000 · 예금주: 노아'
+  }))
+};
+
+function saveState() {
+  localStorage.setItem('tv_students', JSON.stringify(state.students));
+  localStorage.setItem('tv_notices', JSON.stringify(state.notices));
+  localStorage.setItem('tv_settings', JSON.stringify(state.settings));
+}
+
+// ─────────────── 페이지 라우팅 ───────────────
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  const navEl = document.getElementById('nav-' + id);
+  if (navEl) navEl.classList.add('active');
+  if (id === 'admin') { renderAdmin(); }
+  if (id === 'notice') { renderNotices(); }
+  window.scrollTo(0,0);
+}
+
+// ─────────────── 출석 체크 ───────────────
+function selectLessonType(type) {
+  state.lessonType = type;
+  document.getElementById('tab-private').classList.toggle('active', type === '개인');
+  document.getElementById('tab-group').classList.toggle('active', type === '그룹');
+}
+
+(function initDate() {
+  const d = new Date();
+  const str = d.toLocaleDateString('ko-KR', {year:'numeric',month:'long',day:'numeric',weekday:'long'});
+  document.getElementById('checkin-date').value = str;
+})();
+
+function doCheckin() {
+  const name = document.getElementById('checkin-name').value.trim();
+  if (!name) { showToast('이름을 입력해 주세요'); return; }
+
+  // 기존 수강생 찾기 또는 새로 생성
+  let student = state.students.find(s => s.name === name && s.type === state.lessonType);
+  if (!student) {
+    student = { name, type: state.lessonType, lessons: [], memo: '' };
+    state.students.push(student);
+  }
+
+  // 오늘 이미 출석했는지 체크
+  const today = new Date().toLocaleDateString('ko-KR');
+  if (student.lessons.includes(today)) {
+    showToast('오늘은 이미 출석하셨습니다 ✓');
+    return;
+  }
+
+  student.lessons.push(today);
+  saveState();
+
+  const lessonCount = student.lessons.length;
+  const cyclePos = ((lessonCount - 1) % 4) + 1; // 현재 사이클에서 몇 번째
+
+  // UI 업데이트
+  document.getElementById('result-name').textContent = name + '님, 출석 완료! 👋';
+  document.getElementById('result-type').textContent = state.lessonType + ' 레슨 · ' + new Date().toLocaleDateString('ko-KR');
+  document.getElementById('result-lesson-info').textContent = `이번이 ${lessonCount}번째 수업 (이번 사이클 ${cyclePos}/4회)`;
+
+  // 레슨 카운터 (현재 사이클 4개 표시)
+  const counter = document.getElementById('lesson-counter');
+  counter.innerHTML = '';
+  for (let i = 1; i <= 4; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'lesson-dot' + (i < cyclePos ? ' done' : i === cyclePos ? ' current' : '');
+    dot.textContent = i;
+    counter.appendChild(dot);
+  }
+
+  document.getElementById('checkin-result').style.display = 'block';
+  document.querySelector('.card').style.display = 'none';
+  document.querySelector('.lesson-tabs').style.display = 'none';
+
+  // 4회 완료 시 입금 안내
+  if (cyclePos === 4) {
+    setTimeout(() => {
+      const alert = document.getElementById('payment-alert');
+      alert.style.display = 'block';
+      const price = state.lessonType === '개인' ? state.settings.pricePrivate : state.settings.priceGroup;
+      document.getElementById('payment-info-text').textContent =
+        `${state.lessonType} 레슨 4회 · ${price}`;
+    }, 800);
+  }
+}
+
+function resetCheckin() {
+  document.getElementById('checkin-name').value = '';
+  document.getElementById('checkin-result').style.display = 'none';
+  document.getElementById('payment-alert').style.display = 'none';
+  document.querySelector('.card').style.display = 'block';
+  document.querySelector('.lesson-tabs').style.display = 'flex';
+}
+
+// ─────────────── 공지사항 ───────────────
+function renderNotices() {
+  const list = document.getElementById('notice-list');
+  if (!list) return;
+  list.innerHTML = '';
+  if (!state.notices.length) {
+    list.innerHTML = '<div style="text-align:center;color:rgba(241,231,195,0.4);padding:32px">등록된 공지사항이 없습니다</div>';
+    return;
+  }
+  state.notices.slice().reverse().forEach(n => {
+    const el = document.createElement('div');
+    el.className = 'notice-item';
+    el.innerHTML = `
+      <span class="notice-badge ${n.type==='안내'?'info':''}">${n.type}</span>
+      <div class="notice-title">${n.title}</div>
+      <div class="notice-meta">${n.date}</div>
+    `;
+    el.onclick = () => showNoticeDetail(n);
+    list.appendChild(el);
+  });
+}
+
+function showNoticeDetail(n) {
+  document.getElementById('notice-list').style.display = 'none';
+  document.getElementById('notice-detail').style.display = 'block';
+  document.getElementById('detail-badge').textContent = n.type;
+  document.getElementById('detail-title').textContent = n.title;
+  document.getElementById('detail-date').textContent = n.date;
+  document.getElementById('detail-content').innerHTML = n.content.replace(/\n/g,'<br>');
+}
+
+// ─────────────── 관리자 ───────────────
+function renderAdmin() {
+  // 통계
+  const priv = state.students.filter(s => s.type === '개인').length;
+  const grp  = state.students.filter(s => s.type === '그룹').length;
+  const due  = state.students.filter(s => s.lessons.length > 0 && s.lessons.length % 4 === 0).length;
+  document.getElementById('stat-total').textContent = state.students.length;
+  document.getElementById('stat-private').textContent = priv;
+  document.getElementById('stat-group').textContent = grp;
+  document.getElementById('stat-due').textContent = due;
+  document.getElementById('student-count-label').textContent = `수강생 ${state.students.length}명`;
+
+  // 수강생 테이블
+  const tbody = document.getElementById('student-tbody');
+  tbody.innerHTML = '';
+  if (!state.students.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:rgba(241,231,195,0.4);padding:32px">등록된 수강생이 없습니다</td></tr>';
+    return;
+  }
+  state.students.forEach(s => {
+    const count = s.lessons.length;
+    const cyclePos = count > 0 ? ((count - 1) % 4) + 1 : 0;
+    const isDue = count > 0 && count % 4 === 0;
+    const last = s.lessons.length ? s.lessons[s.lessons.length-1] : '—';
+    const tr = document.createElement('tr');
+    // 레슨 진행 표시 (현재 사이클 4개)
+    let pillsHtml = '<div class="lesson-pills">';
+    for (let i = 1; i <= 4; i++) {
+      const cls = i < cyclePos ? 'done' : i === cyclePos ? 'due' : '';
+      pillsHtml += `<div class="lesson-pill ${cls}">${i}</div>`;
+    }
+    pillsHtml += `</div><div style="font-size:10px;color:var(--muted);margin-top:3px">총 ${count}회</div>`;
+    tr.innerHTML = `
+      <td><strong>${s.name}</strong></td>
+      <td><span style="padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600;background:rgba(241,231,195,0.15);color:#f1e7c3">${s.type}</span></td>
+      <td>${pillsHtml}</td>
+      <td style="font-size:12px;color:var(--muted)">${last}</td>
+      <td>${isDue?'<span style="padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600;background:rgba(212,170,58,0.15);color:var(--warm)">💰 입금 예정</span>':'<span style="font-size:12px;color:#f1e7c3">✓ 정상</span>'}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // 설정 값 반영
+  document.getElementById('price-private').value = state.settings.pricePrivate;
+  document.getElementById('price-group').value = state.settings.priceGroup;
+  document.getElementById('bank-info').value = state.settings.bankInfo;
+
+  // 공지 목록
+  renderAdminNotices();
+}
+
+function showAddStudent() {
+  document.getElementById('add-student-form').style.display = 'block';
+  document.getElementById('new-student-name').focus();
+}
+
+function addStudent() {
+  const name = document.getElementById('new-student-name').value.trim();
+  const type = document.getElementById('new-student-type').value;
+  const phone = document.getElementById('new-student-phone').value.trim();
+  const memo  = document.getElementById('new-student-memo').value.trim();
+  if (!name) { showToast('이름을 입력해 주세요'); return; }
+  if (state.students.find(s => s.name === name && s.type === type)) {
+    showToast('이미 등록된 수강생입니다'); return;
+  }
+  state.students.push({ name, type, phone, memo, lessons: [] });
+  saveState();
+  document.getElementById('add-student-form').style.display = 'none';
+  document.getElementById('new-student-name').value = '';
+  renderAdmin();
+  showToast(name + '님이 등록되었습니다 ✓');
+}
+
+function showAdminTab(tab) {
+  ['students','notices','settings'].forEach(t => {
+    document.getElementById('admin-' + t).style.display = t === tab ? 'block' : 'none';
+  });
+  document.querySelectorAll('.tab-btn').forEach((b,i) => {
+    b.classList.toggle('active', ['students','notices','settings'][i] === tab);
+  });
+}
+
+function showAddNotice() {
+  document.getElementById('add-notice-form').style.display = 'block';
+}
+function addNotice() {
+  const type    = document.getElementById('notice-type-select').value;
+  const title   = document.getElementById('notice-title-input').value.trim();
+  const content = document.getElementById('notice-content-input').value.trim();
+  if (!title || !content) { showToast('제목과 내용을 입력해 주세요'); return; }
+  const today = new Date().toLocaleDateString('ko-KR', {year:'numeric',month:'2-digit',day:'2-digit'}).replace(/\. /g,'-').replace('.','');
+  state.notices.push({ id: Date.now(), type, title, content, date: today });
+  saveState();
+  document.getElementById('add-notice-form').style.display = 'none';
+  document.getElementById('notice-title-input').value = '';
+  document.getElementById('notice-content-input').value = '';
+  renderAdminNotices();
+  showToast('공지가 게시되었습니다 ✓');
+}
+function renderAdminNotices() {
+  const el = document.getElementById('admin-notice-list');
+  if (!el) return;
+  el.innerHTML = '';
+  if (!state.notices.length) {
+    el.innerHTML = '<div style="text-align:center;color:rgba(241,231,195,0.4);padding:24px">등록된 공지가 없습니다</div>';
+    return;
+  }
+  state.notices.slice().reverse().forEach(n => {
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border)';
+    row.innerHTML = `
+      <div>
+        <span class="notice-badge ${n.type==='안내'?'info':''}">${n.type}</span>
+        <span style="font-size:14px;font-weight:600;margin-left:8px;color:#f1e7c3">${n.title}</span>
+        <span style="font-size:11px;color:rgba(241,231,195,0.4);margin-left:8px;font-family:'DM Mono',monospace">${n.date}</span>
+      </div>
+      <button onclick="deleteNotice(${n.id})" style="padding:4px 10px;border:1px solid rgba(241,231,195,0.2);background:rgba(241,231,195,0.06);border-radius:6px;font-size:11px;cursor:pointer;color:rgba(241,231,195,0.5)">삭제</button>
+    `;
+    el.appendChild(row);
+  });
+}
+function deleteNotice(id) {
+  state.notices = state.notices.filter(n => n.id !== id);
+  saveState();
+  renderAdminNotices();
+  showToast('삭제되었습니다');
+}
+function saveSettings() {
+  state.settings.pricePrivate = document.getElementById('price-private').value;
+  state.settings.priceGroup   = document.getElementById('price-group').value;
+  state.settings.bankInfo     = document.getElementById('bank-info').value;
+  saveState();
+  showToast('설정이 저장되었습니다 ✓');
+}
+
+// ─────────────── TOAST ───────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+</script>
+</body>
+</html>
