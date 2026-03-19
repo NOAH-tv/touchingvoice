@@ -316,9 +316,8 @@ body { background:var(--bg); color:#f1e7c3; font-family:'Noto Serif KR',serif; m
 <!-- ════════════ HOME ════════════ -->
 <div class="page active" id="page-home">
   <div class="hero">
-    <div class="hero-eyebrow">Voice · 터칭보이스 보컬 레슨</div>
-    <h1 class="hero-title">목소리로<br><em>마음을 잇는</em><br>보컬 레슨</h1>
-    <p class="hero-sub">터칭보이스는 목소리를 통해 당신의 성격과 감성을 발견합니다. 개인 · 그룹 레슨, 성격 분석, 발성 루틴까지.</p>
+    <div class="hero-eyebrow">TouchingVoice · 터칭보이스</div>
+    <h1 class="hero-title">처음 만나는<br><em>진짜 내 목소리</em><br>터칭보이스</h1>
   </div>
 
   <div class="wrap" style="padding-bottom:60px">
@@ -662,6 +661,9 @@ body { background:var(--bg); color:#f1e7c3; font-family:'Noto Serif KR',serif; m
     <!-- 탭 -->
     <div class="tab-bar">
       <button class="tab-btn active" onclick="showAdminTab('students')">수강생 목록</button>
+      <button class="tab-btn" onclick="showAdminTab('teachers')">선생님별 현황</button>
+      <button class="tab-btn" onclick="showAdminTab('absent')">결석 관리</button>
+      <button class="tab-btn" onclick="showAdminTab('payment')">입금 내역</button>
       <button class="tab-btn" onclick="showAdminTab('notices')">공지 관리</button>
       <button class="tab-btn" onclick="showAdminTab('settings')">설정</button>
     </div>
@@ -691,16 +693,25 @@ body { background:var(--bg); color:#f1e7c3; font-family:'Noto Serif KR',serif; m
         </div>
         <div class="grid-2">
           <div class="form-group">
+            <label class="form-label">담당 선생님</label>
+            <select class="form-select" id="new-student-teacher">
+              <option value="천우경">천우경</option>
+              <option value="김수종">김수종</option>
+              <option value="방건주">방건주</option>
+              <option value="탁상우">탁상우</option>
+            </select>
+          </div>
+          <div class="form-group">
             <label class="form-label">연락처 (선택)</label>
             <input type="text" class="form-input" id="new-student-phone" placeholder="010-0000-0000">
           </div>
-          <div class="form-group">
-            <label class="form-label">메모 (선택)</label>
-            <input type="text" class="form-input" id="new-student-memo" placeholder="특이사항">
-          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">메모 (선택)</label>
+          <input type="text" class="form-input" id="new-student-memo" placeholder="특이사항">
         </div>
         <div style="display:flex;gap:10px">
-          <button onclick="addStudent()" style="flex:1;padding:12px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:'Noto Serif KR',serif;font-size:14px;font-weight:600;cursor:pointer">등록하기</button>
+          <button onclick="addStudent()" style="flex:1;padding:12px;background:#f1e7c3;color:#2a1558;border:none;border-radius:8px;font-family:'Noto Serif KR',serif;font-size:14px;font-weight:700;cursor:pointer">등록하기</button>
           <button onclick="document.getElementById('add-student-form').style.display='none'" style="padding:12px 20px;border:1px solid rgba(241,231,195,0.2);background:rgba(241,231,195,0.06);border-radius:8px;font-family:'Noto Serif KR',serif;font-size:14px;cursor:pointer;color:#f1e7c3">취소</button>
         </div>
       </div>
@@ -710,6 +721,7 @@ body { background:var(--bg); color:#f1e7c3; font-family:'Noto Serif KR',serif; m
           <thead>
             <tr>
               <th>이름</th>
+              <th>담당 선생님</th>
               <th>레슨 유형</th>
               <th>수업 현황</th>
               <th>마지막 수업</th>
@@ -723,8 +735,91 @@ body { background:var(--bg); color:#f1e7c3; font-family:'Noto Serif KR',serif; m
       </div>
     </div>
 
-    <!-- 공지 관리 탭 -->
-    <div id="admin-notices" style="display:none">
+    <!-- 선생님별 현황 탭 -->
+    <div id="admin-teachers" style="display:none">
+      <div id="teacher-stats-wrap"></div>
+    </div>
+
+    <!-- 결석 관리 탭 -->
+    <div id="admin-absent" style="display:none">
+      <div class="card">
+        <div class="card-label">결석 기록 (선생님 전용)</div>
+        <div class="grid-2" style="margin-top:12px">
+          <div class="form-group">
+            <label class="form-label">수강생 이름</label>
+            <input type="text" class="form-input" id="absent-name" placeholder="수강생 성함">
+          </div>
+          <div class="form-group">
+            <label class="form-label">결석 날짜</label>
+            <input type="date" class="form-input" id="absent-date">
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">담당 선생님</label>
+            <select class="form-select" id="absent-teacher">
+              <option value="천우경">천우경</option>
+              <option value="김수종">김수종</option>
+              <option value="방건주">방건주</option>
+              <option value="탁상우">탁상우</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">사유 (선택)</label>
+            <input type="text" class="form-input" id="absent-reason" placeholder="개인 사정, 병결 등">
+          </div>
+        </div>
+        <button onclick="addAbsent()" style="padding:12px 24px;background:#f1e7c3;color:#2a1558;border:none;border-radius:8px;font-family:'Noto Serif KR',serif;font-size:14px;font-weight:700;cursor:pointer">결석 기록하기</button>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden">
+        <table class="student-table" id="absent-table">
+          <thead><tr><th>수강생</th><th>담당 선생님</th><th>결석 날짜</th><th>사유</th><th></th></tr></thead>
+          <tbody id="absent-tbody"><tr><td colspan="5" style="text-align:center;color:rgba(241,231,195,0.4);padding:24px">결석 기록이 없습니다</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 입금 내역 탭 -->
+    <div id="admin-payment" style="display:none">
+      <div class="card">
+        <div class="card-label">입금 기록</div>
+        <div class="grid-2" style="margin-top:12px">
+          <div class="form-group">
+            <label class="form-label">수강생 이름</label>
+            <input type="text" class="form-input" id="pay-name" placeholder="수강생 성함">
+          </div>
+          <div class="form-group">
+            <label class="form-label">입금액</label>
+            <input type="text" class="form-input" id="pay-amount" placeholder="200,000">
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">입금일</label>
+            <input type="date" class="form-input" id="pay-date">
+          </div>
+          <div class="form-group">
+            <label class="form-label">메모 (선택)</label>
+            <input type="text" class="form-input" id="pay-memo" placeholder="4회 수강료 등">
+          </div>
+        </div>
+        <button onclick="addPayment()" style="padding:12px 24px;background:#f1e7c3;color:#2a1558;border:none;border-radius:8px;font-family:'Noto Serif KR',serif;font-size:14px;font-weight:700;cursor:pointer">입금 기록하기</button>
+      </div>
+
+      <!-- 입금 안내 카드 -->
+      <div class="card" style="background:linear-gradient(135deg,#3f2378,#2e1860);border:1px solid rgba(241,231,195,0.2)">
+        <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(241,231,195,0.6);margin-bottom:12px">입금 안내 정보</div>
+        <div id="bank-display" style="font-size:15px;font-weight:600;color:#f1e7c3;margin-bottom:6px"></div>
+        <div id="price-display" style="font-size:13px;color:rgba(241,231,195,0.7)"></div>
+      </div>
+
+      <div class="card" style="padding:0;overflow:hidden">
+        <table class="student-table" id="payment-table">
+          <thead><tr><th>수강생</th><th>입금액</th><th>입금일</th><th>메모</th><th></th></tr></thead>
+          <tbody id="payment-tbody"><tr><td colspan="5" style="text-align:center;color:rgba(241,231,195,0.4);padding:24px">입금 내역이 없습니다</td></tr></tbody>
+        </table>
+      </div>
+    </div>
       <div style="margin-bottom:16px">
         <button onclick="showAddNotice()" style="padding:8px 16px;background:#f1e7c3;color:#2a1558;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-family:'Noto Serif KR',serif">+ 공지 작성</button>
       </div>
@@ -789,6 +884,8 @@ let state = {
     { id:2, type:'안내', title:'보이스 매트릭스 검사 오픈!', content:'터칭보이스의 성격+음성 검사가 오픈되었습니다.\n검사 탭에서 바로 시작하실 수 있습니다.\n검사 결과는 선생님과 함께 피드백 세션에서 활용됩니다.', date:'2026-03-19' },
     { id:3, type:'공지', title:'개인 레슨 / 그룹 레슨 선택 안내', content:'이번 학기부터 개인 레슨과 그룹 레슨이 분리 운영됩니다.\n출석 시 레슨 유형을 선택해 주세요.\n자세한 내용은 첫 수업 시 안내드립니다.', date:'2026-03-15' },
   ])),
+  absent: JSON.parse(localStorage.getItem('tv_absent') || '[]'),
+  payments: JSON.parse(localStorage.getItem('tv_payments') || '[]'),
   settings: JSON.parse(localStorage.getItem('tv_settings') || JSON.stringify({
     pricePrivate: '₩200,000',
     priceGroup: '₩120,000',
@@ -799,6 +896,8 @@ let state = {
 function saveState() {
   localStorage.setItem('tv_students', JSON.stringify(state.students));
   localStorage.setItem('tv_notices', JSON.stringify(state.notices));
+  localStorage.setItem('tv_absent', JSON.stringify(state.absent));
+  localStorage.setItem('tv_payments', JSON.stringify(state.payments));
   localStorage.setItem('tv_settings', JSON.stringify(state.settings));
 }
 
@@ -955,10 +1054,11 @@ function renderAdmin() {
     pillsHtml += `</div><div style="font-size:10px;color:var(--muted);margin-top:3px">총 ${count}회</div>`;
     tr.innerHTML = `
       <td><strong>${s.name}</strong></td>
-      <td><span style="padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600;background:rgba(241,231,195,0.15);color:#f1e7c3">${s.type}</span></td>
+      <td><span style="padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600;background:rgba(107,63,160,0.35);color:rgba(241,231,195,0.9)">${s.teacher || '—'}</span></td>
+      <td><span style="padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600;background:rgba(241,231,195,0.12);color:#f1e7c3">${s.type}</span></td>
       <td>${pillsHtml}</td>
-      <td style="font-size:12px;color:var(--muted)">${last}</td>
-      <td>${isDue?'<span style="padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600;background:rgba(212,170,58,0.15);color:var(--warm)">💰 입금 예정</span>':'<span style="font-size:12px;color:#f1e7c3">✓ 정상</span>'}</td>
+      <td style="font-size:12px;color:rgba(241,231,195,0.6)">${last}</td>
+      <td>${isDue?'<span style="padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600;background:rgba(212,170,58,0.2);color:var(--warm)">💰 입금 예정</span>':'<span style="font-size:12px;color:#f1e7c3">✓ 정상</span>'}</td>
     `;
     tbody.appendChild(tr);
   });
@@ -978,15 +1078,16 @@ function showAddStudent() {
 }
 
 function addStudent() {
-  const name = document.getElementById('new-student-name').value.trim();
-  const type = document.getElementById('new-student-type').value;
-  const phone = document.getElementById('new-student-phone').value.trim();
-  const memo  = document.getElementById('new-student-memo').value.trim();
+  const name    = document.getElementById('new-student-name').value.trim();
+  const type    = document.getElementById('new-student-type').value;
+  const teacher = document.getElementById('new-student-teacher').value;
+  const phone   = document.getElementById('new-student-phone').value.trim();
+  const memo    = document.getElementById('new-student-memo').value.trim();
   if (!name) { showToast('이름을 입력해 주세요'); return; }
   if (state.students.find(s => s.name === name && s.type === type)) {
     showToast('이미 등록된 수강생입니다'); return;
   }
-  state.students.push({ name, type, phone, memo, lessons: [] });
+  state.students.push({ name, type, teacher, phone, memo, lessons: [] });
   saveState();
   document.getElementById('add-student-form').style.display = 'none';
   document.getElementById('new-student-name').value = '';
@@ -995,12 +1096,156 @@ function addStudent() {
 }
 
 function showAdminTab(tab) {
-  ['students','notices','settings'].forEach(t => {
-    document.getElementById('admin-' + t).style.display = t === tab ? 'block' : 'none';
+  ['students','teachers','absent','payment','notices','settings'].forEach(t => {
+    const el = document.getElementById('admin-' + t);
+    if (el) el.style.display = t === tab ? 'block' : 'none';
   });
   document.querySelectorAll('.tab-btn').forEach((b,i) => {
-    b.classList.toggle('active', ['students','notices','settings'][i] === tab);
+    b.classList.toggle('active', ['students','teachers','absent','payment','notices','settings'][i] === tab);
   });
+  if (tab === 'teachers') renderTeacherStats();
+  if (tab === 'absent')   renderAbsent();
+  if (tab === 'payment')  renderPayments();
+}
+
+// ── 선생님별 현황 ──
+function renderTeacherStats() {
+  const teachers = ['천우경','김수종','방건주','탁상우'];
+  const wrap = document.getElementById('teacher-stats-wrap');
+  wrap.innerHTML = '';
+  teachers.forEach(t => {
+    const myStudents = state.students.filter(s => s.teacher === t);
+    const totalLessons = myStudents.reduce((sum, s) => sum + s.lessons.length, 0);
+    const absentCount  = state.absent.filter(a => a.teacher === t).length;
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
+        <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#6b3fa0,#2e1860);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#f1e7c3;flex-shrink:0">${t[1]}${t[2]||''}</div>
+        <div>
+          <div style="font-size:17px;font-weight:700;color:#f1e7c3">${t}</div>
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(241,231,195,0.5);letter-spacing:1px">VOCAL COACH</div>
+        </div>
+        <div style="margin-left:auto;display:flex;gap:16px;text-align:center">
+          <div><div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:#f1e7c3">${myStudents.length}</div><div style="font-size:11px;color:rgba(241,231,195,0.5)">담당 수강생</div></div>
+          <div><div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:#f1e7c3">${totalLessons}</div><div style="font-size:11px;color:rgba(241,231,195,0.5)">총 레슨 횟수</div></div>
+          <div><div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:var(--warm)">${absentCount}</div><div style="font-size:11px;color:rgba(241,231,195,0.5)">결석 횟수</div></div>
+        </div>
+      </div>
+      ${myStudents.length ? `<table class="student-table" style="margin-top:8px">
+        <thead><tr><th>수강생</th><th>레슨 유형</th><th>총 레슨</th><th>마지막 수업</th></tr></thead>
+        <tbody>${myStudents.map(s=>`<tr>
+          <td><strong>${s.name}</strong></td>
+          <td>${s.type}</td>
+          <td style="font-family:'DM Mono',monospace">${s.lessons.length}회</td>
+          <td style="font-size:12px;color:rgba(241,231,195,0.6)">${s.lessons.length ? s.lessons[s.lessons.length-1] : '—'}</td>
+        </tr>`).join('')}</tbody>
+      </table>` : `<div style="font-size:13px;color:rgba(241,231,195,0.4);padding:8px 0">담당 수강생이 없습니다</div>`}
+    `;
+    wrap.appendChild(card);
+  });
+}
+
+// ── 결석 관리 ──
+function addAbsent() {
+  const name    = document.getElementById('absent-name').value.trim();
+  const date    = document.getElementById('absent-date').value;
+  const teacher = document.getElementById('absent-teacher').value;
+  const reason  = document.getElementById('absent-reason').value.trim();
+  if (!name || !date) { showToast('이름과 날짜를 입력해 주세요'); return; }
+  state.absent.push({ id: Date.now(), name, date, teacher, reason });
+  saveState();
+  document.getElementById('absent-name').value = '';
+  document.getElementById('absent-reason').value = '';
+  renderAbsent();
+  syncToSheets('absent');
+  showToast('결석이 기록되었습니다 ✓');
+}
+
+function renderAbsent() {
+  const tbody = document.getElementById('absent-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  if (!state.absent.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:rgba(241,231,195,0.4);padding:24px">결석 기록이 없습니다</td></tr>';
+    return;
+  }
+  state.absent.slice().reverse().forEach(a => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><strong>${a.name}</strong></td>
+      <td>${a.teacher}</td>
+      <td style="font-family:'DM Mono',monospace;font-size:12px">${a.date}</td>
+      <td style="font-size:12px;color:rgba(241,231,195,0.6)">${a.reason || '—'}</td>
+      <td><button onclick="deleteAbsent(${a.id})" style="padding:3px 8px;border:1px solid rgba(241,231,195,0.2);background:rgba(241,231,195,0.06);border-radius:6px;font-size:11px;cursor:pointer;color:rgba(241,231,195,0.5)">삭제</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function deleteAbsent(id) {
+  state.absent = state.absent.filter(a => a.id !== id);
+  saveState(); renderAbsent(); showToast('삭제되었습니다');
+}
+
+// ── 입금 내역 ──
+function addPayment() {
+  const name   = document.getElementById('pay-name').value.trim();
+  const amount = document.getElementById('pay-amount').value.trim();
+  const date   = document.getElementById('pay-date').value;
+  const memo   = document.getElementById('pay-memo').value.trim();
+  if (!name || !amount || !date) { showToast('이름, 금액, 날짜를 입력해 주세요'); return; }
+  state.payments.push({ id: Date.now(), name, amount, date, memo });
+  saveState();
+  document.getElementById('pay-name').value = '';
+  document.getElementById('pay-amount').value = '';
+  document.getElementById('pay-memo').value = '';
+  renderPayments();
+  syncToSheets('payment');
+  showToast('입금이 기록되었습니다 ✓');
+}
+
+function renderPayments() {
+  const tbody = document.getElementById('payment-tbody');
+  if (!tbody) return;
+  // 입금 안내 카드 업데이트
+  const bd = document.getElementById('bank-display');
+  const pd = document.getElementById('price-display');
+  if (bd) bd.textContent = state.settings.bankInfo;
+  if (pd) pd.textContent = `개인 레슨 ${state.settings.pricePrivate} · 그룹 레슨 ${state.settings.priceGroup}`;
+
+  tbody.innerHTML = '';
+  if (!state.payments.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:rgba(241,231,195,0.4);padding:24px">입금 내역이 없습니다</td></tr>';
+    return;
+  }
+  state.payments.slice().reverse().forEach(p => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><strong>${p.name}</strong></td>
+      <td style="font-family:'DM Mono',monospace;color:var(--warm)">₩${p.amount.replace(/[^0-9]/g,'').replace(/\B(?=(\d{3})+(?!\d))/g,',')}</td>
+      <td style="font-family:'DM Mono',monospace;font-size:12px">${p.date}</td>
+      <td style="font-size:12px;color:rgba(241,231,195,0.6)">${p.memo || '—'}</td>
+      <td><button onclick="deletePayment(${p.id})" style="padding:3px 8px;border:1px solid rgba(241,231,195,0.2);background:rgba(241,231,195,0.06);border-radius:6px;font-size:11px;cursor:pointer;color:rgba(241,231,195,0.5)">삭제</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function deletePayment(id) {
+  state.payments = state.payments.filter(p => p.id !== id);
+  saveState(); renderPayments(); showToast('삭제되었습니다');
+}
+
+// ── Google Sheets 연동 (연도별 자동 저장) ──
+const APPS_URL = 'https://script.google.com/macros/s/AKfycbzl5QU7_oOSlnslT1oWRtNJ9OP6aOsx97XQwXeVNtUc97q_Uj9qpuEGTelvjtCqV_UcZA/exec';
+
+async function syncToSheets(type) {
+  const year = new Date().getFullYear();
+  try {
+    const payload = { type, year, data: type === 'absent' ? state.absent : state.payments };
+    await fetch(APPS_URL, { method:'POST', headers:{'Content-Type':'text/plain'}, body: JSON.stringify(payload) });
+  } catch(e) { console.log('Sheets sync error:', e); }
 }
 
 function showAddNotice() {
