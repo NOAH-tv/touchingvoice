@@ -25,19 +25,19 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
 body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;min-height:100vh;}
-
+ 
 /* STEPS */
 .step{display:none;}
 .step.active{display:block;animation:stepIn .4s cubic-bezier(.16,1,.3,1);}
 @keyframes stepIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-
+ 
 /* HEADER */
 .site-header{padding:28px 24px 0;display:flex;align-items:center;justify-content:space-between;max-width:680px;margin:0 auto;}
 .logo-mark{display:flex;flex-direction:column;gap:1px;}
 .logo-en{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--accent2);text-transform:uppercase;}
 .logo-kr{font-size:18px;font-weight:600;}
 .step-badge{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:1px;}
-
+ 
 /* HERO */
 .hero{max-width:680px;margin:0 auto;padding:44px 24px 32px;}
 .hero-eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--accent2);text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:10px;}
@@ -46,20 +46,20 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
 .hero-title em{font-style:italic;color:var(--accent);}
 .hero-sub{font-size:14px;color:var(--muted);font-weight:300;line-height:1.9;}
 .hero-divider{width:40px;height:2px;background:var(--accent2);margin:20px 0;}
-
+ 
 /* WRAP */
 .wrap{max-width:680px;margin:0 auto;padding:0 24px 80px;}
-
+ 
 /* CARD */
 .card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:28px;margin-bottom:16px;}
 .card-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2.5px;color:var(--muted);text-transform:uppercase;margin-bottom:14px;}
-
+ 
 /* FORM */
 .form-group{margin-bottom:20px;}
 .form-label{display:block;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--accent2);margin-bottom:8px;text-transform:uppercase;}
 .form-input{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:13px 16px;color:var(--text);font-family:'Noto Serif KR',serif;font-size:14px;outline:none;transition:border-color .2s;-webkit-appearance:none;}
 .form-input:focus{border-color:var(--accent2);}
-
+ 
 /* FILE UPLOAD */
 .file-zone{border:2px dashed var(--border2);border-radius:var(--radius);padding:48px 24px;text-align:center;cursor:pointer;transition:all .25s;position:relative;background:var(--surface);}
 .file-zone:hover,.file-zone.over{border-color:var(--accent2);background:var(--accent-light);}
@@ -72,14 +72,14 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
 .file-bar.show{display:flex;}
 .fb-name{font-size:13px;font-weight:600;flex:1;}
 .fb-size{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);}
-
+ 
 /* PROGRESS BAR (sticky) */
 .prog-wrap{position:sticky;top:0;z-index:50;background:rgba(245,243,239,.92);backdrop-filter:blur(12px);padding:12px 24px;border-bottom:1px solid var(--border);}
 .prog-inner{max-width:680px;margin:0 auto;display:flex;align-items:center;gap:14px;}
 .prog-bar-track{flex:1;height:3px;background:var(--border2);border-radius:2px;overflow:hidden;}
 .prog-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;transition:width .4s cubic-bezier(.16,1,.3,1);width:0%;}
 .prog-label{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);white-space:nowrap;letter-spacing:.5px;}
-
+ 
 /* DOMAIN HEADER */
 .domain-head{display:flex;align-items:center;gap:12px;padding:28px 0 14px;}
 .d-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
@@ -87,7 +87,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
 .d-code{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:2px;}
 .d-name{font-size:15px;font-weight:700;}
 .d-desc{font-size:12px;color:var(--muted);font-weight:300;margin-top:2px;}
-
+ 
 /* Q CARD */
 .q-card{background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:20px 20px 16px;margin-bottom:8px;transition:border-color .2s;}
 .q-card.answered{border-left:3px solid var(--accent2);}
@@ -99,7 +99,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
 .lk-btn.sel{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600;}
 .lk-labs{display:flex;justify-content:space-between;margin-top:5px;}
 .lk-lab{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);}
-
+ 
 /* BUTTONS */
 .btn-primary{width:100%;padding:16px;background:var(--accent-btn);color:#fff;border:none;border-radius:12px;font-family:'Noto Serif KR',serif;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;letter-spacing:.5px;}
 .btn-primary:hover{background:var(--accent);transform:translateY(-1px);box-shadow:0 8px 24px rgba(27,67,50,.25);}
@@ -107,7 +107,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
 .btn-outline{width:100%;padding:14px;background:transparent;color:var(--accent-btn);border:1.5px solid var(--accent-btn);border-radius:12px;font-family:'Noto Serif KR',serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;margin-top:10px;}
 .btn-outline:hover{background:var(--accent-light);}
 .btn-ghost{background:none;border:none;color:var(--muted);font-family:'Noto Serif KR',serif;font-size:13px;cursor:pointer;text-decoration:underline;padding:0;}
-
+ 
 /* CONSENT MODAL */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .2s;}
 .modal-overlay.hidden{display:none;}
@@ -122,7 +122,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
 .consent-check-row{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;}
 .consent-check-row input{width:18px;height:18px;accent-color:var(--accent-btn);margin-top:2px;flex-shrink:0;}
 .consent-check-row span{font-size:13px;line-height:1.65;font-weight:300;}
-
+ 
 /* RESULTS */
 .res-top-card{background:var(--accent);border-radius:var(--radius);padding:36px 28px;color:#fff;margin-bottom:20px;}
 .rtc-eyebrow{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;opacity:.7;margin-bottom:10px;text-transform:uppercase;}
@@ -131,10 +131,10 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
 .rtc-desc{font-size:14px;opacity:.88;line-height:1.8;font-weight:300;}
 .rtc-more-btn{margin-top:18px;padding:10px 22px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:8px;color:#fff;font-family:'Noto Serif KR',serif;font-size:13px;cursor:pointer;transition:all .2s;font-weight:600;}
 .rtc-more-btn:hover{background:rgba(255,255,255,.25);}
-
+ 
 .res-section-title{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:10px;}
 .res-section-title::after{content:'';flex:1;height:1px;background:var(--border2);}
-
+ 
 /* SCORE LIST (personality.co style) */
 .score-list-card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:24px;margin-bottom:20px;}
 .score-row{display:flex;align-items:center;gap:14px;margin-bottom:16px;cursor:pointer;transition:opacity .2s;}
@@ -146,7 +146,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
 .score-bar-fill{height:100%;border-radius:5px;width:0%;transition:width 1.1s cubic-bezier(.16,1,.3,1);}
 .score-pct{width:40px;text-align:right;font-family:'DM Mono',monospace;font-size:13px;font-weight:600;flex-shrink:0;}
 .score-arrow{font-size:14px;color:var(--muted);flex-shrink:0;}
-
+ 
 /* DOMAIN DETAIL MODAL */
 .detail-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:300;display:flex;align-items:flex-end;justify-content:center;}
 .detail-modal-overlay.hidden{display:none;}
@@ -167,7 +167,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
 .bullet-dot{width:6px;height:6px;border-radius:50%;background:var(--accent2);flex-shrink:0;margin-top:8px;}
 .bullet-text{font-size:13px;line-height:1.8;font-weight:300;}
 .detail-sub-title{font-size:15px;font-weight:700;margin:20px 0 10px;}
-
+ 
 /* VOICE SPECIAL */
 .voice-card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:24px;margin-bottom:14px;}
 .vc-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;gap:12px;}
@@ -175,20 +175,20 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
 .vc-badge{padding:5px 12px;border-radius:999px;font-family:'DM Mono',monospace;font-size:11px;font-weight:600;background:rgba(224,122,42,.12);color:var(--c-V);flex-shrink:0;}
 .vc-desc{font-size:13px;line-height:1.85;font-weight:300;color:var(--text);}
 .vc-tip{margin-top:14px;padding:12px 14px;border-radius:8px;background:rgba(224,122,42,.07);border-left:3px solid var(--c-V);font-size:12px;line-height:1.75;font-weight:300;}
-
+ 
 /* VOICE FILE ROW */
 .vf-row{background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:18px 20px;display:flex;align-items:center;gap:14px;margin-bottom:20px;}
 .vf-icon{width:40px;height:40px;border-radius:10px;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
 .vf-info{}
 .vf-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--accent2);margin-bottom:3px;text-transform:uppercase;}
 .vf-name{font-size:13px;font-weight:600;}
-
+ 
 .divider{height:1px;background:var(--border2);margin:24px 0;}
-
+ 
 /* DISCLAIMER */
 .disclaimer{background:var(--surface2);border-radius:10px;padding:16px 18px;font-size:12px;color:var(--muted);line-height:1.8;font-weight:300;margin-bottom:20px;}
 .disclaimer strong{color:var(--text);font-weight:600;}
-
+ 
 /* CROSS ANALYSIS CARD */
 .cross-card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);overflow:hidden;margin-bottom:14px;}
 .cross-header{padding:20px 22px 16px;border-bottom:1px solid var(--border);}
@@ -202,7 +202,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
 .cross-tag-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;}
 .cross-tag{padding:4px 12px;border-radius:999px;font-size:11px;font-weight:600;font-family:'DM Mono',monospace;}
 .cross-callout{padding:13px 16px;border-radius:8px;font-size:12px;line-height:1.8;font-weight:300;border-left:3px solid;}
-
+ 
 /* SYNTH CARD */
 .synth-card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);overflow:hidden;margin-bottom:20px;}
 .synth-top{background:linear-gradient(135deg,var(--accent) 0%,#2d6a4f 100%);padding:28px 28px 24px;color:#fff;}
@@ -218,13 +218,13 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
 .synth-section-text{font-size:13px;line-height:1.9;font-weight:300;color:var(--text);}
 .synth-pill-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
 .synth-pill{padding:5px 14px;border-radius:999px;font-size:12px;font-weight:600;font-family:'DM Mono',monospace;}
-
+ 
 /* VOICE TAB BAR */
 .voice-tab-bar{display:flex;gap:6px;margin-bottom:14px;}
 .voice-tab{flex:1;padding:13px 8px;border-radius:12px;font-family:'Noto Serif KR',serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;border:1.5px solid var(--border2);background:var(--surface);color:var(--muted);}
 .voice-tab.active{background:var(--accent);border-color:var(--accent);color:#fff;}
 .voice-panel{}
-
+ 
 /* REC ZONE */
 .rec-zone{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);overflow:hidden;}
 .rec-script{background:var(--surface2);border-bottom:1px solid var(--border);padding:18px 20px;}
@@ -252,12 +252,12 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
 .rec-btn-redo{flex:1;padding:11px;background:var(--surface2);border:1px solid var(--border2);border-radius:9px;font-family:'Noto Serif KR',serif;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .2s;}
 .rec-btn-use{flex:1;padding:11px;background:var(--accent2);border:none;border-radius:9px;font-family:'Noto Serif KR',serif;font-size:13px;font-weight:600;color:#fff;cursor:pointer;transition:all .2s;}
 .rec-btn-use:hover{background:var(--accent);}
-
+ 
 /* GENDER BUTTONS */
 .gender-btn{flex:1;padding:11px 4px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;font-family:'Noto Serif KR',serif;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent;}
 .gender-btn:hover{border-color:var(--accent2);color:var(--accent2);}
 .gender-btn.sel{background:var(--accent);border-color:var(--accent);color:#fff;}
-
+ 
 /* SPECTRUM */
 .freq-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
 .freq-bar-label{width:80px;flex-shrink:0;font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:.5px;text-align:right;}
@@ -265,7 +265,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
 .freq-bar-fill{height:100%;border-radius:4px;transition:width 1.2s cubic-bezier(.16,1,.3,1);min-width:2px;}
 .freq-bar-pct{width:38px;flex-shrink:0;font-family:'DM Mono',monospace;font-size:10px;font-weight:600;text-align:right;}
 .freq-level-tag{width:38px;flex-shrink:0;font-family:'DM Mono',monospace;font-size:9px;text-align:center;padding:2px 0;border-radius:3px;}
-
+ 
 @media(max-width:600px){
   .hero{padding:36px 20px 24px;}
   .wrap{padding:0 16px 60px;}
@@ -275,7 +275,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
 </style>
 </head>
 <body>
-
+ 
 <!-- ═══════════ STEP 1: UPLOAD ═══════════ -->
 <div class="step active" id="step-1">
   <header class="site-header">
@@ -285,7 +285,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
     </div>
     <span class="step-badge">01 / 03</span>
   </header>
-
+ 
   <div class="hero">
     <div class="hero-eyebrow">Voice Matrix · 보이스 매트릭스</div>
     <h1 class="hero-title">당신의 목소리를<br><em>보여주세요</em></h1>
@@ -295,7 +295,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
       아래 자기소개 대본을 읽고 녹음해 주세요.
     </p>
   </div>
-
+ 
   <div class="wrap">
     <div class="card">
       <div class="card-label">참여자 정보</div>
@@ -317,13 +317,13 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
         </div>
       </div>
     </div>
-
+ 
     <!-- 탭 선택 -->
     <div class="voice-tab-bar">
       <button class="voice-tab active" id="vtab-rec" onclick="switchVoiceTab('rec')">🎙 음성 녹음하기</button>
       <button class="voice-tab" id="vtab-file" onclick="switchVoiceTab('file')">📁 파일 선택</button>
     </div>
-
+ 
     <!-- 녹음 탭 -->
     <div id="vpanel-rec" class="voice-panel">
       <div class="rec-zone" id="recZone">
@@ -367,7 +367,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
         </div>
       </div>
     </div>
-
+ 
     <!-- 파일 선택 탭 -->
     <div id="vpanel-file" class="voice-panel" style="display:none">
       <div class="file-zone" id="uploadZone">
@@ -382,13 +382,13 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
         <span class="fb-size" id="fbSize">—</span>
       </div>
     </div>
-
+ 
     <!-- 공통 준비 완료 상태 -->
     <div id="voiceReadyBar" style="display:none;margin-top:12px;background:rgba(64,145,108,.1);border:1px solid rgba(64,145,108,.3);border-radius:10px;padding:12px 16px;display:none;align-items:center;gap:10px">
       <span style="font-size:18px">✅</span>
       <span style="font-size:13px;font-weight:600;color:var(--accent2)" id="voiceReadyText">준비 완료</span>
     </div>
-
+ 
     <!-- 스펙트럼 분석 패널 -->
     <div id="spectrumPanel" style="display:none;margin-top:20px">
       <div class="card" style="padding:24px">
@@ -414,7 +414,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
         </div>
       </div>
     </div>
-
+ 
     <div style="margin-top:16px">
       <button class="btn-primary" id="btnStep1" onclick="goStep2()" disabled>다음 — 성격 검사 시작 →</button>
     </div>
@@ -423,9 +423,9 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
     </p>
   </div>
 </div>
-
-
-
+ 
+ 
+ 
 <!-- ═══════════ STEP 1.5: 음역대 테스트 ═══════════ -->
 <div class="step" id="step-1b">
   <header class="site-header">
@@ -435,7 +435,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
     </div>
     <span class="step-badge">01.5 / 03</span>
   </header>
-
+ 
   <div class="hero">
     <div class="hero-eyebrow">음역대 테스트 · Range Test</div>
     <h1 class="hero-title">음역대를<br><em>테스트해 볼게요</em></h1>
@@ -446,9 +446,9 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
       할 수 없는 음역대는 자연스럽게 넘어가셔도 됩니다.
     </p>
   </div>
-
+ 
   <div class="wrap">
-
+ 
     <!-- 성별 확인 배지 -->
     <div id="rangeGenderBadge" class="card" style="margin-bottom:16px;display:flex;align-items:center;gap:14px;padding:18px 22px">
       <div style="font-size:28px" id="rangeGenderIcon">—</div>
@@ -458,7 +458,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
         <div style="font-size:11px;color:var(--muted);margin-top:2px;font-family:'DM Mono',monospace" id="rangeGenderFile">—</div>
       </div>
     </div>
-
+ 
     <!-- 이어폰 안내 -->
     <div style="background:rgba(212,160,23,.08);border:1px solid rgba(212,160,23,.25);border-radius:10px;padding:13px 16px;display:flex;align-items:center;gap:10px;margin-bottom:16px">
       <span style="font-size:20px">🎧</span>
@@ -466,14 +466,14 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
         <strong style="font-weight:600;color:var(--c-C)">이어폰 착용 권장</strong> — 이어폰을 쓰면 음원과 내 목소리가 완전히 분리되어 더 정확한 데이터가 수집됩니다.
       </div>
     </div>
-
+ 
     <!-- 플레이어 + 동시 녹음 -->
     <div class="card">
       <div class="card-label">🎵 음역대 테스트</div>
-
+ 
       <!-- 숨겨진 오디오 엘리먼트 (재생용 — 녹음에 포함 안됨) -->
       <audio id="rangeAudio" style="display:none"></audio>
-
+ 
       <!-- 진행 바 -->
       <div id="rangeProgressWrap" style="margin-bottom:20px;display:none">
         <div style="display:flex;justify-content:space-between;margin-bottom:6px">
@@ -484,7 +484,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
           <div id="rangeProgressBar" style="height:100%;background:linear-gradient(90deg,var(--accent2),#6ec89e);border-radius:2px;width:0%;transition:width .5s linear"></div>
         </div>
       </div>
-
+ 
       <!-- 컨트롤 -->
       <div style="display:flex;flex-direction:column;align-items:center;padding:8px 0 16px">
         <div class="rec-orb" id="rangeOrb" onclick="toggleRangeRec()">
@@ -499,12 +499,12 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
         <div style="font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin:14px 0 6px" id="rangeStatusText">탭하여 시작</div>
         <div style="font-family:'DM Mono',monospace;font-size:24px;font-weight:300;letter-spacing:2px;color:var(--text)" id="rangeTimer">00:00</div>
       </div>
-
+ 
       <!-- 실시간 파형 (마이크만) -->
       <div class="rec-waveform" id="rangeWaveform" style="margin-bottom:20px">
         <div class="rec-hint" id="rangeHintText">음원에 맞춰 소리를 내주세요</div>
       </div>
-
+ 
       <!-- 완료 후 -->
       <div id="rangeDoneBar" style="display:none">
         <div style="background:rgba(64,145,108,.1);border:1px solid rgba(64,145,108,.3);border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:10px;margin-bottom:14px">
@@ -520,14 +520,14 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
         </div>
       </div>
     </div>
-
+ 
     <div style="margin-top:14px">
       <button class="btn-ghost" style="width:100%;text-align:center;display:block" onclick="skipRange()">음역대 테스트 건너뛰기 →</button>
     </div>
   </div>
 </div>
-
-
+ 
+ 
 <!-- ═══════════ STEP 2: SURVEY ═══════════ -->
 <div class="step" id="step-2">
   <header class="site-header">
@@ -542,22 +542,22 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
     <h1 class="hero-title">나는 어떤<br><em>사람인가요?</em></h1>
     <p class="hero-sub">1(전혀 아님) ~ 5(매우 그렇다) · 총 70문항 · 약 7~10분</p>
   </div>
-
+ 
   <div class="prog-wrap">
     <div class="prog-inner">
       <div class="prog-bar-track"><div class="prog-fill" id="progFill"></div></div>
       <div class="prog-label" id="progLabel">0 / 70</div>
     </div>
   </div>
-
+ 
   <div class="wrap" id="surveyBody" style="padding-top:8px"></div>
-
+ 
   <div style="max-width:680px;margin:0 auto;padding:0 24px 80px">
     <button class="btn-primary" id="btnSubmit" onclick="showConsent()" disabled>결과 확인하기 →</button>
   </div>
 </div>
-
-
+ 
+ 
 <!-- ═══════════ STEP 3: RESULTS ═══════════ -->
 <div class="step" id="step-3">
   <header class="site-header">
@@ -567,7 +567,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
     </div>
     <span class="step-badge">결과</span>
   </header>
-
+ 
   <div class="wrap" style="padding-top:28px">
     <!-- voice file -->
     <div class="vf-row" id="vfRow" style="display:none">
@@ -577,7 +577,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
         <div class="vf-name" id="vfName">—</div>
       </div>
     </div>
-
+ 
     <!-- dominant trait card -->
     <div class="res-top-card" id="resTopCard">
       <div class="rtc-eyebrow">당신의 지배적인 특성</div>
@@ -586,32 +586,32 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
       <div class="rtc-desc" id="rtcDesc">—</div>
       <button class="rtc-more-btn" onclick="openDetailModal(currentDominant)">더 보기 →</button>
     </div>
-
+ 
     <!-- score list -->
     <div class="res-section-title">총 점수</div>
     <div class="score-list-card" id="scoreListCard">
       <!-- injected by JS -->
     </div>
-
+ 
     <!-- 종합 진단 -->
     <div class="res-section-title" style="margin-top:4px">종합 성격 진단</div>
     <div id="synthCard"></div>
-
+ 
     <!-- 음성 × 성격 교차 분석 (음성 파일 있을 때만) -->
     <div id="crossSection" style="display:none">
       <div class="res-section-title" style="margin-top:4px">🔬 음성 샘플 심화 분석</div>
       <div id="crossCard"></div>
     </div>
-
+ 
     <div class="disclaimer">
       <strong>참고 사항</strong> — 이 결과는 Big Five 성격 모델 기반의 자기 보고식 검사 결과입니다. 음성 샘플은 추가 연구 데이터로 수집되며, 아래 결과의 성격 진단과는 직접적인 인과관계가 없습니다. 결과는 참고용으로만 활용하시기 바랍니다.
     </div>
-
+ 
     <div class="res-section-title" style="margin-top:28px">🎙 음성 샘플 분석</div>
     <div id="voiceSpecialSection"></div>
-
+ 
     <div class="divider"></div>
-
+ 
     <!-- 공유 버튼 -->
     <div class="res-section-title">결과 공유하기</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
@@ -626,19 +626,19 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
       <span style="font-size:18px">📤</span> 더 많은 공유 옵션
     </button>
     <div id="copyToast" style="display:none;text-align:center;padding:10px;background:var(--accent);color:#fff;border-radius:8px;font-size:13px;margin-bottom:10px;animation:stepIn .3s ease">🔗 링크가 복사되었습니다!</div>
-
+ 
     <button class="btn-outline" onclick="restart()">처음으로 돌아가기</button>
   </div>
 </div>
-
-
+ 
+ 
 <!-- ═══════════ CONSENT MODAL ═══════════ -->
 <div class="modal-overlay hidden" id="consentModal">
   <div class="modal-sheet">
     <div class="modal-handle"></div>
     <div class="modal-title">수집 및 이용 동의</div>
     <div class="modal-sub">결과를 확인하기 전에 아래 내용을 읽고 동의해 주세요.</div>
-
+ 
     <div class="consent-box">
       <strong>수집하는 정보</strong><br>
       이름, 성격 검사 응답 데이터, 업로드된 음성 파일 (있는 경우)<br><br>
@@ -649,7 +649,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
       <strong>비고</strong><br>
       음성 데이터는 발성 특성 분석 목적으로만 사용되며, 암호화하여 보관합니다.
     </div>
-
+ 
     <div class="consent-check-row" style="background:var(--accent-light);border-radius:10px;padding:12px 14px;margin-bottom:8px">
       <input type="checkbox" id="consent1" onchange="handleMasterConsent(this)">
       <span style="font-weight:600">아래 항목 전체에 동의합니다. <span style="color:var(--accent-btn);font-size:11px">(전체 동의)</span></span>
@@ -668,13 +668,13 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
         <span>검사 결과가 마케팅·교육 자료로 익명 활용될 수 있음에 동의합니다. <span style="color:var(--c-E);font-size:11px">(필수)</span></span>
       </div>
     </div>
-
+ 
     <button class="btn-primary" id="consentConfirmBtn" onclick="confirmConsent()" style="margin-top:16px" disabled>동의하고 결과 보기 →</button>
     <button class="btn-ghost" style="width:100%;text-align:center;margin-top:12px;display:block" onclick="closeConsent()">취소</button>
   </div>
 </div>
-
-
+ 
+ 
 <!-- ═══════════ DOMAIN DETAIL MODAL ═══════════ -->
 <div class="detail-modal-overlay hidden" id="detailModal">
   <div class="detail-sheet">
@@ -694,8 +694,8 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
     <div class="detail-content" id="detailContent">—</div>
   </div>
 </div>
-
-
+ 
+ 
 <script>
 // ═══════════════════════════
 // BIG FIVE IPIP-STYLE QUESTIONS (60문항, 12/domain)
@@ -777,7 +777,7 @@ const BIG5 = [
       '나는 동시에 여러 관심사를 갖고 있는 편이다.',
     ]},
 ];
-
+ 
 const VOICE_SPECIAL = {
   code:'V', name:'보이스 스페셜', color:'var(--c-V)',
   qs:[
@@ -793,7 +793,7 @@ const VOICE_SPECIAL = {
     '나는 테크닉보다 소리에 담긴 진심이 더 중요하다고 믿는다.',
   ]
 };
-
+ 
 // ═══════════════════════════
 // DOMAIN DETAIL COPY — 5단계 섬세 진단
 // ═══════════════════════════
@@ -812,7 +812,7 @@ const levelMeta = {
   low:   { label:'낮음',     emoji:'🟢' },
   vlow:  { label:'매우 낮음',emoji:'🔵' },
 };
-
+ 
 const domainDetails = {
   E: {
     intro: '외향성은 에너지가 어디를 향하는지를 나타냅니다. 사람과 활동에서 에너지를 얻는 정도입니다.',
@@ -990,7 +990,7 @@ const domainDetails = {
     }
   },
 };
-
+ 
 // ═══════════════════════════
 // VOICE SPECIAL INTERPRETATIONS
 // ═══════════════════════════
@@ -1014,7 +1014,7 @@ function getVoiceSpecialInterpretation(pct) {
     traits: ['감정이 소리에 바로 실림', '즉흥 표현이 자연스러움', '목소리가 내면 상태를 그대로 드러냄', '구조보다 흐름을 따라가는 발성']
   };
 }
-
+ 
 // ═══════════════════════════
 // STATE
 // ═══════════════════════════
@@ -1025,12 +1025,12 @@ let voiceFileName = null;
 let currentDominant = 'O';
 let currentDomainDetail = null;
 let currentDetailTab = 0;
-
+ 
 // ═══════════════════════════
 // SPECTRUM ANALYSIS
 // ═══════════════════════════
 let freqBandData = null; // 나중에 성격 결과와 연결용
-
+ 
 const FREQ_BANDS = [
   { label: '저음\n63Hz',    min: 20,    max: 125,   color: '#4a7fe0', desc: '흉성 공명·묵직함' },
   { label: '중저음\n250Hz', min: 125,   max: 500,   color: '#40916c', desc: '말소리 핵심 대역' },
@@ -1039,12 +1039,12 @@ const FREQ_BANDS = [
   { label: '고음\n8kHz',    min: 6000,  max: 12000, color: '#9b59b6', desc: '밝기·배음' },
   { label: '초고음\n16kHz', min: 12000, max: 20000, color: '#e07a2a', desc: '공기감·마찰음' },
 ];
-
+ 
 async function analyzeSpectrum(file) {
   document.getElementById('spectrumPanel').style.display = 'block';
   document.getElementById('spectrumLoading').style.display = 'block';
   document.getElementById('spectrumResult').style.display = 'none';
-
+ 
   try {
     const arrayBuffer = await file.arrayBuffer();
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1054,23 +1054,23 @@ async function analyzeSpectrum(file) {
     const fftSize = 4096;
     const duration = audioBuffer.duration;
     const numSamples = Math.min(60, Math.floor(duration * 6));
-
+ 
     const realAnalyser = audioCtx.createAnalyser();
     realAnalyser.fftSize = fftSize;
     realAnalyser.smoothingTimeConstant = 0.2;
-
+ 
     const offBuffer = audioCtx.createBuffer(1, channelData.length, sampleRate);
     offBuffer.copyToChannel(channelData, 0);
     const offSource = audioCtx.createBufferSource();
     offSource.buffer = offBuffer;
     offSource.connect(realAnalyser);
     realAnalyser.connect(audioCtx.destination);
-
+ 
     const binCount = realAnalyser.frequencyBinCount;
     const freqBinHz = sampleRate / fftSize;
     const snapFreq = new Uint8Array(binCount);
     const snapAccum = new Array(FREQ_BANDS.length).fill(0);
-
+ 
     // 배음 분석용 누적
     let harmonicRichnessAccum = 0;
     // 발음 명확도 분석용 (이전 에너지 추적)
@@ -1078,9 +1078,9 @@ async function analyzeSpectrum(file) {
     const onsetStrengths = [];
     const spectroRows = [];
     let snapCount = 0;
-
+ 
     offSource.start();
-
+ 
     await new Promise(resolve => {
       const snapInterval = Math.max(80, (duration * 1000) / numSamples);
       let elapsed = 0;
@@ -1088,7 +1088,7 @@ async function analyzeSpectrum(file) {
         realAnalyser.getByteFrequencyData(snapFreq);
         const row = Array.from(snapFreq.slice(0, Math.min(binCount, 256)));
         spectroRows.push(row);
-
+ 
         // ── 대역별 에너지 누적
         FREQ_BANDS.forEach((band, bi) => {
           let sum = 0, count = 0;
@@ -1097,7 +1097,7 @@ async function analyzeSpectrum(file) {
           for (let b = minBin; b <= maxBin; b++) { sum += snapFreq[b]; count++; }
           snapAccum[bi] += count > 0 ? sum / count : 0;
         });
-
+ 
         // ── 배음 풍부도 계산
         // 가장 에너지 강한 bin (기음 추정)
         let peakBin = 0, peakVal = 0;
@@ -1117,7 +1117,7 @@ async function analyzeSpectrum(file) {
           const richness = harmonicCount > 0 ? (harmonicSum / harmonicCount) / peakVal : 0;
           harmonicRichnessAccum += richness;
         }
-
+ 
         // ── 발음 명확도 (Onset Detection)
         let rmsSum = 0;
         const rmsRange = Math.min(binCount, 400);
@@ -1126,7 +1126,7 @@ async function analyzeSpectrum(file) {
         const diff = rms - prevRMS;
         if (diff > 0.04) onsetStrengths.push(diff); // 양의 급등 = onset
         prevRMS = rms;
-
+ 
         snapCount++;
         elapsed += snapInterval;
         if (elapsed >= duration * 1000 - snapInterval) {
@@ -1138,39 +1138,39 @@ async function analyzeSpectrum(file) {
       }, snapInterval);
       setTimeout(() => { clearInterval(timer); offSource.stop(); try{audioCtx.close();}catch(e){} resolve(); }, duration * 1000 + 600);
     });
-
+ 
     // ── 최종 지표 계산
     const bandEnergy = snapAccum.map(v =>
       snapCount > 0 ? Math.min(100, Math.round(v / snapCount / 255 * 100 * 1.6)) : 0
     );
     freqBandData = bandEnergy;
-
+ 
     // 배음 풍부도 (0~100)
     const harmonicRichness = Math.min(100, Math.round((harmonicRichnessAccum / Math.max(snapCount, 1)) * 200));
-
+ 
     // 발음 명확도 (onset 평균 강도 → 0~100)
     const articulationScore = onsetStrengths.length > 0
       ? Math.min(100, Math.round((onsetStrengths.reduce((a,b)=>a+b,0) / onsetStrengths.length) * 600))
       : 20;
-
+ 
     // 스펙트럼 밸런스 (저음 vs 고음 비율)
     const lowEnergy = (bandEnergy[0] + bandEnergy[1]) / 2;
     const highEnergy = (bandEnergy[4] + bandEnergy[5]) / 2;
     const spectralBalance = Math.round(highEnergy / Math.max(lowEnergy, 1) * 50); // 50 = 균형
-
+ 
     renderSpectrogram(spectroRows, binCount);
     renderFreqBars(bandEnergy);
     renderAdvancedMetrics(harmonicRichness, articulationScore, spectralBalance);
     renderFreqComment(bandEnergy, harmonicRichness, articulationScore);
-
+ 
     // 전역 저장 (Sheets 업로드 시 활용)
     window._harmonicRichness  = harmonicRichness;
     window._articulationScore = articulationScore;
     window._spectralBalance   = Math.min(100, spectralBalance);
-
+ 
     document.getElementById('spectrumLoading').style.display = 'none';
     document.getElementById('spectrumResult').style.display = 'block';
-
+ 
     // 결과 페이지가 이미 열려있으면 교차 분석 업데이트
     if (document.getElementById('step-3').classList.contains('active')) {
       const scores = {};
@@ -1178,13 +1178,13 @@ async function analyzeSpectrum(file) {
       document.getElementById('crossSection').style.display = 'block';
       buildCrossCard(scores, freqBandData);
     }
-
+ 
   } catch (err) {
     console.error('Spectrum analysis error:', err);
     document.getElementById('spectrumLoading').textContent = '⚠️ 이 파일 형식은 브라우저에서 바로 분석이 어렵습니다. 검사는 계속 진행하실 수 있습니다.';
   }
 }
-
+ 
 function renderSpectrogram(rows, binCount) {
   const canvas = document.getElementById('spectrogramCanvas');
   const dpr = window.devicePixelRatio || 1;
@@ -1196,11 +1196,11 @@ function renderSpectrogram(rows, binCount) {
   canvas.style.height = H + 'px';
   const ctx = canvas.getContext('2d');
   ctx.scale(dpr, dpr);
-
+ 
   if (!rows.length) return;
   const colW = W / rows.length;
   const useBins = Math.min(rows[0].length, 180); // ~8kHz range
-
+ 
   rows.forEach((row, xi) => {
     for (let yi = 0; yi < useBins; yi++) {
       const val = row[yi] / 255;
@@ -1215,7 +1215,7 @@ function renderSpectrogram(rows, binCount) {
       ctx.fillRect(xi * colW, y, colW + 0.5, h + 0.5);
     }
   });
-
+ 
   // Y-axis labels
   const freqLabels = ['0','1k','2k','4k','8k'];
   ctx.fillStyle = 'rgba(255,255,255,0.5)';
@@ -1225,12 +1225,12 @@ function renderSpectrogram(rows, binCount) {
     ctx.fillText(lbl + 'Hz', 4, Math.max(10, y - 2));
   });
 }
-
+ 
 function renderFreqBars(bandEnergy) {
   const container = document.getElementById('freqBars');
   container.innerHTML = '';
   const maxE = Math.max(...bandEnergy, 1);
-
+ 
   bandEnergy.forEach((e, i) => {
     const band = FREQ_BANDS[i];
     const pct = Math.round((e / 100) * 100);
@@ -1252,7 +1252,7 @@ function renderFreqBars(bandEnergy) {
     }, 100 + i * 80);
   });
 }
-
+ 
 const freqPersonalityMap = [
   { // 저음 63Hz
     high: { trait: '외향성(E) · 성실성(C)', comment: '저음역 에너지가 풍부합니다. 목소리에 무게감과 신뢰감이 실려 있으며, 공간을 채우는 흉성 공명이 잘 발달되어 있습니다.' },
@@ -1285,7 +1285,7 @@ const freqPersonalityMap = [
     low:  { trait: '성실성(C)', comment: '초고음역이 차단된 편입니다. 단단하고 집중된 소리이지만, 공기감 훈련으로 소리의 레이어를 더할 수 있습니다.' }
   },
 ];
-
+ 
 function renderAdvancedMetrics(harmonicRichness, articulationScore, spectralBalance) {
   const container = document.getElementById('advancedMetrics');
   container.innerHTML = `
@@ -1312,19 +1312,19 @@ function renderAdvancedMetrics(harmonicRichness, articulationScore, spectralBala
     </div>
   `;
 }
-
+ 
 function renderFreqComment(bandEnergy, harmonicRichness = 50, articulationScore = 50) {
   const container = document.getElementById('freqComment');
   const dominant = bandEnergy.indexOf(Math.max(...bandEnergy));
   const weak = bandEnergy.indexOf(Math.min(...bandEnergy));
-
+ 
   const domBand = FREQ_BANDS[dominant];
   const domLevel = bandEnergy[dominant] >= 55 ? 'high' : bandEnergy[dominant] >= 30 ? 'mid' : 'low';
   const domMap = freqPersonalityMap[dominant][domLevel];
-
+ 
   const weakBand = FREQ_BANDS[weak];
   const weakMap = freqPersonalityMap[weak]['low'];
-
+ 
   container.innerHTML = `
     <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--accent2);text-transform:uppercase;margin-bottom:8px">주파수 성격 코멘트</div>
     <div style="margin-bottom:12px">
@@ -1338,18 +1338,18 @@ function renderFreqComment(bandEnergy, harmonicRichness = 50, articulationScore 
     <div style="margin-top:10px;font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;line-height:1.6">※ 주파수-성격 연결은 현재 연구 데이터 축적 중입니다. 참고용으로만 활용해 주세요.</div>
   `;
 }
-
+ 
 // ═══════════════════════════
 // 음역대 테스트 — 성별 자동 분기 + 마이크 완전 분리
 // ═══════════════════════════
 // MP3는 Web Audio API → 스피커 출력 전용 (녹음 스트림에 포함 안 됨)
 // 마이크는 별도 MediaRecorder 스트림 → 녹음 전용
-
+ 
 const RANGE_MP3 = {
   '남성': '01_발성기초_남자.mp3',
   '여성': '01_발성기초_여자.mp3',
 };
-
+ 
 let rangeAudioCtx = null;
 let rangeSource = null;
 let rangeAudioBuffer = null;
@@ -1362,7 +1362,7 @@ let rangeIsRecording = false;
 let rangeBlob = null;
 let rangeFileName = null;
 let rangeStartedAt = 0;
-
+ 
 function initRangeWaveform() {
   const wf = document.getElementById('rangeWaveform');
   if (!wf) return;
@@ -1381,20 +1381,20 @@ function initRangeWaveform() {
   hint.textContent = '음원에 맞춰 소리를 내주세요';
   wf.appendChild(hint);
 }
-
+ 
 async function loadRangeForGender() {
   const gender = selectedGender;
   const mp3FileName = RANGE_MP3[gender];
-
+ 
   document.getElementById('rangeGenderIcon').textContent = gender === '남성' ? '👨' : '👩';
   document.getElementById('rangeGenderText').textContent = `${gender}용 음역대 테스트`;
   document.getElementById('rangeGenderFile').textContent = mp3FileName || '—';
-
+ 
   if (!mp3FileName) {
     document.getElementById('rangeStatusText').textContent = '성별을 먼저 선택해주세요';
     return;
   }
-
+ 
   // 현재 페이지 기준 상대 경로 자동 계산 (로컬/GitHub Pages 모두 대응)
   const baseUrl = location.href.replace(/\/[^\/]*$/, '/');
   const candidates = [
@@ -1402,9 +1402,9 @@ async function loadRangeForGender() {
     baseUrl + mp3FileName,          // 현재 폴더 기준
     '/' + mp3FileName,              // 루트 기준
   ];
-
+ 
   document.getElementById('rangeStatusText').textContent = '음원 로딩 중...';
-
+ 
   let loaded = false;
   for (const url of candidates) {
     try {
@@ -1423,7 +1423,7 @@ async function loadRangeForGender() {
       break;
     } catch(e) { continue; }
   }
-
+ 
   if (!loaded) {
     console.warn('Range MP3 로드 실패 — 경로들:', candidates);
     document.getElementById('rangeStatusText').textContent = '음원 준비 중 — 잠시 후 다시 시도해주세요';
@@ -1432,11 +1432,11 @@ async function loadRangeForGender() {
     setTimeout(() => loadRangeForGender(), 5000);
   }
 }
-
+ 
 function fmt(sec) {
   return `${Math.floor(sec/60)}:${String(Math.floor(sec%60)).padStart(2,'0')}`;
 }
-
+ 
 async function toggleRangeRec() {
   if (rangeIsRecording) {
     stopRangeRec(false);
@@ -1444,7 +1444,7 @@ async function toggleRangeRec() {
     await startRangeRec();
   }
 }
-
+ 
 async function startRangeRec() {
   if (!rangeAudioBuffer) {
     skipRange(); return;
@@ -1460,7 +1460,7 @@ async function startRangeRec() {
         autoGainControl: false,
       }
     });
-
+ 
     const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
       ? 'audio/webm;codecs=opus' : 'audio/webm';
     rangeMediaRecorder = new MediaRecorder(micStream, { mimeType });
@@ -1474,7 +1474,7 @@ async function startRangeRec() {
       showRangeDone();
     };
     rangeMediaRecorder.start(100);
-
+ 
     // ── MP3 재생 (AudioContext → 스피커만 — 마이크 스트림과 완전 분리)
     if (rangeSource) { try { rangeSource.stop(); } catch(e) {} }
     rangeSource = rangeAudioCtx.createBufferSource();
@@ -1482,15 +1482,15 @@ async function startRangeRec() {
     rangeSource.connect(rangeAudioCtx.destination); // 스피커로만
     rangeSource.start(0);
     rangeStartedAt = rangeAudioCtx.currentTime;
-
+ 
     // 음원 종료 → 자동 녹음 중지
     rangeSource.onended = () => {
       if (rangeIsRecording) stopRangeRec(true);
     };
-
+ 
     rangeIsRecording = true;
     rangeSeconds = 0;
-
+ 
     // UI
     document.getElementById('rangeOrbInner').classList.add('recording');
     document.getElementById('rangeRingFill').style.stroke = '#c04a7a';
@@ -1498,9 +1498,9 @@ async function startRangeRec() {
     document.getElementById('rangeStatusText').textContent = '녹음 중 · 음원 재생 중';
     document.getElementById('rangeDoneBar').style.display = 'none';
     document.getElementById('rangeHintText') && (document.getElementById('rangeHintText').style.display = 'none');
-
+ 
     const dur = rangeAudioBuffer.duration;
-
+ 
     // 타이머 + 파형
     rangeTimerInterval = setInterval(() => {
       rangeSeconds++;
@@ -1508,7 +1508,7 @@ async function startRangeRec() {
         `${String(Math.floor(rangeSeconds/60)).padStart(2,'0')}:${String(rangeSeconds%60).padStart(2,'0')}`;
       rangeAnimateWaveform();
     }, 1000);
-
+ 
     // 진행 바
     rangeProgressInterval = setInterval(() => {
       const elapsed = rangeAudioCtx.currentTime - rangeStartedAt;
@@ -1516,7 +1516,7 @@ async function startRangeRec() {
       document.getElementById('rangeProgressBar').style.width = pct + '%';
       document.getElementById('rangeProgressLabel').textContent = `${fmt(elapsed)} / ${fmt(dur)}`;
     }, 300);
-
+ 
     // 링 애니메이션
     const ringInterval = setInterval(() => {
       if (!rangeIsRecording) { clearInterval(ringInterval); return; }
@@ -1524,12 +1524,12 @@ async function startRangeRec() {
       const offset = 301.6 * (1 - Math.min(elapsed / dur, 1));
       document.getElementById('rangeRingFill').style.strokeDashoffset = offset;
     }, 500);
-
+ 
   } catch (err) {
     alert('마이크 접근 권한이 필요합니다.\n브라우저 설정에서 마이크를 허용해 주세요.');
   }
 }
-
+ 
 function stopRangeRec(auto) {
   if (!rangeIsRecording) return;
   clearInterval(rangeTimerInterval);
@@ -1542,13 +1542,13 @@ function stopRangeRec(auto) {
   document.getElementById('rangeOrbIcon').textContent = '✓';
   document.getElementById('rangeStatusText').textContent = auto ? '완료!' : '중지됨';
 }
-
+ 
 function showRangeDone() {
   const sec = rangeSeconds;
   document.getElementById('rangeDoneDesc').textContent =
     `${selectedGender}용 음역대 녹음 완료 · ${Math.floor(sec/60)}분 ${sec%60}초`;
   document.getElementById('rangeDoneBar').style.display = 'block';
-
+ 
   // 음역대 녹음 즉시 Drive 업로드 (백그라운드)
   if (rangeBlob && APPS_SCRIPT_URL) {
     const name = document.getElementById('user-name').value.trim() || '이름없음';
@@ -1560,7 +1560,7 @@ function showRangeDone() {
     });
   }
 }
-
+ 
 function redoRange() {
   rangeBlob = null; rangeSeconds = 0; rangeIsRecording = false;
   clearInterval(rangeTimerInterval); clearInterval(rangeProgressInterval);
@@ -1576,7 +1576,7 @@ function redoRange() {
   const hint = document.getElementById('rangeHintText');
   if (hint) hint.style.display = '';
 }
-
+ 
 function rangeAnimateWaveform() {
   document.querySelectorAll('#rangeWaveform .rec-wv-bar').forEach(bar => {
     bar.style.height = (Math.random() * 38 + 4) + 'px';
@@ -1588,13 +1588,13 @@ function stopRangeWaveformAnim() {
     bar.style.height = '4px'; bar.style.opacity = '0.3';
   });
 }
-
+ 
 function skipRange() { goStep2Survey(); }
 function goStep2Survey() {
   switchStep('step-2');
   if (!document.getElementById('surveyBody').children.length) buildSurvey();
 }
-
+ 
 // ═══════════════════════════
 // VOICE TAB + RECORDER
 // ═══════════════════════════
@@ -1606,14 +1606,14 @@ let recSeconds = 0;
 let recBlob = null;
 let recIsRecording = false;
 const REC_MAX = 120; // 2분
-
+ 
 function switchVoiceTab(tab) {
   ['rec','file'].forEach(t => {
     document.getElementById(`vtab-${t}`).classList.toggle('active', t === tab);
     document.getElementById(`vpanel-${t}`).style.display = t === tab ? 'block' : 'none';
   });
 }
-
+ 
 // 녹음 파형 바 생성
 (function initWaveform() {
   const wf = document.getElementById('recWaveform');
@@ -1627,12 +1627,12 @@ function switchVoiceTab(tab) {
     wf.appendChild(bar);
   }
 })();
-
+ 
 async function toggleRec() {
   if (recIsRecording) stopRec();
   else await startRec();
 }
-
+ 
 async function startRec() {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
@@ -1654,7 +1654,7 @@ async function startRec() {
     recMediaRecorder.start(100);
     recIsRecording = true;
     recSeconds = 0;
-
+ 
     // UI 전환
     document.getElementById('recOrbInner').classList.add('recording');
     document.getElementById('recRingFill').classList.add('recording');
@@ -1662,7 +1662,7 @@ async function startRec() {
     document.getElementById('recStatus').textContent = '녹음 중...';
     document.getElementById('recDoneBar').style.display = 'none';
     setReadyBar(false);
-
+ 
     // 타이머
     recTimerInterval = setInterval(() => {
       recSeconds++;
@@ -1677,24 +1677,24 @@ async function startRec() {
       animateWaveform();
       if (recSeconds >= REC_MAX) stopRec();
     }, 1000);
-
+ 
   } catch (err) {
     alert('마이크 접근 권한이 필요합니다.\n브라우저 설정에서 마이크를 허용해 주세요.');
   }
 }
-
+ 
 function stopRec() {
   if (!recMediaRecorder || !recIsRecording) return;
   recMediaRecorder.stop();
   recIsRecording = false;
   clearInterval(recTimerInterval);
-
+ 
   document.getElementById('recOrbInner').classList.remove('recording');
   document.getElementById('recRingFill').classList.remove('recording');
   document.getElementById('recOrbIcon').textContent = '✓';
   document.getElementById('recStatus').textContent = '녹음 완료';
 }
-
+ 
 function redoRec() {
   recBlob = null;
   recIsRecording = false;
@@ -1709,7 +1709,7 @@ function redoRec() {
   setReadyBar(false);
   checkStep1Ready();
 }
-
+ 
 function useRec() {
   if (!recBlob) return;
   voiceFileName = `녹음_${new Date().toLocaleDateString('ko-KR').replace(/\. /g,'-').replace('.','')}.webm`;
@@ -1720,13 +1720,13 @@ function useRec() {
   // 잠깐 후 음역대 테스트로 이동
   setTimeout(() => goStep1b(), 600);
 }
-
+ 
 function skipVoice() {
   voiceFileName = null;
   document.getElementById('btnStep1').disabled = false;
   goStep1b();
 }
-
+ 
 function animateWaveform() {
   document.querySelectorAll('.rec-wv-bar').forEach(bar => {
     bar.style.height = (Math.random() * 36 + 4) + 'px';
@@ -1739,7 +1739,7 @@ function stopWaveformAnim() {
     bar.style.opacity = '0.3';
   });
 }
-
+ 
 function setReadyBar(show, text) {
   const bar = document.getElementById('voiceReadyBar');
   if (show) {
@@ -1749,18 +1749,18 @@ function setReadyBar(show, text) {
     bar.style.display = 'none';
   }
 }
-
+ 
 function checkStep1Ready() {
   const hasVoice = !!voiceFileName;
   document.getElementById('btnStep1').disabled = !hasVoice;
 }
-
+ 
 function selectGender(g) {
   selectedGender = g;
   document.getElementById('gender-m').classList.toggle('sel', g === '남성');
   document.getElementById('gender-f').classList.toggle('sel', g === '여성');
 }
-
+ 
 function handleFile(input) {
   if (!input.files.length) return;
   const f = input.files[0];
@@ -1776,28 +1776,28 @@ function handleFile(input) {
   analyzeSpectrum(f);
   setTimeout(() => goStep1b(), 800);
 }
-
+ 
 function goStep1b() {
   switchStep('step-1b');
   initRangeWaveform();
   // 성별에 따라 음원 자동 로드
   loadRangeForGender();
 }
-
+ 
 function skipRange() {
   goStep2Survey();
 }
-
+ 
 function goStep2() {
   // 음역대 테스트에서 성격 검사로
   goStep2Survey();
 }
-
+ 
 function goStep2Survey() {
   switchStep('step-2');
   if (!document.getElementById('surveyBody').children.length) buildSurvey();
 }
-
+ 
 function goStep2() {
   const name = document.getElementById('user-name').value.trim();
   if (!name) { alert('이름을 입력해 주세요'); return; }
@@ -1807,7 +1807,7 @@ function goStep2() {
   switchStep('step-2');
   if (!document.getElementById('surveyBody').children.length) buildSurvey();
 }
-
+ 
 // ═══════════════════════════
 // BUILD SURVEY
 // ═══════════════════════════
@@ -1834,14 +1834,14 @@ function buildSurvey() {
     body.appendChild(makeQCard(key, globalN, 'V', q));
   });
 }
-
+ 
 function makeQCard(key, n, code, q) {
   const div = document.createElement('div');
   div.className = 'q-card'; div.id = `qc-${key}`;
   div.innerHTML = `<div class="q-num">Q${String(n).padStart(2,'0')} · ${code}</div><div class="q-text">${q}</div><div class="lk-row" id="lk-${key}">${[1,2,3,4,5].map(v=>`<button class="lk-btn" onclick="pick('${key}',${v},this)">${v}</button>`).join('')}</div><div class="lk-labs"><span class="lk-lab">전혀 아님</span><span class="lk-lab">매우 그렇다</span></div>`;
   return div;
 }
-
+ 
 function pick(key, val, btn) {
   const was = answers[key] !== undefined;
   answers[key] = val;
@@ -1856,7 +1856,7 @@ function updateProg() {
   document.getElementById('progLabel').textContent = `${totalAnswered} / ${totalQ}`;
   document.getElementById('btnSubmit').disabled = totalAnswered < totalQ;
 }
-
+ 
 // ═══════════════════════════
 // CONSENT
 // ═══════════════════════════
@@ -1884,7 +1884,7 @@ function confirmConsent() {
   switchStep('step-3');
   setTimeout(animateBars, 300);
 }
-
+ 
 // ═══════════════════════════
 // RESULTS
 // ═══════════════════════════
@@ -1893,32 +1893,32 @@ function calcScore(code) {
   let sum = 0; qs.forEach((_,i)=>{ sum += answers[`${code}_${i}`]||0; });
   return Math.round((sum/(qs.length*5))*100);
 }
-
+ 
 function buildResults() {
   const name = document.getElementById('user-name').value.trim();
   const scores = {};
   BIG5.forEach(d=>{ scores[d.code]=calcScore(d.code); });
   scores.V = calcScore('V');
-
+ 
   // voice file
   if (voiceFileName) {
     document.getElementById('vfRow').style.display='flex';
     document.getElementById('vfName').textContent = voiceFileName;
   }
-
+ 
   // dominant
   const big5scores = BIG5.map(d=>({code:d.code,name:d.name,score:scores[d.code],color:d.color}));
   big5scores.sort((a,b)=>b.score-a.score);
   const dom = big5scores[0];
   currentDominant = dom.code;
-
+ 
   document.getElementById('rtcDominant').textContent = `당신의 지배적인 특성`;
   document.getElementById('rtcType').textContent = dom.name;
   document.getElementById('rtcDesc').textContent = getDomainOneLiner(dom.code, dom.score);
   document.getElementById('resTopCard').style.background = dom.color.replace('var(--c-','').replace(')','');
   const colorMap = { E:'var(--c-E)', C:'var(--c-C)', A:'var(--c-A)', N:'var(--c-N)', O:'var(--c-O)' };
   document.getElementById('resTopCard').style.background = colorMap[dom.code];
-
+ 
   // score list
   const scoreListCard = document.getElementById('scoreListCard');
   scoreListCard.innerHTML = '';
@@ -1938,32 +1938,32 @@ function buildResults() {
     `;
     scoreListCard.appendChild(row);
   });
-
+ 
   // voice special
   buildVoiceSpecial(scores.V);
-
+ 
   // 종합 진단
   buildSynthCard(scores, name);
-
+ 
   // 음성 × 성격 교차 분석 (음성 파일 + 스펙트럼 데이터 있을 때)
   if (voiceFileName && freqBandData) {
     document.getElementById('crossSection').style.display = 'block';
     buildCrossCard(scores, freqBandData);
   }
-
+ 
   // Google Sheets 저장
   saveToSheets(scores, name);
 }
-
+ 
 // ═══════════════════════════
 // GOOGLE DRIVE + SHEETS 저장
 // ═══════════════════════════
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzl5QU7_oOSlnslT1oWRtNJ9OP6aOsx97XQwXeVNtUc97q_Uj9qpuEGTelvjtCqV_UcZA/exec';
-
+ 
 // 전역 Drive 파일 URL (업로드 완료 후 채워짐)
 let introFileUrl  = '';  // 자기소개 녹음
 let rangeFileUrl  = '';  // 음역대 테스트 녹음
-
+ 
 // Blob → Base64 변환
 function blobToBase64(blob) {
   return new Promise((resolve, reject) => {
@@ -1973,7 +1973,7 @@ function blobToBase64(blob) {
     reader.readAsDataURL(blob);
   });
 }
-
+ 
 // 음성 파일 Drive 업로드
 async function uploadAudioToDrive(blob, fileName, category) {
   if (!blob) return '';
@@ -1982,7 +1982,7 @@ async function uploadAudioToDrive(blob, fileName, category) {
     const name   = document.getElementById('user-name').value.trim();
     const date   = new Date().toLocaleDateString('ko-KR').replace(/\. /g,'-').replace('.','');
     const finalName = `${date}_${name}_${selectedGender || ''}_${category === 'range' ? '음역대' : '자기소개'}.webm`;
-
+ 
     const res = await fetch(APPS_SCRIPT_URL, {
       method : 'POST',
       body   : JSON.stringify({
@@ -2003,7 +2003,7 @@ async function uploadAudioToDrive(blob, fileName, category) {
     return '';
   }
 }
-
+ 
 // 성격 검사 결과 + 음성 링크 Sheets 저장
 async function saveToSheets(scores, name) {
   showSaveStatus('saving');
@@ -2015,11 +2015,11 @@ async function saveToSheets(scores, name) {
     ]);
     introFileUrl = iUrl;
     rangeFileUrl = rUrl;
-
+ 
     // 2. Sheets 저장
     const syn        = getSynthType(scores);
     const matchScore = (voiceFileName && freqBandData) ? calcMatchScore(scores, freqBandData) : null;
-
+ 
     const payload = {
       type: 'sheet',
       name,
@@ -2041,7 +2041,7 @@ async function saveToSheets(scores, name) {
         marketing: document.getElementById('consent4')?.checked || false,
       },
     };
-
+ 
     const res  = await fetch(APPS_SCRIPT_URL, {
       method : 'POST',
       body   : JSON.stringify(payload),
@@ -2050,13 +2050,13 @@ async function saveToSheets(scores, name) {
     const json = await res.json();
     json.success ? showSaveStatus('success') : showSaveStatus('error');
     console.log('[터칭보이스] 저장 완료:', json);
-
+ 
   } catch (err) {
     showSaveStatus('error');
     console.error('[터칭보이스] 저장 오류:', err);
   }
 }
-
+ 
 function showSaveStatus(state) {
   let el = document.getElementById('saveStatusBar');
   if (!el) {
@@ -2076,18 +2076,18 @@ function showSaveStatus(state) {
   el.style.display = 'flex';
   if (state !== 'saving') setTimeout(() => { el.style.display = 'none'; }, 5000);
 }
-
+ 
 // ═══════════════════════════
 // 음성 × 성격 교차 분석
 // ═══════════════════════════
 // freqBands: [저음63, 중저음250, 중음1k, 고중음4k, 고음8k, 초고음16k]
 // scores: { E, C, A, N, O }
-
+ 
 function buildCrossCard(scores, freq) {
   const insights = getCrossInsights(scores, freq);
   const container = document.getElementById('crossCard');
   container.innerHTML = '';
-
+ 
   // 일치도 계산 (성격 예측과 음성 실제의 방향성 일치 여부)
   const matchScore = calcMatchScore(scores, freq);
   const matchLabel = matchScore >= 75 ? '높은 일치도' : matchScore >= 50 ? '보통 일치도' : '흥미로운 불일치';
@@ -2097,7 +2097,7 @@ function buildCrossCard(scores, freq) {
     : matchScore >= 50
     ? '성격과 목소리가 대체로 맞지만 일부 흥미로운 차이가 있습니다.'
     : '성격 검사 결과와 실제 목소리 사이에 흥미로운 차이가 있습니다. 내면과 표현이 다른 유형일 수 있습니다.';
-
+ 
   // 총괄 카드
   const summary = document.createElement('div');
   summary.className = 'cross-card';
@@ -2118,7 +2118,7 @@ function buildCrossCard(scores, freq) {
     </div>
   `;
   container.appendChild(summary);
-
+ 
   // 개별 교차 인사이트 카드들
   insights.forEach((ins, i) => {
     const card = document.createElement('div');
@@ -2144,14 +2144,14 @@ function buildCrossCard(scores, freq) {
     `;
     container.appendChild(card);
   });
-
+ 
   // 면책 문구
   const note = document.createElement('div');
   note.style.cssText = 'padding:12px 16px;background:var(--surface2);border-radius:8px;font-size:11px;color:var(--muted);line-height:1.75;font-family:DM Mono,monospace;margin-top:4px;';
   note.innerHTML = '※ 음성 샘플 분석은 터칭보이스의 연구 데이터 수집 목적입니다. 위 성격 검사 결과와 음성 분석은 현재 독립적으로 해석하시기 바랍니다. 추후 데이터가 충분히 축적되면 상관관계 분석 결과를 공개할 예정입니다.';
   container.appendChild(note);
 }
-
+ 
 function calcMatchScore(S, freq) {
   // 각 도메인의 이론적 주파수 방향성과 실제 음성 에너지를 비교
   // E ↔ 4kHz(고중음), C ↔ 250Hz(중저음) 안정도, A ↔ 어택 부드러움(저중음), N ↔ 불규칙성(역방향), O ↔ 8kHz(고음)
@@ -2173,12 +2173,12 @@ function calcMatchScore(S, freq) {
   });
   return Math.round((totalMatch / pairs.length) * 100);
 }
-
+ 
 function getCrossInsights(S, freq) {
   // freq: [저63, 중저250, 중1k, 고중4k, 고8k, 초고16k]
   const F = { bass: freq[0], midLow: freq[1], mid: freq[2], hiMid: freq[3], hi: freq[4], air: freq[5] };
   const insights = [];
-
+ 
   // 1. 외향성 vs 4kHz 투사 에너지
   (() => {
     const eHigh = S.E >= 60, fHigh = F.hiMid >= 38;
@@ -2215,7 +2215,7 @@ function getCrossInsights(S, freq) {
       action: '🎯 마이크를 가까이 쓰는 인티밋 보컬 스타일이 당신에게 잘 어울립니다. 작은 공간에서의 퍼포먼스가 최고의 효과를 냅니다.'
     });
   })();
-
+ 
   // 2. 성실성 vs 중저음 안정도
   (() => {
     const cHigh = S.C >= 60, fHigh = F.midLow >= 35;
@@ -2252,7 +2252,7 @@ function getCrossInsights(S, freq) {
       action: '🎯 짧은 스케일 연습(5분/일)으로 소리의 뿌리를 만들어 보세요. 자유로움 위에 기반이 생기면 표현의 폭이 크게 넓어집니다.'
     });
   })();
-
+ 
   // 3. 신경성 vs 고주파 안정성 (N 높으면 떨림 가능성)
   (() => {
     const nHigh = S.N >= 55, airHigh = F.air >= 30;
@@ -2281,7 +2281,7 @@ function getCrossInsights(S, freq) {
       action: '🎯 이 안정감을 바탕으로 의도적인 감정 표현 연습을 더하면 소리에 더 많은 색채가 생깁니다.'
     });
   })();
-
+ 
   // 4. 개방성 vs 고음 배음
   (() => {
     const oHigh = S.O >= 60, hiHigh = F.hi >= 35;
@@ -2310,7 +2310,7 @@ function getCrossInsights(S, freq) {
       action: '🎯 일부러 "틀린 음"을 내보는 연습으로 소리의 경계를 조금씩 넓혀보세요. 완성도에 다양성이 더해지면 강력해집니다.'
     });
   })();
-
+ 
   // 5. 우호성 vs 저음 따뜻함
   (() => {
     const aHigh = S.A >= 60, bassHigh = F.bass >= 30;
@@ -2339,10 +2339,10 @@ function getCrossInsights(S, freq) {
       action: '🎯 흉성 공명 훈련으로 저음역을 더하면 소리에 무게감과 신뢰감이 추가됩니다. 밝음에 깊이가 더해지는 것입니다.'
     });
   })();
-
+ 
   return insights.slice(0, 4); // 최대 4개 인사이트
 }
-
+ 
 // ═══════════════════════════
 // 종합 성격 진단 로직
 // ═══════════════════════════
@@ -2350,7 +2350,7 @@ function buildSynthCard(scores, name) {
   const S = scores; // E, C, A, N, O
   const syn = getSynthType(S);
   const container = document.getElementById('synthCard');
-
+ 
   container.innerHTML = `
     <div class="synth-card">
       <div class="synth-top" style="background:linear-gradient(135deg,${syn.color1} 0%,${syn.color2} 100%)">
@@ -2397,10 +2397,10 @@ function buildSynthCard(scores, name) {
     </div>
   `;
 }
-
+ 
 function getSynthType(S) {
   const E=S.E, C=S.C, A=S.A, N=S.N, O=S.O;
-
+ 
   // 패턴 매칭 — 가장 두드러진 조합 기준으로 28가지 유형
   // E높음 계열
   if (E>=70 && O>=70 && A>=65) return {
@@ -2413,7 +2413,7 @@ function getSynthType(S) {
     growthPath:'에너지가 많은 만큼 방향이 흩어지기 쉽습니다. 하나에 깊이 집중하는 훈련으로 강점을 더 날카롭게 다듬어 보세요.',
     color1:'#e05c3a', color2:'#d4a017'
   };
-
+ 
   if (E>=70 && O>=70 && A<50) return {
     typeName:'선구적 개척자', typeDesc:'에너지가 넘치고 새로운 것을 향해 돌진합니다. 개성이 강하고 기존 틀을 깨는 것을 즐깁니다.',
     tags:['독창적','주도적','에너지형','실험가'],
@@ -2424,7 +2424,7 @@ function getSynthType(S) {
     growthPath:'독립적인 성향이 강해 협력에서 마찰이 생길 수 있습니다. 공감 어린 경청을 의식적으로 연습하면 더 큰 영향력을 발휘할 수 있습니다.',
     color1:'#e05c3a', color2:'#9b59b6'
   };
-
+ 
   if (E>=70 && C>=65 && N<45) return {
     typeName:'완성된 퍼포머', typeDesc:'에너지와 체계가 결합된 가장 안정적인 무대형 인물입니다.',
     tags:['퍼포먼스형','계획적','에너지형','안정적'],
@@ -2435,7 +2435,7 @@ function getSynthType(S) {
     growthPath:'완성도 높은 퍼포먼스 뒤에 "통제되지 않은 감정의 한 순간"을 허용해 보세요. 예측 불가능한 진정성이 청중의 가슴을 더 깊이 건드립니다.',
     color1:'#e05c3a', color2:'#d4a017'
   };
-
+ 
   if (E>=65 && A>=65 && N>=55) return {
     typeName:'감성적 연결가', typeDesc:'따뜻한 에너지와 깊은 감정이 결합된, 사람의 마음을 여는 유형입니다.',
     tags:['공감형','감성적','사교적','진정성'],
@@ -2446,7 +2446,7 @@ function getSynthType(S) {
     growthPath:'감정이 너무 강할 때 목소리를 잃지 않도록 호흡 지지 훈련이 중요합니다. 감정의 그릇을 키우는 것이 핵심입니다.',
     color1:'#3a86c8', color2:'#c04a7a'
   };
-
+ 
   // C높음 계열
   if (C>=70 && A>=65 && E<50) return {
     typeName:'신뢰의 장인', typeDesc:'묵묵히 실력을 쌓고 따뜻함으로 사람을 대하는, 진정한 장인 유형입니다.',
@@ -2458,7 +2458,7 @@ function getSynthType(S) {
     growthPath:'자신을 더 표현하는 연습이 필요합니다. 실력은 충분합니다 — 이제는 자신을 드러내는 용기를 키워보세요.',
     color1:'#d4a017', color2:'#3a86c8'
   };
-
+ 
   if (C>=70 && N<40) return {
     typeName:'안정의 기둥', typeDesc:'흔들리지 않는 기반 위에 서 있는, 누구에게나 의지가 되는 유형입니다.',
     tags:['안정형','신뢰감','계획적','일관성'],
@@ -2469,7 +2469,7 @@ function getSynthType(S) {
     growthPath:'감정 표현의 폭을 의도적으로 넓히는 연습이 필요합니다. 테크닉과 감정이 만나는 지점에서 당신의 소리는 완성됩니다.',
     color1:'#d4a017', color2:'#40916c'
   };
-
+ 
   // O높음 계열
   if (O>=70 && N>=55 && E<55) return {
     typeName:'내면의 탐험가', typeDesc:'조용하지만 깊이 있는 세계를 가진, 예술적 감수성이 넘치는 유형입니다.',
@@ -2481,7 +2481,7 @@ function getSynthType(S) {
     growthPath:'내면의 세계를 외부로 표현하는 용기가 필요합니다. 무대 경험을 꾸준히 쌓아 자신의 소리가 청중에게 닿는 경험을 반복하세요.',
     color1:'#27ae60', color2:'#9b59b6'
   };
-
+ 
   if (O>=70 && E>=60 && N<50) return {
     typeName:'창의적 탐험가', typeDesc:'호기심과 에너지가 결합된, 매 순간 새로운 것을 발견하는 유형입니다.',
     tags:['창의적','실험적','에너지형','개방적'],
@@ -2492,7 +2492,7 @@ function getSynthType(S) {
     growthPath:'너무 많은 방향으로 에너지가 분산될 수 있습니다. 하나의 프로젝트를 완성하는 경험을 반복하며 깊이를 더해보세요.',
     color1:'#27ae60', color2:'#e05c3a'
   };
-
+ 
   // A높음 계열
   if (A>=70 && N>=55 && O>=55) return {
     typeName:'공감하는 예술가', typeDesc:'타인의 감정을 소리로 담아내는 타고난 감성 예술가입니다.',
@@ -2504,7 +2504,7 @@ function getSynthType(S) {
     growthPath:'자신의 감정도 충분히 표현할 수 있는 공간을 만드세요. 타인을 위한 음악과 자신을 위한 음악 사이의 균형이 중요합니다.',
     color1:'#3a86c8', color2:'#27ae60'
   };
-
+ 
   if (A>=70 && N<45 && E<55) return {
     typeName:'조용한 치유자', typeDesc:'말 없이도 따뜻함으로 주변을 채우는, 깊은 신뢰를 주는 유형입니다.',
     tags:['치유형','안정적','따뜻함','신뢰'],
@@ -2515,7 +2515,7 @@ function getSynthType(S) {
     growthPath:'자신을 더 표현하는 용기를 키워보세요. 이미 충분히 따뜻합니다 — 이제는 그 따뜻함을 더 큰 무대에서 나눌 때입니다.',
     color1:'#3a86c8', color2:'#40916c'
   };
-
+ 
   // N높음 계열
   if (N>=70 && O>=60) return {
     typeName:'날것의 예술혼', typeDesc:'감정과 창의성이 폭발하는, 가장 진정성 있는 예술가 유형입니다.',
@@ -2527,7 +2527,7 @@ function getSynthType(S) {
     growthPath:'이 강렬한 에너지를 담을 기술적 토대가 필요합니다. 호흡 훈련으로 감정을 더 오래, 더 안정적으로 표현할 수 있는 그릇을 키워보세요.',
     color1:'#c04a7a', color2:'#27ae60'
   };
-
+ 
   if (N>=65 && A>=60 && O<50) return {
     typeName:'따뜻한 감수성인', typeDesc:'예민한 감각과 따뜻한 마음이 결합된, 깊이 공감하는 유형입니다.',
     tags:['감수성','공감형','감정풍부','따뜻함'],
@@ -2538,7 +2538,7 @@ function getSynthType(S) {
     growthPath:'자기 자신을 돌보는 시간이 필요합니다. 너무 많이 공감하면 소진될 수 있습니다. 경계를 지키면서 감수성을 유지하는 균형을 찾아보세요.',
     color1:'#c04a7a', color2:'#3a86c8'
   };
-
+ 
   // 균형형
   if (Math.max(E,C,A,N,O) - Math.min(E,C,A,N,O) < 25) return {
     typeName:'균형 잡힌 다재다능인', typeDesc:'어느 한쪽으로 치우치지 않은 유연하고 적응력 강한 유형입니다.',
@@ -2550,7 +2550,7 @@ function getSynthType(S) {
     growthPath:'한 가지 방향을 깊이 탐구하는 경험도 필요합니다. 넓은 기반 위에 하나의 뾰족한 강점을 더하면 더욱 강력해집니다.',
     color1:'#40916c', color2:'#2d6a4f'
   };
-
+ 
   // 기본 fallback — 가장 높은 도메인 기반
   const dominated = ['E','C','A','N','O'].sort((a,b)=>S[b]-S[a])[0];
   const fallbacks = {
@@ -2562,7 +2562,7 @@ function getSynthType(S) {
   };
   return fallbacks[dominated];
 }
-
+ 
 function getDomainOneLiner(code, pct) {
   const level = pct >= 65 ? 'high' : pct >= 40 ? 'mid' : 'low';
   const map = {
@@ -2574,7 +2574,7 @@ function getDomainOneLiner(code, pct) {
   };
   return map[code][level];
 }
-
+ 
 function animateBars() {
   const colorMap = { E:'var(--c-E)', C:'var(--c-C)', A:'var(--c-A)', N:'var(--c-N)', O:'var(--c-O)' };
   BIG5.forEach(d=>{
@@ -2582,24 +2582,58 @@ function animateBars() {
     if (fill) fill.style.width = calcScore(d.code) + '%';
   });
 }
-
+ 
 // ═══════════════════════════
 // SIMILAR ARTIST MAP
 // ═══════════════════════════
 const artistMap = {
-  // [E_level][O_level][A_level] → artists
-  // key: dominant trait + voice type
-  E_high_O_high: { kr: ['지코', '박재범', 'G-DRAGON', '청하'], intl: ['Bruno Mars', 'Justin Timberlake', 'Ariana Grande'] },
-  E_high_O_low:  { kr: ['이찬원', '임영웅', '나훈아', '박현빈'], intl: ['Ed Sheeran', 'Sam Smith', 'Adele'] },
-  E_low_O_high:  { kr: ['아이유', '빈지노', '우원재', 'Dean'], intl: ['Frank Ocean', 'Billie Eilish', 'Lana Del Rey'] },
-  E_low_O_low:   { kr: ['성시경', '조용필', '이소라', '김광석'], intl: ['Leonard Cohen', 'Norah Jones', 'Johnny Cash'] },
-  A_high_N_high: { kr: ['아이유', '백예린', '태연', '폴킴'], intl: ['Adele', 'Billie Eilish', 'Amy Winehouse'] },
-  A_high_N_low:  { kr: ['성시경', '폴킴', '박효신', '이적'], intl: ['John Mayer', 'Jack Johnson', 'Jason Mraz'] },
-  C_high:        { kr: ['보아', '이하이', '비', '씨스타'], intl: ['Beyoncé', 'Michael Jackson', 'Whitney Houston'] },
-  N_high_V_high: { kr: ['박효신', '임재범', '나얼', '이선희'], intl: ['Jeff Buckley', 'Radiohead', 'Bon Iver'] },
-  default:       { kr: ['이문세', '신승훈', '노을', '버스커버스커'], intl: ['Coldplay', 'The Beatles', 'Sting'] },
+  // 외향적 + 개방적 → 에너지 넘치고 트렌디한 퍼포머
+  E_high_O_high: {
+    kr:   ['지코', '박재범', 'G-DRAGON', '청하', '이효리', 'CL', 'BIGBANG', '현아'],
+    intl: ['Bruno Mars', 'Justin Timberlake', 'Ariana Grande', 'Lizzo', 'Harry Styles', 'Dua Lipa', 'The Weeknd']
+  },
+  // 외향적 + 보수적 → 대중 친화적, 정통 감성
+  E_high_O_low: {
+    kr:   ['이찬원', '임영웅', '나훈아', '박현빈', '송가인', '장민호', '영탁', '김호중'],
+    intl: ['Ed Sheeran', 'Sam Smith', 'Adele', 'Michael Bublé', 'Josh Groban', 'Celine Dion', 'Il Divo']
+  },
+  // 내향적 + 개방적 → 아티스틱하고 독창적
+  E_low_O_high: {
+    kr:   ['아이유', '빈지노', '우원재', 'Dean', '백예린', '잔나비', 'epik high', '이랑'],
+    intl: ['Frank Ocean', 'Billie Eilish', 'Lana Del Rey', 'Bon Iver', 'Sufjan Stevens', 'Phoebe Bridgers', 'James Blake']
+  },
+  // 내향적 + 보수적 → 서정적, 깊고 묵직한 감성
+  E_low_O_low: {
+    kr:   ['성시경', '조용필', '이소라', '김광석', '이문세', '변진섭', '이승환', '심수봉'],
+    intl: ['Leonard Cohen', 'Norah Jones', 'Johnny Cash', 'Nick Drake', 'Cat Stevens', 'James Taylor', 'Simon & Garfunkel']
+  },
+  // 친화성 높음 + 신경증 높음 → 감정 표현 강하고 공감 능력 높음
+  A_high_N_high: {
+    kr:   ['아이유', '백예린', '태연', '폴킴', '헤이즈', '이하이', '송하예', '거미'],
+    intl: ['Adele', 'Billie Eilish', 'Amy Winehouse', 'Lorde', 'Olivia Rodrigo', 'Fiona Apple', 'Alanis Morissette']
+  },
+  // 친화성 높음 + 신경증 낮음 → 따뜻하고 안정적인 감성
+  A_high_N_low: {
+    kr:   ['성시경', '폴킴', '박효신', '이적', '정승환', '김필', '권진아', '김동률'],
+    intl: ['John Mayer', 'Jack Johnson', 'Jason Mraz', 'Coldplay', 'James Bay', 'Ben Howard', 'Passenger']
+  },
+  // 성실성 높음 → 강한 무대 장악력, 완성도 높은 퍼포머
+  C_high: {
+    kr:   ['보아', '이하이', '비', '씨스타', '2NE1', 'SHINee', '동방신기', '소녀시대'],
+    intl: ['Beyoncé', 'Michael Jackson', 'Whitney Houston', 'Janet Jackson', 'Mariah Carey', 'Usher', 'Jennifer Lopez']
+  },
+  // 신경증 높음 + 보이스스페셜 높음 → 강렬한 감정선, 극적인 보컬
+  N_high_V_high: {
+    kr:   ['박효신', '임재범', '나얼', '이선희', '소향', '김범수', '신용재', '조규만'],
+    intl: ['Jeff Buckley', 'Radiohead', 'Bon Iver', 'Chris Cornell', 'Thom Yorke', 'Matt Bellamy', 'Freddie Mercury']
+  },
+  // 기본값 → 균형잡힌 감성
+  default: {
+    kr:   ['이문세', '신승훈', '노을', '버스커버스커', '10cm', '볼빨간사춘기', '멜로망스', '적재'],
+    intl: ['Coldplay', 'The Beatles', 'Sting', 'U2', 'Elton John', 'David Bowie', 'Fleetwood Mac']
+  },
 };
-
+ 
 function getSimilarArtists(scores) {
   const E = scores.E >= 60, O = scores.O >= 60, A = scores.A >= 60;
   const N = scores.N >= 60, C = scores.C >= 65, V = scores.V >= 65;
@@ -2613,17 +2647,17 @@ function getSimilarArtists(scores) {
   if (!E && !O) return artistMap.E_low_O_low;
   return artistMap.default;
 }
-
+ 
 function buildVoiceSpecial(pct) {
   const interp = getVoiceSpecialInterpretation(pct);
   const scores = {};
   BIG5.forEach(d=>{ scores[d.code]=calcScore(d.code); });
   scores.V = pct;
   const artists = getSimilarArtists(scores);
-
+ 
   const container = document.getElementById('voiceSpecialSection');
   container.innerHTML = `
-    <div class="voice-card">
+    <div class="voice-card" id="vc-main" style="position:relative;overflow:hidden">
       <div class="vc-header">
         <div>
           <div class="vc-title">보이스 스페셜</div>
@@ -2631,38 +2665,59 @@ function buildVoiceSpecial(pct) {
         </div>
         <div class="vc-badge">${interp.label}</div>
       </div>
+      <!-- 블러 오버레이 -->
+      <div id="vc-blur-overlay" onclick="revealVoiceCard()" style="position:absolute;inset:0;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);background:rgba(30,20,60,0.45);z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;border-radius:inherit;transition:opacity .3s">
+        <div style="font-size:28px;margin-bottom:8px">🔒</div>
+        <div style="font-size:14px;font-weight:700;color:#f1e7c3;margin-bottom:4px">탭해서 분석 결과 보기</div>
+        <div style="font-size:11px;color:rgba(241,231,195,0.6)">터칭보이스 보이스 스페셜</div>
+      </div>
       <div style="margin-bottom:14px">
         ${interp.traits.map(t=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="width:5px;height:5px;border-radius:50%;background:var(--c-V);flex-shrink:0"></div><span style="font-size:13px;font-weight:300">${t}</span></div>`).join('')}
       </div>
       <div class="vc-desc">${interp.desc}</div>
       <div class="vc-tip">${interp.tip}</div>
     </div>
-
-    <div class="voice-card" style="border-left:4px solid var(--c-V)">
+ 
+    <div class="voice-card" id="vc-artists" style="border-left:4px solid var(--c-V);position:relative;overflow:hidden">
+      <!-- 블러 오버레이 (가수 카드) -->
+      <div id="vc-artists-blur" onclick="revealArtistsCard()" style="position:absolute;inset:0;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);background:rgba(30,20,60,0.45);z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;border-radius:inherit;transition:opacity .3s">
+        <div style="font-size:28px;margin-bottom:8px">🎤</div>
+        <div style="font-size:14px;font-weight:700;color:#f1e7c3;margin-bottom:4px">탭해서 나와 비슷한 가수 보기</div>
+        <div style="font-size:11px;color:rgba(241,231,195,0.6)">성격·발성 에너지 매칭</div>
+      </div>
       <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:12px">🎤 나와 목소리·성격이 비슷한 가수는?</div>
       <div style="font-size:13px;color:var(--muted);font-weight:300;line-height:1.75;margin-bottom:18px">성격 검사 결과와 보이스 스페셜 수치를 바탕으로 비슷한 발성 에너지와 감성을 가진 가수들을 매칭했어요.</div>
-
+ 
       <div style="margin-bottom:16px">
         <div style="font-size:11px;font-family:'DM Mono',monospace;letter-spacing:1.5px;color:var(--accent2);margin-bottom:10px;text-transform:uppercase">🇰🇷 국내 가수</div>
         <div style="display:flex;flex-wrap:wrap;gap:8px">
           ${artists.kr.map(a=>`<div style="padding:7px 14px;background:var(--surface2);border-radius:999px;font-size:13px;font-weight:600">${a}</div>`).join('')}
         </div>
       </div>
-
+ 
       <div>
         <div style="font-size:11px;font-family:'DM Mono',monospace;letter-spacing:1.5px;color:var(--accent2);margin-bottom:10px;text-transform:uppercase">🌍 해외 가수</div>
         <div style="display:flex;flex-wrap:wrap;gap:8px">
           ${artists.intl.map(a=>`<div style="padding:7px 14px;background:var(--surface2);border-radius:999px;font-size:13px;font-weight:600">${a}</div>`).join('')}
         </div>
       </div>
-
+ 
       <div style="margin-top:16px;padding:12px 14px;border-radius:8px;background:rgba(224,122,42,.07);font-size:11px;color:var(--muted);line-height:1.75;font-family:'DM Mono',monospace">
         ※ 이 매칭은 성격-발성 상관관계 연구를 기반으로 한 재미 요소입니다. 더 많은 데이터가 쌓일수록 정확도가 높아집니다.
       </div>
     </div>
   `;
 }
-
+ 
+function revealVoiceCard() {
+  const overlay = document.getElementById('vc-blur-overlay');
+  if (overlay) { overlay.style.opacity = '0'; setTimeout(() => overlay.remove(), 300); }
+}
+function revealArtistsCard() {
+  const overlay = document.getElementById('vc-artists-blur');
+  if (overlay) { overlay.style.opacity = '0'; setTimeout(() => overlay.remove(), 300); }
+}
+ 
 // ═══════════════════════════
 // DOMAIN DETAIL MODAL
 // ═══════════════════════════
@@ -2675,7 +2730,7 @@ function openDetailModal(code) {
   const pct = calcScore(code);
   const lk = getLevelKey(pct);
   const lm = levelMeta[lk];
-
+ 
   document.getElementById('detailDomainName').textContent = d.name;
   document.getElementById('detailDomainIntro').textContent = detail.intro;
   const tag = document.getElementById('detailScoreTag');
@@ -2683,20 +2738,20 @@ function openDetailModal(code) {
   tag.style.background = `${colorMap[code]}18`;
   tag.style.color = colorMap[code];
   tag.style.border = `1px solid ${colorMap[code]}44`;
-
+ 
   // reset tabs
   document.querySelectorAll('.detail-tab').forEach((t,i)=>t.classList.toggle('active',i===0));
   renderDetailTab(0);
   document.getElementById('detailModal').classList.remove('hidden');
 }
 function closeDetailModal() { document.getElementById('detailModal').classList.add('hidden'); }
-
+ 
 function switchDetailTab(i) {
   currentDetailTab = i;
   document.querySelectorAll('.detail-tab').forEach((t,idx)=>t.classList.toggle('active', idx===i));
   renderDetailTab(i);
 }
-
+ 
 function renderDetailTab(i) {
   const detail = domainDetails[currentDomainDetail];
   const pct = calcScore(currentDomainDetail);
@@ -2707,7 +2762,7 @@ function renderDetailTab(i) {
   const data = detail.byLevel[lk][tabKey];
   const colorMap = { E:'var(--c-E)', C:'var(--c-C)', A:'var(--c-A)', N:'var(--c-N)', O:'var(--c-O)' };
   const col = colorMap[currentDomainDetail];
-
+ 
   document.getElementById('detailContent').innerHTML = `
     <div class="detail-sub-title">${tabTitles[i]}</div>
     <div class="detail-section-text">${data.text}</div>
@@ -2716,7 +2771,7 @@ function renderDetailTab(i) {
     </div>
   `;
 }
-
+ 
 // ═══════════════════════════
 // UTIL
 // ═══════════════════════════
@@ -2774,13 +2829,13 @@ function restart() {
   updateProg();
   switchStep('step-1');
 }
-
+ 
 // Drag
 const zone = document.getElementById('uploadZone');
 zone.addEventListener('dragover', e=>{e.preventDefault();zone.classList.add('over');});
 zone.addEventListener('dragleave',()=>zone.classList.remove('over'));
 zone.addEventListener('drop',e=>{e.preventDefault();zone.classList.remove('over');if(e.dataTransfer.files.length){const dt=new DataTransfer();dt.items.add(e.dataTransfer.files[0]);const input=document.getElementById('voiceFile');input.files=dt.files;handleFile(input);}});
-
+ 
 // ═══════════════════════════
 // SHARE FUNCTIONS
 // ═══════════════════════════
@@ -2792,68 +2847,60 @@ function getShareText() {
   const big5sorted = BIG5.map(d=>({name:d.name,score:scores[d.code]})).sort((a,b)=>b.score-a.score);
   return `[터칭보이스 보이스 매트릭스]\n${name}의 지배적 특성: ${domName} ${big5sorted[0].score}%\n\n${big5sorted.map(d=>`${d.name} ${d.score}%`).join(' · ')}\n\n나와 비슷한 가수는 누구일까? 터칭보이스에서 확인해보세요 🎙`;
 }
-
+ 
 function shareKakao() {
   const name = document.getElementById('user-name').value.trim() || '나';
   const domName = document.getElementById('rtcType').textContent;
   const scores = {};
   BIG5.forEach(d=>{ scores[d.code]=calcScore(d.code); });
   const sorted = BIG5.map(d=>({name:d.name,score:scores[d.code]})).sort((a,b)=>b.score-a.score);
-  const url = location.href;
-
+  const url = 'https://noah-tv.github.io/touchingvoice/touchingvoice_v3.html';
+ 
   const title = `[터칭보이스] ${name}의 성격 분석 결과`;
   const desc = `지배 특성: ${domName}\n${sorted.map(d=>`${d.name} ${d.score}%`).join(' · ')}\n\n나도 해보기 👇`;
-
-  // 방법 1: 카카오 SDK (앱키 있을 때)
+  const shareText = `${title}\n${desc}\n${url}`;
+ 
+  // 방법 1: 카카오 SDK (앱키 초기화됐을 때)
   if (typeof Kakao !== 'undefined' && Kakao.isInitialized()) {
     Kakao.Share.sendDefault({
       objectType: 'feed',
       content: {
         title,
         description: desc,
-        imageUrl: 'https://noah-tv.github.io/touchingvoice/touchingvoice_v3.html',
+        imageUrl: 'https://noah-tv.github.io/touchingvoice/og_image.png',
         link: { mobileWebUrl: url, webUrl: url }
       },
       buttons: [{ title: '나도 검사하기', link: { mobileWebUrl: url, webUrl: url } }]
     });
     return;
   }
-
-  // 방법 2: 카카오톡 앱 채팅방 직접 공유 (모바일 전용)
-  // kakaolink 스킴은 채팅방 선택 화면으로 바로 이동
-  const shareText = `${title}\n${desc}\n${url}`;
-
-  if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-    // 모바일: 카카오톡 공유하기 스킴
-    const kakaoScheme = `kakaolink://send?text=${encodeURIComponent(shareText)}`;
-    location.href = kakaoScheme;
-
-    // 앱이 없으면 fallback으로 클립보드 복사
-    setTimeout(() => {
-      navigator.clipboard.writeText(shareText).catch(() => {
-        const el = document.createElement('textarea');
-        el.value = shareText;
-        document.body.appendChild(el);
-        el.select();
-        document.execCommand('copy');
-        document.body.removeChild(el);
-      });
-      showToast('📋 복사됐어요! 카카오톡에서 붙여넣기 해주세요');
-    }, 1500);
-  } else {
-    // PC: 클립보드 복사 + 안내
-    navigator.clipboard.writeText(shareText).catch(() => {
-      const el = document.createElement('textarea');
-      el.value = shareText;
-      document.body.appendChild(el);
-      el.select();
-      document.execCommand('copy');
-      document.body.removeChild(el);
-    });
-    showToast('📋 결과가 복사됐습니다! 카카오톡에서 붙여넣기(Ctrl+V) 해주세요');
+ 
+  // 방법 2: Web Share API (모바일 브라우저 네이티브 공유)
+  if (navigator.share) {
+    navigator.share({ title, text: desc, url })
+      .catch(() => copyAndToast(shareText));
+    return;
   }
+ 
+  // 방법 3: 클립보드 복사 + 안내
+  copyAndToast(shareText);
 }
-
+ 
+function copyAndToast(text) {
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('📋 복사됐어요! 카카오톡에서 붙여넣기 해주세요');
+  }).catch(() => {
+    const el = document.createElement('textarea');
+    el.value = text;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    showToast('📋 복사됐어요! 카카오톡에서 붙여넣기 해주세요');
+  });
+}
+ 
+ 
 function copyLink() {
   const text = getShareText();
   navigator.clipboard.writeText(text + '\n' + location.href).then(() => {
@@ -2869,7 +2916,7 @@ function copyLink() {
     showToast('🔗 결과가 클립보드에 복사되었습니다!');
   });
 }
-
+ 
 function shareNative() {
   const text = getShareText();
   if (navigator.share) {
@@ -2878,14 +2925,14 @@ function shareNative() {
     copyLink();
   }
 }
-
+ 
 function showToast(msg) {
   const t = document.getElementById('copyToast');
   t.textContent = msg;
   t.style.display = 'block';
   setTimeout(() => { t.style.display = 'none'; }, 3000);
 }
-
+ 
 // Modal backdrop close
 document.getElementById('consentModal').addEventListener('click', e=>{if(e.target===document.getElementById('consentModal')) closeConsent();});
 document.getElementById('detailModal').addEventListener('click', e=>{if(e.target===document.getElementById('detailModal')) closeDetailModal();});
