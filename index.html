@@ -46,37 +46,55 @@ body { background:var(--bg); color:#f1e7c3; font-family:'Paperlogy',sans-serif; 
   background:rgba(30,12,70,0.97);
   backdrop-filter:blur(12px);
   border-bottom:1px solid rgba(241,231,195,0.10);
-  padding:0 24px;
+  padding:0 12px;
 }
 .nav-inner {
   max-width:1200px; margin:0 auto;
-  height:60px; display:flex; align-items:center; gap:0;
+  height:52px; display:flex; align-items:center; gap:0;
+  overflow-x:auto; overflow-y:hidden;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
 }
+.nav-inner::-webkit-scrollbar { display:none; }
 .nav-logo {
   display:flex; align-items:center; text-decoration:none;
-  cursor:pointer; margin-right:32px; flex-shrink:0;
+  cursor:pointer; margin-right:12px; flex-shrink:0;
 }
 .nav-logo-en {
-  font-family:'Paperlogy',sans-serif; font-size:12px; letter-spacing:0.22em;
+  font-family:'Paperlogy',sans-serif; font-size:11px; letter-spacing:0.18em;
   color:#f1e7c3; text-transform:uppercase; font-weight:600;
 }
-.nav-links { display:flex; align-items:center; gap:2px; flex:1; flex-wrap:nowrap; overflow:visible; }
+.nav-links { display:flex; align-items:center; gap:1px; flex-shrink:0; }
 .nav-link {
-  padding:8px 14px; border-radius:8px;
-  font-size:13px; font-weight:500; color:rgba(241,231,195,0.65);
+  padding:7px 11px; border-radius:8px;
+  font-size:12px; font-weight:500; color:rgba(241,231,195,0.65);
   text-decoration:none; transition:all .15s; cursor:pointer; border:none; background:none;
   white-space:nowrap; flex-shrink:0;
 }
 .nav-link:hover { background:rgba(241,231,195,0.10); color:#f1e7c3; }
 .nav-link.active { color:#f1e7c3; background:rgba(241,231,195,0.15); font-weight:600; }
-.nav-icons { display:flex; align-items:center; gap:4px; margin-left:auto; flex-shrink:0; }
+.nav-icons { display:flex; align-items:center; gap:2px; margin-left:8px; flex-shrink:0; }
 .nav-btn {
-  padding:7px 14px; border-radius:8px;
+  padding:6px 12px; border-radius:8px;
   background:rgba(241,231,195,0.15); color:#f1e7c3; border:1px solid rgba(241,231,195,0.2);
   font-family:'Paperlogy',sans-serif; font-size:12px; font-weight:600;
-  cursor:pointer; transition:all .2s; white-space:nowrap;
+  cursor:pointer; transition:all .2s; white-space:nowrap; flex-shrink:0;
 }
 .nav-btn:hover { background:rgba(241,231,195,0.25); }
+
+/* ── 뒤로가기 플로팅 버튼 ── */
+.back-fab {
+  position:fixed; bottom:24px; left:20px; z-index:200;
+  width:44px; height:44px; border-radius:50%;
+  background:rgba(30,12,70,0.92); border:1px solid rgba(241,231,195,0.25);
+  backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+  display:none; align-items:center; justify-content:center;
+  cursor:pointer; transition:all .2s;
+  font-size:18px; color:#f1e7c3;
+  box-shadow:0 4px 20px rgba(0,0,0,.4);
+}
+.back-fab:hover { background:rgba(63,35,120,0.95); transform:scale(1.08); }
+.back-fab.visible { display:flex; }
 
 /* ── PAGES ── */
 .page { display:none; }
@@ -795,7 +813,7 @@ h1, h2, h3,
         <button onclick="doSyncSheets()" id="sync-btn" style="padding:8px 14px;border:1px solid rgba(241,231,195,0.25);border-radius:8px;background:rgba(241,231,195,0.08);font-size:12px;cursor:pointer;font-family:'Paperlogy',sans-serif;color:#f1e7c3;display:flex;align-items:center;gap:6px">
           ☁️ Sheets 동기화
         </button>
-        <button onclick="showPage('home')" style="padding:8px 16px;border:1px solid rgba(241,231,195,0.25);border-radius:8px;background:rgba(241,231,195,0.08);font-size:13px;cursor:pointer;font-family:'Paperlogy',sans-serif;color:#f1e7c3">← 메인으로</button>
+        <button onclick="goBack()" style="padding:8px 16px;border:1px solid rgba(241,231,195,0.25);border-radius:8px;background:rgba(241,231,195,0.08);font-size:13px;cursor:pointer;font-family:'Paperlogy',sans-serif;color:#f1e7c3">← 메인으로</button>
       </div>
     </div>
 
@@ -1181,6 +1199,9 @@ h1, h2, h3,
   </div>
 </div>
 
+<!-- 뒤로가기 플로팅 버튼 -->
+<button class="back-fab" id="back-fab" onclick="goBack()">←</button>
+
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
@@ -1325,16 +1346,37 @@ async function sheetsAction(action, data) {
   }
 }
 
-// ─────────────── 페이지 라우팅 ───────────────
+// ─────────────── 페이지 히스토리 ───────────────
+let _pageHistory = ['home'];
+
+function goBack() {
+  if (_pageHistory.length > 1) {
+    _pageHistory.pop();
+    const prev = _pageHistory[_pageHistory.length - 1];
+    _showPage(prev);
+  }
+}
+
 function showPage(id) {
+  if (_pageHistory[_pageHistory.length - 1] !== id) {
+    _pageHistory.push(id);
+    if (_pageHistory.length > 10) _pageHistory.shift();
+  }
+  _showPage(id);
+}
+
+function _showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
   document.getElementById('page-' + id).classList.add('active');
   const navEl = document.getElementById('nav-' + id);
   if (navEl) navEl.classList.add('active');
-  if (id === 'admin') { renderAdmin(); }
+  if (id === 'admin')  { renderAdmin(); }
   if (id === 'notice') { renderNotices(); }
-  window.scrollTo(0,0);
+  // 뒤로가기 FAB: 홈이면 숨김
+  const fab = document.getElementById('back-fab');
+  if (fab) fab.classList.toggle('visible', id !== 'home');
+  window.scrollTo(0, 0);
 }
 
 // ─────────────── 출석 체크 ───────────────
