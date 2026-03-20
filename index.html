@@ -1146,14 +1146,25 @@ h1, h2, h3,
     <!-- 설정 탭 -->
     <div id="admin-settings" style="display:none">
       <div class="card">
-        <div class="card-label">결제 정보</div>
-        <div class="form-group" style="margin-top:8px">
-          <label class="form-label">개인 레슨 4회 수강료</label>
-          <input type="text" class="form-input" id="price-private" value="₩200,000">
-        </div>
-        <div class="form-group">
-          <label class="form-label">그룹 레슨 4회 수강료</label>
-          <input type="text" class="form-input" id="price-group" value="₩120,000">
+        <div class="card-label">강사별 레슨 금액 (4회 기준)</div>
+        <div style="font-size:11px;color:rgba(241,231,195,0.45);margin-bottom:16px;margin-top:4px;font-family:'Paperlogy',sans-serif">4회 완료 시 SMS에 자동으로 반영됩니다</div>
+        <div class="grid-2" style="margin-top:8px">
+          <div class="form-group">
+            <label class="form-label">천우경</label>
+            <input type="text" class="form-input" id="price-천우경" placeholder="₩550,000">
+          </div>
+          <div class="form-group">
+            <label class="form-label">김수종</label>
+            <input type="text" class="form-input" id="price-김수종" placeholder="₩330,000">
+          </div>
+          <div class="form-group">
+            <label class="form-label">방건주</label>
+            <input type="text" class="form-input" id="price-방건주" placeholder="₩330,000">
+          </div>
+          <div class="form-group">
+            <label class="form-label">탁상우</label>
+            <input type="text" class="form-input" id="price-탁상우" placeholder="₩220,000">
+          </div>
         </div>
         <div class="form-group">
           <label class="form-label">입금 계좌</label>
@@ -1281,8 +1292,14 @@ h1, h2, h3,
     <!-- 입금 안내 배너 -->
     <div class="stamp-payment-banner" id="sc-payment-banner">
       <h4>🎉 4회 완료!</h4>
-      <p>수고하셨습니다. 다음 4회 레슨 수강료 안내입니다.<br>입금 확인 후 다음 일정이 확정됩니다.</p>
+      <p>수강료 안내 문자를 수강생에게 바로 보낼 수 있어요.</p>
       <div class="stamp-bank-info" id="sc-bank-info">—</div>
+      <!-- SMS 발송 버튼 -->
+      <a id="sc-sms-btn" href="#" onclick="return false"
+         style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:12px;padding:13px 16px;background:rgba(212,170,58,0.18);border:1.5px solid rgba(212,170,58,0.45);border-radius:10px;color:var(--warm);font-family:'Paperlogy',sans-serif;font-size:14px;font-weight:700;text-decoration:none;cursor:pointer;transition:all .2s">
+        📱 수강료 안내 문자 발송
+      </a>
+      <div style="font-size:10px;color:rgba(241,231,195,0.35);text-align:center;margin-top:6px;font-family:'Paperlogy',sans-serif">탭하면 기본 문자앱이 열려요 · 내용은 자동으로 채워집니다</div>
     </div>
 
     <!-- 버튼 -->
@@ -1318,7 +1335,13 @@ let state = {
   settings: JSON.parse(localStorage.getItem('tv_settings') || JSON.stringify({
     pricePrivate: '₩200,000',
     priceGroup: '₩120,000',
-    bankInfo: '기업은행 274-103965-04-014 · 터칭보이스(천우경)'
+    bankInfo: '기업은행 274-103965-04-014 · 터칭보이스(천우경)',
+    teacherPrices: {
+      '천우경': '₩550,000',
+      '김수종': '₩330,000',
+      '방건주': '₩330,000',
+      '탁상우': '₩220,000'
+    }
   }))
 };
 
@@ -1330,7 +1353,15 @@ function saveState() {
   localStorage.setItem('tv_settings', JSON.stringify(state.settings));
 }
 
-// ─────────────── Google Sheets 연동 ───────────────
+// 강사별 레슨 금액 반환
+function getTeacherPrice(teacherName) {
+  const prices = state.settings.teacherPrices || {
+    '천우경': '₩550,000', '김수종': '₩330,000',
+    '방건주': '₩330,000', '탁상우': '₩220,000'
+  };
+  return prices[teacherName] || state.settings.pricePrivate || '₩200,000';
+}
+
 const APPS_URL = 'https://script.google.com/macros/s/AKfycbzdsDflB3PsPTpMedBb2nH1faaJ8LEdbnvh0LF_okk5RezbwMLnp4shRgAgzJ-6L2bdJQ/exec';
 let _sheetsLoaded = false;
 
@@ -1533,7 +1564,7 @@ function doCheckin() {
     setTimeout(() => {
       const alert = document.getElementById('payment-alert');
       alert.style.display = 'block';
-      const price = state.lessonType === '개인' ? state.settings.pricePrivate : state.settings.priceGroup;
+      const price = getTeacherPrice(student.teacher);
       document.getElementById('payment-info-text').textContent =
         `${state.lessonType} 레슨 4회 · ${price}`;
     }, 800);
@@ -1623,8 +1654,11 @@ function renderAdmin() {
   });
 
   // 설정 값 반영
-  document.getElementById('price-private').value = state.settings.pricePrivate;
-  document.getElementById('price-group').value = state.settings.priceGroup;
+  const tp = state.settings.teacherPrices || { '천우경':'₩550,000','김수종':'₩330,000','방건주':'₩330,000','탁상우':'₩220,000' };
+  ['천우경','김수종','방건주','탁상우'].forEach(t => {
+    const el = document.getElementById('price-' + t);
+    if (el) el.value = tp[t] || '';
+  });
   document.getElementById('bank-info').value = state.settings.bankInfo;
 
   // 비밀번호 변경 UI
@@ -1823,7 +1857,11 @@ function renderPayments() {
   const bd = document.getElementById('bank-display');
   const pd = document.getElementById('price-display');
   if (bd) bd.textContent = state.settings.bankInfo;
-  if (pd) pd.textContent = `개인 레슨 ${state.settings.pricePrivate} · 그룹 레슨 ${state.settings.priceGroup}`;
+  if (pd) {
+    const tp = state.settings.teacherPrices || {};
+    const priceStr = ['천우경','김수종','방건주','탁상우'].map(t => `${t} ${tp[t]||''}`).join(' · ');
+    pd.textContent = priceStr;
+  }
 
   tbody.innerHTML = '';
   if (!state.payments.length) {
@@ -1976,9 +2014,29 @@ function renderStampCard() {
     ? `${cycle-1}사이클 완료 ✓`
     : `${cycle}사이클 · ${cyclePos}/4회차`;
 
-  // 은행 정보
-  document.getElementById('sc-bank-info').textContent = state.settings.bankInfo +
-    `\n${s.type === '개인' ? state.settings.pricePrivate : state.settings.priceGroup}`;
+  // 강사별 금액
+  const price = getTeacherPrice(s.teacher);
+  const bankInfo = state.settings.bankInfo;
+  document.getElementById('sc-bank-info').textContent = `${bankInfo}\n${price}`;
+
+  // SMS 링크 생성
+  const smsBtn = document.getElementById('sc-sms-btn');
+  if (smsBtn && s.phone) {
+    const phone = s.phone.replace(/-/g, '');
+    const cycleNum = Math.floor(total / 4);
+    const smsBody = `[터칭보이스] ${s.name}님, ${cycleNum * 4}회 레슨이 완료되었습니다 🎉\n\n다음 ${cycleNum + 1}기 ${s.type} 레슨(4회) 수강료 안내드립니다.\n\n▶ 금액: ${price}\n▶ 계좌: ${bankInfo}\n\n입금 확인 후 다음 일정 안내드릴게요.\n감사합니다 🙏`;
+    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const sep = isIOS ? '&' : '?';
+    smsBtn.href = `sms:${phone}${sep}body=${encodeURIComponent(smsBody)}`;
+    smsBtn.onclick = null;
+    smsBtn.style.opacity = '1';
+    smsBtn.innerHTML = '📱 수강료 안내 문자 발송';
+  } else if (smsBtn) {
+    smsBtn.href = '#';
+    smsBtn.onclick = (e) => { e.preventDefault(); showToast('수강생 연락처가 없습니다. 수강생 정보를 수정해 주세요.'); };
+    smsBtn.style.opacity = '0.45';
+    smsBtn.innerHTML = '📱 연락처 없음 — 수강생 정보 수정 필요';
+  }
 
   // 4칸 스탬프 그리드
   const grid = document.getElementById('sc-grid');
@@ -2049,9 +2107,12 @@ function deleteStudent(idx) {
 }
 
 function saveSettings() {
-  state.settings.pricePrivate = document.getElementById('price-private').value;
-  state.settings.priceGroup   = document.getElementById('price-group').value;
-  state.settings.bankInfo     = document.getElementById('bank-info').value;
+  if (!state.settings.teacherPrices) state.settings.teacherPrices = {};
+  ['천우경','김수종','방건주','탁상우'].forEach(t => {
+    const el = document.getElementById('price-' + t);
+    if (el && el.value) state.settings.teacherPrices[t] = el.value;
+  });
+  state.settings.bankInfo = document.getElementById('bank-info').value;
   saveState();
   showToast('설정이 저장되었습니다 ✓');
 }
