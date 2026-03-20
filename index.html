@@ -790,7 +790,13 @@ h1, h2, h3,
         <div class="card-label" style="margin-bottom:4px">관리자 · Admin Dashboard</div>
         <h2 class="section-title">수강 관리</h2>
       </div>
-      <button onclick="showPage('home')" style="padding:8px 16px;border:1px solid rgba(241,231,195,0.25);border-radius:8px;background:rgba(241,231,195,0.08);font-size:13px;cursor:pointer;font-family:'Paperlogy',sans-serif;color:#f1e7c3">← 메인으로</button>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span id="sheets-status" style="font-family:'Paperlogy',sans-serif;font-size:11px;color:rgba(241,231,195,0.4);letter-spacing:.3px">⏳ 연결 중...</span>
+        <button onclick="doSyncSheets()" id="sync-btn" style="padding:8px 14px;border:1px solid rgba(241,231,195,0.25);border-radius:8px;background:rgba(241,231,195,0.08);font-size:12px;cursor:pointer;font-family:'Paperlogy',sans-serif;color:#f1e7c3;display:flex;align-items:center;gap:6px">
+          ☁️ Sheets 동기화
+        </button>
+        <button onclick="showPage('home')" style="padding:8px 16px;border:1px solid rgba(241,231,195,0.25);border-radius:8px;background:rgba(241,231,195,0.08);font-size:13px;cursor:pointer;font-family:'Paperlogy',sans-serif;color:#f1e7c3">← 메인으로</button>
+      </div>
     </div>
 
     <!-- 통계 카드 -->
@@ -881,6 +887,7 @@ h1, h2, h3,
               <th>수업 현황</th>
               <th>마지막 수업</th>
               <th>상태</th>
+              <th></th>
             </tr>
           </thead>
           <tbody id="student-tbody">
@@ -1077,6 +1084,45 @@ h1, h2, h3,
   </div>
 </div>
 
+<!-- ════ 레슨 횟수 수정 모달 ════ -->
+<div class="modal-overlay" id="edit-lesson-modal" onclick="if(event.target===this)closeEditLesson()">
+  <div class="modal-box" style="max-width:400px">
+    <button class="modal-close" onclick="closeEditLesson()">✕</button>
+    <div style="padding:32px">
+      <div style="font-family:'Paperlogy',sans-serif;font-size:10px;letter-spacing:0.15em;color:rgba(241,231,195,0.5);text-transform:uppercase;margin-bottom:8px">레슨 횟수 수정</div>
+      <h3 style="font-size:20px;font-weight:700;color:#f1e7c3;margin-bottom:4px" id="edit-student-name"></h3>
+      <div style="font-size:13px;color:rgba(241,231,195,0.5);margin-bottom:24px" id="edit-student-info"></div>
+
+      <!-- 현재 횟수 표시 + 조절 -->
+      <div style="display:flex;align-items:center;justify-content:center;gap:20px;margin-bottom:28px">
+        <button onclick="adjustLesson(-1)" style="width:44px;height:44px;border-radius:50%;background:rgba(241,231,195,0.1);border:1px solid rgba(241,231,195,0.25);color:#f1e7c3;font-size:22px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center" onmouseover="this.style.background='rgba(241,231,195,0.2)'" onmouseout="this.style.background='rgba(241,231,195,0.1)'">−</button>
+        <div style="text-align:center">
+          <div style="font-size:48px;font-weight:700;color:#f1e7c3;line-height:1;font-family:'Paperlogy',sans-serif" id="edit-count-display">0</div>
+          <div style="font-size:12px;color:rgba(241,231,195,0.45);margin-top:4px">총 레슨 횟수</div>
+        </div>
+        <button onclick="adjustLesson(1)" style="width:44px;height:44px;border-radius:50%;background:rgba(241,231,195,0.1);border:1px solid rgba(241,231,195,0.25);color:#f1e7c3;font-size:22px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center" onmouseover="this.style.background='rgba(241,231,195,0.2)'" onmouseout="this.style.background='rgba(241,231,195,0.1)'">+</button>
+      </div>
+
+      <!-- 현재 사이클 표시 -->
+      <div id="edit-cycle-display" style="display:flex;gap:8px;justify-content:center;margin-bottom:24px"></div>
+
+      <!-- 날짜 직접 추가 -->
+      <div style="border-top:1px solid rgba(241,231,195,0.1);padding-top:20px;margin-bottom:16px">
+        <div style="font-size:11px;color:rgba(241,231,195,0.45);margin-bottom:10px;font-weight:500">특정 날짜 수업 추가</div>
+        <div style="display:flex;gap:8px">
+          <input type="date" class="form-input" id="edit-add-date" style="flex:1">
+          <button onclick="addLessonDate()" style="padding:10px 16px;background:rgba(241,231,195,0.12);border:1px solid rgba(241,231,195,0.2);border-radius:8px;color:#f1e7c3;font-size:13px;cursor:pointer;white-space:nowrap;font-family:'Paperlogy',sans-serif">추가</button>
+        </div>
+      </div>
+
+      <!-- 수업 날짜 목록 -->
+      <div id="edit-lesson-dates" style="max-height:160px;overflow-y:auto;margin-bottom:20px"></div>
+
+      <button onclick="saveEditLesson()" class="btn-primary">저장하기 →</button>
+    </div>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
@@ -1107,6 +1153,120 @@ function saveState() {
   localStorage.setItem('tv_settings', JSON.stringify(state.settings));
 }
 
+// ─────────────── Google Sheets 연동 ───────────────
+const APPS_URL = 'https://script.google.com/macros/s/AKfycbzdsDflB3PsPTpMedBb2nH1faaJ8LEdbnvh0LF_okk5RezbwMLnp4shRgAgzJ-6L2bdJQ/exec';
+let _sheetsLoaded = false;
+
+// Sheets에서 전체 데이터 불러오기 (앱 시작 시)
+async function loadFromSheets() {
+  setSheetsStatus('loading');
+  try {
+    // getAllData에 lessons 포함 (Apps Script v3 이후)
+    const r = await fetch(`${APPS_URL}?action=getAllData`);
+    const d = await r.json();
+    if (d.status !== 'ok') throw new Error(d.msg);
+
+    // 수강생 병합 (Sheets 기준으로 재구성, localStorage lessons 보존)
+    if (d.students && d.students.length > 0) {
+      const localStudents = state.students;
+      const merged = d.students.map(sheetS => {
+        const local = localStudents.find(l => l.name === sheetS.name && l.type === sheetS.type);
+        return { ...sheetS, lessons: local ? local.lessons : [] };
+      });
+      // localStorage에만 있는 수강생도 유지
+      localStudents.forEach(ls => {
+        if (!merged.find(m => m.name === ls.name && m.type === ls.type)) {
+          merged.push(ls);
+        }
+      });
+      state.students = merged;
+    }
+
+    // 출석 데이터로 lessons 배열 재구성 (Sheets가 source of truth)
+    if (d.lessons && d.lessons.length > 0) {
+      state.students.forEach(s => {
+        const myLessons = d.lessons
+          .filter(l => l.name === s.name && l.type === s.type)
+          .sort((a, b) => (parseInt(a.seq) || 0) - (parseInt(b.seq) || 0))
+          .map(l => l.date);
+        if (myLessons.length > 0) s.lessons = myLessons;
+      });
+    }
+
+    // 입금 / 결석 / 공지 - Sheets가 source of truth
+    if (d.payments && d.payments.length > 0) state.payments = d.payments;
+    if (d.absents  && d.absents.length  > 0) state.absent   = d.absents;
+    if (d.notices  && d.notices.length  > 0) state.notices  = d.notices;
+
+    saveState();
+    _sheetsLoaded = true;
+    setSheetsStatus('ok');
+    console.log('✅ Sheets에서 데이터 로드 완료');
+
+    // 현재 활성 페이지 재렌더
+    const activePage = document.querySelector('.page.active');
+    if (activePage) {
+      const pageId = activePage.id.replace('page-', '');
+      if (pageId === 'admin')  renderAdmin();
+      if (pageId === 'notice') renderNotices();
+    }
+  } catch(e) {
+    setSheetsStatus('error');
+    console.log('⚠️ Sheets 연결 실패, localStorage 사용:', e.message);
+  }
+}
+
+// Sheets 연결 상태 표시
+function setSheetsStatus(status) {
+  const el = document.getElementById('sheets-status');
+  if (!el) return;
+  const map = {
+    loading: { text: '⏳ Sheets 연결 중...', color: 'rgba(241,231,195,0.5)' },
+    ok:      { text: '☁️ Sheets 연동됨',     color: '#6fcf97' },
+    error:   { text: '⚠️ 오프라인 모드',      color: 'var(--warm)' },
+  };
+  const s = map[status] || map.error;
+  el.textContent = s.text;
+  el.style.color = s.color;
+}
+
+// 전체 동기화 (localStorage → Sheets)
+async function syncAllToSheets() {
+  try {
+    const r = await fetch(APPS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        action: 'syncAll',
+        data: {
+          students: state.students,
+          payments: state.payments,
+          absent:   state.absent,
+          notices:  state.notices
+        }
+      })
+    });
+    const d = await r.json();
+    return d.status === 'ok';
+  } catch(e) {
+    console.log('Sheets 동기화 실패:', e);
+    return false;
+  }
+}
+
+// 개별 액션 Sheets 저장
+async function sheetsAction(action, data) {
+  try {
+    await fetch(APPS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action, ...data })
+    });
+  } catch(e) {
+    console.log(`Sheets ${action} 실패:`, e);
+  }
+}
+
 // ─────────────── 페이지 라우팅 ───────────────
 function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -1125,12 +1285,6 @@ function selectLessonType(type) {
   document.getElementById('tab-private').classList.toggle('active', type === '개인');
   document.getElementById('tab-group').classList.toggle('active', type === '그룹');
 }
-
-(function initDate() {
-  const d = new Date();
-  const str = d.toLocaleDateString('ko-KR', {year:'numeric',month:'long',day:'numeric',weekday:'long'});
-  document.getElementById('checkin-date').value = str;
-})();
 
 function doCheckin() {
   const name = document.getElementById('checkin-name').value.trim();
@@ -1152,6 +1306,7 @@ function doCheckin() {
 
   student.lessons.push(today);
   saveState();
+  sheetsAction('saveLesson', { data: { name, type: state.lessonType, teacher: student.teacher||'', date: today, seq: student.lessons.length } });
 
   const lessonCount = student.lessons.length;
   const cyclePos = ((lessonCount - 1) % 4) + 1; // 현재 사이클에서 몇 번째
@@ -1245,13 +1400,12 @@ function renderAdmin() {
     tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:rgba(241,231,195,0.4);padding:32px">등록된 수강생이 없습니다</td></tr>';
     return;
   }
-  state.students.forEach(s => {
+  state.students.forEach((s, idx) => {
     const count = s.lessons.length;
     const cyclePos = count > 0 ? ((count - 1) % 4) + 1 : 0;
     const isDue = count > 0 && count % 4 === 0;
     const last = s.lessons.length ? s.lessons[s.lessons.length-1] : '—';
     const tr = document.createElement('tr');
-    // 레슨 진행 표시 (현재 사이클 4개)
     let pillsHtml = '<div class="lesson-pills">';
     for (let i = 1; i <= 4; i++) {
       const cls = i < cyclePos ? 'done' : i === cyclePos ? 'due' : '';
@@ -1265,6 +1419,7 @@ function renderAdmin() {
       <td>${pillsHtml}</td>
       <td style="font-size:12px;color:rgba(241,231,195,0.6)">${last}</td>
       <td>${isDue?'<span style="padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600;background:rgba(212,170,58,0.2);color:var(--warm)">💰 입금 예정</span>':'<span style="font-size:12px;color:#f1e7c3">✓ 정상</span>'}</td>
+      <td><button onclick="openEditLesson(${idx})" style="padding:5px 12px;border:1px solid rgba(241,231,195,0.25);background:rgba(241,231,195,0.08);border-radius:6px;font-size:11px;cursor:pointer;color:#f1e7c3;font-family:'Paperlogy',sans-serif;transition:all .15s" onmouseover="this.style.background='rgba(241,231,195,0.16)'" onmouseout="this.style.background='rgba(241,231,195,0.08)'">수정</button> <button onclick="deleteStudent(${idx})" style="padding:5px 10px;border:1px solid rgba(255,120,120,0.2);background:rgba(255,100,100,0.07);border-radius:6px;font-size:11px;cursor:pointer;color:rgba(255,150,150,0.7);font-family:'Paperlogy',sans-serif;transition:all .15s" onmouseover="this.style.background='rgba(255,100,100,0.15)'" onmouseout="this.style.background='rgba(255,100,100,0.07)'">삭제</button></td>
     `;
     tbody.appendChild(tr);
   });
@@ -1311,6 +1466,7 @@ function addStudent() {
   document.getElementById('new-student-name').value = '';
   renderAdmin();
   showToast(name + '님이 등록되었습니다 ✓');
+  sheetsAction('saveStudent', { data: { name, type, teacher, phone, memo } });
 }
 
 function showAdminTab(tab) {
@@ -1365,21 +1521,6 @@ function renderTeacherStats() {
 }
 
 // ── 결석 관리 ──
-function addAbsent() {
-  const name    = document.getElementById('absent-name').value.trim();
-  const date    = document.getElementById('absent-date').value;
-  const teacher = document.getElementById('absent-teacher').value;
-  const reason  = document.getElementById('absent-reason').value.trim();
-  if (!name || !date) { showToast('이름과 날짜를 입력해 주세요'); return; }
-  state.absent.push({ id: Date.now(), name, date, teacher, reason });
-  saveState();
-  document.getElementById('absent-name').value = '';
-  document.getElementById('absent-reason').value = '';
-  renderAbsent();
-  syncToSheets('absent');
-  showToast('결석이 기록되었습니다 ✓');
-}
-
 function renderAbsent() {
   const tbody = document.getElementById('absent-tbody');
   if (!tbody) return;
@@ -1399,28 +1540,6 @@ function renderAbsent() {
     `;
     tbody.appendChild(tr);
   });
-}
-
-function deleteAbsent(id) {
-  state.absent = state.absent.filter(a => a.id !== id);
-  saveState(); renderAbsent(); showToast('삭제되었습니다');
-}
-
-// ── 입금 내역 ──
-function addPayment() {
-  const name   = document.getElementById('pay-name').value.trim();
-  const amount = document.getElementById('pay-amount').value.trim();
-  const date   = document.getElementById('pay-date').value;
-  const memo   = document.getElementById('pay-memo').value.trim();
-  if (!name || !amount || !date) { showToast('이름, 금액, 날짜를 입력해 주세요'); return; }
-  state.payments.push({ id: Date.now(), name, amount, date, memo });
-  saveState();
-  document.getElementById('pay-name').value = '';
-  document.getElementById('pay-amount').value = '';
-  document.getElementById('pay-memo').value = '';
-  renderPayments();
-  syncToSheets('payment');
-  showToast('입금이 기록되었습니다 ✓');
 }
 
 function renderPayments() {
@@ -1450,20 +1569,56 @@ function renderPayments() {
   });
 }
 
-function deletePayment(id) {
-  state.payments = state.payments.filter(p => p.id !== id);
-  saveState(); renderPayments(); showToast('삭제되었습니다');
+// ── Google Sheets 연동 ──
+// doSyncSheets: 관리자 버튼으로 수동 전체 동기화
+async function doSyncSheets() {
+  const btn = document.getElementById('sync-btn');
+  if (btn) { btn.textContent = '⏳ 동기화 중...'; btn.disabled = true; }
+  setSheetsStatus('loading');
+  const ok = await syncAllToSheets();
+  if (ok) {
+    setSheetsStatus('ok');
+    // 동기화 후 Sheets에서 최신 데이터 다시 로드
+    await loadFromSheets();
+  } else {
+    setSheetsStatus('error');
+  }
+  if (btn) { btn.textContent = '☁️ Sheets 동기화'; btn.disabled = false; }
+  showToast(ok ? 'Google Sheets 동기화 완료 ✓' : 'Sheets 연결 실패. 나중에 다시 시도해 주세요.');
 }
 
-// ── Google Sheets 연동 (연도별 자동 저장) ──
-const APPS_URL = 'https://script.google.com/macros/s/AKfycbzl5QU7_oOSlnslT1oWRtNJ9OP6aOsx97XQwXeVNtUc97q_Uj9qpuEGTelvjtCqV_UcZA/exec';
+// addAbsent/addPayment Sheets 연동 업데이트
+function addAbsent() {
+  const name    = document.getElementById('absent-name').value.trim();
+  const date    = document.getElementById('absent-date').value;
+  const teacher = document.getElementById('absent-teacher').value;
+  const reason  = document.getElementById('absent-reason').value.trim();
+  if (!name || !date) { showToast('이름과 날짜를 입력해 주세요'); return; }
+  const record = { id: Date.now(), name, date, teacher, reason };
+  state.absent.push(record);
+  saveState();
+  document.getElementById('absent-name').value = '';
+  document.getElementById('absent-reason').value = '';
+  renderAbsent();
+  sheetsAction('saveAbsent', { data: record });
+  showToast('결석이 기록되었습니다 ✓');
+}
 
-async function syncToSheets(type) {
-  const year = new Date().getFullYear();
-  try {
-    const payload = { type, year, data: type === 'absent' ? state.absent : state.payments };
-    await fetch(APPS_URL, { method:'POST', headers:{'Content-Type':'text/plain'}, body: JSON.stringify(payload) });
-  } catch(e) { console.log('Sheets sync error:', e); }
+function addPayment() {
+  const name   = document.getElementById('pay-name').value.trim();
+  const amount = document.getElementById('pay-amount').value.trim();
+  const date   = document.getElementById('pay-date').value;
+  const memo   = document.getElementById('pay-memo').value.trim();
+  if (!name || !amount || !date) { showToast('이름, 금액, 날짜를 입력해 주세요'); return; }
+  const record = { id: Date.now(), name, amount, date, memo };
+  state.payments.push(record);
+  saveState();
+  document.getElementById('pay-name').value = '';
+  document.getElementById('pay-amount').value = '';
+  document.getElementById('pay-memo').value = '';
+  renderPayments();
+  sheetsAction('savePayment', { data: record });
+  showToast('입금이 기록되었습니다 ✓');
 }
 
 function showAddNotice() {
@@ -1481,6 +1636,8 @@ function addNotice() {
   document.getElementById('notice-title-input').value = '';
   document.getElementById('notice-content-input').value = '';
   renderAdminNotices();
+  renderNotices();
+  sheetsAction('saveNotice', { data: { id: state.notices[state.notices.length-1].id, type, title, content, date: today } });
   showToast('공지가 게시되었습니다 ✓');
 }
 function renderAdminNotices() {
@@ -1509,8 +1666,20 @@ function deleteNotice(id) {
   state.notices = state.notices.filter(n => n.id !== id);
   saveState();
   renderAdminNotices();
+  sheetsAction('deleteNotice', { id });
   showToast('삭제되었습니다');
 }
+function deleteStudent(idx) {
+  const s = state.students[idx];
+  if (!s) return;
+  if (!confirm(`${s.name}님(${s.type} 레슨)을 삭제하시겠습니까?`)) return;
+  state.students.splice(idx, 1);
+  saveState();
+  renderAdmin();
+  sheetsAction('deleteStudent', { name: s.name, type: s.type });
+  showToast(s.name + '님이 삭제되었습니다');
+}
+
 function saveSettings() {
   state.settings.pricePrivate = document.getElementById('price-private').value;
   state.settings.priceGroup   = document.getElementById('price-group').value;
@@ -1527,6 +1696,114 @@ function savePasswords() {
   });
   localStorage.setItem('tv_passwords', JSON.stringify(passwords));
   showToast('비밀번호가 저장되었습니다 ✓');
+}
+
+// ─────────────── 레슨 횟수 수정 ───────────────
+let editStudentIdx = -1;
+let editLessons = [];
+
+function openEditLesson(idx) {
+  editStudentIdx = idx;
+  const s = state.students[idx];
+  editLessons = [...s.lessons]; // 복사본
+
+  document.getElementById('edit-student-name').textContent = s.name;
+  document.getElementById('edit-student-info').textContent = `${s.teacher || '—'} · ${s.type} 레슨`;
+
+  // 오늘 날짜를 date input 기본값으로
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('edit-add-date').value = today;
+
+  renderEditModal();
+  document.getElementById('edit-lesson-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function renderEditModal() {
+  const count = editLessons.length;
+  const cyclePos = count > 0 ? ((count - 1) % 4) + 1 : 0;
+
+  // 횟수 표시
+  document.getElementById('edit-count-display').textContent = count;
+
+  // 사이클 도트
+  const cycleEl = document.getElementById('edit-cycle-display');
+  cycleEl.innerHTML = '';
+  for (let i = 1; i <= 4; i++) {
+    const dot = document.createElement('div');
+    const isDone = i < cyclePos;
+    const isCurrent = i === cyclePos && count > 0;
+    dot.style.cssText = `width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;transition:all .2s;`;
+    if (isCurrent) {
+      dot.style.background = '#f1e7c3'; dot.style.color = '#2a1558';
+    } else if (isDone) {
+      dot.style.background = 'rgba(241,231,195,0.28)'; dot.style.color = '#f1e7c3';
+    } else {
+      dot.style.background = 'rgba(241,231,195,0.06)'; dot.style.color = 'rgba(241,231,195,0.3)';
+      dot.style.border = '1px solid rgba(241,231,195,0.12)';
+    }
+    dot.textContent = i;
+    cycleEl.appendChild(dot);
+  }
+
+  // 날짜 목록
+  const datesEl = document.getElementById('edit-lesson-dates');
+  if (!editLessons.length) {
+    datesEl.innerHTML = '<div style="font-size:12px;color:rgba(241,231,195,0.3);text-align:center;padding:12px">수업 기록 없음</div>';
+    return;
+  }
+  datesEl.innerHTML = editLessons.map((d, i) => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:8px;background:rgba(241,231,195,0.05);margin-bottom:4px">
+      <span style="font-size:12px;color:rgba(241,231,195,0.7);font-family:'Paperlogy',sans-serif">${i+1}회 · ${d}</span>
+      <button onclick="removeLessonDate(${i})" style="padding:2px 8px;border:1px solid rgba(241,231,195,0.15);background:none;border-radius:4px;font-size:10px;color:rgba(241,231,195,0.4);cursor:pointer;font-family:'Paperlogy',sans-serif">삭제</button>
+    </div>
+  `).join('');
+}
+
+function adjustLesson(delta) {
+  const newCount = editLessons.length + delta;
+  if (newCount < 0) return;
+  if (delta > 0) {
+    // 날짜 추가: 오늘 날짜로
+    const today = new Date().toLocaleDateString('ko-KR');
+    editLessons.push(today);
+  } else {
+    editLessons.pop();
+  }
+  renderEditModal();
+}
+
+function addLessonDate() {
+  const dateVal = document.getElementById('edit-add-date').value;
+  if (!dateVal) { showToast('날짜를 선택해 주세요'); return; }
+  // YYYY-MM-DD → 한국 형식
+  const [y, m, d] = dateVal.split('-');
+  const formatted = `${y}. ${parseInt(m)}. ${parseInt(d)}.`;
+  editLessons.push(formatted);
+  renderEditModal();
+}
+
+function removeLessonDate(idx) {
+  editLessons.splice(idx, 1);
+  renderEditModal();
+}
+
+function saveEditLesson() {
+  if (editStudentIdx < 0) return;
+  const s = state.students[editStudentIdx];
+  s.lessons = editLessons;
+  saveState();
+  sheetsAction('updateLessons', { name: s.name, type: s.type, lessons: editLessons });
+  closeEditLesson();
+  renderAdmin();
+  showToast(`${s.name}님 레슨 횟수가 수정되었습니다 ✓`);
+}
+
+function closeEditLesson() {
+  document.getElementById('edit-lesson-modal').classList.remove('open');
+  document.body.style.overflow = '';
+  editStudentIdx = -1;
+  editLessons = [];
 }
 
 // ─────────────── 강사 데이터 ───────────────
@@ -1724,6 +2001,41 @@ function showToast(msg) {
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2800);
 }
+
+// ─────────────── 공지 Sheets 연동 ───────────────
+function addNotice_sheets(type, title, content, date) {
+  const record = { id: Date.now(), type, title, content, date };
+  sheetsAction('saveNotice', { data: record });
+}
+// 기존 delete 함수들 Sheets 연동 포함
+function deleteAbsent(id) {
+  state.absent = state.absent.filter(a => a.id !== id);
+  saveState(); renderAbsent();
+  sheetsAction('deleteAbsent', { id });
+  showToast('삭제되었습니다');
+}
+function deletePayment(id) {
+  state.payments = state.payments.filter(p => p.id !== id);
+  saveState(); renderPayments();
+  sheetsAction('deletePayment', { id });
+  showToast('삭제되었습니다');
+}
+
+// ─────────────── 앱 초기화 ───────────────
+(async function init() {
+  // 날짜 초기화
+  const d = new Date();
+  const str = d.toLocaleDateString('ko-KR', {year:'numeric',month:'long',day:'numeric',weekday:'long'});
+  const el = document.getElementById('checkin-date');
+  if (el) el.value = str;
+
+  // Sheets에서 데이터 로드 (백그라운드)
+  try {
+    await loadFromSheets();
+  } catch(e) {
+    console.log('초기 로드 건너뜀');
+  }
+})();
 </script>
 </body>
 </html>
