@@ -823,7 +823,7 @@ h1, h2, h3,
     <div class="tab-bar">
       <button class="tab-btn active" onclick="showAdminTab('students')">수강생 목록</button>
       <button class="tab-btn" onclick="showAdminTab('teachers')">선생님별 현황</button>
-      <button class="tab-btn" onclick="showAdminTab('absent')">결석 관리</button>
+      <button class="tab-btn" onclick="showAdminTab('absent')">출석 관리</button>
       <button class="tab-btn" onclick="showAdminTab('payment')">입금 내역</button>
       <button class="tab-btn" onclick="showAdminTab('notices')">공지 관리</button>
       <button class="tab-btn" onclick="showAdminTab('settings')">설정</button>
@@ -833,7 +833,13 @@ h1, h2, h3,
     <div id="admin-students">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
         <div style="font-size:13px;color:var(--muted)" id="student-count-label">수강생 0명</div>
-        <button onclick="showAddStudent()" style="padding:8px 16px;background:#f1e7c3;color:#2a1558;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-family:'Paperlogy',sans-serif">+ 수강생 추가</button>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <button onclick="showAddStudent()" style="padding:8px 16px;background:#f1e7c3;color:#2a1558;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-family:'Paperlogy',sans-serif">+ 수강생 추가</button>
+          <label style="padding:8px 16px;background:rgba(241,231,195,0.12);color:#f1e7c3;border:1px solid rgba(241,231,195,0.25);border-radius:8px;font-size:13px;cursor:pointer;font-family:'Paperlogy',sans-serif">
+            📂 엑셀 일괄 등록
+            <input type="file" accept=".xlsx,.xls" style="display:none" onchange="handleExcelUpload(event)">
+          </label>
+        </div>
       </div>
 
       <!-- 수강생 추가 폼 -->
@@ -902,42 +908,94 @@ h1, h2, h3,
       <div id="teacher-stats-wrap"></div>
     </div>
 
-    <!-- 결석 관리 탭 -->
+    <!-- 출석 관리 탭 -->
     <div id="admin-absent" style="display:none">
-      <div class="card">
-        <div class="card-label">결석 기록 (선생님 전용)</div>
-        <div class="grid-2" style="margin-top:12px">
-          <div class="form-group">
-            <label class="form-label">수강생 이름</label>
-            <input type="text" class="form-input" id="absent-name" placeholder="수강생 성함">
-          </div>
-          <div class="form-group">
-            <label class="form-label">결석 날짜</label>
-            <input type="date" class="form-input" id="absent-date">
-          </div>
-        </div>
-        <div class="grid-2">
-          <div class="form-group">
-            <label class="form-label">담당 선생님</label>
-            <select class="form-select" id="absent-teacher">
-              <option value="천우경">천우경</option>
-              <option value="김수종">김수종</option>
-              <option value="방건주">방건주</option>
-              <option value="탁상우">탁상우</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">사유 (선택)</label>
-            <input type="text" class="form-input" id="absent-reason" placeholder="개인 사정, 병결 등">
-          </div>
-        </div>
-        <button onclick="addAbsent()" style="padding:12px 24px;background:#f1e7c3;color:#2a1558;border:none;border-radius:8px;font-family:'Paperlogy',sans-serif;font-size:14px;font-weight:700;cursor:pointer">결석 기록하기</button>
+
+      <!-- 서브탭 -->
+      <div style="display:flex;gap:8px;margin-bottom:20px">
+        <button id="att-tab-attend" onclick="showAttTab('attend')" style="padding:8px 18px;border-radius:8px;font-family:'Paperlogy',sans-serif;font-size:13px;font-weight:600;cursor:pointer;background:#f1e7c3;color:#2a1558;border:none">✅ 출석 기록</button>
+        <button id="att-tab-absent" onclick="showAttTab('absent')" style="padding:8px 18px;border-radius:8px;font-family:'Paperlogy',sans-serif;font-size:13px;font-weight:600;cursor:pointer;background:rgba(241,231,195,0.12);color:#f1e7c3;border:1px solid rgba(241,231,195,0.2)">❌ 결석 기록</button>
       </div>
-      <div class="card" style="padding:0;overflow:hidden">
-        <table class="student-table" id="absent-table">
-          <thead><tr><th>수강생</th><th>담당 선생님</th><th>결석 날짜</th><th>사유</th><th></th></tr></thead>
-          <tbody id="absent-tbody"><tr><td colspan="5" style="text-align:center;color:rgba(241,231,195,0.4);padding:24px">결석 기록이 없습니다</td></tr></tbody>
-        </table>
+
+      <!-- 출석 기록 서브탭 -->
+      <div id="att-panel-attend">
+        <div class="card">
+          <div class="card-label">출석 직접 기록 (선생님 전용)</div>
+          <div class="grid-2" style="margin-top:12px">
+            <div class="form-group">
+              <label class="form-label">수강생 이름</label>
+              <input type="text" class="form-input" id="attend-name" placeholder="수강생 성함">
+            </div>
+            <div class="form-group">
+              <label class="form-label">출석 날짜</label>
+              <input type="date" class="form-input" id="attend-date">
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label">레슨 유형</label>
+              <select class="form-select" id="attend-type">
+                <option value="개인">개인 레슨</option>
+                <option value="그룹">그룹 레슨</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">담당 선생님</label>
+              <select class="form-select" id="attend-teacher">
+                <option value="천우경">천우경</option>
+                <option value="김수종">김수종</option>
+                <option value="방건주">방건주</option>
+                <option value="탁상우">탁상우</option>
+              </select>
+            </div>
+          </div>
+          <button onclick="addAttendance()" style="padding:12px 24px;background:#f1e7c3;color:#2a1558;border:none;border-radius:8px;font-family:'Paperlogy',sans-serif;font-size:14px;font-weight:700;cursor:pointer">출석 기록하기</button>
+        </div>
+        <div class="card" style="padding:0;overflow:hidden">
+          <table class="student-table">
+            <thead><tr><th>수강생</th><th>레슨 유형</th><th>담당 선생님</th><th>총 출석</th><th>마지막 출석</th></tr></thead>
+            <tbody id="attend-tbody"><tr><td colspan="5" style="text-align:center;color:rgba(241,231,195,0.4);padding:24px">출석 기록이 없습니다</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 결석 기록 서브탭 -->
+      <div id="att-panel-absent" style="display:none">
+        <div class="card">
+          <div class="card-label">결석 기록 (선생님 전용)</div>
+          <div class="grid-2" style="margin-top:12px">
+            <div class="form-group">
+              <label class="form-label">수강생 이름</label>
+              <input type="text" class="form-input" id="absent-name" placeholder="수강생 성함">
+            </div>
+            <div class="form-group">
+              <label class="form-label">결석 날짜</label>
+              <input type="date" class="form-input" id="absent-date">
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label">담당 선생님</label>
+              <select class="form-select" id="absent-teacher">
+                <option value="천우경">천우경</option>
+                <option value="김수종">김수종</option>
+                <option value="방건주">방건주</option>
+                <option value="탁상우">탁상우</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">사유 (선택)</label>
+              <input type="text" class="form-input" id="absent-reason" placeholder="개인 사정, 병결 등">
+            </div>
+          </div>
+          <button onclick="addAbsent()" style="padding:12px 24px;background:#f1e7c3;color:#2a1558;border:none;border-radius:8px;font-family:'Paperlogy',sans-serif;font-size:14px;font-weight:700;cursor:pointer">결석 기록하기</button>
+        </div>
+        <div class="card" style="padding:0;overflow:hidden">
+          <table class="student-table" id="absent-table">
+            <thead><tr><th>수강생</th><th>담당 선생님</th><th>결석 날짜</th><th>사유</th><th></th></tr></thead>
+            <tbody id="absent-tbody"><tr><td colspan="5" style="text-align:center;color:rgba(241,231,195,0.4);padding:24px">결석 기록이 없습니다</td></tr></tbody>
+          </table>
+        </div>
       </div>
     </div>
 
@@ -1478,7 +1536,7 @@ function showAdminTab(tab) {
     b.classList.toggle('active', ['students','teachers','absent','payment','notices','settings'][i] === tab);
   });
   if (tab === 'teachers') renderTeacherStats();
-  if (tab === 'absent')   renderAbsent();
+  if (tab === 'absent')   { renderAbsent(); renderAttendance(); showAttTab('attend'); }
   if (tab === 'payment')  renderPayments();
 }
 
@@ -1517,6 +1575,82 @@ function renderTeacherStats() {
       </table>` : `<div style="font-size:13px;color:rgba(241,231,195,0.4);padding:8px 0">담당 수강생이 없습니다</div>`}
     `;
     wrap.appendChild(card);
+  });
+}
+
+// ── 출석 관리 서브탭 ──
+function showAttTab(tab) {
+  document.getElementById('att-panel-attend').style.display = tab === 'attend' ? 'block' : 'none';
+  document.getElementById('att-panel-absent').style.display = tab === 'absent' ? 'block' : 'none';
+  const btnAttend = document.getElementById('att-tab-attend');
+  const btnAbsent = document.getElementById('att-tab-absent');
+  if (btnAttend) {
+    btnAttend.style.background = tab === 'attend' ? '#f1e7c3' : 'rgba(241,231,195,0.12)';
+    btnAttend.style.color      = tab === 'attend' ? '#2a1558' : '#f1e7c3';
+    btnAttend.style.border     = tab === 'attend' ? 'none' : '1px solid rgba(241,231,195,0.2)';
+  }
+  if (btnAbsent) {
+    btnAbsent.style.background = tab === 'absent' ? '#f1e7c3' : 'rgba(241,231,195,0.12)';
+    btnAbsent.style.color      = tab === 'absent' ? '#2a1558' : '#f1e7c3';
+    btnAbsent.style.border     = tab === 'absent' ? 'none' : '1px solid rgba(241,231,195,0.2)';
+  }
+  if (tab === 'absent') renderAbsent();
+  if (tab === 'attend') renderAttendance();
+}
+
+function addAttendance() {
+  const name    = document.getElementById('attend-name').value.trim();
+  const dateVal = document.getElementById('attend-date').value;
+  const type    = document.getElementById('attend-type').value;
+  const teacher = document.getElementById('attend-teacher').value;
+  if (!name || !dateVal) { showToast('이름과 날짜를 입력해 주세요'); return; }
+
+  // YYYY-MM-DD → 한국 형식
+  const [y, m, d] = dateVal.split('-');
+  const formatted = `${y}. ${parseInt(m)}. ${parseInt(d)}.`;
+
+  let student = state.students.find(s => s.name === name && s.type === type);
+  if (!student) {
+    student = { name, type, teacher, phone: '', memo: '', lessons: [] };
+    state.students.push(student);
+    sheetsAction('saveStudent', { data: { name, type, teacher, phone: '', memo: '' } });
+  }
+  if (student.lessons.includes(formatted)) { showToast('이미 기록된 날짜예요'); return; }
+
+  student.lessons.push(formatted);
+  student.lessons.sort();
+  saveState();
+  renderAttendance();
+  renderAdmin();
+  sheetsAction('saveLesson', { data: { name, type, teacher, date: formatted, seq: student.lessons.length } });
+  document.getElementById('attend-name').value = '';
+  showToast(`${name}님 출석 기록 완료 ✓`);
+}
+
+function renderAttendance() {
+  const tbody = document.getElementById('attend-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  const students = [...state.students].sort((a, b) => {
+    const la = a.lessons[a.lessons.length - 1] || '';
+    const lb = b.lessons[b.lessons.length - 1] || '';
+    return lb.localeCompare(la);
+  });
+  if (!students.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:rgba(241,231,195,0.4);padding:24px">출석 기록이 없습니다</td></tr>';
+    return;
+  }
+  students.forEach(s => {
+    const tr = document.createElement('tr');
+    const last = s.lessons.length ? s.lessons[s.lessons.length - 1] : '—';
+    tr.innerHTML = `
+      <td><strong>${s.name}</strong></td>
+      <td><span style="padding:3px 8px;border-radius:4px;font-size:11px;background:rgba(241,231,195,0.12);color:#f1e7c3">${s.type}</span></td>
+      <td><span style="padding:3px 8px;border-radius:4px;font-size:11px;background:rgba(107,63,160,0.35);color:rgba(241,231,195,0.9)">${s.teacher || '—'}</span></td>
+      <td style="font-family:'Paperlogy',sans-serif;font-weight:700">${s.lessons.length}회</td>
+      <td style="font-size:12px;color:rgba(241,231,195,0.6)">${last}</td>
+    `;
+    tbody.appendChild(tr);
   });
 }
 
@@ -1806,6 +1940,122 @@ function closeEditLesson() {
   editLessons = [];
 }
 
+// ─────────────── 엑셀 일괄 등록 ───────────────
+async function handleExcelUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  event.target.value = ''; // 동일 파일 재업로드 가능하게 초기화
+
+  showToast('📂 엑셀 파일 읽는 중...');
+
+  try {
+    // SheetJS 로드 (CDN)
+    if (typeof XLSX === 'undefined') {
+      await loadScript('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js');
+    }
+
+    const data = await file.arrayBuffer();
+    const workbook = XLSX.read(data, { type: 'array' });
+
+    // 첫 번째 시트 또는 "수강생 목록" 시트 사용
+    const sheetName = workbook.SheetNames.includes('수강생 목록')
+      ? '수강생 목록'
+      : workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+    const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+
+    // 헤더 행 찾기 (이름/레슨유형/담당선생님 포함된 행)
+    let headerRow = -1;
+    for (let i = 0; i < rows.length; i++) {
+      const r = rows[i].map(c => String(c).trim());
+      if (r.includes('이름') && r.includes('레슨유형')) { headerRow = i; break; }
+    }
+    if (headerRow < 0) { showToast('❌ 헤더를 찾을 수 없어요. 양식을 확인해 주세요.'); return; }
+
+    const headers = rows[headerRow].map(c => String(c).trim());
+    const iName    = headers.indexOf('이름');
+    const iType    = headers.indexOf('레슨유형');
+    const iTeacher = headers.indexOf('담당선생님');
+    const iPhone   = headers.indexOf('연락처');
+    const iMemo    = headers.indexOf('메모');
+    const iSeq     = headers.indexOf('총레슨횟수');
+
+    const newStudents = [];
+    const skipped = [];
+
+    for (let i = headerRow + 1; i < rows.length; i++) {
+      const r = rows[i];
+      const name = String(r[iName] || '').trim();
+      const type = String(r[iType] || '').trim();
+      if (!name || !type) continue;
+
+      // 예시 데이터 필터링
+      if (['홍길동','김민지','이수진'].includes(name)) continue;
+
+      if (!['개인','그룹'].includes(type)) {
+        skipped.push(`${name} (레슨유형 오류: "${type}")`);
+        continue;
+      }
+
+      const teacher = String(r[iTeacher] || '').trim();
+      const phone   = String(r[iPhone]   || '').trim();
+      const memo    = String(r[iMemo]    || '').trim();
+      const seq     = parseInt(r[iSeq])  || 0;
+
+      // 중복 체크
+      if (state.students.find(s => s.name === name && s.type === type)) {
+        skipped.push(`${name} (이미 등록됨)`);
+        continue;
+      }
+
+      // lessons 배열 생성 (총 레슨 횟수만큼 빈 날짜 채움 — 날짜 불명)
+      const lessons = seq > 0
+        ? Array.from({ length: seq }, (_, k) => `이전수업 ${k + 1}회`)
+        : [];
+
+      newStudents.push({ name, type, teacher, phone, memo, lessons });
+    }
+
+    if (!newStudents.length && !skipped.length) {
+      showToast('등록할 수강생이 없어요.'); return;
+    }
+
+    // state에 추가 + Sheets에 저장
+    for (const s of newStudents) {
+      state.students.push(s);
+      await sheetsAction('saveStudent', { data: { name: s.name, type: s.type, teacher: s.teacher, phone: s.phone, memo: s.memo } });
+      // 레슨 횟수 있으면 updateLessons
+      if (s.lessons.length > 0) {
+        await sheetsAction('updateLessons', { name: s.name, type: s.type, lessons: s.lessons });
+      }
+    }
+
+    saveState();
+    renderAdmin();
+
+    let msg = `✅ ${newStudents.length}명 등록 완료!`;
+    if (skipped.length) msg += ` (건너뜀 ${skipped.length}명)`;
+    showToast(msg);
+
+    if (skipped.length) {
+      console.warn('건너뜀:', skipped.join(', '));
+      setTimeout(() => showToast(`건너뜀: ${skipped.slice(0,3).join(', ')}${skipped.length > 3 ? ' 외 ' + (skipped.length - 3) + '명' : ''}`), 3000);
+    }
+
+  } catch (e) {
+    showToast('❌ 파일 읽기 실패: ' + e.message);
+    console.error(e);
+  }
+}
+
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = src; s.onload = resolve; s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+
 // ─────────────── 강사 데이터 ───────────────
 const TEACHERS = {
   '천우경': {
@@ -2028,6 +2278,12 @@ function deletePayment(id) {
   const str = d.toLocaleDateString('ko-KR', {year:'numeric',month:'long',day:'numeric',weekday:'long'});
   const el = document.getElementById('checkin-date');
   if (el) el.value = str;
+  // 출석 관리 날짜 기본값
+  const today = d.toISOString().split('T')[0];
+  const attendDate = document.getElementById('attend-date');
+  if (attendDate) attendDate.value = today;
+  const absentDate = document.getElementById('absent-date');
+  if (absentDate) absentDate.value = today;
 
   // Sheets에서 데이터 로드 (백그라운드)
   try {
