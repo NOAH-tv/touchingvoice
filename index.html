@@ -342,6 +342,62 @@ body { background:var(--bg); color:#f1e7c3; font-family:'Paperlogy',sans-serif; 
 }
 .modal-close:hover { background:rgba(241,231,195,0.2); }
 
+/* ── 스탬프 카드 슬라이드업 ── */
+.stamp-overlay {
+  display:none; position:fixed; inset:0; z-index:600;
+  background:rgba(15,5,40,0.7); backdrop-filter:blur(6px);
+  align-items:flex-end; justify-content:center;
+}
+.stamp-overlay.open { display:flex; animation:fadeIn .2s ease; }
+.stamp-sheet {
+  background:#3f2378; border:1px solid rgba(241,231,195,0.18);
+  border-radius:24px 24px 0 0; width:100%; max-width:520px;
+  padding:28px 24px 40px; position:relative;
+  animation:slideUp .3s cubic-bezier(.16,1,.3,1);
+}
+@keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+.stamp-handle {
+  width:40px; height:4px; background:rgba(241,231,195,0.25);
+  border-radius:2px; margin:0 auto 20px; cursor:pointer;
+}
+/* 4칸 스탬프 그리드 */
+.stamp-grid {
+  display:grid; grid-template-columns:repeat(4,1fr); gap:12px;
+  margin:20px 0;
+}
+.stamp-slot {
+  aspect-ratio:1; border-radius:16px;
+  border:2px dashed rgba(241,231,195,0.2);
+  background:rgba(241,231,195,0.04);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  cursor:pointer; transition:all .2s; position:relative; overflow:hidden;
+}
+.stamp-slot:hover { border-color:rgba(241,231,195,0.4); background:rgba(241,231,195,0.08); }
+.stamp-slot.filled {
+  border:2px solid rgba(241,231,195,0.35);
+  background:linear-gradient(135deg,rgba(63,35,120,0.9),rgba(107,47,160,0.8));
+}
+.stamp-slot.filled::after {
+  content:'✓'; font-size:32px; color:#f1e7c3; font-weight:700;
+}
+.stamp-slot.empty-hint { border-color:rgba(241,231,195,0.35); background:rgba(241,231,195,0.06); }
+.stamp-slot-num {
+  font-family:'Paperlogy',sans-serif; font-size:10px; font-weight:600;
+  color:rgba(241,231,195,0.3); letter-spacing:1px; position:absolute; top:8px; left:10px;
+}
+.stamp-slot.filled .stamp-slot-num { color:rgba(241,231,195,0.5); }
+/* 입금 안내 배너 */
+.stamp-payment-banner {
+  display:none; background:linear-gradient(135deg,rgba(212,170,58,0.2),rgba(212,170,58,0.08));
+  border:1px solid rgba(212,170,58,0.4); border-radius:14px;
+  padding:18px 20px; margin-top:4px; text-align:center;
+  animation:fadeIn .4s ease;
+}
+.stamp-payment-banner.show { display:block; }
+.stamp-payment-banner h4 { font-size:16px; font-weight:700; color:var(--warm); margin-bottom:6px; }
+.stamp-payment-banner p  { font-size:12px; color:rgba(241,231,195,0.75); line-height:1.7; margin-bottom:12px; }
+.stamp-bank-info { background:rgba(241,231,195,0.1); border-radius:8px; padding:10px 14px; font-family:'Paperlogy',sans-serif; font-size:13px; color:#f1e7c3; }
+
 /* ── 강사 프로필 모달 ── */
 .teacher-modal-header {
   padding:32px 32px 20px;
@@ -1199,6 +1255,48 @@ h1, h2, h3,
   </div>
 </div>
 
+<!-- ════ 스탬프 카드 슬라이드업 ════ -->
+<div class="stamp-overlay" id="stamp-overlay" onclick="if(event.target===this)closeStampCard()">
+  <div class="stamp-sheet">
+    <div class="stamp-handle" onclick="closeStampCard()"></div>
+    <!-- 헤더 -->
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px">
+      <div>
+        <div style="font-family:'Paperlogy',sans-serif;font-size:9px;letter-spacing:2px;color:rgba(241,231,195,0.5);text-transform:uppercase;margin-bottom:5px" id="sc-teacher-info">—</div>
+        <div style="font-size:22px;font-weight:700;color:#f1e7c3" id="sc-name">—</div>
+        <div style="font-size:12px;color:rgba(241,231,195,0.5);margin-top:3px" id="sc-type-info">—</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-family:'Paperlogy',sans-serif;font-size:28px;font-weight:700;color:#f1e7c3;line-height:1" id="sc-total">0</div>
+        <div style="font-size:10px;color:rgba(241,231,195,0.45);margin-top:2px">총 레슨</div>
+      </div>
+    </div>
+
+    <!-- 사이클 표시 -->
+    <div style="font-family:'Paperlogy',sans-serif;font-size:10px;letter-spacing:1.5px;color:rgba(241,231,195,0.4);text-transform:uppercase;margin-bottom:8px" id="sc-cycle-label">사이클 1회차</div>
+
+    <!-- 4칸 스탬프 -->
+    <div class="stamp-grid" id="sc-grid"></div>
+
+    <!-- 입금 안내 배너 -->
+    <div class="stamp-payment-banner" id="sc-payment-banner">
+      <h4>🎉 4회 완료!</h4>
+      <p>수고하셨습니다. 다음 4회 레슨 수강료 안내입니다.<br>입금 확인 후 다음 일정이 확정됩니다.</p>
+      <div class="stamp-bank-info" id="sc-bank-info">—</div>
+    </div>
+
+    <!-- 버튼 -->
+    <div style="display:flex;gap:10px;margin-top:20px">
+      <button onclick="stampAddToday()" id="sc-add-btn" style="flex:1;padding:14px;background:#f1e7c3;color:#2a1558;border:none;border-radius:12px;font-family:'Paperlogy',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s">
+        + 오늘 출석 추가
+      </button>
+      <button onclick="openEditLesson(stampStudentIdx)" style="padding:14px 18px;background:rgba(241,231,195,0.1);color:#f1e7c3;border:1px solid rgba(241,231,195,0.2);border-radius:12px;font-family:'Paperlogy',sans-serif;font-size:13px;cursor:pointer">
+        상세 수정
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- 뒤로가기 플로팅 버튼 -->
 <button class="back-fab" id="back-fab" onclick="goBack()">←</button>
 
@@ -1513,7 +1611,7 @@ function renderAdmin() {
     }
     pillsHtml += `</div><div style="font-size:10px;color:var(--muted);margin-top:3px">총 ${count}회</div>`;
     tr.innerHTML = `
-      <td><strong>${s.name}</strong></td>
+      <td><strong style="cursor:pointer;text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(241,231,195,0.3)" onclick="openStampCard(${idx})">${s.name}</strong></td>
       <td><span style="padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600;background:rgba(107,63,160,0.35);color:rgba(241,231,195,0.9)">${s.teacher || '—'}</span></td>
       <td><span style="padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600;background:rgba(241,231,195,0.12);color:#f1e7c3">${s.type}</span></td>
       <td>${pillsHtml}</td>
@@ -1845,6 +1943,100 @@ function deleteNotice(id) {
   sheetsAction('deleteNotice', { id });
   showToast('삭제되었습니다');
 }
+// ─────────────── 스탬프 카드 ───────────────
+let stampStudentIdx = -1;
+
+function openStampCard(idx) {
+  stampStudentIdx = idx;
+  renderStampCard();
+  document.getElementById('stamp-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeStampCard() {
+  document.getElementById('stamp-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+  stampStudentIdx = -1;
+}
+
+function renderStampCard() {
+  if (stampStudentIdx < 0) return;
+  const s = state.students[stampStudentIdx];
+  const total    = s.lessons.length;
+  const cycle    = Math.floor(total / 4) + 1;          // 현재 사이클 번호
+  const cyclePos = total % 4;                           // 현재 사이클에서 완료한 수 (0~4)
+  const isDue    = total > 0 && total % 4 === 0;       // 정확히 4회 배수 = 입금 타이밍
+
+  // 헤더
+  document.getElementById('sc-name').textContent      = s.name;
+  document.getElementById('sc-teacher-info').textContent = `${s.teacher || '—'} · ${s.type} 레슨`;
+  document.getElementById('sc-type-info').textContent = `마지막 수업: ${s.lessons.length ? s.lessons[s.lessons.length-1] : '없음'}`;
+  document.getElementById('sc-total').textContent     = total;
+  document.getElementById('sc-cycle-label').textContent = isDue
+    ? `${cycle-1}사이클 완료 ✓`
+    : `${cycle}사이클 · ${cyclePos}/4회차`;
+
+  // 은행 정보
+  document.getElementById('sc-bank-info').textContent = state.settings.bankInfo +
+    `\n${s.type === '개인' ? state.settings.pricePrivate : state.settings.priceGroup}`;
+
+  // 4칸 스탬프 그리드
+  const grid = document.getElementById('sc-grid');
+  grid.innerHTML = '';
+  for (let i = 1; i <= 4; i++) {
+    const slot = document.createElement('div');
+    slot.className = 'stamp-slot' + (i <= cyclePos ? ' filled' : '');
+    slot.innerHTML = `<div class="stamp-slot-num">${i}회</div>`;
+    // 빈 칸 탭 → 오늘 출석 추가
+    if (i > cyclePos) {
+      slot.onclick = () => stampAddToday();
+      slot.title = '탭하여 오늘 출석 추가';
+    }
+    grid.appendChild(slot);
+  }
+
+  // 입금 안내 배너
+  const banner = document.getElementById('sc-payment-banner');
+  banner.classList.toggle('show', isDue);
+
+  // 출석 추가 버튼 텍스트
+  const addBtn = document.getElementById('sc-add-btn');
+  if (addBtn) {
+    addBtn.textContent = isDue ? '✓ 다음 사이클 시작' : '+ 오늘 출석 추가';
+    addBtn.style.background = isDue ? 'rgba(212,170,58,0.25)' : '#f1e7c3';
+    addBtn.style.color      = isDue ? 'var(--warm)' : '#2a1558';
+    addBtn.style.border     = isDue ? '1px solid rgba(212,170,58,0.4)' : 'none';
+  }
+}
+
+function stampAddToday() {
+  if (stampStudentIdx < 0) return;
+  const s = state.students[stampStudentIdx];
+  const today = new Date().toLocaleDateString('ko-KR');
+
+  // 오늘 이미 출석 체크됐는지 확인
+  if (s.lessons.includes(today)) {
+    showToast('오늘은 이미 출석하셨습니다 ✓'); return;
+  }
+
+  s.lessons.push(today);
+  saveState();
+  sheetsAction('saveLesson', { data: { name: s.name, type: s.type, teacher: s.teacher||'', date: today, seq: s.lessons.length } });
+
+  const newTotal  = s.lessons.length;
+  const isDueNow  = newTotal % 4 === 0;
+
+  renderStampCard();
+  renderAdmin();
+
+  if (isDueNow) {
+    showToast(`🎉 ${s.name}님 4회 완료! 입금 안내가 표시됩니다.`);
+  } else {
+    const remaining = 4 - (newTotal % 4);
+    showToast(`${s.name}님 출석 ✓ (다음 입금까지 ${remaining}회 남음)`);
+  }
+}
+
 function deleteStudent(idx) {
   const s = state.students[idx];
   if (!s) return;
@@ -1879,6 +2071,8 @@ let editStudentIdx = -1;
 let editLessons = [];
 
 function openEditLesson(idx) {
+  // 스탬프 카드가 열려있으면 먼저 닫기
+  document.getElementById('stamp-overlay').classList.remove('open');
   editStudentIdx = idx;
   const s = state.students[idx];
   editLessons = [...s.lessons]; // 복사본
