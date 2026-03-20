@@ -40,23 +40,28 @@ body { background:var(--bg); color:#f1e7c3; font-family:'Noto Serif KR',serif; m
   background:rgba(30,12,70,0.97);
   backdrop-filter:blur(12px);
   border-bottom:1px solid rgba(241,231,195,0.10);
-  padding:0 24px;
+  padding:0 32px;
 }
 .nav-inner {
   max-width:1080px; margin:0 auto;
-  height:60px; display:flex; align-items:center; justify-content:space-between;
+  height:60px; display:flex; align-items:center; gap:0;
 }
-.nav-logo { display:flex; flex-direction:column; gap:1px; text-decoration:none; }
+.nav-logo {
+  display:flex; flex-direction:column; gap:1px; text-decoration:none;
+  cursor:pointer; margin-right:40px; flex-shrink:0;
+}
 .nav-logo-en { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:3px; color:rgba(241,231,195,0.6); text-transform:uppercase; }
 .nav-logo-kr { font-size:17px; font-weight:600; color:#f1e7c3; }
-.nav-links { display:flex; align-items:center; gap:8px; }
+.nav-links { display:flex; align-items:center; gap:4px; flex:1; }
 .nav-link {
-  padding:7px 14px; border-radius:8px;
-  font-size:13px; font-weight:400; color:rgba(241,231,195,0.55);
+  padding:8px 18px; border-radius:8px;
+  font-size:13px; font-weight:400; color:rgba(241,231,195,0.65);
   text-decoration:none; transition:all .15s; cursor:pointer; border:none; background:none;
+  white-space:nowrap;
 }
 .nav-link:hover { background:rgba(241,231,195,0.10); color:#f1e7c3; }
 .nav-link.active { color:#f1e7c3; background:rgba(241,231,195,0.15); font-weight:600; }
+.nav-icons { display:flex; align-items:center; gap:4px; margin-left:auto; }
 .nav-btn {
   padding:8px 18px; border-radius:8px;
   background:#f1e7c3; color:#2a1558; border:none;
@@ -298,14 +303,14 @@ body { background:var(--bg); color:#f1e7c3; font-family:'Noto Serif KR',serif; m
   <div class="nav-inner">
     <a class="nav-logo" onclick="showPage('home')">
       <span class="nav-logo-en">TouchingVoice</span>
-      <span class="nav-logo-kr">터칭보이스</span>
     </a>
     <div class="nav-links">
-      <button class="nav-link active" id="nav-home" onclick="showPage('home')">홈</button>
-      <button class="nav-link" id="nav-checkin" onclick="showPage('checkin')">출석 체크</button>
+      <button class="nav-link active" id="nav-checkin" onclick="showPage('checkin')">출석 체크</button>
       <button class="nav-link" id="nav-notice" onclick="showPage('notice')">공지사항</button>
       <button class="nav-link" id="nav-test" onclick="showPage('test')">성격 검사</button>
       <button class="nav-link" id="nav-feed" onclick="showPage('feed')">콘텐츠</button>
+    </div>
+    <div class="nav-icons">
       <button class="nav-link" onclick="window.open('https://www.youtube.com/@Touchin9Voice','_blank')" title="유튜브" style="font-size:16px;padding:7px 10px">▶</button>
       <button class="nav-link" onclick="window.open('https://www.instagram.com/touchingvoice_official','_blank')" title="인스타그램" style="font-size:16px;padding:7px 10px">📸</button>
       <button class="nav-btn" onclick="showPage('admin')">관리자 ›</button>
@@ -365,7 +370,8 @@ body { background:var(--bg); color:#f1e7c3; font-family:'Noto Serif KR',serif; m
     <!-- ── 강사 섹션 ── -->
     <div style="margin-top:48px;padding-top:48px;border-top:1px solid rgba(241,231,195,0.1)">
       <div class="card-label" style="margin-bottom:8px;text-align:center">Our Teachers · 강사 소개</div>
-      <h2 style="font-family:'Cormorant Garamond',serif;font-size:clamp(28px,5vw,44px);font-weight:300;text-align:center;margin-bottom:8px;color:#f1e7c3">터칭보이스와 함께하는<br><em style="font-style:italic;color:rgba(241,231,195,0.6)">보이스 아티스트</em></h2>
+      <h2 style="font-family:'Cormorant Garamond',serif;font-size:clamp(28px,5vw,44px);font-weight:300;text-align:center;margin-bottom:6px;color:#f1e7c3">터칭보이스</h2>
+      <div style="text-align:center;font-family:'Cormorant Garamond',serif;font-size:clamp(16px,3vw,22px);font-style:italic;color:rgba(241,231,195,0.55);margin-bottom:0">Voice Conductor</div>
       <div style="height:1px;width:40px;background:rgba(241,231,195,0.3);margin:20px auto 40px"></div>
 
       <div class="grid-2" style="gap:20px;max-width:800px;margin:0 auto">
@@ -484,7 +490,7 @@ body { background:var(--bg); color:#f1e7c3; font-family:'Noto Serif KR',serif; m
         <div class="payment-info">
           <div style="margin-bottom:6px;opacity:.8;font-size:11px">입금 안내</div>
           <div style="font-size:16px;font-weight:700" id="payment-info-text">개인 레슨 4회 · ₩200,000</div>
-          <div style="margin-top:8px;font-size:12px;opacity:.8">카카오뱅크 · 3333-00-0000000 · 예금주: 노아</div>
+          <div style="margin-top:8px;font-size:12px;opacity:.8">기업은행 · 274-103965-04-014 · 터칭보이스(천우경)</div>
         </div>
       </div>
 
@@ -863,7 +869,7 @@ body { background:var(--bg); color:#f1e7c3; font-family:'Noto Serif KR',serif; m
         </div>
         <div class="form-group">
           <label class="form-label">입금 계좌</label>
-          <input type="text" class="form-input" id="bank-info" value="카카오뱅크 3333-00-0000000 · 예금주: 노아">
+          <input type="text" class="form-input" id="bank-info" value="기업은행 274-103965-04-014 · 터칭보이스(천우경)">
         </div>
         <button onclick="saveSettings()" style="padding:12px 24px;background:#f1e7c3;color:#2a1558;border:none;border-radius:8px;font-family:'Noto Serif KR',serif;font-size:14px;font-weight:700;cursor:pointer">저장</button>
       </div>
@@ -889,7 +895,7 @@ let state = {
   settings: JSON.parse(localStorage.getItem('tv_settings') || JSON.stringify({
     pricePrivate: '₩200,000',
     priceGroup: '₩120,000',
-    bankInfo: '카카오뱅크 3333-00-0000000 · 예금주: 노아'
+    bankInfo: '기업은행 274-103965-04-014 · 터칭보이스(천우경)'
   }))
 };
 
