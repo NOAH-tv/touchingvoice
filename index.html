@@ -398,7 +398,48 @@ body { background:var(--bg); color:#f1e7c3; font-family:'Paperlogy',sans-serif; 
 .stamp-payment-banner p  { font-size:12px; color:rgba(241,231,195,0.75); line-height:1.7; margin-bottom:12px; }
 .stamp-bank-info { background:rgba(241,231,195,0.1); border-radius:8px; padding:10px 14px; font-family:'Paperlogy',sans-serif; font-size:13px; color:#f1e7c3; }
 
-/* ── 강사 프로필 모달 ── */
+/* ── 레슨 노트 탭 ── */
+.ln-tab {
+  padding:7px 14px; border-radius:8px; border:none; background:none;
+  font-family:'Paperlogy',sans-serif; font-size:12px; font-weight:600;
+  color:rgba(241,231,195,0.5); cursor:pointer; transition:all .15s;
+}
+.ln-tab.active { background:rgba(241,231,195,0.15); color:#f1e7c3; }
+.ln-tab:hover  { background:rgba(241,231,195,0.1); color:#f1e7c3; }
+
+/* ── 레슨 노트 카드 (학생 뷰) ── */
+.lesson-note-card {
+  background:var(--surface2); border:1px solid var(--border2);
+  border-radius:12px; padding:16px 18px; margin-bottom:12px;
+  cursor:pointer; transition:all .2s;
+}
+.lesson-note-card:hover { border-color:rgba(241,231,195,0.35); }
+.lesson-note-card .note-date { font-family:'Paperlogy',sans-serif; font-size:10px; letter-spacing:1px; color:rgba(241,231,195,0.45); margin-bottom:6px; }
+.lesson-note-card .note-preview { font-size:13px; color:rgba(241,231,195,0.8); line-height:1.6; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.lesson-note-card .note-badges { display:flex; gap:6px; margin-top:8px; }
+.note-badge-hw { padding:3px 8px; border-radius:4px; font-size:10px; font-weight:600; background:rgba(157,138,161,0.2); color:rgba(157,138,161,0.9); font-family:'Paperlogy',sans-serif; }
+.note-badge-yt { padding:3px 8px; border-radius:4px; font-size:10px; font-weight:600; background:rgba(212,170,58,0.15); color:var(--warm); font-family:'Paperlogy',sans-serif; }
+
+/* ── 선생님별 수강생 그룹 ── */
+.teacher-group { margin-bottom:28px; }
+.teacher-group-header {
+  display:flex; align-items:center; gap:12px; margin-bottom:12px;
+  padding:12px 16px; background:rgba(63,35,120,0.5);
+  border-radius:12px; border:1px solid rgba(241,231,195,0.12);
+}
+.teacher-avatar {
+  width:38px; height:38px; border-radius:50%;
+  background:linear-gradient(135deg,#6b3fa0,#2e1860);
+  display:flex; align-items:center; justify-content:center;
+  font-size:13px; font-weight:700; color:#f1e7c3; flex-shrink:0;
+}
+.mypage-stamp-slot {
+  aspect-ratio:1; border-radius:10px;
+  border:2px dashed rgba(241,231,195,0.18);
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px; transition:all .2s;
+}
+.mypage-stamp-slot.filled { border-color:rgba(241,231,195,0.35); background:rgba(63,35,120,0.6); }
 .teacher-modal-header {
   padding:32px 32px 20px;
   display:flex; gap:20px; align-items:flex-start;
@@ -545,10 +586,11 @@ h1, h2, h3,
       <span class="nav-logo-en">TouchingVoice</span>
     </a>
     <div class="nav-links">
-      <button class="nav-link active" id="nav-checkin" onclick="showPage('checkin')">출석 체크</button>
+      <button class="nav-link" id="nav-checkin" onclick="showPage('checkin')">출석 체크</button>
       <button class="nav-link" id="nav-notice" onclick="showPage('notice')">공지사항</button>
       <button class="nav-link" id="nav-test" onclick="showPage('test')">성격 검사</button>
       <button class="nav-link" id="nav-feed" onclick="showPage('feed')">콘텐츠</button>
+      <button class="nav-link" id="nav-mypage" onclick="showPage('mypage')">내 레슨</button>
     </div>
     <div class="nav-icons">
       <button class="nav-link" onclick="window.open('https://www.youtube.com/@Touchin9Voice','_blank')" title="유튜브" style="font-size:16px;padding:7px 10px">▶</button>
@@ -856,6 +898,53 @@ h1, h2, h3,
   </div>
 </div>
 
+<!-- ════════════ MY LESSON (학생용) ════════════ -->
+<div class="page" id="page-mypage">
+  <div class="wrap-sm" style="padding-top:40px;padding-bottom:60px">
+    <div class="card-label" style="margin-bottom:8px">내 레슨 · My Lesson</div>
+    <h2 class="section-title">내 레슨 기록</h2>
+    <p class="section-sub">이름을 입력하면 레슨 내용, 숙제, 참고 영상을 확인할 수 있어요.</p>
+
+    <!-- 이름 입력 -->
+    <div id="mypage-login" class="card">
+      <div class="form-group">
+        <label class="form-label">이름</label>
+        <input type="text" class="form-input" id="mypage-name-input" placeholder="성함을 입력해 주세요" onkeydown="if(event.key==='Enter')mypageLogin()">
+      </div>
+      <button class="btn-primary" onclick="mypageLogin()">확인 →</button>
+    </div>
+
+    <!-- 학생 대시보드 -->
+    <div id="mypage-dashboard" style="display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+        <div>
+          <div style="font-size:20px;font-weight:700;color:#f1e7c3" id="mypage-student-name">—</div>
+          <div style="font-size:12px;color:rgba(241,231,195,0.5);margin-top:2px" id="mypage-student-info">—</div>
+        </div>
+        <button onclick="mypageLogout()" style="padding:6px 14px;background:rgba(241,231,195,0.08);border:1px solid rgba(241,231,195,0.2);border-radius:8px;font-size:12px;color:rgba(241,231,195,0.6);cursor:pointer;font-family:'Paperlogy',sans-serif">나가기</button>
+      </div>
+
+      <!-- 스탬프 미니 뷰 -->
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-label" style="margin-bottom:12px">수업 현황</div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;flex:1" id="mypage-stamp-grid"></div>
+          <div style="text-align:center;flex-shrink:0">
+            <div style="font-family:'Paperlogy',sans-serif;font-size:28px;font-weight:700;color:#f1e7c3" id="mypage-total">0</div>
+            <div style="font-size:10px;color:rgba(241,231,195,0.45)">총 레슨</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 레슨 노트 목록 -->
+      <div class="card-label" style="margin-bottom:12px">레슨 기록</div>
+      <div id="mypage-notes-list">
+        <div style="text-align:center;color:rgba(241,231,195,0.4);padding:32px;font-size:13px">레슨 기록이 없습니다</div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ════════════ ADMIN ════════════ -->
 <div class="page" id="page-admin">
   <div class="wrap" style="padding-top:40px;padding-bottom:60px">
@@ -957,24 +1046,8 @@ h1, h2, h3,
         </div>
       </div>
 
-      <div class="card" style="padding:0;overflow:hidden">
-        <table class="student-table" id="student-table">
-          <thead>
-            <tr>
-              <th>이름</th>
-              <th>담당 선생님</th>
-              <th>레슨 유형</th>
-              <th>수업 현황</th>
-              <th>마지막 수업</th>
-              <th>상태</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="student-tbody">
-            <tr><td colspan="5" style="text-align:center;color:rgba(241,231,195,0.4);padding:32px">등록된 수강생이 없습니다</td></tr>
-          </tbody>
-        </table>
-      </div>
+      <div id="student-by-teacher"></div>
+
     </div>
 
     <!-- 선생님별 현황 탭 -->
@@ -1266,6 +1339,54 @@ h1, h2, h3,
   </div>
 </div>
 
+<!-- ════ 레슨 노트 모달 ════ -->
+<div class="modal-overlay" id="lesson-note-modal" onclick="if(event.target===this)closeLessonNote()">
+  <div class="modal-box" style="max-width:480px">
+    <button class="modal-close" onclick="closeLessonNote()">✕</button>
+    <div style="padding:28px 28px 24px">
+
+      <!-- 헤더 -->
+      <div style="margin-bottom:20px">
+        <div style="font-family:'Paperlogy',sans-serif;font-size:9px;letter-spacing:2px;color:rgba(241,231,195,0.5);text-transform:uppercase;margin-bottom:6px" id="ln-meta">—</div>
+        <div style="font-size:20px;font-weight:700;color:#f1e7c3" id="ln-title">—</div>
+      </div>
+
+      <!-- 탭 -->
+      <div style="display:flex;gap:6px;margin-bottom:20px;border-bottom:1px solid rgba(241,231,195,0.1);padding-bottom:12px">
+        <button class="ln-tab active" id="ln-tab-note" onclick="switchLessonNoteTab('note')">📝 레슨 노트</button>
+        <button class="ln-tab" id="ln-tab-hw" onclick="switchLessonNoteTab('hw')">📚 숙제</button>
+        <button class="ln-tab" id="ln-tab-yt" onclick="switchLessonNoteTab('yt')">▶ 유튜브</button>
+      </div>
+
+      <!-- 레슨 노트 패널 -->
+      <div id="ln-panel-note">
+        <div style="font-family:'Paperlogy',sans-serif;font-size:10px;letter-spacing:1px;color:rgba(241,231,195,0.5);margin-bottom:8px">이번 레슨에서 다룬 내용</div>
+        <textarea id="ln-note-input" class="form-input" rows="5" placeholder="발성 포인트, 곡 진도, 특이사항 등..." style="resize:vertical;line-height:1.7;font-size:13px"></textarea>
+      </div>
+
+      <!-- 숙제 패널 -->
+      <div id="ln-panel-hw" style="display:none">
+        <div style="font-family:'Paperlogy',sans-serif;font-size:10px;letter-spacing:1px;color:rgba(241,231,195,0.5);margin-bottom:8px">숙제 내용</div>
+        <textarea id="ln-hw-input" class="form-input" rows="4" placeholder="연습 곡, 발성 연습 방법, 녹음 과제 등..." style="resize:vertical;line-height:1.7;font-size:13px"></textarea>
+        <div style="font-family:'Paperlogy',sans-serif;font-size:10px;letter-spacing:1px;color:rgba(241,231,195,0.5);margin:12px 0 8px">마감일 (선택)</div>
+        <input type="date" id="ln-hw-due" class="form-input">
+      </div>
+
+      <!-- 유튜브 패널 -->
+      <div id="ln-panel-yt" style="display:none">
+        <div style="font-family:'Paperlogy',sans-serif;font-size:10px;letter-spacing:1px;color:rgba(241,231,195,0.5);margin-bottom:8px">참고 유튜브 링크</div>
+        <div id="ln-yt-list"></div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <input type="url" id="ln-yt-input" class="form-input" placeholder="https://youtube.com/watch?v=..." style="flex:1;font-size:13px">
+          <button onclick="addYtLink()" style="padding:12px 16px;background:rgba(241,231,195,0.12);border:1px solid rgba(241,231,195,0.2);border-radius:8px;color:#f1e7c3;font-size:13px;cursor:pointer;white-space:nowrap;font-family:'Paperlogy',sans-serif">추가</button>
+        </div>
+      </div>
+
+      <button onclick="saveLessonNote()" class="btn-primary" style="margin-top:20px">저장하기 →</button>
+    </div>
+  </div>
+</div>
+
 <!-- ════ 스탬프 카드 슬라이드업 ════ -->
 <div class="stamp-overlay" id="stamp-overlay" onclick="if(event.target===this)closeStampCard()">
   <div class="stamp-sheet">
@@ -1307,8 +1428,11 @@ h1, h2, h3,
       <button onclick="stampAddToday()" id="sc-add-btn" style="flex:1;padding:14px;background:#f1e7c3;color:#2a1558;border:none;border-radius:12px;font-family:'Paperlogy',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s">
         + 오늘 출석 추가
       </button>
-      <button onclick="openEditLesson(stampStudentIdx)" style="padding:14px 18px;background:rgba(241,231,195,0.1);color:#f1e7c3;border:1px solid rgba(241,231,195,0.2);border-radius:12px;font-family:'Paperlogy',sans-serif;font-size:13px;cursor:pointer">
-        상세 수정
+      <button onclick="openLessonNote(stampStudentIdx)" style="padding:14px 16px;background:rgba(241,231,195,0.1);color:#f1e7c3;border:1px solid rgba(241,231,195,0.2);border-radius:12px;font-family:'Paperlogy',sans-serif;font-size:13px;cursor:pointer">
+        📝
+      </button>
+      <button onclick="openEditLesson(stampStudentIdx)" style="padding:14px 16px;background:rgba(241,231,195,0.1);color:#f1e7c3;border:1px solid rgba(241,231,195,0.2);border-radius:12px;font-family:'Paperlogy',sans-serif;font-size:13px;cursor:pointer">
+        ✏️
       </button>
     </div>
   </div>
@@ -1502,6 +1626,7 @@ function _showPage(id) {
   if (navEl) navEl.classList.add('active');
   if (id === 'admin')  { renderAdmin(); }
   if (id === 'notice') { renderNotices(); }
+  if (id === 'mypage' && mypageStudentIdx >= 0) { renderMypage(); }
   // 뒤로가기 FAB: 홈이면 숨김
   const fab = document.getElementById('back-fab');
   if (fab) fab.classList.toggle('visible', id !== 'home');
@@ -1622,36 +1747,69 @@ function renderAdmin() {
   document.getElementById('stat-due').textContent = due;
   document.getElementById('student-count-label').textContent = `수강생 ${state.students.length}명`;
 
-  // 수강생 테이블
-  const tbody = document.getElementById('student-tbody');
-  tbody.innerHTML = '';
-  if (!state.students.length) {
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:rgba(241,231,195,0.4);padding:32px">등록된 수강생이 없습니다</td></tr>';
-    return;
-  }
-  state.students.forEach((s, idx) => {
-    const count = s.lessons.length;
-    const cyclePos = count > 0 ? ((count - 1) % 4) + 1 : 0;
-    const isDue = count > 0 && count % 4 === 0;
-    const last = s.lessons.length ? s.lessons[s.lessons.length-1] : '—';
-    const tr = document.createElement('tr');
-    let pillsHtml = '<div class="lesson-pills">';
-    for (let i = 1; i <= 4; i++) {
-      const cls = i < cyclePos ? 'done' : i === cyclePos ? 'due' : '';
-      pillsHtml += `<div class="lesson-pill ${cls}">${i}</div>`;
+  // 수강생 목록 — 선생님별 그룹
+  const wrap = document.getElementById('student-by-teacher');
+  if (wrap) {
+    wrap.innerHTML = '';
+    const teachers = ['천우경','김수종','방건주','탁상우'];
+    const noTeacher = state.students.filter(s => !s.teacher || !teachers.includes(s.teacher));
+    const groups = teachers.map(t => ({ teacher: t, students: state.students.filter(s => s.teacher === t) }));
+    if (noTeacher.length) groups.push({ teacher: '미배정', students: noTeacher });
+
+    groups.forEach(g => {
+      if (!g.students.length) return;
+      const groupEl = document.createElement('div');
+      groupEl.className = 'teacher-group';
+      const initials = g.teacher === '미배정' ? '?' : g.teacher.slice(1);
+      groupEl.innerHTML = `
+        <div class="teacher-group-header">
+          <div class="teacher-avatar">${initials}</div>
+          <div style="flex:1">
+            <div style="font-size:15px;font-weight:700;color:#f1e7c3">${g.teacher}</div>
+            <div style="font-size:11px;color:rgba(241,231,195,0.45);margin-top:1px">수강생 ${g.students.length}명</div>
+          </div>
+          <div style="font-family:'Paperlogy',sans-serif;font-size:11px;color:rgba(241,231,195,0.4)">${getTeacherPrice(g.teacher)} / 4회</div>
+        </div>
+        <div class="card" style="padding:0;overflow:hidden">
+          <table class="student-table">
+            <thead><tr><th>이름</th><th>레슨 유형</th><th>수업 현황</th><th>마지막 수업</th><th>상태</th><th></th></tr></thead>
+            <tbody>${g.students.map(s => {
+              const idx = state.students.indexOf(s);
+              const count = s.lessons.length;
+              const cyclePos = count > 0 ? ((count - 1) % 4) + 1 : 0;
+              const isDue = count > 0 && count % 4 === 0;
+              const last = s.lessons.length ? s.lessons[s.lessons.length-1] : '—';
+              let pillsHtml = '<div class="lesson-pills">';
+              for (let i = 1; i <= 4; i++) {
+                const cls = i < cyclePos ? 'done' : i === cyclePos ? 'due' : '';
+                pillsHtml += `<div class="lesson-pill ${cls}">${i}</div>`;
+              }
+              pillsHtml += `</div><div style="font-size:10px;color:var(--muted);margin-top:2px">총 ${count}회</div>`;
+              return `<tr>
+                <td><strong style="cursor:pointer;text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(241,231,195,0.3)" onclick="openStampCard(${idx})">${s.name}</strong></td>
+                <td><span style="padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600;background:rgba(241,231,195,0.12);color:#f1e7c3">${s.type}</span></td>
+                <td>${pillsHtml}</td>
+                <td style="font-size:12px;color:rgba(241,231,195,0.6)">${last}</td>
+                <td>${isDue ? '<span style="padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600;background:rgba(212,170,58,0.2);color:var(--warm)">💰 입금 예정</span>' : '<span style="font-size:12px;color:#f1e7c3">✓</span>'}</td>
+                <td style="display:flex;gap:4px">
+                  <button onclick="openLessonNote(${idx})" style="padding:5px 10px;border:1px solid rgba(241,231,195,0.25);background:rgba(241,231,195,0.08);border-radius:6px;font-size:11px;cursor:pointer;color:#f1e7c3;font-family:'Paperlogy',sans-serif">📝</button>
+                  <button onclick="deleteStudent(${idx})" style="padding:5px 8px;border:1px solid rgba(255,120,120,0.2);background:rgba(255,100,100,0.07);border-radius:6px;font-size:11px;cursor:pointer;color:rgba(255,150,150,0.7)">✕</button>
+                </td>
+              </tr>`;
+            }).join('')}</tbody>
+          </table>
+        </div>`;
+      wrap.appendChild(groupEl);
+    });
+
+    if (!state.students.length) {
+      wrap.innerHTML = '<div style="text-align:center;color:rgba(241,231,195,0.4);padding:40px;font-size:13px">등록된 수강생이 없습니다</div>';
     }
-    pillsHtml += `</div><div style="font-size:10px;color:var(--muted);margin-top:3px">총 ${count}회</div>`;
-    tr.innerHTML = `
-      <td><strong style="cursor:pointer;text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(241,231,195,0.3)" onclick="openStampCard(${idx})">${s.name}</strong></td>
-      <td><span style="padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600;background:rgba(107,63,160,0.35);color:rgba(241,231,195,0.9)">${s.teacher || '—'}</span></td>
-      <td><span style="padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600;background:rgba(241,231,195,0.12);color:#f1e7c3">${s.type}</span></td>
-      <td>${pillsHtml}</td>
-      <td style="font-size:12px;color:rgba(241,231,195,0.6)">${last}</td>
-      <td>${isDue?'<span style="padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600;background:rgba(212,170,58,0.2);color:var(--warm)">💰 입금 예정</span>':'<span style="font-size:12px;color:#f1e7c3">✓ 정상</span>'}</td>
-      <td><button onclick="openEditLesson(${idx})" style="padding:5px 12px;border:1px solid rgba(241,231,195,0.25);background:rgba(241,231,195,0.08);border-radius:6px;font-size:11px;cursor:pointer;color:#f1e7c3;font-family:'Paperlogy',sans-serif;transition:all .15s" onmouseover="this.style.background='rgba(241,231,195,0.16)'" onmouseout="this.style.background='rgba(241,231,195,0.08)'">수정</button> <button onclick="deleteStudent(${idx})" style="padding:5px 10px;border:1px solid rgba(255,120,120,0.2);background:rgba(255,100,100,0.07);border-radius:6px;font-size:11px;cursor:pointer;color:rgba(255,150,150,0.7);font-family:'Paperlogy',sans-serif;transition:all .15s" onmouseover="this.style.background='rgba(255,100,100,0.15)'" onmouseout="this.style.background='rgba(255,100,100,0.07)'">삭제</button></td>
-    `;
-    tbody.appendChild(tr);
-  });
+  }
+
+  // 통계 업데이트 (student-tbody 호환)
+  const tbody = document.getElementById('student-tbody');
+  if (tbody) tbody.innerHTML = ''; // 구버전 tbody 비우기
 
   // 설정 값 반영
   const tp = state.settings.teacherPrices || { '천우경':'₩550,000','김수종':'₩330,000','방건주':'₩330,000','탁상우':'₩220,000' };
@@ -1739,13 +1897,17 @@ function renderTeacherStats() {
         </div>
       </div>
       ${myStudents.length ? `<table class="student-table" style="margin-top:8px">
-        <thead><tr><th>수강생</th><th>레슨 유형</th><th>총 레슨</th><th>마지막 수업</th></tr></thead>
-        <tbody>${myStudents.map(s=>`<tr>
-          <td><strong>${s.name}</strong></td>
-          <td>${s.type}</td>
-          <td style="font-family:'Paperlogy',sans-serif">${s.lessons.length}회</td>
-          <td style="font-size:12px;color:rgba(241,231,195,0.6)">${s.lessons.length ? s.lessons[s.lessons.length-1] : '—'}</td>
-        </tr>`).join('')}</tbody>
+        <thead><tr><th>수강생</th><th>레슨 유형</th><th>총 레슨</th><th>마지막 수업</th><th></th></tr></thead>
+        <tbody>${myStudents.map(s => {
+          const idx = state.students.indexOf(s);
+          return `<tr>
+            <td><strong style="cursor:pointer;text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(241,231,195,0.3)" onclick="openStampCard(${idx})">${s.name}</strong></td>
+            <td>${s.type}</td>
+            <td style="font-family:'Paperlogy',sans-serif">${s.lessons.length}회</td>
+            <td style="font-size:12px;color:rgba(241,231,195,0.6)">${s.lessons.length ? s.lessons[s.lessons.length-1] : '—'}</td>
+            <td><button onclick="openLessonNote(${idx})" style="padding:4px 10px;border:1px solid rgba(241,231,195,0.2);background:rgba(241,231,195,0.08);border-radius:6px;font-size:11px;cursor:pointer;color:#f1e7c3;font-family:'Paperlogy',sans-serif">📝 노트</button></td>
+          </tr>`;
+        }).join('')}</tbody>
       </table>` : `<div style="font-size:13px;color:rgba(241,231,195,0.4);padding:8px 0">담당 수강생이 없습니다</div>`}
     `;
     wrap.appendChild(card);
@@ -1981,6 +2143,170 @@ function deleteNotice(id) {
   sheetsAction('deleteNotice', { id });
   showToast('삭제되었습니다');
 }
+// ─────────────── 레슨 노트 ───────────────
+let lnStudentIdx = -1;
+let lnYtLinks = [];
+
+function openLessonNote(idx) {
+  lnStudentIdx = idx;
+  const s = state.students[idx];
+  if (!s.lessonNotes) s.lessonNotes = { note: '', hw: '', hwDue: '', yt: [] };
+  lnYtLinks = [...(s.lessonNotes.yt || [])];
+
+  document.getElementById('ln-meta').textContent = `${s.teacher || '—'} · ${s.type} 레슨 · 총 ${s.lessons.length}회`;
+  document.getElementById('ln-title').textContent = s.name + '님 레슨 노트';
+  document.getElementById('ln-note-input').value = s.lessonNotes.note || '';
+  document.getElementById('ln-hw-input').value   = s.lessonNotes.hw   || '';
+  document.getElementById('ln-hw-due').value     = s.lessonNotes.hwDue || '';
+  renderYtLinks();
+  switchLessonNoteTab('note');
+  document.getElementById('lesson-note-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLessonNote() {
+  document.getElementById('lesson-note-modal').classList.remove('open');
+  document.body.style.overflow = '';
+  lnStudentIdx = -1;
+}
+
+function switchLessonNoteTab(tab) {
+  ['note','hw','yt'].forEach(t => {
+    document.getElementById(`ln-tab-${t}`).classList.toggle('active', t === tab);
+    document.getElementById(`ln-panel-${t}`).style.display = t === tab ? 'block' : 'none';
+  });
+}
+
+function addYtLink() {
+  const url = document.getElementById('ln-yt-input').value.trim();
+  if (!url) return;
+  lnYtLinks.push(url);
+  document.getElementById('ln-yt-input').value = '';
+  renderYtLinks();
+}
+
+function removeYtLink(i) {
+  lnYtLinks.splice(i, 1);
+  renderYtLinks();
+}
+
+function renderYtLinks() {
+  const el = document.getElementById('ln-yt-list');
+  if (!lnYtLinks.length) {
+    el.innerHTML = '<div style="font-size:12px;color:rgba(241,231,195,0.35);padding:8px 0">추가된 링크 없음</div>';
+    return;
+  }
+  el.innerHTML = lnYtLinks.map((url, i) => {
+    const videoId = url.match(/(?:v=|youtu\.be\/)([^&\s]+)/)?.[1];
+    const thumb = videoId ? `https://img.youtube.com/vi/${videoId}/mqdefault.jpg` : null;
+    return `<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:rgba(241,231,195,0.05);border-radius:8px;margin-bottom:6px">
+      ${thumb ? `<img src="${thumb}" style="width:60px;height:34px;border-radius:4px;object-fit:cover;flex-shrink:0">` : '<div style="width:60px;height:34px;background:rgba(241,231,195,0.08);border-radius:4px;flex-shrink:0"></div>'}
+      <div style="flex:1;overflow:hidden">
+        <div style="font-size:11px;color:rgba(241,231,195,0.6);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${url}</div>
+      </div>
+      <button onclick="removeYtLink(${i})" style="padding:3px 8px;border:1px solid rgba(255,120,120,0.2);background:none;border-radius:4px;font-size:10px;color:rgba(255,150,150,0.6);cursor:pointer">✕</button>
+    </div>`;
+  }).join('');
+}
+
+function saveLessonNote() {
+  if (lnStudentIdx < 0) return;
+  const s = state.students[lnStudentIdx];
+  s.lessonNotes = {
+    note:  document.getElementById('ln-note-input').value,
+    hw:    document.getElementById('ln-hw-input').value,
+    hwDue: document.getElementById('ln-hw-due').value,
+    yt:    [...lnYtLinks],
+    updatedAt: new Date().toLocaleDateString('ko-KR')
+  };
+  saveState();
+  closeLessonNote();
+  showToast(`${s.name}님 레슨 노트 저장 ✓`);
+}
+
+// ─────────────── 학생용 내 레슨 페이지 ───────────────
+let mypageStudentIdx = -1;
+
+function mypageLogin() {
+  const name = document.getElementById('mypage-name-input').value.trim();
+  if (!name) { showToast('이름을 입력해 주세요'); return; }
+  const idx = state.students.findIndex(s => s.name === name);
+  if (idx < 0) { showToast('등록된 수강생을 찾을 수 없어요'); return; }
+  mypageStudentIdx = idx;
+  renderMypage();
+  document.getElementById('mypage-login').style.display = 'none';
+  document.getElementById('mypage-dashboard').style.display = 'block';
+}
+
+function mypageLogout() {
+  mypageStudentIdx = -1;
+  document.getElementById('mypage-name-input').value = '';
+  document.getElementById('mypage-login').style.display = 'block';
+  document.getElementById('mypage-dashboard').style.display = 'none';
+}
+
+function renderMypage() {
+  if (mypageStudentIdx < 0) return;
+  const s = state.students[mypageStudentIdx];
+  const total    = s.lessons.length;
+  const cyclePos = total % 4;
+  const notes    = s.lessonNotes || {};
+
+  document.getElementById('mypage-student-name').textContent = s.name + '님';
+  document.getElementById('mypage-student-info').textContent = `${s.teacher || '—'} · ${s.type} 레슨`;
+  document.getElementById('mypage-total').textContent = total;
+
+  // 스탬프 미니
+  const grid = document.getElementById('mypage-stamp-grid');
+  grid.innerHTML = '';
+  for (let i = 1; i <= 4; i++) {
+    const slot = document.createElement('div');
+    slot.className = 'mypage-stamp-slot' + (i <= cyclePos ? ' filled' : '');
+    slot.textContent = i <= cyclePos ? '✓' : i;
+    slot.style.cssText = `aspect-ratio:1;border-radius:10px;border:2px ${i <= cyclePos ? 'solid rgba(241,231,195,0.35)' : 'dashed rgba(241,231,195,0.18)'};display:flex;align-items:center;justify-content:center;font-size:${i <= cyclePos ? '16px' : '12px'};font-weight:700;color:${i <= cyclePos ? '#f1e7c3' : 'rgba(241,231,195,0.3)'};background:${i <= cyclePos ? 'rgba(63,35,120,0.7)' : 'rgba(241,231,195,0.03)'};transition:all .2s`;
+    grid.appendChild(slot);
+  }
+
+  // 레슨 노트 목록
+  const notesList = document.getElementById('mypage-notes-list');
+  const hasNote = notes.note || notes.hw || (notes.yt && notes.yt.length);
+  if (!hasNote) {
+    notesList.innerHTML = '<div style="text-align:center;color:rgba(241,231,195,0.4);padding:32px;font-size:13px">아직 레슨 노트가 없어요</div>';
+    return;
+  }
+
+  let html = '';
+  if (notes.note) {
+    html += `<div class="lesson-note-card">
+      <div class="note-date">${notes.updatedAt || '—'} · 레슨 내용</div>
+      <div class="note-preview">${notes.note}</div>
+      <div class="note-badges"><span class="note-badge-hw">레슨 노트</span></div>
+    </div>`;
+  }
+  if (notes.hw) {
+    html += `<div class="lesson-note-card">
+      <div class="note-date">${notes.hwDue ? '마감: ' + notes.hwDue : notes.updatedAt || '—'} · 숙제</div>
+      <div class="note-preview">📚 ${notes.hw}</div>
+      <div class="note-badges"><span class="note-badge-hw">숙제</span>${notes.hwDue ? `<span style="font-size:10px;color:rgba(241,231,195,0.4)">마감 ${notes.hwDue}</span>` : ''}</div>
+    </div>`;
+  }
+  if (notes.yt && notes.yt.length) {
+    notes.yt.forEach(url => {
+      const videoId = url.match(/(?:v=|youtu\.be\/)([^&\s]+)/)?.[1];
+      const thumb = videoId ? `https://img.youtube.com/vi/${videoId}/mqdefault.jpg` : null;
+      html += `<a href="${url}" target="_blank" class="lesson-note-card" style="display:block;text-decoration:none">
+        <div class="note-date">참고 영상</div>
+        <div style="display:flex;gap:12px;align-items:center">
+          ${thumb ? `<img src="${thumb}" style="width:80px;height:45px;border-radius:6px;object-fit:cover;flex-shrink:0">` : '<div style="width:80px;height:45px;background:rgba(241,231,195,0.08);border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px">▶</div>'}
+          <div style="font-size:12px;color:rgba(241,231,195,0.7);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${url}</div>
+        </div>
+        <div class="note-badges"><span class="note-badge-yt">▶ 유튜브</span></div>
+      </a>`;
+    });
+  }
+  notesList.innerHTML = html;
+}
+
 // ─────────────── 스탬프 카드 ───────────────
 let stampStudentIdx = -1;
 
