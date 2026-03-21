@@ -1493,17 +1493,37 @@ let _sheetsLoaded = false;
 async function loadFromSheets() {
   setSheetsStatus('loading');
   try {
-    // getAllData에 lessons 포함 (Apps Script v3 이후)
-    const r = await fetch(`${APPS_URL}?action=getAllData`);
-    const d = await r.json();
+    const [r1, r2] = await Promise.all([
+      fetch(`${APPS_URL}?action=getAllData`),
+      fetch(`${APPS_URL}?action=getLessons`)
+    ]);
+    const d  = await r1.json();
+    const dl = await r2.json();
     if (d.status !== 'ok') throw new Error(d.msg);
 
-    // 수강생 병합 (Sheets 기준으로 재구성, localStorage lessons 보존)
+    // localStorage 백업 (병합 전 저장)
+    const localStudents = JSON.parse(localStorage.getItem('tv_students') || '[]');
+
+    // ── 출석 데이터 먼저 확보 ──
+    const lessonsData = (dl.status === 'ok' && dl.data && dl.data.length > 0)
+      ? dl.data
+      : (d.lessons && d.lessons.length > 0 ? d.lessons : []);
+
+    // ── 수강생 병합 (Sheets 기준, lessons는 아래에서 채움) ──
     if (d.students && d.students.length > 0) {
-      const localStudents = state.students;
       const merged = d.students.map(sheetS => {
         const local = localStudents.find(l => l.name === sheetS.name && l.type === sheetS.type);
-        return { ...sheetS, lessons: local ? local.lessons : [] };
+        // Sheets 출석이 있으면 Sheets 기준, 없으면 localStorage 보존
+        const sheetsLessons = lessonsData
+          .filter(l => l.name === sheetS.name && l.type === sheetS.type)
+          .sort((a, b) => (parseInt(a.seq)||0) - (parseInt(b.seq)||0))
+          .map(l => l.date)
+          .filter(Boolean);
+        return {
+          ...sheetS,
+          lessons:     sheetsLessons.length > 0 ? sheetsLessons : (local?.lessons || []),
+          lessonNotes: local?.lessonNotes || {}
+        };
       });
       // localStorage에만 있는 수강생도 유지
       localStudents.forEach(ls => {
@@ -1512,20 +1532,12 @@ async function loadFromSheets() {
         }
       });
       state.students = merged;
+    } else {
+      // Sheets에 수강생 없으면 localStorage 그대로 유지
+      if (localStudents.length > 0) state.students = localStudents;
     }
 
-    // 출석 데이터로 lessons 배열 재구성 (Sheets가 source of truth)
-    if (d.lessons && d.lessons.length > 0) {
-      state.students.forEach(s => {
-        const myLessons = d.lessons
-          .filter(l => l.name === s.name && l.type === s.type)
-          .sort((a, b) => (parseInt(a.seq) || 0) - (parseInt(b.seq) || 0))
-          .map(l => l.date);
-        if (myLessons.length > 0) s.lessons = myLessons;
-      });
-    }
-
-    // 입금 / 결석 / 공지 - Sheets가 source of truth
+    // ── 입금 / 결석 / 공지 ──
     if (d.payments && d.payments.length > 0) state.payments = d.payments;
     if (d.absents  && d.absents.length  > 0) state.absent   = d.absents;
     if (d.notices  && d.notices.length  > 0) state.notices  = d.notices;
@@ -1533,7 +1545,7 @@ async function loadFromSheets() {
     saveState();
     _sheetsLoaded = true;
     setSheetsStatus('ok');
-    console.log('✅ Sheets에서 데이터 로드 완료');
+    console.log(`✅ Sheets 로드 완료 — 수강생 ${state.students.length}명, 출석 ${lessonsData.length}건`);
 
     // 현재 활성 페이지 재렌더
     const activePage = document.querySelector('.page.active');
@@ -1587,16 +1599,54 @@ async function syncAllToSheets() {
 }
 
 // 개별 액션 Sheets 저장
+// 실패한 Sheets 요청 큐 (재시도용)
+let _sheetsQueue = JSON.parse(localStorage.getItem('tv_sheets_queue') || '[]');
+
 async function sheetsAction(action, data) {
+  const payload = { action, ...data };
   try {
-    await fetch(APPS_URL, {
+    const r = await fetch(APPS_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ action, ...data })
+      body: JSON.stringify(payload)
     });
+    const result = await r.json();
+    if (result.status !== 'ok') throw new Error(result.msg || 'unknown error');
+    // 성공 시 큐에서 동일 액션 제거
+    _sheetsQueue = _sheetsQueue.filter(q => !(q.action === action && JSON.stringify(q) === JSON.stringify(payload)));
+    localStorage.setItem('tv_sheets_queue', JSON.stringify(_sheetsQueue));
   } catch(e) {
-    console.log(`Sheets ${action} 실패:`, e);
+    console.log(`⚠️ Sheets ${action} 실패, 큐에 저장:`, e.message);
+    // 큐에 추가 (중복 방지)
+    const key = JSON.stringify(payload);
+    if (!_sheetsQueue.find(q => JSON.stringify(q) === key)) {
+      _sheetsQueue.push({ ...payload, _ts: Date.now() });
+      if (_sheetsQueue.length > 50) _sheetsQueue = _sheetsQueue.slice(-50);
+      localStorage.setItem('tv_sheets_queue', JSON.stringify(_sheetsQueue));
+    }
   }
+}
+
+// 앱 시작 시 실패 큐 재시도
+async function flushSheetsQueue() {
+  if (!_sheetsQueue.length) return;
+  console.log(`🔄 Sheets 큐 재시도: ${_sheetsQueue.length}건`);
+  const queue = [..._sheetsQueue];
+  for (const item of queue) {
+    try {
+      const r = await fetch(APPS_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(item)
+      });
+      const result = await r.json();
+      if (result.status === 'ok') {
+        _sheetsQueue = _sheetsQueue.filter(q => JSON.stringify(q) !== JSON.stringify(item));
+      }
+    } catch(e) { /* 다음 번에 재시도 */ }
+  }
+  localStorage.setItem('tv_sheets_queue', JSON.stringify(_sheetsQueue));
+  if (_sheetsQueue.length === 0) console.log('✅ 큐 플러시 완료');
 }
 
 // ─────────────── 페이지 히스토리 ───────────────
