@@ -355,11 +355,57 @@ body { background:var(--bg); color:#f1e7c3; font-family:'Paperlogy',sans-serif; 
   border-radius:24px 24px 0 0; width:100%; max-width:520px;
   padding:28px 24px 40px; position:relative;
   animation:slideUp .3s cubic-bezier(.16,1,.3,1);
+  transition:transform .3s cubic-bezier(.16,1,.3,1);
+  touch-action:none;
 }
+.stamp-sheet.dragging { transition:none; }
 @keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
 .stamp-handle {
   width:40px; height:4px; background:rgba(241,231,195,0.25);
   border-radius:2px; margin:0 auto 20px; cursor:pointer;
+  /* 터치 영역 확장 */
+  padding:8px 40px; margin-left:-40px; margin-right:-40px; margin-top:-8px;
+}
+
+/* ── 모바일 수강생 테이블 → 카드형 ── */
+@media(max-width:640px) {
+  .student-table { display:block; }
+  .student-table thead { display:none; }
+  .student-table tbody { display:block; }
+  .student-table tbody tr {
+    display:flex;
+    flex-direction:column;
+    padding:14px 14px 12px;
+    border-bottom:1px solid rgba(241,231,195,0.08);
+    position:relative;
+    gap:6px;
+  }
+  .student-table tbody tr:last-child { border-bottom:none; }
+  .student-table tbody td {
+    padding:0;
+    border-bottom:none !important;
+    font-size:12px;
+    white-space:normal;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  /* 이름 — 크게 */
+  .student-table tbody td:first-child {
+    font-size:16px;
+    font-weight:700;
+    padding-bottom:4px;
+    padding-right:80px; /* 버튼 공간 확보 */
+  }
+  /* 마지막 td(버튼) — 우측 상단 */
+  .student-table tbody td:last-child {
+    position:absolute;
+    top:14px; right:12px;
+    flex-direction:row;
+    gap:4px;
+  }
+  /* pills 줄바꿈 허용 */
+  .lesson-pills { flex-wrap:wrap; gap:3px; }
 }
 /* 4칸 스탬프 그리드 */
 .stamp-grid {
@@ -2526,12 +2572,73 @@ let stampStudentIdx = -1;
 function openStampCard(idx) {
   stampStudentIdx = idx;
   renderStampCard();
-  document.getElementById('stamp-overlay').classList.add('open');
+  const overlay = document.getElementById('stamp-overlay');
+  const sheet   = overlay.querySelector('.stamp-sheet');
+  overlay.classList.add('open');
   document.body.style.overflow = 'hidden';
+
+  // ── 슬라이드 다운으로 닫기 ──
+  let startY = 0, currentY = 0, isDragging = false;
+
+  function onTouchStart(e) {
+    // 핸들 또는 시트 상단 영역에서만 드래그 시작
+    const handle = sheet.querySelector('.stamp-handle');
+    const handleRect = handle.getBoundingClientRect();
+    const touchY = e.touches[0].clientY;
+    if (touchY > handleRect.bottom + 40) return; // 상단 60px 내에서만
+    startY = touchY;
+    isDragging = true;
+    sheet.classList.add('dragging');
+  }
+
+  function onTouchMove(e) {
+    if (!isDragging) return;
+    currentY = e.touches[0].clientY - startY;
+    if (currentY < 0) currentY = 0;
+    sheet.style.transform = `translateY(${currentY}px)`;
+    // 배경 투명도 조절
+    const ratio = Math.max(0, 1 - currentY / 300);
+    overlay.style.background = `rgba(15,5,40,${0.7 * ratio})`;
+  }
+
+  function onTouchEnd() {
+    if (!isDragging) return;
+    isDragging = false;
+    sheet.classList.remove('dragging');
+    if (currentY > 120) {
+      // 충분히 내렸으면 닫기
+      sheet.style.transform = `translateY(100%)`;
+      setTimeout(() => {
+        closeStampCard();
+        sheet.style.transform = '';
+        overlay.style.background = '';
+      }, 280);
+    } else {
+      // 원위치
+      sheet.style.transform = '';
+      overlay.style.background = '';
+      currentY = 0;
+    }
+  }
+
+  sheet.addEventListener('touchstart', onTouchStart, { passive:true });
+  sheet.addEventListener('touchmove',  onTouchMove,  { passive:true });
+  sheet.addEventListener('touchend',   onTouchEnd);
+
+  // 닫힐 때 이벤트 정리
+  sheet._cleanupTouch = () => {
+    sheet.removeEventListener('touchstart', onTouchStart);
+    sheet.removeEventListener('touchmove',  onTouchMove);
+    sheet.removeEventListener('touchend',   onTouchEnd);
+  };
 }
 
 function closeStampCard() {
-  document.getElementById('stamp-overlay').classList.remove('open');
+  const overlay = document.getElementById('stamp-overlay');
+  const sheet   = overlay.querySelector('.stamp-sheet');
+  overlay.classList.remove('open');
+  overlay.style.background = '';
+  if (sheet) { sheet.style.transform = ''; if (sheet._cleanupTouch) sheet._cleanupTouch(); }
   document.body.style.overflow = '';
   stampStudentIdx = -1;
 }
