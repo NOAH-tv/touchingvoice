@@ -1557,6 +1557,14 @@ async function loadFromSheets() {
       : (d.lessons && d.lessons.length > 0 ? d.lessons : []);
 
     // ── 수강생 병합 (Sheets 기준, 로컬 전용 필드 보존) ──
+    // Sheets lessonNotes 인덱스 빌드
+    const sheetsNotes = {};
+    if (d.lessonNotes && d.lessonNotes.length > 0) {
+      d.lessonNotes.forEach(n => {
+        sheetsNotes[`${n.name}__${n.type}`] = n;
+      });
+    }
+
     if (d.students && d.students.length > 0) {
       const merged = d.students.map(sheetS => {
         const local = localStudents.find(l => l.name === sheetS.name && l.type === sheetS.type);
@@ -1565,11 +1573,17 @@ async function loadFromSheets() {
           .sort((a, b) => (parseInt(a.seq)||0) - (parseInt(b.seq)||0))
           .map(l => l.date)
           .filter(Boolean);
+
+        // lessonNotes: Sheets 우선 (기기 간 동기화), 없으면 localStorage
+        const sheetsNote = sheetsNotes[`${sheetS.name}__${sheetS.type}`];
+        const lessonNotes = sheetsNote
+          ? { note: sheetsNote.note || '', hw: sheetsNote.hw || '', hwDue: sheetsNote.hwDue || '', yt: sheetsNote.yt || [], updatedAt: sheetsNote.updatedAt || '' }
+          : (local?.lessonNotes ?? {});
+
         return {
           ...sheetS,
           lessons:     sheetsLessons.length > 0 ? sheetsLessons : (local?.lessons || []),
-          // 로컬 전용 필드 — Sheets에 없으므로 항상 localStorage 값 우선
-          lessonNotes: local?.lessonNotes ?? {},
+          lessonNotes,
           phone:       local?.phone || sheetS.phone || '',
           memo:        local?.memo  || sheetS.memo  || '',
         };
@@ -2368,13 +2382,22 @@ function saveLessonNote() {
   if (lnStudentIdx < 0) return;
   const s = state.students[lnStudentIdx];
   s.lessonNotes = {
-    note:  document.getElementById('ln-note-input').value,
-    hw:    document.getElementById('ln-hw-input').value,
-    hwDue: document.getElementById('ln-hw-due').value,
-    yt:    [...lnYtLinks],
+    note:      document.getElementById('ln-note-input').value,
+    hw:        document.getElementById('ln-hw-input').value,
+    hwDue:     document.getElementById('ln-hw-due').value,
+    yt:        [...lnYtLinks],
     updatedAt: new Date().toLocaleDateString('ko-KR')
   };
   saveState();
+  // Sheets에도 저장 (기기 간 동기화)
+  sheetsAction('saveLessonNotes', { data: {
+    name:  s.name,
+    type:  s.type,
+    note:  s.lessonNotes.note,
+    hw:    s.lessonNotes.hw,
+    hwDue: s.lessonNotes.hwDue,
+    yt:    s.lessonNotes.yt
+  }});
   closeLessonNote();
   showToast(`${s.name}님 레슨 노트 저장 ✓`);
 }
