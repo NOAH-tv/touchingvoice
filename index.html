@@ -1100,8 +1100,8 @@ h1, h2, h3,
         </div>
         <div class="card" style="padding:0;overflow:hidden">
           <table class="student-table">
-            <thead><tr><th>수강생</th><th>레슨 유형</th><th>담당 선생님</th><th>총 출석</th><th>마지막 출석</th></tr></thead>
-            <tbody id="attend-tbody"><tr><td colspan="5" style="text-align:center;color:rgba(241,231,195,0.4);padding:24px">출석 기록이 없습니다</td></tr></tbody>
+            <thead><tr><th>수강생</th><th>레슨 유형</th><th>담당 선생님</th><th>수업 현황</th><th>마지막 출석</th><th></th></tr></thead>
+            <tbody id="attend-tbody"><tr><td colspan="6" style="text-align:center;color:rgba(241,231,195,0.4);padding:24px">출석 기록이 없습니다</td></tr></tbody>
           </table>
         </div>
       </div>
@@ -1448,6 +1448,7 @@ h1, h2, h3,
 // ─────────────── 상태 관리 ───────────────
 let state = {
   lessonType: '개인',
+  currentTeacher: '',   // 로그인한 선생님
   students: JSON.parse(localStorage.getItem('tv_students') || '[]'),
   notices: JSON.parse(localStorage.getItem('tv_notices') || JSON.stringify([
     { id:1, type:'공지', title:'3월 수업 일정 안내', content:'3월 25일(화)은 정상 수업입니다.\n4월 첫째 주 일정은 별도 공지 예정입니다.\n문의는 카카오톡으로 연락해 주세요.', date:'2026-03-19' },
@@ -1465,7 +1466,8 @@ let state = {
       '김수종': '₩330,000',
       '방건주': '₩330,000',
       '탁상우': '₩220,000'
-    }
+    },
+    lessonMinutes: 50   // 1회 레슨 시간 (분)
   }))
 };
 
@@ -1475,6 +1477,26 @@ function saveState() {
   localStorage.setItem('tv_absent', JSON.stringify(state.absent));
   localStorage.setItem('tv_payments', JSON.stringify(state.payments));
   localStorage.setItem('tv_settings', JSON.stringify(state.settings));
+}
+
+// ── 누적 레슨 통계 계산 ──
+function getLessonStats(student) {
+  const count   = student.lessons.length;
+  const mins    = (state.settings.lessonMinutes || 50) * count;
+  const months  = Math.floor(count / 4);          // 4회 = 1개월
+  const rem     = count % 4;                       // 이번 달 진행 횟수
+  const hours   = Math.floor(mins / 60);
+  const restMin = mins % 60;
+  const timeStr = hours > 0
+    ? `${hours}시간${restMin > 0 ? ' ' + restMin + '분' : ''}`
+    : `${mins}분`;
+  return { count, months, rem, totalMins: mins, timeStr };
+}
+
+// ── 현재 선생님 기준 학생 필터 ──
+function getVisibleStudents() {
+  if (!state.currentTeacher) return state.students;
+  return state.students.filter(s => s.teacher === state.currentTeacher);
 }
 
 // 강사별 레슨 금액 반환
@@ -1802,60 +1824,81 @@ function showNoticeDetail(n) {
 
 // ─────────────── 관리자 ───────────────
 function renderAdmin() {
-  // 통계
-  const priv = state.students.filter(s => s.type === '개인').length;
-  const grp  = state.students.filter(s => s.type === '그룹').length;
-  const due  = state.students.filter(s => s.lessons.length > 0 && s.lessons.length % 4 === 0).length;
-  document.getElementById('stat-total').textContent = state.students.length;
-  document.getElementById('stat-private').textContent = priv;
-  document.getElementById('stat-group').textContent = grp;
-  document.getElementById('stat-due').textContent = due;
-  document.getElementById('student-count-label').textContent = `수강생 ${state.students.length}명`;
+  const visible = getVisibleStudents();  // 선생님 필터 적용
 
-  // 수강생 목록 — 선생님별 그룹
+  // 통계
+  const priv     = visible.filter(s => s.type === '개인').length;
+  const grp      = visible.filter(s => s.type === '그룹').length;
+  const due      = visible.filter(s => s.lessons.length > 0 && s.lessons.length % 4 === 0).length;
+  const totalMin = visible.reduce((sum, s) => sum + (state.settings.lessonMinutes||50) * s.lessons.length, 0);
+  const totalH   = Math.floor(totalMin / 60);
+  const timeDisp = totalH > 0 ? `${totalH}h ${totalMin%60}m` : `${totalMin}m`;
+
+  document.getElementById('stat-total').textContent   = visible.length;
+  document.getElementById('stat-private').textContent = priv;
+  document.getElementById('stat-group').textContent   = grp;
+  document.getElementById('stat-due').textContent     = due;
+  document.getElementById('student-count-label').textContent =
+    state.currentTeacher
+      ? `${state.currentTeacher} 선생님 · 수강생 ${visible.length}명 · 누적 ${timeDisp}`
+      : `수강생 ${visible.length}명 · 누적 ${timeDisp}`;
+
+  // 수강생 목록 — 선생님별 그룹 (필터 적용)
   const wrap = document.getElementById('student-by-teacher');
   if (wrap) {
     wrap.innerHTML = '';
     const teachers = ['천우경','김수종','방건주','탁상우'];
-    const noTeacher = state.students.filter(s => !s.teacher || !teachers.includes(s.teacher));
-    const groups = teachers.map(t => ({ teacher: t, students: state.students.filter(s => s.teacher === t) }));
-    if (noTeacher.length) groups.push({ teacher: '미배정', students: noTeacher });
 
-    groups.forEach(g => {
+    // 선생님 로그인 시 본인 그룹만, 전체 관리자 시 전체
+    const groupsToShow = state.currentTeacher
+      ? [{ teacher: state.currentTeacher, students: visible }]
+      : (() => {
+          const noTeacher = state.students.filter(s => !s.teacher || !teachers.includes(s.teacher));
+          const g = teachers.map(t => ({ teacher: t, students: state.students.filter(s => s.teacher === t) }));
+          if (noTeacher.length) g.push({ teacher: '미배정', students: noTeacher });
+          return g;
+        })();
+
+    groupsToShow.forEach(g => {
       if (!g.students.length) return;
       const groupEl = document.createElement('div');
       groupEl.className = 'teacher-group';
       const initials = g.teacher === '미배정' ? '?' : g.teacher.slice(1);
+      const grpTotalMins = g.students.reduce((s,st) => s + st.lessons.length, 0) * (state.settings.lessonMinutes||50);
+      const grpH = Math.floor(grpTotalMins/60);
+      const grpTimeStr = grpH > 0 ? grpH+'h '+(grpTotalMins%60)+'m' : grpTotalMins+'m';
       groupEl.innerHTML = `
         <div class="teacher-group-header">
           <div class="teacher-avatar">${initials}</div>
           <div style="flex:1">
             <div style="font-size:15px;font-weight:700;color:#f1e7c3">${g.teacher}</div>
-            <div style="font-size:11px;color:rgba(241,231,195,0.45);margin-top:1px">수강생 ${g.students.length}명</div>
+            <div style="font-size:11px;color:rgba(241,231,195,0.45);margin-top:1px">수강생 ${g.students.length}명 · 누적 ${grpTimeStr}</div>
           </div>
           <div style="font-family:'Paperlogy',sans-serif;font-size:11px;color:rgba(241,231,195,0.4)">${getTeacherPrice(g.teacher)} / 4회</div>
         </div>
         <div class="card" style="padding:0;overflow:hidden">
           <table class="student-table">
-            <thead><tr><th>이름</th><th>레슨 유형</th><th>수업 현황</th><th>마지막 수업</th><th>상태</th><th></th></tr></thead>
+            <thead><tr><th>이름</th><th>레슨 유형</th><th>수업 현황</th><th>누적</th><th>마지막</th><th>상태</th><th></th></tr></thead>
             <tbody>${g.students.map(s => {
               const idx = state.students.indexOf(s);
-              const count = s.lessons.length;
-              const cyclePos = count > 0 ? ((count - 1) % 4) + 1 : 0;
-              const isDue = count > 0 && count % 4 === 0;
+              const st  = getLessonStats(s);
+              const cyclePos = st.count > 0 ? ((st.count-1)%4)+1 : 0;
+              const isDue = st.count > 0 && st.count%4 === 0;
               const last = s.lessons.length ? s.lessons[s.lessons.length-1] : '—';
               let pillsHtml = '<div class="lesson-pills">';
               for (let i = 1; i <= 4; i++) {
                 const cls = i < cyclePos ? 'done' : i === cyclePos ? 'due' : '';
                 pillsHtml += `<div class="lesson-pill ${cls}">${i}</div>`;
               }
-              pillsHtml += `</div><div style="font-size:10px;color:var(--muted);margin-top:2px">총 ${count}회</div>`;
+              pillsHtml += `</div><div style="font-size:10px;color:var(--muted);margin-top:2px">총 ${st.count}회</div>`;
+              const mthStr = st.months > 0 ? `<div style="font-size:10px;color:rgba(241,231,195,0.45)">${st.months}개월</div>` : '';
               return `<tr>
                 <td><strong style="cursor:pointer;text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(241,231,195,0.3)" onclick="openStampCard(${idx})">${s.name}</strong></td>
                 <td><span style="padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600;background:rgba(241,231,195,0.12);color:#f1e7c3">${s.type}</span></td>
                 <td>${pillsHtml}</td>
+                <td style="font-size:11px;color:rgba(241,231,195,0.65);line-height:1.5">${st.timeStr}${mthStr}</td>
                 <td style="font-size:12px;color:rgba(241,231,195,0.6)">${last}</td>
-                <td>${isDue ? '<span style="padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600;background:rgba(212,170,58,0.2);color:var(--warm)">💰 입금 예정</span>' : '<span style="font-size:12px;color:#f1e7c3">✓</span>'}</td>
+                <td>${isDue ? '<span style="padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600;background:rgba(212,170,58,0.2);color:var(--warm)">💰</span>' : '<span style="font-size:12px;color:#f1e7c3">✓</span>'}</td>
                 <td style="display:flex;gap:4px">
                   <button onclick="openLessonNote(${idx})" style="padding:5px 10px;border:1px solid rgba(241,231,195,0.25);background:rgba(241,231,195,0.08);border-radius:6px;font-size:11px;cursor:pointer;color:#f1e7c3;font-family:'Paperlogy',sans-serif">📝</button>
                   <button onclick="deleteStudent(${idx})" style="padding:5px 8px;border:1px solid rgba(255,120,120,0.2);background:rgba(255,100,100,0.07);border-radius:6px;font-size:11px;cursor:pointer;color:rgba(255,150,150,0.7)">✕</button>
@@ -1867,7 +1910,7 @@ function renderAdmin() {
       wrap.appendChild(groupEl);
     });
 
-    if (!state.students.length) {
+    if (!visible.length) {
       wrap.innerHTML = '<div style="text-align:center;color:rgba(241,231,195,0.4);padding:40px;font-size:13px">등록된 수강생이 없습니다</div>';
     }
   }
@@ -1939,7 +1982,9 @@ function showAdminTab(tab) {
 
 // ── 선생님별 현황 ──
 function renderTeacherStats() {
-  const teachers = ['천우경','김수종','방건주','탁상우'];
+  const teachers = state.currentTeacher
+    ? [state.currentTeacher]
+    : ['천우경','김수종','방건주','탁상우'];
   const wrap = document.getElementById('teacher-stats-wrap');
   wrap.innerHTML = '';
   teachers.forEach(t => {
@@ -2038,18 +2083,38 @@ function renderAttendance() {
     return lb.localeCompare(la);
   });
   if (!students.length) {
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:rgba(241,231,195,0.4);padding:24px">출석 기록이 없습니다</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:rgba(241,231,195,0.4);padding:24px">출석 기록이 없습니다</td></tr>';
     return;
   }
   students.forEach(s => {
+    const idx = state.students.indexOf(s);
     const tr = document.createElement('tr');
     const last = s.lessons.length ? s.lessons[s.lessons.length - 1] : '—';
+    const count = s.lessons.length;
+    const cyclePos = count > 0 ? ((count - 1) % 4) + 1 : 0;
+    const isDue = count > 0 && count % 4 === 0;
+    // 현재 사이클 미니 pills
+    let pills = '<div style="display:flex;gap:3px">';
+    for (let i = 1; i <= 4; i++) {
+      const cls = i < cyclePos ? 'done' : i === cyclePos ? 'due' : '';
+      pills += `<div class="lesson-pill ${cls}" style="width:18px;height:18px;font-size:9px">${i}</div>`;
+    }
+    pills += '</div>';
     tr.innerHTML = `
-      <td><strong>${s.name}</strong></td>
+      <td><strong style="cursor:pointer;text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(241,231,195,0.3)" onclick="openStampCard(${idx})">${s.name}</strong></td>
       <td><span style="padding:3px 8px;border-radius:4px;font-size:11px;background:rgba(241,231,195,0.12);color:#f1e7c3">${s.type}</span></td>
       <td><span style="padding:3px 8px;border-radius:4px;font-size:11px;background:rgba(107,63,160,0.35);color:rgba(241,231,195,0.9)">${s.teacher || '—'}</span></td>
-      <td style="font-family:'Paperlogy',sans-serif;font-weight:700">${s.lessons.length}회</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-family:'Paperlogy',sans-serif;font-weight:700">${count}회</span>
+          ${pills}
+          ${isDue ? '<span style="font-size:10px;color:var(--warm)">💰</span>' : ''}
+        </div>
+      </td>
       <td style="font-size:12px;color:rgba(241,231,195,0.6)">${last}</td>
+      <td>
+        <button onclick="openEditLesson(${idx})" style="padding:4px 10px;border:1px solid rgba(241,231,195,0.22);background:rgba(241,231,195,0.07);border-radius:6px;font-size:11px;cursor:pointer;color:#f1e7c3;font-family:'Paperlogy',sans-serif">수정</button>
+      </td>
     `;
     tbody.appendChild(tr);
   });
@@ -2399,7 +2464,9 @@ function renderStampCard() {
   // 헤더
   document.getElementById('sc-name').textContent      = s.name;
   document.getElementById('sc-teacher-info').textContent = `${s.teacher || '—'} · ${s.type} 레슨`;
-  document.getElementById('sc-type-info').textContent = `마지막 수업: ${s.lessons.length ? s.lessons[s.lessons.length-1] : '없음'}`;
+  const st = getLessonStats(s);
+  const monthLabel = st.months > 0 ? ` · ${st.months}개월차` : '';
+  document.getElementById('sc-type-info').textContent = `누적 ${st.timeStr}${monthLabel} · 마지막: ${s.lessons.length ? s.lessons[s.lessons.length-1] : '없음'}`;
   document.getElementById('sc-total').textContent     = total;
   document.getElementById('sc-cycle-label').textContent = isDue
     ? `${cycle-1}사이클 완료 ✓`
