@@ -964,19 +964,19 @@ h1, h2, h3,
 
     <!-- 통계 카드 -->
     <div class="admin-stats">
-      <div class="admin-stat-card">
+      <div class="admin-stat-card" onclick="filterStudents('all')" id="filter-all" style="cursor:pointer;transition:all .2s">
         <div class="admin-stat-num" id="stat-total">0</div>
         <div class="admin-stat-label">총 수강생</div>
       </div>
-      <div class="admin-stat-card">
+      <div class="admin-stat-card" onclick="filterStudents('개인')" id="filter-private" style="cursor:pointer;transition:all .2s">
         <div class="admin-stat-num" id="stat-private">0</div>
         <div class="admin-stat-label">개인 레슨</div>
       </div>
-      <div class="admin-stat-card">
+      <div class="admin-stat-card" onclick="filterStudents('그룹')" id="filter-group" style="cursor:pointer;transition:all .2s">
         <div class="admin-stat-num" id="stat-group">0</div>
         <div class="admin-stat-label">그룹 레슨</div>
       </div>
-      <div class="admin-stat-card">
+      <div class="admin-stat-card" onclick="filterStudents('due')" id="filter-due" style="cursor:pointer;transition:all .2s">
         <div class="admin-stat-num" style="color:var(--warm);font-family:'Paperlogy',sans-serif;font-size:28px;font-weight:600" id="stat-due">0</div>
         <div class="admin-stat-label">입금 예정</div>
       </div>
@@ -1481,22 +1481,45 @@ function saveState() {
 
 // ── 누적 레슨 통계 계산 ──
 function getLessonStats(student) {
-  const count   = student.lessons.length;
-  const mins    = (state.settings.lessonMinutes || 50) * count;
-  const months  = Math.floor(count / 4);          // 4회 = 1개월
-  const rem     = count % 4;                       // 이번 달 진행 횟수
-  const hours   = Math.floor(mins / 60);
-  const restMin = mins % 60;
-  const timeStr = hours > 0
-    ? `${hours}시간${restMin > 0 ? ' ' + restMin + '분' : ''}`
-    : `${mins}분`;
-  return { count, months, rem, totalMins: mins, timeStr };
+  const count  = student.lessons.length;
+  const months = Math.floor(count / 4);  // 4회 = 1개월
+  const rem    = count % 4;              // 이번 달 진행 횟수
+  return { count, months, rem };
 }
 
 // ── 현재 선생님 기준 학생 필터 ──
+let _studentFilter = 'all'; // 'all' | '개인' | '그룹' | 'due'
+
 function getVisibleStudents() {
-  if (!state.currentTeacher) return state.students;
-  return state.students.filter(s => s.teacher === state.currentTeacher);
+  // 천우경 = 전체 권한, 나머지 강사 = 본인 학생만
+  const byTeacher = (!state.currentTeacher || state.currentTeacher === '천우경')
+    ? state.students
+    : state.students.filter(s => s.teacher === state.currentTeacher);
+
+  // 통계 카드 필터
+  if (_studentFilter === '개인') return byTeacher.filter(s => s.type === '개인');
+  if (_studentFilter === '그룹') return byTeacher.filter(s => s.type === '그룹');
+  if (_studentFilter === 'due')  return byTeacher.filter(s => s.lessons.length > 0 && s.lessons.length % 4 === 0);
+  return byTeacher;
+}
+
+function filterStudents(type) {
+  _studentFilter = _studentFilter === type ? 'all' : type; // 같은 거 다시 누르면 해제
+  // 카드 활성화 스타일
+  ['all','private','group','due'].forEach(k => {
+    const el = document.getElementById('filter-' + k);
+    if (el) el.style.boxShadow = '';
+    if (el) el.style.borderColor = '';
+  });
+  const activeKey = type === '개인' ? 'private' : type === '그룹' ? 'group' : type;
+  if (_studentFilter !== 'all') {
+    const activeEl = document.getElementById('filter-' + activeKey);
+    if (activeEl) {
+      activeEl.style.boxShadow = '0 0 0 2px rgba(241,231,195,0.5)';
+      activeEl.style.borderColor = 'rgba(241,231,195,0.5)';
+    }
+  }
+  renderAdmin();
 }
 
 // 강사별 레슨 금액 반환
@@ -1824,55 +1847,54 @@ function showNoticeDetail(n) {
 
 // ─────────────── 관리자 ───────────────
 function renderAdmin() {
-  const visible = getVisibleStudents();  // 선생님 필터 적용
+  const visible = getVisibleStudents();
 
-  // 통계
-  const priv     = visible.filter(s => s.type === '개인').length;
-  const grp      = visible.filter(s => s.type === '그룹').length;
-  const due      = visible.filter(s => s.lessons.length > 0 && s.lessons.length % 4 === 0).length;
-  const totalMin = visible.reduce((sum, s) => sum + (state.settings.lessonMinutes||50) * s.lessons.length, 0);
-  const totalH   = Math.floor(totalMin / 60);
-  const timeDisp = totalH > 0 ? `${totalH}h ${totalMin%60}m` : `${totalMin}m`;
+  // 통계 (필터 없는 기준값으로)
+  const base     = (!state.currentTeacher || state.currentTeacher === '천우경')
+    ? state.students
+    : state.students.filter(s => s.teacher === state.currentTeacher);
+  const priv     = base.filter(s => s.type === '개인').length;
+  const grp      = base.filter(s => s.type === '그룹').length;
+  const due      = base.filter(s => s.lessons.length > 0 && s.lessons.length % 4 === 0).length;
+  const totalLessons = base.reduce((sum, s) => sum + s.lessons.length, 0);
 
-  document.getElementById('stat-total').textContent   = visible.length;
+  document.getElementById('stat-total').textContent   = base.length;
   document.getElementById('stat-private').textContent = priv;
   document.getElementById('stat-group').textContent   = grp;
   document.getElementById('stat-due').textContent     = due;
   document.getElementById('student-count-label').textContent =
-    state.currentTeacher
-      ? `${state.currentTeacher} 선생님 · 수강생 ${visible.length}명 · 누적 ${timeDisp}`
-      : `수강생 ${visible.length}명 · 누적 ${timeDisp}`;
+    state.currentTeacher && state.currentTeacher !== '천우경'
+      ? `${state.currentTeacher} 선생님 · 수강생 ${visible.length}명 · 누적 ${totalLessons}회`
+      : `수강생 ${base.length}명 · 누적 ${totalLessons}회${_studentFilter !== 'all' ? ' (필터 적용 중)' : ''}`;
 
-  // 수강생 목록 — 선생님별 그룹 (필터 적용)
+  // 수강생 목록 — 선생님별 그룹
   const wrap = document.getElementById('student-by-teacher');
   if (wrap) {
     wrap.innerHTML = '';
-    const teachers = ['천우경','김수종','방건주','탁상우'];
+    const isAdminAll = !state.currentTeacher || state.currentTeacher === '천우경';
+    const teachers   = ['천우경','김수종','방건주','탁상우'];
 
-    // 선생님 로그인 시 본인 그룹만, 전체 관리자 시 전체
-    const groupsToShow = state.currentTeacher
-      ? [{ teacher: state.currentTeacher, students: visible }]
-      : (() => {
-          const noTeacher = state.students.filter(s => !s.teacher || !teachers.includes(s.teacher));
-          const g = teachers.map(t => ({ teacher: t, students: state.students.filter(s => s.teacher === t) }));
+    const groupsToShow = isAdminAll
+      ? (() => {
+          const noTeacher = visible.filter(s => !s.teacher || !teachers.includes(s.teacher));
+          const g = teachers.map(t => ({ teacher: t, students: visible.filter(s => s.teacher === t) }));
           if (noTeacher.length) g.push({ teacher: '미배정', students: noTeacher });
           return g;
-        })();
+        })()
+      : [{ teacher: state.currentTeacher, students: visible }];
 
     groupsToShow.forEach(g => {
       if (!g.students.length) return;
       const groupEl = document.createElement('div');
       groupEl.className = 'teacher-group';
       const initials = g.teacher === '미배정' ? '?' : g.teacher.slice(1);
-      const grpTotalMins = g.students.reduce((s,st) => s + st.lessons.length, 0) * (state.settings.lessonMinutes||50);
-      const grpH = Math.floor(grpTotalMins/60);
-      const grpTimeStr = grpH > 0 ? grpH+'h '+(grpTotalMins%60)+'m' : grpTotalMins+'m';
+      const grpTotalLessons = g.students.reduce((s,st) => s + st.lessons.length, 0);
       groupEl.innerHTML = `
         <div class="teacher-group-header">
           <div class="teacher-avatar">${initials}</div>
           <div style="flex:1">
             <div style="font-size:15px;font-weight:700;color:#f1e7c3">${g.teacher}</div>
-            <div style="font-size:11px;color:rgba(241,231,195,0.45);margin-top:1px">수강생 ${g.students.length}명 · 누적 ${grpTimeStr}</div>
+            <div style="font-size:11px;color:rgba(241,231,195,0.45);margin-top:1px">수강생 ${g.students.length}명 · 누적 ${grpTotalLessons}회</div>
           </div>
           <div style="font-family:'Paperlogy',sans-serif;font-size:11px;color:rgba(241,231,195,0.4)">${getTeacherPrice(g.teacher)} / 4회</div>
         </div>
@@ -1891,12 +1913,14 @@ function renderAdmin() {
                 pillsHtml += `<div class="lesson-pill ${cls}">${i}</div>`;
               }
               pillsHtml += `</div><div style="font-size:10px;color:var(--muted);margin-top:2px">총 ${st.count}회</div>`;
-              const mthStr = st.months > 0 ? `<div style="font-size:10px;color:rgba(241,231,195,0.45)">${st.months}개월</div>` : '';
+              const mthStr = st.months > 0 ? `<div style="font-size:10px;color:rgba(241,231,195,0.45)">${st.months}개월차</div>` : '';
               return `<tr>
                 <td><strong style="cursor:pointer;text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(241,231,195,0.3)" onclick="openStampCard(${idx})">${s.name}</strong></td>
                 <td><span style="padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600;background:rgba(241,231,195,0.12);color:#f1e7c3">${s.type}</span></td>
                 <td>${pillsHtml}</td>
-                <td style="font-size:11px;color:rgba(241,231,195,0.65);line-height:1.5">${st.timeStr}${mthStr}</td>
+                <td style="font-size:12px;color:rgba(241,231,195,0.75);font-family:'Paperlogy',sans-serif;font-weight:600">
+                  ${st.count}회 ${mthStr}
+                </td>
                 <td style="font-size:12px;color:rgba(241,231,195,0.6)">${last}</td>
                 <td>${isDue ? '<span style="padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600;background:rgba(212,170,58,0.2);color:var(--warm)">💰</span>' : '<span style="font-size:12px;color:#f1e7c3">✓</span>'}</td>
                 <td style="display:flex;gap:4px">
@@ -1982,9 +2006,10 @@ function showAdminTab(tab) {
 
 // ── 선생님별 현황 ──
 function renderTeacherStats() {
-  const teachers = state.currentTeacher
-    ? [state.currentTeacher]
-    : ['천우경','김수종','방건주','탁상우'];
+  const isAdminAll = !state.currentTeacher || state.currentTeacher === '천우경';
+  const teachers = isAdminAll
+    ? ['천우경','김수종','방건주','탁상우']
+    : [state.currentTeacher];
   const wrap = document.getElementById('teacher-stats-wrap');
   wrap.innerHTML = '';
   teachers.forEach(t => {
@@ -2077,7 +2102,7 @@ function renderAttendance() {
   const tbody = document.getElementById('attend-tbody');
   if (!tbody) return;
   tbody.innerHTML = '';
-  const students = [...state.students].sort((a, b) => {
+  const students = [...getVisibleStudents()].sort((a, b) => {
     const la = a.lessons[a.lessons.length - 1] || '';
     const lb = b.lessons[b.lessons.length - 1] || '';
     return lb.localeCompare(la);
@@ -2466,7 +2491,7 @@ function renderStampCard() {
   document.getElementById('sc-teacher-info').textContent = `${s.teacher || '—'} · ${s.type} 레슨`;
   const st = getLessonStats(s);
   const monthLabel = st.months > 0 ? ` · ${st.months}개월차` : '';
-  document.getElementById('sc-type-info').textContent = `누적 ${st.timeStr}${monthLabel} · 마지막: ${s.lessons.length ? s.lessons[s.lessons.length-1] : '없음'}`;
+  document.getElementById('sc-type-info').textContent = `누적 ${st.count}회${monthLabel} · 마지막: ${s.lessons.length ? s.lessons[s.lessons.length-1] : '없음'}`;
   document.getElementById('sc-total').textContent     = total;
   document.getElementById('sc-cycle-label').textContent = isDue
     ? `${cycle-1}사이클 완료 ✓`
