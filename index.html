@@ -261,6 +261,7 @@ body { background:var(--bg); color:#f1e7c3; font-family:'Paperlogy',sans-serif; 
 /* ── 유튜브 피드 ── */
 .yt-card { background:var(--surface); border:1px solid var(--border2); border-radius:var(--radius); overflow:hidden; cursor:pointer; transition:all .2s; }
 .yt-card:hover { transform:translateY(-2px); box-shadow:0 8px 32px rgba(0,0,0,.35); border-color:rgba(241,231,195,0.3); }
+.yt-card:hover .yt-hover-play { opacity:1 !important; }
 .yt-thumb { width:100%; aspect-ratio:16/9; background:var(--surface2); display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; }
 .yt-play { width:48px; height:48px; border-radius:50%; background:rgba(241,231,195,.88); display:flex; align-items:center; justify-content:center; }
 .yt-play::after { content:''; border-style:solid; border-width:9px 0 9px 18px; border-color:transparent transparent transparent #2a1558; margin-left:3px; }
@@ -852,36 +853,70 @@ h1, h2, h3,
 
     <!-- 발성 루틴 카드 -->
     <div class="card-label" style="margin-bottom:12px">🎯 발성 루틴 추천</div>
-    <div class="grid-3" style="margin-bottom:32px">
-      <div class="yt-card">
-        <div class="yt-thumb" style="background:linear-gradient(135deg,#3f2378,#6b3fa0)">
-          <div style="color:#f1e7c3;font-size:28px">🌿</div>
-          <div class="yt-play" style="position:absolute;right:10px;bottom:10px;width:36px;height:36px"></div>
-        </div>
-        <div class="yt-info">
-          <div class="yt-title">아침 5분 발성 루틴 — 기초 워밍업</div>
-          <div class="yt-meta">기초 · 5분 · 매일 권장</div>
-        </div>
+
+    <!-- 남자/여자 발성 기초 -->
+    <div style="margin-bottom:12px">
+      <div style="font-family:'Paperlogy',sans-serif;font-size:10px;letter-spacing:1.5px;color:rgba(241,231,195,0.5);text-transform:uppercase;margin-bottom:10px">🎤 발성 기초</div>
+      <div class="grid-2" style="margin-bottom:0">
+        <a href="https://www.youtube.com/watch?v=_P6EWB6nOEU" target="_blank" class="yt-card" style="text-decoration:none;display:block">
+          <div class="yt-thumb" style="position:relative;overflow:hidden">
+            <img src="https://img.youtube.com/vi/_P6EWB6nOEU/mqdefault.jpg" style="width:100%;height:100%;object-fit:cover;display:block" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div style="display:none;position:absolute;inset:0;background:linear-gradient(135deg,#3f2378,#6b3fa0);align-items:center;justify-content:center;font-size:28px">🎤</div>
+            <div style="position:absolute;inset:0;background:rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center;opacity:0;transition:.2s" class="yt-hover-play">
+              <div style="width:44px;height:44px;background:rgba(255,255,255,0.9);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px">▶</div>
+            </div>
+          </div>
+          <div class="yt-info">
+            <div class="yt-title">남성 발성 기초</div>
+            <div class="yt-meta">기초 · 매일 권장</div>
+          </div>
+        </a>
+        <a href="https://www.youtube.com/watch?v=4RHy4GB6a-8" target="_blank" class="yt-card" style="text-decoration:none;display:block">
+          <div class="yt-thumb" style="position:relative;overflow:hidden">
+            <img src="https://img.youtube.com/vi/4RHy4GB6a-8/mqdefault.jpg" style="width:100%;height:100%;object-fit:cover;display:block" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div style="display:none;position:absolute;inset:0;background:linear-gradient(135deg,#6b3fa0,#9d8aa1);align-items:center;justify-content:center;font-size:28px">🎤</div>
+            <div style="position:absolute;inset:0;background:rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center;opacity:0;transition:.2s" class="yt-hover-play">
+              <div style="width:44px;height:44px;background:rgba(255,255,255,0.9);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px">▶</div>
+            </div>
+          </div>
+          <div class="yt-info">
+            <div class="yt-title">여성 발성 기초</div>
+            <div class="yt-meta">기초 · 매일 권장</div>
+          </div>
+        </a>
       </div>
-      <div class="yt-card">
-        <div class="yt-thumb" style="background:linear-gradient(135deg,#6b3fa0,#9d8aa1)">
-          <div style="color:#f1e7c3;font-size:28px">🔥</div>
-          <div class="yt-play" style="position:absolute;right:10px;bottom:10px;width:36px;height:36px"></div>
-        </div>
-        <div class="yt-info">
-          <div class="yt-title">혼성 음역대 개발 — 믹스보이스 기초</div>
-          <div class="yt-meta">중급 · 15분 · 주 3회 권장</div>
-        </div>
-      </div>
-      <div class="yt-card">
-        <div class="yt-thumb" style="background:linear-gradient(135deg,#2e1860,#3f2378)">
-          <div style="color:#f1e7c3;font-size:28px">💎</div>
-          <div class="yt-play" style="position:absolute;right:10px;bottom:10px;width:36px;height:36px"></div>
-        </div>
-        <div class="yt-info">
-          <div class="yt-title">감성 표현력 향상 — 성격별 보컬 접근</div>
-          <div class="yt-meta">고급 · 20분 · 레슨 전 권장</div>
-        </div>
+    </div>
+
+    <!-- 음역대 강화 / 호흡 훈련 -->
+    <div style="margin-bottom:32px">
+      <div style="font-family:'Paperlogy',sans-serif;font-size:10px;letter-spacing:1.5px;color:rgba(241,231,195,0.5);text-transform:uppercase;margin-bottom:10px">💪 트레이닝</div>
+      <div class="grid-2">
+        <a href="https://www.youtube.com/watch?v=bhdsE_sV6LE" target="_blank" class="yt-card" style="text-decoration:none;display:block">
+          <div class="yt-thumb" style="position:relative;overflow:hidden">
+            <img src="https://img.youtube.com/vi/bhdsE_sV6LE/mqdefault.jpg" style="width:100%;height:100%;object-fit:cover;display:block" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div style="display:none;position:absolute;inset:0;background:linear-gradient(135deg,#2e1860,#6b3fa0);align-items:center;justify-content:center;font-size:28px">🔥</div>
+            <div style="position:absolute;inset:0;background:rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center;opacity:0;transition:.2s" class="yt-hover-play">
+              <div style="width:44px;height:44px;background:rgba(255,255,255,0.9);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px">▶</div>
+            </div>
+          </div>
+          <div class="yt-info">
+            <div class="yt-title">음역대 강화 훈련</div>
+            <div class="yt-meta">중급 · 주 3회 권장</div>
+          </div>
+        </a>
+        <a href="https://www.youtube.com/watch?v=t0zGm8FcL1c" target="_blank" class="yt-card" style="text-decoration:none;display:block">
+          <div class="yt-thumb" style="position:relative;overflow:hidden">
+            <img src="https://img.youtube.com/vi/t0zGm8FcL1c/mqdefault.jpg" style="width:100%;height:100%;object-fit:cover;display:block" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div style="display:none;position:absolute;inset:0;background:linear-gradient(135deg,#3f2378,#2e1860);align-items:center;justify-content:center;font-size:28px">🌬</div>
+            <div style="position:absolute;inset:0;background:rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center;opacity:0;transition:.2s" class="yt-hover-play">
+              <div style="width:44px;height:44px;background:rgba(255,255,255,0.9);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px">▶</div>
+            </div>
+          </div>
+          <div class="yt-info">
+            <div class="yt-title">호흡 훈련</div>
+            <div class="yt-meta">기초 · 매일 권장</div>
+          </div>
+        </a>
       </div>
     </div>
 
