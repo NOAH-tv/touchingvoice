@@ -1501,19 +1501,20 @@ async function loadFromSheets() {
     const dl = await r2.json();
     if (d.status !== 'ok') throw new Error(d.msg);
 
-    // localStorage 백업 (병합 전 저장)
-    const localStudents = JSON.parse(localStorage.getItem('tv_students') || '[]');
+    // localStorage 백업 — state.students가 이미 최신값이므로 그걸 기준으로 사용
+    const localStudents = state.students.length > 0
+      ? state.students
+      : JSON.parse(localStorage.getItem('tv_students') || '[]');
 
     // ── 출석 데이터 먼저 확보 ──
     const lessonsData = (dl.status === 'ok' && dl.data && dl.data.length > 0)
       ? dl.data
       : (d.lessons && d.lessons.length > 0 ? d.lessons : []);
 
-    // ── 수강생 병합 (Sheets 기준, lessons는 아래에서 채움) ──
+    // ── 수강생 병합 (Sheets 기준, 로컬 전용 필드 보존) ──
     if (d.students && d.students.length > 0) {
       const merged = d.students.map(sheetS => {
         const local = localStudents.find(l => l.name === sheetS.name && l.type === sheetS.type);
-        // Sheets 출석이 있으면 Sheets 기준, 없으면 localStorage 보존
         const sheetsLessons = lessonsData
           .filter(l => l.name === sheetS.name && l.type === sheetS.type)
           .sort((a, b) => (parseInt(a.seq)||0) - (parseInt(b.seq)||0))
@@ -1522,7 +1523,10 @@ async function loadFromSheets() {
         return {
           ...sheetS,
           lessons:     sheetsLessons.length > 0 ? sheetsLessons : (local?.lessons || []),
-          lessonNotes: local?.lessonNotes || {}
+          // 로컬 전용 필드 — Sheets에 없으므로 항상 localStorage 값 우선
+          lessonNotes: local?.lessonNotes ?? {},
+          phone:       local?.phone || sheetS.phone || '',
+          memo:        local?.memo  || sheetS.memo  || '',
         };
       });
       // localStorage에만 있는 수강생도 유지
@@ -1541,6 +1545,17 @@ async function loadFromSheets() {
     if (d.payments && d.payments.length > 0) state.payments = d.payments;
     if (d.absents  && d.absents.length  > 0) state.absent   = d.absents;
     if (d.notices  && d.notices.length  > 0) state.notices  = d.notices;
+
+    // ── 최종 안전장치: lessonNotes 절대 손실 방지 ──
+    // 병합 전 localStudents에 lessonNotes가 있었는데 state.students에서 없어진 경우 복원
+    localStudents.forEach(ls => {
+      if (ls.lessonNotes && Object.keys(ls.lessonNotes).length > 0) {
+        const target = state.students.find(m => m.name === ls.name && m.type === ls.type);
+        if (target && (!target.lessonNotes || Object.keys(target.lessonNotes).length === 0)) {
+          target.lessonNotes = ls.lessonNotes;
+        }
+      }
+    });
 
     saveState();
     _sheetsLoaded = true;
