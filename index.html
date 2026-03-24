@@ -487,6 +487,13 @@ body { background:var(--bg); color:#f1e7c3; font-family:'Paperlogy',sans-serif; 
   font-size:18px; transition:all .2s;
 }
 .mypage-stamp-slot.filled { border-color:rgba(241,231,195,0.35); background:rgba(63,35,120,0.6); }
+/* 학생 대시보드 탭 */
+.mp-tab {
+  padding:7px 14px; border-radius:8px; border:none; background:none;
+  font-family:'Paperlogy',sans-serif; font-size:12px; font-weight:600;
+  color:rgba(241,231,195,0.5); cursor:pointer; transition:all .15s; white-space:nowrap;
+}
+.mp-tab.active { background:rgba(241,231,195,0.15); color:#f1e7c3; }
 
 /* ── 엔진 탭 ── */
 .eng-tab {
@@ -668,7 +675,7 @@ h1, h2, h3,
     <div class="nav-icons">
       <button class="nav-link" onclick="window.open('https://www.youtube.com/@Touchin9Voice','_blank')" title="유튜브" style="font-size:16px;padding:7px 10px">▶</button>
       <button class="nav-link" onclick="window.open('https://www.instagram.com/touchingvoice_official','_blank')" title="인스타그램" style="font-size:16px;padding:7px 10px">📸</button>
-      <button class="nav-btn" onclick="openAdminLogin()">관리자</button>
+      <button class="nav-btn" id="nav-admin-btn" onclick="openAdminLogin()">관리자</button>
     </div>
   </div>
 </nav>
@@ -1033,44 +1040,115 @@ h1, h2, h3,
   <div class="wrap-sm" style="padding-top:40px;padding-bottom:60px">
     <div class="card-label" style="margin-bottom:8px">내 레슨 · My Lesson</div>
     <h2 class="section-title">내 레슨 기록</h2>
-    <p class="section-sub">이름을 입력하면 레슨 내용, 숙제, 참고 영상을 확인할 수 있어요.</p>
+    <p class="section-sub">이름과 비밀번호로 로그인하면 수업 내역, 입금, 숙제를 확인할 수 있어요.</p>
 
-    <!-- 이름 입력 -->
+    <!-- 로그인 폼 -->
     <div id="mypage-login" class="card">
       <div class="form-group">
         <label class="form-label">이름</label>
-        <input type="text" class="form-input" id="mypage-name-input" placeholder="성함을 입력해 주세요" onkeydown="if(event.key==='Enter')mypageLogin()">
+        <input type="text" class="form-input" id="mypage-name-input" placeholder="성함" onkeydown="if(event.key==='Enter')document.getElementById('mypage-pw-input').focus()">
       </div>
-      <button class="btn-primary" onclick="mypageLogin()">확인 →</button>
+      <div class="form-group">
+        <label class="form-label">비밀번호 <span style="font-size:10px;color:var(--muted)">(초기: 0000)</span></label>
+        <input type="password" class="form-input" id="mypage-pw-input" placeholder="비밀번호" onkeydown="if(event.key==='Enter')mypageLogin()">
+      </div>
+      <div id="mypage-login-error" style="display:none;font-size:12px;color:#ef5350;margin-bottom:8px">이름 또는 비밀번호가 맞지 않아요</div>
+      <button class="btn-primary" onclick="mypageLogin()">로그인 →</button>
     </div>
 
     <!-- 학생 대시보드 -->
     <div id="mypage-dashboard" style="display:none">
+
+      <!-- 헤더 -->
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
         <div>
           <div style="font-size:20px;font-weight:700;color:#f1e7c3" id="mypage-student-name">—</div>
           <div style="font-size:12px;color:rgba(241,231,195,0.5);margin-top:2px" id="mypage-student-info">—</div>
         </div>
-        <button onclick="mypageLogout()" style="padding:6px 14px;background:rgba(241,231,195,0.08);border:1px solid rgba(241,231,195,0.2);border-radius:8px;font-size:12px;color:rgba(241,231,195,0.6);cursor:pointer;font-family:'Paperlogy',sans-serif">나가기</button>
-      </div>
-
-      <!-- 스탬프 미니 뷰 -->
-      <div class="card" style="margin-bottom:16px">
-        <div class="card-label" style="margin-bottom:12px">수업 현황</div>
-        <div style="display:flex;gap:10px;align-items:center">
-          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;flex:1" id="mypage-stamp-grid"></div>
-          <div style="text-align:center;flex-shrink:0">
-            <div style="font-family:'Paperlogy',sans-serif;font-size:28px;font-weight:700;color:#f1e7c3" id="mypage-total">0</div>
-            <div style="font-size:10px;color:rgba(241,231,195,0.45)">총 레슨</div>
-          </div>
+        <div style="display:flex;gap:8px">
+          <button onclick="openChangePw()" style="padding:6px 12px;background:rgba(241,231,195,0.08);border:1px solid rgba(241,231,195,0.2);border-radius:8px;font-size:11px;color:rgba(241,231,195,0.6);cursor:pointer;font-family:'Paperlogy',sans-serif">🔑 비번변경</button>
+          <button onclick="mypageLogout()" style="padding:6px 12px;background:rgba(241,231,195,0.08);border:1px solid rgba(241,231,195,0.2);border-radius:8px;font-size:11px;color:rgba(241,231,195,0.6);cursor:pointer;font-family:'Paperlogy',sans-serif">나가기</button>
         </div>
       </div>
 
-      <!-- 레슨 노트 목록 -->
-      <div class="card-label" style="margin-bottom:12px">레슨 기록</div>
-      <div id="mypage-notes-list">
-        <div style="text-align:center;color:rgba(241,231,195,0.4);padding:32px;font-size:13px">레슨 기록이 없습니다</div>
+      <!-- 탭 -->
+      <div style="display:flex;gap:6px;margin-bottom:20px;border-bottom:1px solid rgba(241,231,195,0.1);padding-bottom:12px;overflow-x:auto">
+        <button class="mp-tab active" id="mp-tab-lessons" onclick="switchMpTab('lessons')">📅 수업 내역</button>
+        <button class="mp-tab" id="mp-tab-payment" onclick="switchMpTab('payment')">💰 입금</button>
+        <button class="mp-tab" id="mp-tab-notes" onclick="switchMpTab('notes')">📝 레슨 노트</button>
       </div>
+
+      <!-- 수업 내역 패널 -->
+      <div id="mp-panel-lessons">
+        <!-- 현재 사이클 스탬프 -->
+        <div class="card" style="margin-bottom:16px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+            <div class="card-label">이번 달 현황</div>
+            <div style="font-family:'Paperlogy',sans-serif;font-size:11px;color:var(--muted)" id="mypage-months-label"></div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center">
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;flex:1" id="mypage-stamp-grid"></div>
+            <div style="text-align:center;flex-shrink:0">
+              <div style="font-family:'Paperlogy',sans-serif;font-size:28px;font-weight:700;color:#f1e7c3" id="mypage-total">0</div>
+              <div style="font-size:10px;color:rgba(241,231,195,0.45)">총 레슨</div>
+            </div>
+          </div>
+        </div>
+        <!-- 수업 전체 목록 -->
+        <div class="card-label" style="margin-bottom:8px">전체 수업 기록</div>
+        <div class="card" style="padding:0;overflow:hidden">
+          <div id="mypage-lessons-list" style="max-height:300px;overflow-y:auto"></div>
+        </div>
+      </div>
+
+      <!-- 입금 패널 -->
+      <div id="mp-panel-payment" style="display:none">
+        <!-- 입금 안내 카드 -->
+        <div class="card" style="margin-bottom:16px;background:linear-gradient(135deg,rgba(63,35,120,0.8),rgba(46,24,96,0.8));border-color:rgba(212,170,58,0.3)">
+          <div class="card-label" style="color:var(--warm)">입금 안내</div>
+          <div style="font-size:15px;font-weight:700;color:#f1e7c3;margin:8px 0" id="mp-payment-amount">—</div>
+          <div style="font-size:13px;color:rgba(241,231,195,0.7);line-height:1.8" id="mp-bank-info">—</div>
+          <button onclick="mypageSendSMS()" style="margin-top:14px;width:100%;padding:13px;background:var(--warm);color:#2a1558;border:none;border-radius:10px;font-family:'Paperlogy',sans-serif;font-size:14px;font-weight:700;cursor:pointer">📱 문자로 계좌 전송</button>
+        </div>
+        <!-- 입금 내역 -->
+        <div class="card-label" style="margin-bottom:8px">입금 내역</div>
+        <div id="mp-payment-list">
+          <div style="text-align:center;color:var(--muted);padding:24px;font-size:13px">입금 내역이 없습니다</div>
+        </div>
+      </div>
+
+      <!-- 레슨 노트 패널 -->
+      <div id="mp-panel-notes" style="display:none">
+        <div id="mypage-notes-list">
+          <div style="text-align:center;color:rgba(241,231,195,0.4);padding:32px;font-size:13px">레슨 기록이 없습니다</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- 비밀번호 변경 모달 -->
+<div class="modal-overlay" id="change-pw-modal" onclick="if(event.target===this)closeChangePw()">
+  <div class="modal-box" style="max-width:360px">
+    <button class="modal-close" onclick="closeChangePw()">✕</button>
+    <div style="padding:28px">
+      <div class="card-label" style="margin-bottom:4px">비밀번호 변경</div>
+      <h3 style="font-size:18px;font-weight:700;margin-bottom:20px">새 비밀번호 설정</h3>
+      <div class="form-group">
+        <label class="form-label">현재 비밀번호</label>
+        <input type="password" class="form-input" id="pw-current" placeholder="현재 비밀번호">
+      </div>
+      <div class="form-group">
+        <label class="form-label">새 비밀번호</label>
+        <input type="password" class="form-input" id="pw-new" placeholder="새 비밀번호 (4자리 이상)">
+      </div>
+      <div class="form-group">
+        <label class="form-label">새 비밀번호 확인</label>
+        <input type="password" class="form-input" id="pw-new2" placeholder="다시 입력">
+      </div>
+      <div id="pw-change-error" style="display:none;font-size:12px;color:#ef5350;margin-bottom:8px"></div>
+      <button class="btn-primary" onclick="doChangePw()">변경하기 →</button>
     </div>
   </div>
 </div>
@@ -1636,7 +1714,7 @@ h1, h2, h3,
 // ─────────────── 상태 관리 ───────────────
 let state = {
   lessonType: '개인',
-  currentTeacher: '',   // 로그인한 선생님
+  currentTeacher: sessionStorage.getItem('tv_teacher') || '',  // 강사 로그인 지속
   students: JSON.parse(localStorage.getItem('tv_students') || '[]'),
   notices: JSON.parse(localStorage.getItem('tv_notices') || JSON.stringify([
     { id:1, type:'공지', title:'3월 수업 일정 안내', content:'3월 25일(화)은 정상 수업입니다.\n4월 첫째 주 일정은 별도 공지 예정입니다.\n문의는 카카오톡으로 연락해 주세요.', date:'2026-03-19' },
@@ -1665,6 +1743,9 @@ function saveState() {
   localStorage.setItem('tv_absent', JSON.stringify(state.absent));
   localStorage.setItem('tv_payments', JSON.stringify(state.payments));
   localStorage.setItem('tv_settings', JSON.stringify(state.settings));
+  // 로그인 상태 세션에 저장
+  if (state.currentTeacher) sessionStorage.setItem('tv_teacher', state.currentTeacher);
+  else sessionStorage.removeItem('tv_teacher');
 }
 
 // ── 누적 레슨 통계 계산 ──
@@ -1938,7 +2019,10 @@ function _showPage(id) {
   if (navEl) navEl.classList.add('active');
   if (id === 'admin')  { renderAdmin(); }
   if (id === 'notice') { renderNotices(); }
-  if (id === 'mypage' && mypageStudentIdx >= 0) { renderMypage(); }
+  if (id === 'mypage') {
+    if (mypageStudentIdx < 0) restoreMypageSession();
+    else renderMypage();
+  }
   // 뒤로가기 FAB: 홈이면 숨김
   const fab = document.getElementById('back-fab');
   if (fab) fab.classList.toggle('visible', id !== 'home');
@@ -2591,15 +2675,36 @@ function saveLessonNote() {
   showToast(`${s.name}님 레슨 노트 저장 ✓`);
 }
 
-// ─────────────── 학생용 내 레슨 페이지 ───────────────
+// ─────────────── 학생 내 레슨 페이지 ───────────────
 let mypageStudentIdx = -1;
+
+// 학생 비밀번호 저장소 (이름 기준)
+function getStudentPasswords() {
+  return JSON.parse(localStorage.getItem('tv_student_passwords') || '{}');
+}
+function saveStudentPassword(name, pw) {
+  const pws = getStudentPasswords();
+  pws[name] = pw;
+  localStorage.setItem('tv_student_passwords', JSON.stringify(pws));
+}
 
 function mypageLogin() {
   const name = document.getElementById('mypage-name-input').value.trim();
+  const pw   = document.getElementById('mypage-pw-input').value;
+  const errEl = document.getElementById('mypage-login-error');
   if (!name) { showToast('이름을 입력해 주세요'); return; }
+
   const idx = state.students.findIndex(s => s.name === name);
-  if (idx < 0) { showToast('등록된 수강생을 찾을 수 없어요'); return; }
+  if (idx < 0) { errEl.style.display = 'block'; errEl.textContent = '등록된 수강생을 찾을 수 없어요'; return; }
+
+  const pws = getStudentPasswords();
+  const stored = pws[name] || '0000'; // 초기 비밀번호 0000
+  if (pw !== stored) { errEl.style.display = 'block'; errEl.textContent = '비밀번호가 맞지 않아요'; return; }
+
+  errEl.style.display = 'none';
   mypageStudentIdx = idx;
+  // 세션에 저장 (페이지 전환해도 유지)
+  sessionStorage.setItem('tv_student', JSON.stringify({ name, idx }));
   renderMypage();
   document.getElementById('mypage-login').style.display = 'none';
   document.getElementById('mypage-dashboard').style.display = 'block';
@@ -2607,56 +2712,113 @@ function mypageLogin() {
 
 function mypageLogout() {
   mypageStudentIdx = -1;
+  sessionStorage.removeItem('tv_student');
   document.getElementById('mypage-name-input').value = '';
+  document.getElementById('mypage-pw-input').value = '';
   document.getElementById('mypage-login').style.display = 'block';
   document.getElementById('mypage-dashboard').style.display = 'none';
+}
+
+// 세션 복원 (페이지 이동 후 돌아왔을 때)
+function restoreMypageSession() {
+  const saved = sessionStorage.getItem('tv_student');
+  if (!saved) return;
+  try {
+    const { name, idx } = JSON.parse(saved);
+    const realIdx = state.students.findIndex(s => s.name === name);
+    if (realIdx < 0) { sessionStorage.removeItem('tv_student'); return; }
+    mypageStudentIdx = realIdx;
+    renderMypage();
+    document.getElementById('mypage-login').style.display = 'none';
+    document.getElementById('mypage-dashboard').style.display = 'block';
+  } catch(e) { sessionStorage.removeItem('tv_student'); }
+}
+
+function switchMpTab(tab) {
+  ['lessons','payment','notes'].forEach(t => {
+    document.getElementById('mp-tab-' + t).classList.toggle('active', t === tab);
+    document.getElementById('mp-panel-' + t).style.display = t === tab ? 'block' : 'none';
+  });
 }
 
 function renderMypage() {
   if (mypageStudentIdx < 0) return;
   const s = state.students[mypageStudentIdx];
   const total    = s.lessons.length;
-  const cyclePos = total % 4;
+  const st       = getLessonStats(s);
   const notes    = s.lessonNotes || {};
 
   document.getElementById('mypage-student-name').textContent = s.name + '님';
   document.getElementById('mypage-student-info').textContent = `${s.teacher || '—'} · ${s.type} 레슨`;
   document.getElementById('mypage-total').textContent = total;
 
-  // 스탬프 미니
+  // 개월차 라벨
+  const monthsEl = document.getElementById('mypage-months-label');
+  if (monthsEl) monthsEl.textContent = st.months > 0 ? `${st.months}개월차` : '첫 번째 달';
+
+  // 스탬프 미니 (이번 사이클)
+  const cyclePos = total % 4;
   const grid = document.getElementById('mypage-stamp-grid');
   grid.innerHTML = '';
   for (let i = 1; i <= 4; i++) {
+    const filled = i <= cyclePos;
     const slot = document.createElement('div');
-    slot.className = 'mypage-stamp-slot' + (i <= cyclePos ? ' filled' : '');
-    slot.textContent = i <= cyclePos ? '✓' : i;
-    slot.style.cssText = `aspect-ratio:1;border-radius:10px;border:2px ${i <= cyclePos ? 'solid rgba(241,231,195,0.35)' : 'dashed rgba(241,231,195,0.18)'};display:flex;align-items:center;justify-content:center;font-size:${i <= cyclePos ? '16px' : '12px'};font-weight:700;color:${i <= cyclePos ? '#f1e7c3' : 'rgba(241,231,195,0.3)'};background:${i <= cyclePos ? 'rgba(63,35,120,0.7)' : 'rgba(241,231,195,0.03)'};transition:all .2s`;
+    slot.style.cssText = `aspect-ratio:1;border-radius:10px;border:2px ${filled?'solid rgba(241,231,195,0.35)':'dashed rgba(241,231,195,0.18)'};display:flex;align-items:center;justify-content:center;font-size:${filled?'16px':'12px'};font-weight:700;color:${filled?'#f1e7c3':'rgba(241,231,195,0.3)'};background:${filled?'rgba(63,35,120,0.7)':'rgba(241,231,195,0.03)'}`;
+    slot.textContent = filled ? '✓' : i;
     grid.appendChild(slot);
   }
 
-  // 레슨 노트 목록
+  // 수업 전체 목록
+  const lessonsList = document.getElementById('mypage-lessons-list');
+  if (s.lessons.length === 0) {
+    lessonsList.innerHTML = '<div style="text-align:center;color:var(--muted);padding:24px;font-size:13px">수업 기록이 없습니다</div>';
+  } else {
+    lessonsList.innerHTML = [...s.lessons].reverse().map((date, i) => {
+      const num = s.lessons.length - i;
+      const month = Math.ceil(num / 4);
+      return `<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid rgba(241,231,195,0.07)">
+        <div style="font-family:'Paperlogy',sans-serif;font-size:18px;font-weight:700;color:#f1e7c3;width:32px;text-align:center">${num}</div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:600">${date}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:1px">${month}개월차 · ${((num-1)%4)+1}/4회</div>
+        </div>
+        <div style="font-size:10px;color:var(--muted)">${s.teacher||''}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // 입금 패널
+  const price = getTeacherPrice(s.teacher);
+  const bankInfo = state.settings.bankInfo || '기업은행 274-103965-04-014 · 터칭보이스(천우경)';
+  document.getElementById('mp-payment-amount').textContent = `${price} (4회 기준)`;
+  document.getElementById('mp-bank-info').textContent = bankInfo;
+
+  const myPayments = state.payments.filter(p => p.name === s.name);
+  const payEl = document.getElementById('mp-payment-list');
+  if (!myPayments.length) {
+    payEl.innerHTML = '<div style="text-align:center;color:var(--muted);padding:24px;font-size:13px">입금 내역이 없습니다</div>';
+  } else {
+    payEl.innerHTML = myPayments.map(p => `
+      <div class="score-history-item" style="padding:12px 0">
+        <div style="font-family:'Paperlogy',sans-serif;font-size:16px;font-weight:700;color:var(--warm);width:80px;flex-shrink:0">${p.amount}</div>
+        <div><div style="font-size:13px;font-weight:600">${p.date}</div>${p.memo?`<div style="font-size:11px;color:var(--muted)">${p.memo}</div>`:''}</div>
+      </div>`).join('');
+  }
+
+  // 레슨 노트 패널
+  renderMypageNotes(notes);
+}
+
+function renderMypageNotes(notes) {
   const notesList = document.getElementById('mypage-notes-list');
   const hasNote = notes.note || notes.hw || (notes.yt && notes.yt.length);
   if (!hasNote) {
     notesList.innerHTML = '<div style="text-align:center;color:rgba(241,231,195,0.4);padding:32px;font-size:13px">아직 레슨 노트가 없어요</div>';
     return;
   }
-
   let html = '';
-  if (notes.note) {
-    html += `<div class="lesson-note-card">
-      <div class="note-date">${notes.updatedAt || '—'} · 레슨 내용</div>
-      <div class="note-preview">${notes.note}</div>
-      <div class="note-badges"><span class="note-badge-hw">레슨 노트</span></div>
-    </div>`;
-  }
-  if (notes.hw) {
-    html += `<div class="lesson-note-card">
-      <div class="note-date">${notes.hwDue ? '마감: ' + notes.hwDue : notes.updatedAt || '—'} · 숙제</div>
-      <div class="note-preview">📚 ${notes.hw}</div>
-      <div class="note-badges"><span class="note-badge-hw">숙제</span>${notes.hwDue ? `<span style="font-size:10px;color:rgba(241,231,195,0.4)">마감 ${notes.hwDue}</span>` : ''}</div>
-    </div>`;
-  }
+  if (notes.note) html += `<div class="lesson-note-card"><div class="note-date">${notes.updatedAt||'—'} · 레슨 내용</div><div class="note-preview">${notes.note}</div><div class="note-badges"><span class="note-badge-hw">레슨 노트</span></div></div>`;
+  if (notes.hw) html += `<div class="lesson-note-card"><div class="note-date">${notes.hwDue?'마감: '+notes.hwDue:notes.updatedAt||'—'} · 숙제</div><div class="note-preview">📚 ${notes.hw}</div><div class="note-badges"><span class="note-badge-hw">숙제</span>${notes.hwDue?`<span style="font-size:10px;color:var(--muted)">마감 ${notes.hwDue}</span>`:''}</div></div>`;
   if (notes.yt && notes.yt.length) {
     notes.yt.forEach(url => {
       const videoId = url.match(/(?:v=|youtu\.be\/)([^&\s]+)/)?.[1];
@@ -2664,7 +2826,7 @@ function renderMypage() {
       html += `<a href="${url}" target="_blank" class="lesson-note-card" style="display:block;text-decoration:none">
         <div class="note-date">참고 영상</div>
         <div style="display:flex;gap:12px;align-items:center">
-          ${thumb ? `<img src="${thumb}" style="width:80px;height:45px;border-radius:6px;object-fit:cover;flex-shrink:0">` : '<div style="width:80px;height:45px;background:rgba(241,231,195,0.08);border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px">▶</div>'}
+          ${thumb?`<img src="${thumb}" style="width:80px;height:45px;border-radius:6px;object-fit:cover;flex-shrink:0">`:'<div style="width:80px;height:45px;background:rgba(241,231,195,0.08);border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px">▶</div>'}
           <div style="font-size:12px;color:rgba(241,231,195,0.7);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${url}</div>
         </div>
         <div class="note-badges"><span class="note-badge-yt">▶ 유튜브</span></div>
@@ -2672,6 +2834,47 @@ function renderMypage() {
     });
   }
   notesList.innerHTML = html;
+}
+
+function mypageSendSMS() {
+  if (mypageStudentIdx < 0) return;
+  const s = state.students[mypageStudentIdx];
+  const price = getTeacherPrice(s.teacher);
+  const bank = state.settings.bankInfo || '기업은행 274-103965-04-014 · 터칭보이스(천우경)';
+  const phone = s.phone || '';
+  const body = encodeURIComponent(`[터칭보이스] ${s.name}님 수강료 안내\n${price} (4회)\n${bank}`);
+  const isIOS = /iPhone|iPad/i.test(navigator.userAgent);
+  window.location.href = isIOS ? `sms:${phone}&body=${body}` : `sms:${phone}?body=${body}`;
+}
+
+// 비밀번호 변경
+function openChangePw() {
+  document.getElementById('pw-current').value = '';
+  document.getElementById('pw-new').value = '';
+  document.getElementById('pw-new2').value = '';
+  document.getElementById('pw-change-error').style.display = 'none';
+  document.getElementById('change-pw-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeChangePw() {
+  document.getElementById('change-pw-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function doChangePw() {
+  if (mypageStudentIdx < 0) return;
+  const s = state.students[mypageStudentIdx];
+  const cur  = document.getElementById('pw-current').value;
+  const nw   = document.getElementById('pw-new').value;
+  const nw2  = document.getElementById('pw-new2').value;
+  const errEl = document.getElementById('pw-change-error');
+  const pws  = getStudentPasswords();
+  const stored = pws[s.name] || '0000';
+  if (cur !== stored) { errEl.style.display='block'; errEl.textContent='현재 비밀번호가 맞지 않아요'; return; }
+  if (nw.length < 4)  { errEl.style.display='block'; errEl.textContent='비밀번호는 4자리 이상이어야 해요'; return; }
+  if (nw !== nw2)     { errEl.style.display='block'; errEl.textContent='새 비밀번호가 서로 맞지 않아요'; return; }
+  saveStudentPassword(s.name, nw);
+  closeChangePw();
+  showToast('비밀번호가 변경됐어요 ✓');
 }
 
 // ═══════════════════════════════════════════
@@ -3683,12 +3886,38 @@ function tryAdminLogin() {
   if (pw === passwords[selectedTeacherLogin]) {
     closeAdminLogin();
     state.currentTeacher = selectedTeacherLogin;
+    sessionStorage.setItem('tv_teacher', selectedTeacherLogin);
+    updateNavLoginState();
     showPage('admin');
     showToast(selectedTeacherLogin + ' 선생님, 환영합니다 ✓');
   } else {
     document.getElementById('admin-login-error').style.display = 'block';
     document.getElementById('admin-pw-input').value = '';
     document.getElementById('admin-pw-input').focus();
+  }
+}
+
+function logoutTeacher() {
+  state.currentTeacher = '';
+  sessionStorage.removeItem('tv_teacher');
+  updateNavLoginState();
+  showPage('home');
+  showToast('로그아웃 됐어요');
+}
+
+function updateNavLoginState() {
+  const btn = document.getElementById('nav-admin-btn');
+  if (!btn) return;
+  if (state.currentTeacher) {
+    btn.textContent = state.currentTeacher.slice(-2) + ' ✓';
+    btn.style.background = 'rgba(241,231,195,0.2)';
+    btn.onclick = () => {
+      if (confirm(state.currentTeacher + ' 선생님 로그아웃 할까요?')) logoutTeacher();
+    };
+  } else {
+    btn.textContent = '관리자';
+    btn.style.background = '';
+    btn.onclick = openAdminLogin;
   }
 }
 
@@ -3732,6 +3961,9 @@ function deletePayment(id) {
   if (attendDate) attendDate.value = today;
   const absentDate = document.getElementById('absent-date');
   if (absentDate) absentDate.value = today;
+
+  // 로그인 상태 복원
+  updateNavLoginState();
 
   // Sheets에서 데이터 로드 (백그라운드)
   try {
