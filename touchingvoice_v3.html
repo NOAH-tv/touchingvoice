@@ -942,6 +942,12 @@ let answers = {};
 let totalAnswered = 0;
 const totalQ = 70;
 let voiceFileName = null;
+let rangeSource = null;   // 음역대 테스트 AudioBufferSourceNode
+let rangeBlob = null;
+let rangeSeconds = 0;
+let rangeIsRecording = false;
+let rangeTimerInterval = null;
+let rangeProgressInterval = null;
 let currentDominant = 'O';
 let currentDomainDetail = null;
 let currentDetailTab = 0;
@@ -1394,7 +1400,14 @@ function useRec() {
 
 function skipVoice() {
   voiceFileName = null;
-  document.getElementById('btnStep1').disabled = false;
+  window._voiceAnalysisReady = false;
+  // 이름/나이/성별 확인 후 바로 step-2로 이동
+  const name = document.getElementById('user-name').value.trim();
+  if (!name) { alert('이름을 입력해 주세요'); return; }
+  const age = document.getElementById('user-age').value;
+  if (!age) { alert('나이를 입력해 주세요'); return; }
+  if (!selectedGender) { alert('성별을 선택해 주세요'); return; }
+  goStep2Survey();
 }
 
 // ── 애창곡 후렴 녹음 ──
@@ -2644,7 +2657,8 @@ function restart() {
   document.getElementById('btnStep1').disabled=true;
   // 음역대 테스트 초기화
   rangeBlob=null; rangeSeconds=0; rangeIsRecording=false;
-  clearInterval(rangeTimerInterval); clearInterval(rangeProgressInterval);
+  if (rangeTimerInterval) clearInterval(rangeTimerInterval);
+  if (rangeProgressInterval) clearInterval(rangeProgressInterval);
   if (rangeSource) { try { rangeSource.stop(); } catch(e) {} }
   document.getElementById('rangeDoneBar').style.display='none';
   document.getElementById('rangeOrbIcon').textContent='▶';
