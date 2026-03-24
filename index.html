@@ -562,6 +562,78 @@ body { background:var(--bg); color:#f1e7c3; font-family:'Paperlogy',sans-serif; 
 .teacher-select-btn:hover { border-color:rgba(241,231,195,0.4); color:#f1e7c3; }
 .teacher-select-btn.selected { border-color:#f1e7c3; background:rgba(241,231,195,0.15); color:#f1e7c3; font-weight:600; }
 
+/* ── 그룹레슨 반 카드 ── */
+.group-class-card {
+  background:var(--surface); border:1px solid var(--border2);
+  border-radius:var(--radius); margin-bottom:20px; overflow:hidden;
+}
+.group-class-header {
+  padding:20px 24px 16px;
+  display:flex; align-items:flex-start; justify-content:space-between;
+  border-bottom:1px solid rgba(241,231,195,0.1);
+}
+.group-class-badge {
+  display:inline-flex; align-items:center; gap:6px;
+  font-family:'Paperlogy',sans-serif; font-size:11px; font-weight:600;
+  letter-spacing:1px; text-transform:uppercase; color:rgba(241,231,195,0.5);
+  margin-bottom:4px;
+}
+.group-class-name {
+  font-size:20px; font-weight:700; color:#f1e7c3; margin-bottom:2px;
+}
+.group-class-meta {
+  font-size:12px; color:rgba(241,231,195,0.45);
+}
+.group-edit-btn {
+  padding:5px 12px; background:rgba(241,231,195,0.07);
+  border:1px solid rgba(241,231,195,0.2); border-radius:7px;
+  font-size:11px; color:rgba(241,231,195,0.6); cursor:pointer;
+  font-family:'Paperlogy',sans-serif; transition:all .15s;
+}
+.group-edit-btn:hover { background:rgba(241,231,195,0.14); color:#f1e7c3; }
+.group-student-row {
+  display:flex; align-items:center; gap:14px;
+  padding:14px 24px; border-bottom:1px solid rgba(241,231,195,0.07);
+  transition:background .15s;
+}
+.group-student-row:last-child { border-bottom:none; }
+.group-student-row:hover { background:rgba(255,255,255,0.03); }
+.group-cycle-dots { display:flex; gap:5px; align-items:center; }
+.group-cycle-dot {
+  width:26px; height:26px; border-radius:50%;
+  border:1.5px solid rgba(241,231,195,0.15);
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Paperlogy',sans-serif; font-size:10px; font-weight:600;
+  color:rgba(241,231,195,0.25); transition:all .2s;
+}
+.group-cycle-dot.done { background:rgba(241,231,195,0.2); border-color:rgba(241,231,195,0.35); color:#f1e7c3; }
+.group-cycle-dot.current { background:#f1e7c3; border-color:#f1e7c3; color:#2a1558; animation:pulse 1.5s ease-out infinite; }
+.group-payment-banner {
+  margin:0 20px 20px;
+  background:linear-gradient(135deg,rgba(212,170,58,0.18),rgba(212,170,58,0.07));
+  border:1px solid rgba(212,170,58,0.4); border-radius:12px;
+  padding:16px 20px; display:flex; align-items:center; gap:14px;
+}
+.group-payment-banner h5 {
+  font-size:14px; font-weight:700; color:var(--warm); margin-bottom:3px;
+}
+.group-payment-banner p { font-size:12px; color:rgba(241,231,195,0.65); line-height:1.6; }
+.group-confirm-btn {
+  margin-left:auto; flex-shrink:0;
+  padding:9px 16px; background:rgba(212,170,58,0.2);
+  border:1.5px solid rgba(212,170,58,0.5); border-radius:9px;
+  font-family:'Paperlogy',sans-serif; font-size:12px; font-weight:700;
+  color:var(--warm); cursor:pointer; transition:all .2s; white-space:nowrap;
+}
+.group-confirm-btn:hover { background:rgba(212,170,58,0.32); }
+.group-add-lesson-btn {
+  padding:5px 12px; background:rgba(241,231,195,0.07);
+  border:1px solid rgba(241,231,195,0.18); border-radius:7px;
+  font-size:11px; color:rgba(241,231,195,0.6); cursor:pointer;
+  font-family:'Paperlogy',sans-serif; transition:all .15s;
+}
+.group-add-lesson-btn:hover { background:rgba(241,231,195,0.15); color:#f1e7c3; }
+
 /* ── Paperlogy 타이포그래피 체계 ──
    700 Bold    → 메인 헤드라인, 강사 이름, 주요 수치
    600 SemiBold → 섹션 제목, 카드 타이틀, 버튼
@@ -1193,6 +1265,7 @@ h1, h2, h3,
     <!-- 탭 -->
     <div class="tab-bar" style="overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;scrollbar-width:none">
       <button class="tab-btn active" onclick="showAdminTab('students')" style="white-space:nowrap">수강생 목록</button>
+      <button class="tab-btn" onclick="showAdminTab('grouptab')" style="white-space:nowrap">🎤 그룹 레슨</button>
       <button class="tab-btn" onclick="showAdminTab('teachers')" style="white-space:nowrap">선생님별 현황</button>
       <button class="tab-btn" onclick="showAdminTab('absent')" style="white-space:nowrap">출석 관리</button>
       <button class="tab-btn" onclick="showAdminTab('payment')" style="white-space:nowrap">입금 내역</button>
@@ -1232,10 +1305,31 @@ h1, h2, h3,
           </div>
           <div class="form-group">
             <label class="form-label">레슨 유형</label>
-            <select class="form-select" id="new-student-type">
+            <select class="form-select" id="new-student-type" onchange="onNewStudentTypeChange()">
               <option value="개인">개인 레슨</option>
               <option value="그룹">그룹 레슨</option>
             </select>
+          </div>
+          <div class="form-group" id="new-student-group-wrap" style="display:none">
+            <label class="form-label">그룹반</label>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <select class="form-select" id="new-student-class">
+                <option value="A">A반</option><option value="B">B반</option><option value="C">C반</option>
+                <option value="D">D반</option><option value="E">E반</option><option value="F">F반</option>
+                <option value="G">G반</option><option value="H">H반</option><option value="I">I반</option>
+                <option value="J">J반</option><option value="K">K반</option><option value="L">L반</option>
+                <option value="M">M반</option><option value="N">N반</option><option value="O">O반</option>
+                <option value="P">P반</option><option value="Q">Q반</option><option value="R">R반</option>
+                <option value="S">S반</option><option value="T">T반</option><option value="U">U반</option>
+                <option value="V">V반</option><option value="W">W반</option><option value="X">X반</option>
+                <option value="Y">Y반</option><option value="Z">Z반</option>
+              </select>
+              <select class="form-select" id="new-student-time">
+                <option value="12:00">12:00 (점심)</option>
+                <option value="18:00">18:00 (저녁)</option>
+                <option value="19:00">19:00 (저녁)</option>
+              </select>
+            </div>
           </div>
           <div class="form-group">
             <label class="form-label">담당 선생님</label>
@@ -1278,6 +1372,18 @@ h1, h2, h3,
     <!-- 선생님별 현황 탭 -->
     <div id="admin-teachers" style="display:none">
       <div id="teacher-stats-wrap"></div>
+    </div>
+
+    <!-- 🎤 그룹 레슨 탭 -->
+    <div id="admin-grouptab" style="display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+        <div>
+          <div style="font-size:18px;font-weight:700;color:#f1e7c3;margin-bottom:4px">넥슨코리아 그룹 레슨</div>
+          <div style="font-size:12px;color:rgba(241,231,195,0.5)">반별 4회 사이클 관리 · 수강료 입금 추적</div>
+        </div>
+        <button onclick="openAddGroupStudent()" style="padding:9px 18px;background:#f1e7c3;color:#2a1558;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Paperlogy',sans-serif">+ 수강생 추가</button>
+      </div>
+      <div id="group-classes-wrap"></div>
     </div>
 
     <!-- 출석 관리 탭 -->
@@ -1716,6 +1822,103 @@ h1, h2, h3,
         <div id="pw-change-list"></div>
         <button onclick="savePasswords()" style="margin-top:12px;padding:12px 24px;background:#f1e7c3;color:#2a1558;border:none;border-radius:8px;font-family:'Paperlogy',sans-serif;font-size:14px;font-weight:700;cursor:pointer">비밀번호 저장</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ 그룹 수강생 추가 모달 ════ -->
+<div class="modal-overlay" id="add-group-student-modal" onclick="if(event.target===this)closeAddGroupStudent()">
+  <div class="modal-box" style="max-width:420px">
+    <button class="modal-close" onclick="closeAddGroupStudent()">✕</button>
+    <div style="padding:28px">
+      <div class="card-label" style="margin-bottom:4px">그룹 레슨 수강생 등록</div>
+      <h3 style="font-size:18px;font-weight:700;margin-bottom:20px;color:#f1e7c3">새 수강생 추가</h3>
+      <div class="form-group">
+        <label class="form-label">이름</label>
+        <input type="text" class="form-input" id="gs-name" placeholder="성함">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group">
+          <label class="form-label">반</label>
+          <select class="form-select" id="gs-class" onchange="syncGroupLabel()">
+            <option value="A">A반</option>
+            <option value="B">B반</option>
+            <option value="C">C반</option>
+            <option value="D">D반</option>
+            <option value="E">E반</option>
+            <option value="F">F반</option>
+            <option value="G">G반</option>
+            <option value="H">H반</option>
+            <option value="I">I반</option>
+            <option value="J">J반</option>
+            <option value="K">K반</option>
+            <option value="L">L반</option>
+            <option value="M">M반</option>
+            <option value="N">N반</option>
+            <option value="O">O반</option>
+            <option value="P">P반</option>
+            <option value="Q">Q반</option>
+            <option value="R">R반</option>
+            <option value="S">S반</option>
+            <option value="T">T반</option>
+            <option value="U">U반</option>
+            <option value="V">V반</option>
+            <option value="W">W반</option>
+            <option value="X">X반</option>
+            <option value="Y">Y반</option>
+            <option value="Z">Z반</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">수업 시간</label>
+          <select class="form-select" id="gs-time" onchange="syncGroupLabel()">
+            <option value="12:00">12:00 (점심)</option>
+            <option value="18:00">18:00 (저녁)</option>
+            <option value="19:00">19:00 (저녁)</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">담당 강사</label>
+        <select class="form-select" id="gs-teacher">
+          <option value="김수종">김수종</option>
+          <option value="방건주">방건주</option>
+          <option value="탁상우">탁상우</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">수강생 전화번호 (선택)</label>
+        <input type="tel" class="form-input" id="gs-phone" placeholder="010-0000-0000">
+      </div>
+      <div style="display:flex;gap:10px">
+        <button onclick="saveAddGroupStudent()" style="flex:1;padding:13px;background:#f1e7c3;color:#2a1558;border:none;border-radius:8px;font-family:'Paperlogy',sans-serif;font-size:14px;font-weight:700;cursor:pointer">등록하기</button>
+        <button onclick="closeAddGroupStudent()" style="padding:13px 18px;border:1px solid rgba(241,231,195,0.2);background:rgba(241,231,195,0.06);border-radius:8px;font-family:'Paperlogy',sans-serif;font-size:14px;cursor:pointer;color:#f1e7c3">취소</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ 그룹 반 편집 모달 ════ -->
+<div class="modal-overlay" id="edit-group-modal" onclick="if(event.target===this)closeEditGroupModal()">
+  <div class="modal-box" style="max-width:420px">
+    <button class="modal-close" onclick="closeEditGroupModal()">✕</button>
+    <div style="padding:28px">
+      <div class="card-label" style="margin-bottom:4px">그룹반 정보 편집</div>
+      <h3 style="font-size:18px;font-weight:700;margin-bottom:4px;color:#f1e7c3" id="eg-title">—</h3>
+      <div style="font-size:12px;color:rgba(241,231,195,0.45);margin-bottom:20px" id="eg-sub">—</div>
+      <div class="form-group">
+        <label class="form-label">담당 강사 변경</label>
+        <select class="form-select" id="eg-teacher">
+          <option value="김수종">김수종</option>
+          <option value="방건주">방건주</option>
+          <option value="탁상우">탁상우</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">그룹 수강료 (4회 기준)</label>
+        <input type="text" class="form-input" id="eg-price" placeholder="₩120,000">
+      </div>
+      <button onclick="saveEditGroupModal()" style="width:100%;padding:13px;background:#f1e7c3;color:#2a1558;border:none;border-radius:8px;font-family:'Paperlogy',sans-serif;font-size:14px;font-weight:700;cursor:pointer">저장하기</button>
     </div>
   </div>
 </div>
@@ -2502,7 +2705,7 @@ function renderAdmin() {
               const gIcon = s.gender === '남' ? '<span style="font-size:10px;opacity:.6">👨</span>' : s.gender === '여' ? '<span style="font-size:10px;opacity:.6">👩</span>' : '';
               return `<tr>
                 <td><strong style="cursor:pointer;text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(241,231,195,0.3)" onclick="openStampCard(${idx})">${gIcon} ${s.name}</strong></td>
-                <td><span style="padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600;background:rgba(241,231,195,0.12);color:#f1e7c3">${s.type}</span></td>
+                <td><span style="padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600;background:rgba(241,231,195,0.12);color:#f1e7c3">${s.type}${s.group ? ' · '+s.group : ''}</span></td>
                 <td>${pillsHtml}</td>
                 <td style="font-size:12px;color:rgba(241,231,195,0.75);font-family:'Paperlogy',sans-serif;font-weight:600">
                   ${st.count}회 ${mthStr}
@@ -2562,6 +2765,9 @@ function addStudent() {
   const name    = document.getElementById('new-student-name').value.trim();
   const gender  = document.getElementById('new-student-gender').value;
   const type    = document.getElementById('new-student-type').value;
+  const group   = type === '그룹'
+    ? `${document.getElementById('new-student-class')?.value || 'A'}반 ${document.getElementById('new-student-time')?.value || '12:00'}`
+    : '';
   const teacher = document.getElementById('new-student-teacher').value;
   const phone   = document.getElementById('new-student-phone').value.trim();
   const memo    = document.getElementById('new-student-memo').value.trim();
@@ -2569,24 +2775,25 @@ function addStudent() {
   if (state.students.find(s => s.name === name && s.type === type)) {
     showToast('이미 등록된 수강생입니다'); return;
   }
-  state.students.push({ name, gender, type, teacher, phone, memo, lessons: [] });
+  state.students.push({ name, gender, type, group, teacher, phone, memo, lessons: [] });
   saveState();
   document.getElementById('add-student-form').style.display = 'none';
   document.getElementById('new-student-name').value = '';
   document.getElementById('new-student-gender').value = '';
   renderAdmin();
   showToast(name + '님이 등록되었습니다 ✓');
-  sheetsAction('saveStudent', { data: { name, gender, type, teacher, phone, memo } });
+  sheetsAction('saveStudent', { data: { name, gender, type, group, teacher, phone, memo } });
 }
 
 function showAdminTab(tab) {
-  ['students','teachers','absent','payment','notices','analysis','settings'].forEach(t => {
+  ['students','grouptab','teachers','absent','payment','notices','analysis','settings'].forEach(t => {
     const el = document.getElementById('admin-' + t);
     if (el) el.style.display = t === tab ? 'block' : 'none';
   });
   document.querySelectorAll('.tab-btn').forEach((b,i) => {
-    b.classList.toggle('active', ['students','teachers','absent','payment','notices','analysis','settings'][i] === tab);
+    b.classList.toggle('active', ['students','grouptab','teachers','absent','payment','notices','analysis','settings'][i] === tab);
   });
+  if (tab === 'grouptab') renderGroupLessons();
   if (tab === 'teachers') renderTeacherStats();
   if (tab === 'absent')   { renderAbsent(); renderAttendance(); showAttTab('attend'); }
   if (tab === 'payment')  renderPayments();
@@ -2596,6 +2803,286 @@ function showAdminTab(tab) {
     const nameEl = document.getElementById('settings-teacher-name');
     if (nameEl) nameEl.textContent = state.currentTeacher || '(전체 관리자)';
   }
+}
+
+// ═══════════════════════════════════════════
+// 그룹 레슨 관리
+// ═══════════════════════════════════════════
+
+// 반+시간 레이블 조합 헬퍼
+function buildGroupLabel(cls, time) {
+  return `${cls}반 ${time}`;
+}
+
+// 그룹 수강생 추가 모달에서 레이블 실시간 동기화
+function syncGroupLabel() {
+  // 미리보기용, 실제 저장은 saveAddGroupStudent에서 조합
+}
+
+// 현재 등록된 그룹반 목록 (수강생 데이터에서 추출 + 고유 정렬)
+function getRegisteredGroups() {
+  const groups = state.students
+    .filter(s => s.type === '그룹' && s.group)
+    .map(s => s.group);
+  return [...new Set(groups)].sort((a, b) => {
+    // "A반 12:00" 형식 기준 정렬
+    const [ca, ta] = a.split('반 ');
+    const [cb, tb] = b.split('반 ');
+    if (ca !== cb) return ca < cb ? -1 : 1;
+    return (ta || '') < (tb || '') ? -1 : 1;
+  });
+}
+
+// 반별 설정 (담당강사, 가격) — localStorage
+function getGroupClassSettings() {
+  return JSON.parse(localStorage.getItem('tv_group_settings') || '{}');
+}
+function saveGroupClassSettings(settings) {
+  localStorage.setItem('tv_group_settings', JSON.stringify(settings));
+}
+
+function renderGroupLessons() {
+  const wrap = document.getElementById('group-classes-wrap');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  const settings = getGroupClassSettings();
+  const bankInfo = state.settings.bankInfo || '';
+  const isAdmin = !state.currentTeacher || state.currentTeacher === '천우경';
+
+  // 등록된 반 목록 추출
+  const groups = getRegisteredGroups();
+
+  if (!groups.length) {
+    wrap.innerHTML = `<div style="text-align:center;color:rgba(241,231,195,0.35);padding:60px 24px;font-size:14px">
+      <div style="font-size:32px;margin-bottom:16px">🎤</div>
+      아직 등록된 그룹 수강생이 없어요<br>
+      <span style="font-size:12px;opacity:.7">위의 "+ 수강생 추가" 버튼으로 등록해 주세요</span>
+    </div>`;
+    return;
+  }
+
+  groups.forEach(groupLabel => {
+    const cfg = settings[groupLabel] || { teacher: '', price: '₩120,000' };
+    const students = state.students.filter(s => s.type === '그룹' && s.group === groupLabel);
+
+    // 강사 필터
+    if (!isAdmin && cfg.teacher && cfg.teacher !== state.currentTeacher) return;
+
+    const card = document.createElement('div');
+    card.className = 'group-class-card';
+
+    // 반 이름 파싱
+    const [clsPart, timePart] = groupLabel.split('반 ');
+    const displayName = `${clsPart}반`;
+    const displayTime = timePart || '';
+
+    const dueStudents = students.filter(s => s.lessons.length > 0 && s.lessons.length % 4 === 0 && !isPaymentConfirmedForCycle(s));
+    const hasDue = dueStudents.length > 0;
+
+    card.innerHTML = `
+      <div class="group-class-header">
+        <div>
+          <div class="group-class-badge">🎤 넥슨코리아${cfg.teacher ? ' · ' + cfg.teacher : ''}</div>
+          <div class="group-class-name">${displayName} <span style="font-weight:300;color:rgba(241,231,195,0.6);font-size:15px">${displayTime}</span></div>
+          <div class="group-class-meta">${students.length}명 · ${cfg.price} / 4회</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+          ${hasDue ? `<span style="padding:4px 10px;background:rgba(212,170,58,0.2);border:1px solid rgba(212,170,58,0.4);border-radius:999px;font-size:11px;font-weight:600;color:var(--warm);font-family:'Paperlogy',sans-serif">💰 입금 ${dueStudents.length}명</span>` : ''}
+          <button class="group-edit-btn" onclick="openEditGroupModal('${groupLabel.replace(/'/g,"\\'")}')">⚙ 반 설정</button>
+        </div>
+      </div>
+      <div id="group-students-${encodeURIComponent(groupLabel)}"></div>
+    `;
+    wrap.appendChild(card);
+
+    const studentsWrap = card.querySelector(`#group-students-${encodeURIComponent(groupLabel)}`);
+
+    if (!students.length) {
+      studentsWrap.innerHTML = `<div style="padding:24px;text-align:center;font-size:13px;color:rgba(241,231,195,0.3)">등록된 수강생이 없습니다</div>`;
+    } else {
+      students.forEach(s => {
+        const idx = state.students.indexOf(s);
+        const count = s.lessons.length;
+        const cyclePos = count > 0 ? ((count - 1) % 4) + 1 : 0;
+        const isDue = count > 0 && count % 4 === 0 && !isPaymentConfirmedForCycle(s);
+        const last = s.lessons.length ? s.lessons[s.lessons.length - 1] : '—';
+
+        const row = document.createElement('div');
+        row.className = 'group-student-row';
+
+        let dotsHtml = '<div class="group-cycle-dots">';
+        for (let i = 1; i <= 4; i++) {
+          const dc = i < cyclePos ? 'done' : i === cyclePos ? 'current' : '';
+          dotsHtml += `<div class="group-cycle-dot ${dc}">${i}</div>`;
+        }
+        dotsHtml += '</div>';
+
+        row.innerHTML = `
+          <div style="flex:1;min-width:0">
+            <div style="font-size:14px;font-weight:700;color:#f1e7c3;cursor:pointer" onclick="openStampCard(${idx})">${s.name}</div>
+            <div style="font-size:11px;color:rgba(241,231,195,0.4);margin-top:1px">총 ${count}회 · 마지막 ${last}${s.phone ? ' · 📱 '+s.phone : ''}</div>
+          </div>
+          ${dotsHtml}
+          <div style="display:flex;gap:6px;align-items:center;margin-left:8px">
+            ${isDue ? `<span style="padding:3px 8px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(212,170,58,0.2);color:var(--warm);border:1px solid rgba(212,170,58,0.35);white-space:nowrap">💰 입금필요</span>` : ''}
+            <button class="group-add-lesson-btn" onclick="groupAddLesson(${idx})">+ 출석</button>
+            <button onclick="deleteStudent(${idx})" style="padding:5px 8px;border:1px solid rgba(255,120,120,0.2);background:rgba(255,100,100,0.07);border-radius:6px;font-size:11px;cursor:pointer;color:rgba(255,150,150,0.7)">✕</button>
+          </div>
+        `;
+        studentsWrap.appendChild(row);
+
+        if (isDue) {
+          const banner = document.createElement('div');
+          banner.className = 'group-payment-banner';
+          banner.innerHTML = `
+            <div>
+              <h5>🎉 ${s.name}님 4회 완료!</h5>
+              <p>${cfg.price} 입금 요청 · ${bankInfo}</p>
+            </div>
+            <button class="group-confirm-btn" onclick="confirmGroupPayment(${idx})">입금 확인 ✓</button>
+          `;
+          studentsWrap.appendChild(banner);
+        }
+      });
+    }
+
+    const addRow = document.createElement('div');
+    addRow.style.cssText = 'padding:12px 24px;border-top:1px solid rgba(241,231,195,0.07)';
+    addRow.innerHTML = `<button onclick="openAddGroupStudentForClass('${groupLabel.replace(/'/g,"\\'")}','${displayTime}')" style="font-size:12px;color:rgba(241,231,195,0.45);background:none;border:none;cursor:pointer;font-family:'Paperlogy',sans-serif;padding:0">+ 이 반에 수강생 추가</button>`;
+    card.appendChild(addRow);
+  });
+}
+
+// 사이클별 입금 확인 여부 체크
+function isPaymentConfirmedForCycle(student) {
+  const cycle = Math.floor(student.lessons.length / 4);
+  const key = `${student.name}__그룹__cycle${cycle}`;
+  return JSON.parse(localStorage.getItem('tv_group_payments') || '{}')[key] === true;
+}
+
+function confirmGroupPayment(idx) {
+  const s = state.students[idx];
+  if (!s) return;
+  const cycle = Math.floor(s.lessons.length / 4);
+  const key = `${s.name}__그룹__cycle${cycle}`;
+  const gp = JSON.parse(localStorage.getItem('tv_group_payments') || '{}');
+  gp[key] = true;
+  localStorage.setItem('tv_group_payments', JSON.stringify(gp));
+
+  const cfg = getGroupClassSettings();
+  const clsCfg = cfg[s.group] || {};
+  const price = clsCfg.price || '₩120,000';
+  const today = new Date().toLocaleDateString('ko-KR');
+  state.payments.push({ id: Date.now(), name: s.name, amount: price, date: today, memo: `${s.group || '그룹'} ${cycle}번째 사이클` });
+  saveState();
+
+  showToast(`${s.name}님 입금 확인 완료 ✓`);
+  renderGroupLessons();
+}
+
+function groupAddLesson(idx) {
+  const s = state.students[idx];
+  if (!s) return;
+  const today = new Date().toLocaleDateString('ko-KR');
+  if (s.lessons.includes(today)) { showToast('오늘은 이미 출석 기록이 있어요'); return; }
+  s.lessons.push(today);
+  saveState();
+  sheetsAction('saveLesson', { data: { name: s.name, type: '그룹', teacher: s.teacher || '', date: today, seq: s.lessons.length } });
+  showToast(`${s.name}님 출석 완료 ✓`);
+  renderGroupLessons();
+  renderAdmin();
+}
+
+// 그룹 수강생 추가 모달
+function openAddGroupStudent() {
+  document.getElementById('gs-name').value = '';
+  document.getElementById('gs-phone').value = '';
+  document.getElementById('gs-class').value = 'A';
+  document.getElementById('gs-time').value = '12:00';
+  document.getElementById('gs-teacher').value = '김수종';
+  document.getElementById('add-group-student-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function openAddGroupStudentForClass(classLabel, time) {
+  document.getElementById('gs-name').value = '';
+  document.getElementById('gs-phone').value = '';
+  // 레이블에서 반 + 시간 파싱
+  const match = classLabel.match(/^([A-Z])반 (.+)$/);
+  if (match) {
+    document.getElementById('gs-class').value = match[1];
+    document.getElementById('gs-time').value = match[2];
+  }
+  document.getElementById('add-group-student-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeAddGroupStudent() {
+  document.getElementById('add-group-student-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function saveAddGroupStudent() {
+  const name    = document.getElementById('gs-name').value.trim();
+  const cls     = document.getElementById('gs-class').value;
+  const time    = document.getElementById('gs-time').value;
+  const group   = `${cls}반 ${time}`;
+  const teacher = document.getElementById('gs-teacher').value;
+  const phone   = document.getElementById('gs-phone').value.trim();
+  if (!name) { showToast('이름을 입력해 주세요'); return; }
+  if (state.students.find(s => s.name === name && s.type === '그룹')) {
+    showToast('이미 그룹 레슨에 등록된 수강생입니다'); return;
+  }
+  state.students.push({ name, type: '그룹', group, teacher, phone, memo: '', lessons: [] });
+  saveState();
+  // 반 설정에 강사 기본값 저장
+  const settings = getGroupClassSettings();
+  if (!settings[group]) settings[group] = { teacher, price: '₩120,000' };
+  saveGroupClassSettings(settings);
+  closeAddGroupStudent();
+  renderGroupLessons();
+  renderAdmin();
+  showToast(`${name}님이 ${group}에 등록되었습니다 ✓`);
+  sheetsAction('saveStudent', { data: { name, type: '그룹', group, teacher, phone, memo: '' } });
+}
+
+// 반 설정 편집 모달
+let _editGroupLabel = '';
+
+function openEditGroupModal(groupLabel) {
+  _editGroupLabel = groupLabel;
+  const settings = getGroupClassSettings();
+  const cfg = settings[groupLabel] || { teacher: '', price: '₩120,000' };
+  document.getElementById('eg-title').textContent = groupLabel;
+  document.getElementById('eg-sub').textContent = '담당 강사 및 수강료를 설정합니다';
+  document.getElementById('eg-teacher').value = cfg.teacher || '김수종';
+  document.getElementById('eg-price').value = cfg.price || '₩120,000';
+  document.getElementById('edit-group-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeEditGroupModal() {
+  document.getElementById('edit-group-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function saveEditGroupModal() {
+  const settings = getGroupClassSettings();
+  settings[_editGroupLabel] = {
+    teacher: document.getElementById('eg-teacher').value,
+    price: document.getElementById('eg-price').value.trim() || '₩120,000',
+  };
+  saveGroupClassSettings(settings);
+  closeEditGroupModal();
+  renderGroupLessons();
+  showToast('반 설정이 저장되었습니다 ✓');
+}
+
+// 수강생 등록 폼 — 그룹 선택 시 반 필드 토글
+function onNewStudentTypeChange() {
+  const type = document.getElementById('new-student-type').value;
+  const wrap = document.getElementById('new-student-group-wrap');
+  if (wrap) wrap.style.display = type === '그룹' ? 'block' : 'none';
 }
 
 // ── 선생님별 현황 ──
