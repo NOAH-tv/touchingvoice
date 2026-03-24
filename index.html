@@ -3263,6 +3263,9 @@ async function handleWavFile(file) {
     // 시트에 원본 데이터 저장용으로 전역 보관
     window._wavRaw = { energy, stability, clarity, resonance, zcr: Math.round(zcr*10000)/10000, duration: Math.round(duration), filename: file.name };
 
+    // Drive에 원본 파일 업로드
+    uploadFileToDrive(file, 'audio', window._wavRaw);
+
   } catch(err) {
     analyzing.style.display = 'none';
     zone.style.display = 'block';
@@ -3308,7 +3311,68 @@ function setEngineValue(id, val, src) {
 }
 
 // ═══════════════════════════════════════════
-// RX 캡처 이미지 분석 (Claude Vision API)
+// Google Drive 파일 업로드 (Apps Script 경유)
+// ═══════════════════════════════════════════
+
+async function uploadFileToDrive(file, fileType, metaRaw) {
+  if (!VOICE_URL) return; // VOICE_URL 없으면 스킵
+  try {
+    // 수강생 이름 가져오기
+    const selIdx = parseInt(document.getElementById('eng-student-select')?.value);
+    const studentName = (!isNaN(selIdx) && state.students[selIdx])
+      ? state.students[selIdx].name : '미분류';
+
+    // 파일 → base64
+    const base64 = await new Promise((res, rej) => {
+      const reader = new FileReader();
+      reader.onload = () => res(reader.result.split(',')[1]);
+      reader.onerror = rej;
+      reader.readAsDataURL(file);
+    });
+
+    // 업로드 상태 표시
+    const statusId = fileType === 'audio' ? 'wav-drive-status' : 'rx-drive-status';
+    let statusEl = document.getElementById(statusId);
+    if (!statusEl) {
+      statusEl = document.createElement('div');
+      statusEl.id = statusId;
+      statusEl.style.cssText = 'font-size:11px;color:var(--muted);margin-top:6px;text-align:center';
+      const target = fileType === 'audio'
+        ? document.getElementById('wav-result')
+        : document.getElementById('rx-result');
+      if (target) target.appendChild(statusEl);
+    }
+    statusEl.textContent = '☁️ Drive에 업로드 중...';
+
+    const r = await fetch(VOICE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        action: 'uploadFile',
+        data: {
+          base64,
+          mimeType:    file.type || (fileType === 'audio' ? 'audio/wav' : 'image/png'),
+          filename:    file.name,
+          fileType,
+          studentName,
+        }
+      })
+    });
+    const d = await r.json();
+
+    if (d.status === 'ok') {
+      statusEl.innerHTML = `✅ Drive 저장 완료 · <a href="${d.fileUrl}" target="_blank" style="color:var(--warm)">열기</a>`;
+      // URL을 전역 raw 데이터에도 저장
+      if (fileType === 'audio' && window._wavRaw) window._wavRaw.driveUrl = d.fileUrl;
+      if (fileType === 'rx_captures' && window._rxRaw) window._rxRaw.driveUrl = d.fileUrl;
+    } else {
+      statusEl.textContent = '⚠️ Drive 업로드 실패: ' + (d.msg || '');
+    }
+  } catch(err) {
+    console.log('Drive 업로드 실패:', err);
+  }
+}
+
 // ═══════════════════════════════════════════
 
 function handleRxDrop(e) {
@@ -3414,6 +3478,9 @@ async function handleRxFile(file) {
 
     // 시트 저장용
     window._rxRaw = { ...parsed, filename: file.name };
+
+    // Drive에 원본 이미지 업로드
+    uploadFileToDrive(file, 'rx_captures', window._rxRaw);
 
     analyzing.style.display = 'none';
     result.style.display    = 'block';
@@ -3626,9 +3693,11 @@ function runAnalysisEngine() {
           tvScore:  scoreR.total,
           gapType:  gapR.type,
           tone:     uxR.tone,
-          // WAV / RX 원본 데이터 추가
-          wavRaw:   window._wavRaw || null,
-          rxRaw:    window._rxRaw  || null,
+          // WAV / RX 원본 데이터 + Drive 링크
+          wavRaw:      window._wavRaw || null,
+          rxRaw:       window._rxRaw  || null,
+          wavDriveUrl: window._wavRaw?.driveUrl || '',
+          rxDriveUrl:  window._rxRaw?.driveUrl  || '',
         }
       })
     }).catch(e => console.log('목소리 데이터 저장 실패:', e));
