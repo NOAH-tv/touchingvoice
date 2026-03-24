@@ -1484,6 +1484,38 @@ h1, h2, h3,
 
     <!-- 설정 탭 -->
     <div id="admin-settings" style="display:none">
+
+      <!-- 시트 연동 설정 -->
+      <div class="card" style="margin-bottom:16px;border-color:rgba(212,170,58,0.3)">
+        <div class="card-label" style="color:var(--warm)">📊 Google Sheets 연동</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.7">
+          레슨 관리 시트와 목소리 데이터 시트를 분리해서 운영할 수 있어요.<br>
+          목소리 데이터 Apps Script를 새로 배포한 후 URL을 입력해 주세요.
+        </div>
+        <div class="form-group">
+          <label class="form-label">🎙 목소리 데이터 시트 URL</label>
+          <input type="url" class="form-input" id="voice-url-input"
+            placeholder="https://script.google.com/macros/s/..."
+            value="">
+          <div style="font-size:11px;color:var(--muted);margin-top:4px">입력하면 보이스 분석 결과가 별도 시트에 자동 저장됩니다</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button onclick="saveVoiceUrl()" style="padding:10px 20px;background:#f1e7c3;color:#2a1558;border:none;border-radius:8px;font-family:'Paperlogy',sans-serif;font-size:13px;font-weight:700;cursor:pointer">저장</button>
+          <button onclick="testVoiceUrl()" style="padding:10px 16px;background:rgba(241,231,195,0.1);border:1px solid rgba(241,231,195,0.2);border-radius:8px;font-family:'Paperlogy',sans-serif;font-size:13px;color:#f1e7c3;cursor:pointer">연결 테스트</button>
+          <span id="voice-url-status" style="font-size:12px;color:var(--muted);align-self:center"></span>
+        </div>
+        <div style="margin-top:16px;padding:12px 14px;background:rgba(241,231,195,0.04);border-radius:8px;border:1px solid rgba(241,231,195,0.1)">
+          <div style="font-family:'Paperlogy',sans-serif;font-size:10px;letter-spacing:1px;color:var(--muted);margin-bottom:8px">📋 목소리 데이터 Apps Script 배포 순서</div>
+          <div style="font-size:12px;color:rgba(241,231,195,0.7);line-height:1.9">
+            1. <a href="https://script.google.com" target="_blank" style="color:var(--warm)">script.google.com</a> → 새 프로젝트 만들기<br>
+            2. 아래 버튼으로 코드 복사 → 붙여넣기<br>
+            3. 배포 → 새 배포 → 웹 앱 → <strong>액세스: 모든 사용자</strong><br>
+            4. 배포 URL을 위 입력란에 붙여넣기
+          </div>
+          <button onclick="copyVoiceScript()" style="margin-top:10px;padding:8px 16px;background:rgba(241,231,195,0.1);border:1px solid rgba(241,231,195,0.2);border-radius:6px;font-family:'Paperlogy',sans-serif;font-size:12px;color:#f1e7c3;cursor:pointer">📋 코드 복사</button>
+        </div>
+      </div>
+
       <div class="card">
         <div class="card-label">강사별 레슨 금액 (4회 기준)</div>
         <div style="font-size:11px;color:rgba(241,231,195,0.45);margin-bottom:16px;margin-top:4px;font-family:'Paperlogy',sans-serif">4회 완료 시 SMS에 자동으로 반영됩니다</div>
@@ -1800,7 +1832,9 @@ function getTeacherPrice(teacherName) {
   return prices[teacherName] || state.settings.pricePrivate || '₩200,000';
 }
 
-const APPS_URL = 'https://script.google.com/macros/s/AKfycbzdsDflB3PsPTpMedBb2nH1faaJ8LEdbnvh0LF_okk5RezbwMLnp4shRgAgzJ-6L2bdJQ/exec';
+const APPS_URL  = 'https://script.google.com/macros/s/AKfycbzdsDflB3PsPTpMedBb2nH1faaJ8LEdbnvh0LF_okk5RezbwMLnp4shRgAgzJ-6L2bdJQ/exec';
+// 목소리 데이터 전용 시트 URL (새 Apps Script 배포 후 여기에 입력)
+let VOICE_URL = localStorage.getItem('tv_voice_url') || '';
 let _sheetsLoaded = false;
 
 // Sheets에서 전체 데이터 불러오기 (앱 시작 시)
@@ -2289,6 +2323,7 @@ function showAdminTab(tab) {
   if (tab === 'absent')   { renderAbsent(); renderAttendance(); showAttTab('attend'); }
   if (tab === 'payment')  renderPayments();
   if (tab === 'analysis') initAnalysisTab();
+  if (tab === 'settings') { loadVoiceUrlSetting(); }
 }
 
 // ── 선생님별 현황 ──
@@ -3030,6 +3065,107 @@ const CONTENT_ENGINE = {
   }
 };
 
+// ── 목소리 데이터 시트 URL 관리 ──
+function saveVoiceUrl() {
+  const url = document.getElementById('voice-url-input').value.trim();
+  VOICE_URL = url;
+  localStorage.setItem('tv_voice_url', url);
+  document.getElementById('voice-url-status').textContent = url ? '✓ 저장됨' : '삭제됨';
+  document.getElementById('voice-url-status').style.color = url ? '#4caf82' : 'var(--muted)';
+  showToast(url ? '목소리 데이터 시트 URL 저장 ✓' : 'URL 삭제됨');
+}
+
+async function testVoiceUrl() {
+  const url = document.getElementById('voice-url-input').value.trim();
+  const statusEl = document.getElementById('voice-url-status');
+  if (!url) { showToast('URL을 먼저 입력해 주세요'); return; }
+  statusEl.textContent = '⏳ 테스트 중...'; statusEl.style.color = 'var(--muted)';
+  try {
+    const r = await fetch(`${url}?action=getAllVoiceData`);
+    const d = await r.json();
+    if (d.status === 'ok') {
+      statusEl.textContent = '✓ 연결 성공'; statusEl.style.color = '#4caf82';
+      showToast('목소리 데이터 시트 연결 성공 ✓');
+    } else throw new Error(d.msg);
+  } catch(e) {
+    statusEl.textContent = '✗ 연결 실패'; statusEl.style.color = '#ef5350';
+    showToast('연결 실패: ' + e.message);
+  }
+}
+
+function copyVoiceScript() {
+  const code = `// 터칭보이스 목소리 데이터 수집 Apps Script
+const SS_VOICE = SpreadsheetApp.getActiveSpreadsheet();
+function doGet(e) {
+  const action = e.parameter.action;
+  try {
+    let result;
+    if (action === 'getVoiceData') result = getVoiceData(e.parameter.name);
+    else if (action === 'getAllVoiceData') result = getAllVoiceData();
+    else result = { status: 'error', msg: 'unknown action' };
+    return jsonOut(result);
+  } catch(err) { return jsonOut({ status: 'error', msg: err.toString() }); }
+}
+function doPost(e) {
+  try {
+    const payload = JSON.parse(e.postData.contents);
+    const action = payload.action;
+    let result;
+    if (action === 'saveVoiceResult') result = saveVoiceResult(payload.data);
+    else if (action === 'saveVoiceBatch') result = saveVoiceBatch(payload.data);
+    else result = { status: 'error', msg: 'unknown action' };
+    return jsonOut(result);
+  } catch(err) { return jsonOut({ status: 'error', msg: err.toString() }); }
+}
+function initVoiceSheet(name, headers) {
+  let sheet = SS_VOICE.getSheetByName(name);
+  if (!sheet) { sheet = SS_VOICE.insertSheet(name); sheet.appendRow(headers); sheet.getRange(1,1,1,headers.length).setFontWeight('bold').setBackground('#2a1558').setFontColor('#f1e7c3'); }
+  return sheet;
+}
+function saveVoiceResult(d) {
+  const sheet = initVoiceSheet('검사결과', ['수강생','검사일시','담당선생님','O_개방성','C_성실성','E_외향성','A_우호성','N_신경성','명료도','공명','에너지','안정도','감정선택','TV스코어','괴리유형','코칭톤','메모','타임스탬프']);
+  sheet.appendRow([d.name||'',d.date||new Date().toLocaleDateString('ko-KR'),d.teacher||'',d.bf?.O??'',d.bf?.C??'',d.bf?.E??'',d.bf?.A??'',d.bf?.N??'',d.voice?.clarity??'',d.voice?.resonance??'',d.voice?.energy??'',d.voice?.stability??'',Array.isArray(d.feelings)?d.feelings.join(', '):(d.feelings||''),d.tvScore??'',d.gapType||'',d.tone||'',d.memo||'',new Date().toLocaleString('ko-KR')]);
+  return { status: 'ok' };
+}
+function getVoiceData(name) {
+  const sheet = SS_VOICE.getSheetByName('검사결과');
+  if (!sheet) return { status: 'ok', data: [] };
+  const rows = sheet.getDataRange().getValues();
+  const headers = rows[0];
+  const data = rows.slice(1).filter(r => !name || r[0] === name).map(r => { const obj={}; headers.forEach((h,i)=>obj[h]=r[i]); return obj; });
+  return { status: 'ok', data };
+}
+function getAllVoiceData() {
+  const sheet = SS_VOICE.getSheetByName('검사결과');
+  if (!sheet) return { status: 'ok', data: { 검사결과: [] } };
+  const rows = sheet.getDataRange().getValues();
+  const headers = rows[0];
+  const data = rows.slice(1).map(r => { const obj={}; headers.forEach((h,i)=>obj[h]=r[i]); return obj; });
+  return { status: 'ok', data: { 검사결과: data } };
+}
+function saveVoiceBatch(records) {
+  if (!Array.isArray(records)) return { status: 'error', msg: 'records must be array' };
+  records.forEach(d => saveVoiceResult(d));
+  return { status: 'ok', count: records.length };
+}
+function jsonOut(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
+}`;
+  navigator.clipboard.writeText(code)
+    .then(() => showToast('코드 복사됨 ✓'))
+    .catch(() => {
+      const el = document.createElement('textarea');
+      el.value = code; document.body.appendChild(el); el.select();
+      document.execCommand('copy'); document.body.removeChild(el);
+      showToast('코드 복사됨 ✓');
+    });
+}
+
+function loadVoiceUrlSetting() {
+  const input = document.getElementById('voice-url-input');
+  if (input) input.value = localStorage.getItem('tv_voice_url') || '';
+}
+
 // ── 분석 탭 초기화 ──
 function initAnalysisTab() {
   // 수강생 셀렉트 채우기
@@ -3100,7 +3236,7 @@ function runAnalysisEngine() {
   renderEngGap(gapR);
   renderEngContent(contentR);
 
-  // 결과를 학생 데이터에 저장 (히스토리)
+  // 결과를 학생 데이터에 저장 (로컬 히스토리)
   if (!s.lessonNotes) s.lessonNotes = {};
   if (!s.lessonNotes.scoreHistory) s.lessonNotes.scoreHistory = [];
   s.lessonNotes.scoreHistory.push({
@@ -3111,6 +3247,29 @@ function runAnalysisEngine() {
     tone:    uxR.tone,
   });
   saveState();
+
+  // 목소리 데이터 전용 시트에도 저장 (VOICE_URL 설정 시)
+  if (VOICE_URL) {
+    fetch(VOICE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        action:   'saveVoiceResult',
+        data: {
+          name:     s.name,
+          teacher:  s.teacher || '',
+          date:     new Date().toLocaleDateString('ko-KR'),
+          bf,
+          voice,
+          feelings: [...feelings],
+          tvScore:  scoreR.total,
+          gapType:  gapR.type,
+          tone:     uxR.tone,
+        }
+      })
+    }).catch(e => console.log('목소리 데이터 저장 실패:', e));
+  }
+
   showToast(`${s.name}님 분석 완료 · TV Score ${scoreR.total}`);
 }
 
