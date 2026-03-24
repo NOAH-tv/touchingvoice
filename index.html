@@ -1427,9 +1427,61 @@ h1, h2, h3,
 
     <!-- 🔮 보이스 분석 탭 -->
     <div id="admin-analysis" style="display:none">
-      <!-- 수강생 선택 -->
+
+      <!-- ① WAV 파일 업로드 -->
       <div class="card" style="margin-bottom:16px">
-        <div class="card-label">분석할 수강생 선택</div>
+        <div class="card-label">🎙 WAV 파일 분석</div>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.7">스튜디오 녹음 WAV 파일을 올리면 에너지·안정도·명료도를 자동으로 계산해서 아래 입력값에 채워줍니다.</p>
+        <label id="wav-drop-zone" style="display:block;border:2px dashed rgba(241,231,195,0.25);border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:all .2s;background:rgba(241,231,195,0.03)"
+          ondragover="event.preventDefault();this.style.borderColor='rgba(241,231,195,0.6)'"
+          ondragleave="this.style.borderColor='rgba(241,231,195,0.25)'"
+          ondrop="handleWavDrop(event)">
+          <input type="file" accept=".wav,.mp3,.m4a,.aac,.flac" style="display:none" id="wav-file-input" onchange="handleWavFile(this.files[0])">
+          <div style="font-size:28px;margin-bottom:8px">🎵</div>
+          <div style="font-size:13px;font-weight:600;color:#f1e7c3;margin-bottom:4px">WAV 파일을 여기에 드래그하거나 탭해서 선택</div>
+          <div style="font-size:11px;color:var(--muted)">WAV · MP3 · M4A · FLAC 지원</div>
+        </label>
+        <!-- 분석 진행 표시 -->
+        <div id="wav-analyzing" style="display:none;text-align:center;padding:16px">
+          <div style="font-size:13px;color:var(--muted)">⏳ 오디오 분석 중...</div>
+          <div style="margin-top:8px;height:4px;background:rgba(241,231,195,0.1);border-radius:2px;overflow:hidden">
+            <div id="wav-progress" style="height:100%;width:0%;background:#f1e7c3;border-radius:2px;transition:width .3s"></div>
+          </div>
+        </div>
+        <!-- 분석 결과 미리보기 -->
+        <div id="wav-result" style="display:none;margin-top:12px">
+          <div style="font-family:'Paperlogy',sans-serif;font-size:10px;letter-spacing:1px;color:var(--muted);margin-bottom:10px">📊 자동 측정값 (입력란에 반영됨)</div>
+          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px" id="wav-metrics"></div>
+        </div>
+      </div>
+
+      <!-- ② RX 캡처 이미지 분석 -->
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-label">🖼 RX 화면 분석 (iZotope RX)</div>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.7">RX 스펙트럼·노이즈·피치 화면 캡처를 올리면 Claude가 읽어서 수치를 추출합니다.</p>
+        <label style="display:block;border:2px dashed rgba(241,231,195,0.25);border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:all .2s;background:rgba(241,231,195,0.03)"
+          ondragover="event.preventDefault();this.style.borderColor='rgba(241,231,195,0.6)'"
+          ondragleave="this.style.borderColor='rgba(241,231,195,0.25)'"
+          ondrop="handleRxDrop(event)">
+          <input type="file" accept="image/*" style="display:none" id="rx-file-input" onchange="handleRxFile(this.files[0])">
+          <div style="font-size:28px;margin-bottom:8px">📸</div>
+          <div style="font-size:13px;font-weight:600;color:#f1e7c3;margin-bottom:4px">RX 캡처 이미지를 여기에 드래그하거나 탭해서 선택</div>
+          <div style="font-size:11px;color:var(--muted)">PNG · JPG · WEBP 지원 · Claude Vision으로 자동 분석</div>
+        </label>
+        <!-- RX 분석 결과 -->
+        <div id="rx-analyzing" style="display:none;text-align:center;padding:16px">
+          <div style="font-size:13px;color:var(--muted)">🔍 Claude가 RX 화면 읽는 중...</div>
+        </div>
+        <div id="rx-result" style="display:none;margin-top:12px">
+          <div style="font-family:'Paperlogy',sans-serif;font-size:10px;letter-spacing:1px;color:var(--muted);margin-bottom:8px">🔬 RX 분석 결과</div>
+          <div id="rx-image-preview" style="margin-bottom:10px"></div>
+          <div id="rx-metrics" style="font-size:12px;line-height:1.8;color:rgba(241,231,195,0.8);background:rgba(241,231,195,0.05);border-radius:8px;padding:12px 14px"></div>
+        </div>
+      </div>
+
+      <!-- ③ 수강생 선택 + 입력값 (자동 채워짐) -->
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-label">수강생 선택 및 지표 확인</div>
         <div class="grid-2" style="margin-top:8px">
           <div class="form-group">
             <label class="form-label">수강생</label>
@@ -1438,7 +1490,7 @@ h1, h2, h3,
             </select>
           </div>
           <div class="form-group">
-            <label class="form-label">음성 안정도 (%)</label>
+            <label class="form-label">음성 안정도 (%) <span id="eng-stability-src" style="font-size:10px;color:var(--warm)"></span></label>
             <input type="range" id="eng-stability" min="0" max="100" value="65"
               oninput="document.getElementById('eng-stability-val').textContent=this.value"
               style="width:100%;margin-top:8px">
@@ -1447,15 +1499,15 @@ h1, h2, h3,
         </div>
         <div class="grid-2">
           <div class="form-group">
-            <label class="form-label">명료도 (1–10)</label>
+            <label class="form-label">명료도 (1–10) <span id="eng-clarity-src" style="font-size:10px;color:var(--warm)"></span></label>
             <input type="number" class="form-input" id="eng-clarity" min="1" max="10" value="6">
           </div>
           <div class="form-group">
-            <label class="form-label">공명 (1–10)</label>
+            <label class="form-label">공명 (1–10) <span id="eng-resonance-src" style="font-size:10px;color:var(--warm)"></span></label>
             <input type="number" class="form-input" id="eng-resonance" min="1" max="10" value="5">
           </div>
           <div class="form-group">
-            <label class="form-label">에너지 (%)</label>
+            <label class="form-label">에너지 (%) <span id="eng-energy-src" style="font-size:10px;color:var(--warm)"></span></label>
             <input type="number" class="form-input" id="eng-energy" min="0" max="100" value="60">
           </div>
         </div>
@@ -1484,6 +1536,18 @@ h1, h2, h3,
 
     <!-- 설정 탭 -->
     <div id="admin-settings" style="display:none">
+
+      <!-- 로그인 상태 + 로그아웃 -->
+      <div class="card" style="margin-bottom:16px;display:flex;align-items:center;justify-content:space-between" id="settings-login-info">
+        <div>
+          <div class="card-label" style="margin-bottom:2px">현재 로그인</div>
+          <div style="font-size:16px;font-weight:700;color:#f1e7c3" id="settings-teacher-name">—</div>
+        </div>
+        <button onclick="if(confirm('로그아웃 할까요?')) logoutTeacher()"
+          style="padding:10px 18px;background:rgba(255,100,100,0.12);border:1px solid rgba(255,100,100,0.25);border-radius:8px;font-family:'Paperlogy',sans-serif;font-size:13px;color:rgba(255,150,150,0.9);cursor:pointer">
+          로그아웃
+        </button>
+      </div>
 
       <!-- 시트 연동 설정 -->
       <div class="card" style="margin-bottom:16px;border-color:rgba(212,170,58,0.3)">
@@ -1833,8 +1897,8 @@ function getTeacherPrice(teacherName) {
 }
 
 const APPS_URL  = 'https://script.google.com/macros/s/AKfycbzdsDflB3PsPTpMedBb2nH1faaJ8LEdbnvh0LF_okk5RezbwMLnp4shRgAgzJ-6L2bdJQ/exec';
-// 목소리 데이터 전용 시트 URL (새 Apps Script 배포 후 여기에 입력)
-let VOICE_URL = localStorage.getItem('tv_voice_url') || '';
+// 목소리 데이터 전용 시트 URL
+let VOICE_URL = localStorage.getItem('tv_voice_url') || 'https://script.google.com/macros/s/AKfycbwwJ1oO54d7Jqy6N1uFHz_a0JoseSIac9JNI_CtB9Tuh9U6KQRFEAcHglVvwinkacSXGA/exec';
 let _sheetsLoaded = false;
 
 // Sheets에서 전체 데이터 불러오기 (앱 시작 시)
@@ -2323,7 +2387,11 @@ function showAdminTab(tab) {
   if (tab === 'absent')   { renderAbsent(); renderAttendance(); showAttTab('attend'); }
   if (tab === 'payment')  renderPayments();
   if (tab === 'analysis') initAnalysisTab();
-  if (tab === 'settings') { loadVoiceUrlSetting(); }
+  if (tab === 'settings') {
+    loadVoiceUrlSetting();
+    const nameEl = document.getElementById('settings-teacher-name');
+    if (nameEl) nameEl.textContent = state.currentTeacher || '(전체 관리자)';
+  }
 }
 
 // ── 선생님별 현황 ──
@@ -3065,7 +3133,300 @@ const CONTENT_ENGINE = {
   }
 };
 
-// ── 목소리 데이터 시트 URL 관리 ──
+// ═══════════════════════════════════════════
+// WAV 파일 분석 (Web Audio API)
+// ═══════════════════════════════════════════
+
+function handleWavDrop(e) {
+  e.preventDefault();
+  e.currentTarget.style.borderColor = 'rgba(241,231,195,0.25)';
+  const file = e.dataTransfer.files[0];
+  if (file) handleWavFile(file);
+}
+
+async function handleWavFile(file) {
+  if (!file) return;
+  const zone = document.getElementById('wav-drop-zone');
+  const analyzing = document.getElementById('wav-analyzing');
+  const result = document.getElementById('wav-result');
+  const progress = document.getElementById('wav-progress');
+
+  zone.style.display = 'none';
+  analyzing.style.display = 'block';
+  result.style.display = 'none';
+
+  try {
+    // 파일 읽기
+    const arrayBuffer = await file.arrayBuffer();
+    progress.style.width = '30%';
+
+    // Web Audio API로 디코딩
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+    progress.style.width = '60%';
+
+    // 채널 데이터 (모노 또는 좌채널)
+    const channelData = audioBuffer.getChannelData(0);
+    const sampleRate  = audioBuffer.sampleRate;
+    const duration    = audioBuffer.duration;
+
+    // ── 지표 계산 ──
+    // 1. RMS 에너지 (0~1 → 0~100%)
+    let sumSq = 0;
+    for (let i = 0; i < channelData.length; i++) sumSq += channelData[i] ** 2;
+    const rms = Math.sqrt(sumSq / channelData.length);
+    const energy = Math.round(Math.min(rms * 300, 100));
+
+    // 2. 안정도 — RMS 분산 (낮을수록 안정)
+    const frameSize = Math.floor(sampleRate * 0.05); // 50ms 프레임
+    const frameRMS  = [];
+    for (let i = 0; i + frameSize < channelData.length; i += frameSize) {
+      let s = 0;
+      for (let j = i; j < i + frameSize; j++) s += channelData[j] ** 2;
+      frameRMS.push(Math.sqrt(s / frameSize));
+    }
+    const meanRMS = frameRMS.reduce((a,b) => a+b, 0) / frameRMS.length;
+    const variance = frameRMS.reduce((a,b) => a + (b - meanRMS)**2, 0) / frameRMS.length;
+    const stability = Math.round(Math.max(0, Math.min(100, 100 - (variance / (meanRMS**2 + 0.0001)) * 80)));
+
+    // 3. 스펙트럼 분석 (FFT) → 명료도, 공명 추정
+    const fftSize   = 2048;
+    const analyser  = audioCtx.createAnalyser();
+    analyser.fftSize = fftSize;
+    const source = audioCtx.createBufferSource();
+    source.buffer = audioBuffer;
+    source.connect(analyser);
+    const freqData = new Float32Array(analyser.frequencyBinCount);
+    analyser.getFloatFrequencyData(freqData);
+
+    // 주파수 대역별 에너지
+    const binHz   = sampleRate / fftSize;
+    const getRange = (lo, hi) => {
+      let e = 0, n = 0;
+      for (let i = Math.floor(lo/binHz); i < Math.min(Math.ceil(hi/binHz), freqData.length); i++) {
+        e += Math.pow(10, freqData[i]/20); n++;
+      }
+      return n > 0 ? e/n : 0;
+    };
+
+    const voiceEnergy   = getRange(300, 3000);   // 음성 기본 대역
+    const hiEnergy      = getRange(3000, 8000);  // 고주파 (명료도)
+    const resonanceFreq = getRange(200, 800);    // 저주파 공명
+
+    // 명료도: 고주파 비율
+    const total = voiceEnergy + hiEnergy + 0.001;
+    const clarity = Math.round(Math.min(10, Math.max(1, (hiEnergy / total) * 15 + 3)));
+
+    // 공명: 저주파 강도 정규화
+    const resonance = Math.round(Math.min(10, Math.max(1, (resonanceFreq / (voiceEnergy + 0.001)) * 8)));
+
+    // Zero Crossing Rate (추가 안정 지표)
+    let zc = 0;
+    for (let i = 1; i < channelData.length; i++) {
+      if ((channelData[i] >= 0) !== (channelData[i-1] >= 0)) zc++;
+    }
+    const zcr = zc / channelData.length;
+
+    progress.style.width = '100%';
+    audioCtx.close();
+
+    // ── 입력란에 자동 반영 ──
+    setEngineValue('eng-stability', stability, '🎵 WAV');
+    setEngineValue('eng-energy',    energy,    '🎵 WAV');
+    setEngineValue('eng-clarity',   clarity,   '🎵 WAV');
+    setEngineValue('eng-resonance', resonance, '🎵 WAV');
+
+    // ── 결과 미리보기 ──
+    const metrics = [
+      { label:'에너지',   val: energy + '%',     color:'#4caf82' },
+      { label:'안정도',   val: stability + '%',  color:'#42a5f5' },
+      { label:'명료도',   val: clarity + '/10',  color:'#ab47bc' },
+      { label:'공명',     val: resonance + '/10',color:'#ffc107' },
+      { label:'파일',     val: file.name.slice(0,20), color:'rgba(241,231,195,0.5)' },
+      { label:'길이',     val: duration.toFixed(1) + '초', color:'rgba(241,231,195,0.5)' },
+    ];
+    document.getElementById('wav-metrics').innerHTML = metrics.map(m => `
+      <div style="background:rgba(241,231,195,0.05);border-radius:8px;padding:10px 12px">
+        <div style="font-size:9px;font-weight:600;letter-spacing:1px;color:${m.color};text-transform:uppercase;margin-bottom:4px">${m.label}</div>
+        <div style="font-family:'Paperlogy',sans-serif;font-size:18px;font-weight:700;color:#f1e7c3">${m.val}</div>
+      </div>`).join('');
+
+    // 파형 미니 시각화
+    renderWaveform(channelData);
+
+    analyzing.style.display = 'none';
+    result.style.display = 'block';
+    zone.style.display = 'block';
+    zone.querySelector('div:nth-child(2)').textContent = '✓ ' + file.name;
+    showToast('WAV 분석 완료 — 입력값 자동 반영 ✓');
+
+    // 시트에 원본 데이터 저장용으로 전역 보관
+    window._wavRaw = { energy, stability, clarity, resonance, zcr: Math.round(zcr*10000)/10000, duration: Math.round(duration), filename: file.name };
+
+  } catch(err) {
+    analyzing.style.display = 'none';
+    zone.style.display = 'block';
+    showToast('WAV 분석 실패: ' + err.message);
+    console.error(err);
+  }
+}
+
+function renderWaveform(channelData) {
+  // 기존 캔버스 제거
+  const old = document.getElementById('wav-waveform');
+  if (old) old.remove();
+  const canvas = document.createElement('canvas');
+  canvas.id = 'wav-waveform';
+  canvas.style.cssText = 'width:100%;height:60px;border-radius:8px;background:rgba(241,231,195,0.04);margin-top:10px;display:block';
+  canvas.width  = 800;
+  canvas.height = 120;
+  document.getElementById('wav-result').appendChild(canvas);
+  const ctx = canvas.getContext('2d');
+  const step = Math.floor(channelData.length / 800);
+  ctx.strokeStyle = 'rgba(241,231,195,0.7)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  for (let i = 0; i < 800; i++) {
+    const val = channelData[i * step] * 55;
+    const y   = 60 + val;
+    i === 0 ? ctx.moveTo(i, y) : ctx.lineTo(i, y);
+  }
+  ctx.stroke();
+}
+
+function setEngineValue(id, val, src) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (el.tagName === 'INPUT' && el.type === 'range') {
+    el.value = val;
+    el.dispatchEvent(new Event('input'));
+  } else {
+    el.value = val;
+  }
+  const srcEl = document.getElementById(id + '-src');
+  if (srcEl) { srcEl.textContent = src; srcEl.style.color = 'var(--warm)'; }
+}
+
+// ═══════════════════════════════════════════
+// RX 캡처 이미지 분석 (Claude Vision API)
+// ═══════════════════════════════════════════
+
+function handleRxDrop(e) {
+  e.preventDefault();
+  e.currentTarget.style.borderColor = 'rgba(241,231,195,0.25)';
+  const file = e.dataTransfer.files[0];
+  if (file) handleRxFile(file);
+}
+
+async function handleRxFile(file) {
+  if (!file || !file.type.startsWith('image/')) { showToast('이미지 파일을 선택해 주세요'); return; }
+  const analyzing = document.getElementById('rx-analyzing');
+  const result    = document.getElementById('rx-result');
+
+  analyzing.style.display = 'block';
+  result.style.display    = 'none';
+
+  try {
+    // 이미지 → base64
+    const base64 = await new Promise((res, rej) => {
+      const reader = new FileReader();
+      reader.onload = () => res(reader.result.split(',')[1]);
+      reader.onerror = rej;
+      reader.readAsDataURL(file);
+    });
+
+    // 이미지 미리보기
+    document.getElementById('rx-image-preview').innerHTML =
+      `<img src="data:${file.type};base64,${base64}" style="width:100%;border-radius:8px;margin-bottom:8px;max-height:200px;object-fit:contain">`;
+
+    // Claude Vision API 호출
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{
+          role: 'user',
+          content: [
+            {
+              type: 'image',
+              source: { type: 'base64', media_type: file.type, data: base64 }
+            },
+            {
+              type: 'text',
+              text: `이 이미지는 iZotope RX 또는 오디오 분석 소프트웨어의 화면 캡처입니다.
+화면에서 다음 지표들을 읽어서 JSON으로만 응답해주세요. 다른 텍스트 없이 JSON만:
+{
+  "clarity": 1~10 (명료도, 고주파 선명도 기준),
+  "resonance": 1~10 (공명, 저주파 풍부함 기준),
+  "energy": 0~100 (전체 에너지/레벨 % 기준),
+  "stability": 0~100 (안정도, 노이즈 적을수록 높음),
+  "noise_floor": "숫자dB 또는 없으면 null",
+  "peak_level": "숫자dB 또는 없으면 null",
+  "dominant_freq": "주요 주파수 대역 또는 null",
+  "notes": "화면에서 읽은 주요 관찰사항 1~2문장 한국어"
+}
+화면에서 정확한 수치를 읽을 수 없으면 스펙트럼 모양과 전반적인 특성으로 추정하세요.`
+            }
+          ]
+        }]
+      })
+    });
+
+    const data = await response.json();
+    const text = data.content?.[0]?.text || '';
+
+    // JSON 파싱
+    let parsed;
+    try {
+      const jsonStr = text.match(/\{[\s\S]*\}/)?.[0] || text;
+      parsed = JSON.parse(jsonStr);
+    } catch(e) {
+      throw new Error('Claude 응답 파싱 실패: ' + text.slice(0, 100));
+    }
+
+    // 입력란에 자동 반영
+    if (parsed.clarity)   setEngineValue('eng-clarity',   Math.round(parsed.clarity),   '🖼 RX');
+    if (parsed.resonance) setEngineValue('eng-resonance', Math.round(parsed.resonance), '🖼 RX');
+    if (parsed.energy)    setEngineValue('eng-energy',    Math.round(parsed.energy),    '🖼 RX');
+    if (parsed.stability) setEngineValue('eng-stability', Math.round(parsed.stability), '🖼 RX');
+
+    // 결과 표시
+    document.getElementById('rx-metrics').innerHTML = `
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+        ${[
+          ['명료도', parsed.clarity + '/10', '#ab47bc'],
+          ['공명',   parsed.resonance + '/10', '#ffc107'],
+          ['에너지', parsed.energy + '%', '#4caf82'],
+          ['안정도', parsed.stability + '%', '#42a5f5'],
+        ].map(([l,v,c]) => `
+          <div style="background:rgba(241,231,195,0.05);border-radius:8px;padding:10px 12px">
+            <div style="font-size:9px;font-weight:600;letter-spacing:1px;color:${c};text-transform:uppercase;margin-bottom:3px">${l}</div>
+            <div style="font-family:'Paperlogy',sans-serif;font-size:18px;font-weight:700;color:#f1e7c3">${v}</div>
+          </div>`).join('')}
+      </div>
+      ${parsed.noise_floor ? `<div style="margin-bottom:4px">🔇 노이즈 플로어: <strong>${parsed.noise_floor}</strong></div>` : ''}
+      ${parsed.peak_level  ? `<div style="margin-bottom:4px">📊 피크 레벨: <strong>${parsed.peak_level}</strong></div>` : ''}
+      ${parsed.dominant_freq ? `<div style="margin-bottom:4px">🎵 주요 주파수: <strong>${parsed.dominant_freq}</strong></div>` : ''}
+      ${parsed.notes ? `<div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(241,231,195,0.1);font-size:11px;color:var(--muted)">${parsed.notes}</div>` : ''}
+    `;
+
+    // 시트 저장용
+    window._rxRaw = { ...parsed, filename: file.name };
+
+    analyzing.style.display = 'none';
+    result.style.display    = 'block';
+    showToast('RX 분석 완료 — 입력값 자동 반영 ✓');
+
+  } catch(err) {
+    analyzing.style.display = 'none';
+    showToast('RX 분석 실패: ' + err.message);
+    console.error(err);
+  }
+}
+
+// ═══════════════════════════════════════════
 function saveVoiceUrl() {
   const url = document.getElementById('voice-url-input').value.trim();
   VOICE_URL = url;
@@ -3254,7 +3615,7 @@ function runAnalysisEngine() {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify({
-        action:   'saveVoiceResult',
+        action: 'saveVoiceResult',
         data: {
           name:     s.name,
           teacher:  s.teacher || '',
@@ -3265,6 +3626,9 @@ function runAnalysisEngine() {
           tvScore:  scoreR.total,
           gapType:  gapR.type,
           tone:     uxR.tone,
+          // WAV / RX 원본 데이터 추가
+          wavRaw:   window._wavRaw || null,
+          rxRaw:    window._rxRaw  || null,
         }
       })
     }).catch(e => console.log('목소리 데이터 저장 실패:', e));
@@ -4070,13 +4434,23 @@ function updateNavLoginState() {
   if (state.currentTeacher) {
     btn.textContent = state.currentTeacher.slice(-2) + ' ✓';
     btn.style.background = 'rgba(241,231,195,0.2)';
-    btn.onclick = () => {
+    // 클릭 → 수강 관리로 바로 이동
+    btn.onclick = () => showPage('admin');
+    // 길게 누르면 로그아웃
+    btn.oncontextmenu = (e) => {
+      e.preventDefault();
       if (confirm(state.currentTeacher + ' 선생님 로그아웃 할까요?')) logoutTeacher();
     };
+    let holdTimer;
+    btn.ontouchstart = () => { holdTimer = setTimeout(() => { if (confirm(state.currentTeacher + ' 선생님 로그아웃 할까요?')) logoutTeacher(); }, 700); };
+    btn.ontouchend = () => clearTimeout(holdTimer);
   } else {
     btn.textContent = '관리자';
     btn.style.background = '';
     btn.onclick = openAdminLogin;
+    btn.oncontextmenu = null;
+    btn.ontouchstart = null;
+    btn.ontouchend = null;
   }
 }
 
