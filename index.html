@@ -1196,7 +1196,7 @@ h1, h2, h3,
       <button class="tab-btn" onclick="showAdminTab('teachers')">선생님별 현황</button>
       <button class="tab-btn" onclick="showAdminTab('absent')">출석 관리</button>
       <button class="tab-btn" onclick="showAdminTab('payment')">입금 내역</button>
-      <button class="tab-btn" onclick="showAdminTab('notices')">공지 관리</button>
+      
       <button class="tab-btn" onclick="showAdminTab('analysis')">🔮 보이스 분석</button>
       <button class="tab-btn" onclick="showAdminTab('settings')">설정</button>
     </div>
@@ -1223,14 +1223,20 @@ h1, h2, h3,
             <input type="text" class="form-input" id="new-student-name" placeholder="성함">
           </div>
           <div class="form-group">
+            <label class="form-label">성별</label>
+            <select class="form-select" id="new-student-gender">
+              <option value="">선택 안 함</option>
+              <option value="남">남자</option>
+              <option value="여">여자</option>
+            </select>
+          </div>
+          <div class="form-group">
             <label class="form-label">레슨 유형</label>
             <select class="form-select" id="new-student-type">
               <option value="개인">개인 레슨</option>
               <option value="그룹">그룹 레슨</option>
             </select>
           </div>
-        </div>
-        <div class="grid-2">
           <div class="form-group">
             <label class="form-label">담당 선생님</label>
             <select class="form-select" id="new-student-teacher">
@@ -1240,14 +1246,24 @@ h1, h2, h3,
               <option value="탁상우">탁상우</option>
             </select>
           </div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">성별</label>
+            <select class="form-select" id="new-student-gender">
+              <option value="">선택 안함</option>
+              <option value="남성">남성</option>
+              <option value="여성">여성</option>
+            </select>
+          </div>
           <div class="form-group">
             <label class="form-label">연락처 (선택)</label>
             <input type="text" class="form-input" id="new-student-phone" placeholder="010-0000-0000">
           </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">메모 (선택)</label>
-          <input type="text" class="form-input" id="new-student-memo" placeholder="특이사항">
+          <div class="form-group">
+            <label class="form-label">메모 (선택)</label>
+            <input type="text" class="form-input" id="new-student-memo" placeholder="특이사항">
+          </div>
         </div>
         <div style="display:flex;gap:10px">
           <button onclick="addStudent()" style="flex:1;padding:12px;background:#f1e7c3;color:#2a1558;border:none;border-radius:8px;font-family:'Paperlogy',sans-serif;font-size:14px;font-weight:700;cursor:pointer">등록하기</button>
@@ -1428,58 +1444,7 @@ h1, h2, h3,
     <!-- 🔮 보이스 분석 탭 -->
     <div id="admin-analysis" style="display:none">
 
-      <!-- ① WAV 파일 업로드 -->
-      <div class="card" style="margin-bottom:16px">
-        <div class="card-label">🎙 WAV 파일 분석</div>
-        <p style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.7">스튜디오 녹음 WAV 파일을 올리면 에너지·안정도·명료도를 자동으로 계산해서 아래 입력값에 채워줍니다.</p>
-        <label id="wav-drop-zone" style="display:block;border:2px dashed rgba(241,231,195,0.25);border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:all .2s;background:rgba(241,231,195,0.03)"
-          ondragover="event.preventDefault();this.style.borderColor='rgba(241,231,195,0.6)'"
-          ondragleave="this.style.borderColor='rgba(241,231,195,0.25)'"
-          ondrop="handleWavDrop(event)">
-          <input type="file" accept=".wav,.mp3,.m4a,.aac,.flac" style="display:none" id="wav-file-input" onchange="handleWavFile(this.files[0])">
-          <div style="font-size:28px;margin-bottom:8px">🎵</div>
-          <div style="font-size:13px;font-weight:600;color:#f1e7c3;margin-bottom:4px">WAV 파일을 여기에 드래그하거나 탭해서 선택</div>
-          <div style="font-size:11px;color:var(--muted)">WAV · MP3 · M4A · FLAC 지원</div>
-        </label>
-        <!-- 분석 진행 표시 -->
-        <div id="wav-analyzing" style="display:none;text-align:center;padding:16px">
-          <div style="font-size:13px;color:var(--muted)">⏳ 오디오 분석 중...</div>
-          <div style="margin-top:8px;height:4px;background:rgba(241,231,195,0.1);border-radius:2px;overflow:hidden">
-            <div id="wav-progress" style="height:100%;width:0%;background:#f1e7c3;border-radius:2px;transition:width .3s"></div>
-          </div>
-        </div>
-        <!-- 분석 결과 미리보기 -->
-        <div id="wav-result" style="display:none;margin-top:12px">
-          <div style="font-family:'Paperlogy',sans-serif;font-size:10px;letter-spacing:1px;color:var(--muted);margin-bottom:10px">📊 자동 측정값 (입력란에 반영됨)</div>
-          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px" id="wav-metrics"></div>
-        </div>
-      </div>
-
-      <!-- ② RX 캡처 이미지 분석 -->
-      <div class="card" style="margin-bottom:16px">
-        <div class="card-label">🖼 RX 화면 분석 (iZotope RX)</div>
-        <p style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.7">RX 스펙트럼·노이즈·피치 화면 캡처를 올리면 Claude가 읽어서 수치를 추출합니다.</p>
-        <label style="display:block;border:2px dashed rgba(241,231,195,0.25);border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:all .2s;background:rgba(241,231,195,0.03)"
-          ondragover="event.preventDefault();this.style.borderColor='rgba(241,231,195,0.6)'"
-          ondragleave="this.style.borderColor='rgba(241,231,195,0.25)'"
-          ondrop="handleRxDrop(event)">
-          <input type="file" accept="image/*" style="display:none" id="rx-file-input" onchange="handleRxFile(this.files[0])">
-          <div style="font-size:28px;margin-bottom:8px">📸</div>
-          <div style="font-size:13px;font-weight:600;color:#f1e7c3;margin-bottom:4px">RX 캡처 이미지를 여기에 드래그하거나 탭해서 선택</div>
-          <div style="font-size:11px;color:var(--muted)">PNG · JPG · WEBP 지원 · Claude Vision으로 자동 분석</div>
-        </label>
-        <!-- RX 분석 결과 -->
-        <div id="rx-analyzing" style="display:none;text-align:center;padding:16px">
-          <div style="font-size:13px;color:var(--muted)">🔍 Claude가 RX 화면 읽는 중...</div>
-        </div>
-        <div id="rx-result" style="display:none;margin-top:12px">
-          <div style="font-family:'Paperlogy',sans-serif;font-size:10px;letter-spacing:1px;color:var(--muted);margin-bottom:8px">🔬 RX 분석 결과</div>
-          <div id="rx-image-preview" style="margin-bottom:10px"></div>
-          <div id="rx-metrics" style="font-size:12px;line-height:1.8;color:rgba(241,231,195,0.8);background:rgba(241,231,195,0.05);border-radius:8px;padding:12px 14px"></div>
-        </div>
-      </div>
-
-      <!-- ③ 수강생 선택 + 입력값 (자동 채워짐) -->
+      <!-- ① 수강생 선택 및 지표 확인 -->
       <div class="card" style="margin-bottom:16px">
         <div class="card-label">수강생 선택 및 지표 확인</div>
         <div class="grid-2" style="margin-top:8px">
@@ -1489,15 +1454,6 @@ h1, h2, h3,
               <option value="">-- 선택 --</option>
             </select>
           </div>
-          <div class="form-group">
-            <label class="form-label">음성 안정도 (%) <span id="eng-stability-src" style="font-size:10px;color:var(--warm)"></span></label>
-            <input type="range" id="eng-stability" min="0" max="100" value="65"
-              oninput="document.getElementById('eng-stability-val').textContent=this.value"
-              style="width:100%;margin-top:8px">
-            <span id="eng-stability-val" style="font-size:12px;color:var(--muted)">65</span>
-          </div>
-        </div>
-        <div class="grid-2">
           <div class="form-group">
             <label class="form-label">명료도 (1–10) <span id="eng-clarity-src" style="font-size:10px;color:var(--warm)"></span></label>
             <input type="number" class="form-input" id="eng-clarity" min="1" max="10" value="6">
@@ -1511,12 +1467,173 @@ h1, h2, h3,
             <input type="number" class="form-input" id="eng-energy" min="0" max="100" value="60">
           </div>
         </div>
-        <!-- 감정 선택 -->
-        <div style="margin-top:12px">
-          <div class="form-label" style="margin-bottom:8px">오늘 감정 상태</div>
-          <div id="eng-feelings" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+
+        <!-- 성격검사 기반 항목별 발달 수치 -->
+        <div style="margin-top:16px">
+          <div class="form-label" style="margin-bottom:10px">성격검사 기반 항목별 발달 수치</div>
+          <div id="bf-scores-display" style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px">
+            <!-- JS로 렌더링 -->
+            <div style="background:rgba(241,231,195,0.05);border-radius:8px;padding:10px 12px;text-align:center">
+              <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:4px">E 외향성</div>
+              <div id="bf-E-val" style="font-size:20px;font-weight:700;color:#f1e7c3">—</div>
+            </div>
+            <div style="background:rgba(241,231,195,0.05);border-radius:8px;padding:10px 12px;text-align:center">
+              <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:4px">C 성실성</div>
+              <div id="bf-C-val" style="font-size:20px;font-weight:700;color:#f1e7c3">—</div>
+            </div>
+            <div style="background:rgba(241,231,195,0.05);border-radius:8px;padding:10px 12px;text-align:center">
+              <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:4px">A 우호성</div>
+              <div id="bf-A-val" style="font-size:20px;font-weight:700;color:#f1e7c3">—</div>
+            </div>
+            <div style="background:rgba(241,231,195,0.05);border-radius:8px;padding:10px 12px;text-align:center">
+              <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:4px">N 신경성</div>
+              <div id="bf-N-val" style="font-size:20px;font-weight:700;color:#f1e7c3">—</div>
+            </div>
+            <div style="background:rgba(241,231,195,0.05);border-radius:8px;padding:10px 12px;text-align:center">
+              <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:4px">O 개방성</div>
+              <div id="bf-O-val" style="font-size:20px;font-weight:700;color:#f1e7c3">—</div>
+            </div>
+            <div style="background:rgba(241,231,195,0.05);border-radius:8px;padding:10px 12px;text-align:center">
+              <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:4px">V 보이스스페셜</div>
+              <div id="bf-V-val" style="font-size:20px;font-weight:700;color:#f1e7c3">—</div>
+            </div>
+          </div>
+          <div style="font-size:11px;color:var(--muted);margin-top:8px">성격검사 완료 시 자동 표시됩니다</div>
         </div>
+
+        <!-- 터칭보이스 완성도 -->
+        <div style="margin-top:16px;padding-top:16px;border-top:1px solid rgba(241,231,195,0.1)">
+          <div class="form-label" style="margin-bottom:10px">터칭보이스 완성도</div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label">하부성대 발달 (%)</label>
+              <input type="number" class="form-input" id="eng-lower-vocal" min="0" max="100" value=""
+                placeholder="0–100"
+                oninput="calcTVCompletion()">
+            </div>
+            <div class="form-group">
+              <label class="form-label">인두근육 발달 (%)</label>
+              <input type="number" class="form-input" id="eng-pharynx" min="0" max="100" value=""
+                placeholder="0–100"
+                oninput="calcTVCompletion()">
+            </div>
+          </div>
+          <div style="margin-top:12px;background:rgba(241,231,195,0.06);border:1px solid rgba(241,231,195,0.15);border-radius:10px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between">
+            <div>
+              <div style="font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:2px">TOUCHINGVOICE 완성도</div>
+              <div style="font-size:11px;color:rgba(241,231,195,0.5)">(하부성대 + 인두근육) ÷ 2</div>
+            </div>
+            <div id="tv-completion-val" style="font-family:'Paperlogy',sans-serif;font-size:32px;font-weight:700;color:#f1e7c3">—</div>
+          </div>
+          <!-- 숨겨진 stability 입력 (엔진 호환용) -->
+          <input type="hidden" id="eng-stability" value="65">
+          <span id="eng-stability-src" style="display:none"></span>
+          <span id="eng-stability-val" style="display:none">65</span>
+        </div>
+
         <button onclick="runAnalysisEngine()" style="margin-top:16px;padding:13px 28px;background:#f1e7c3;color:#2a1558;border:none;border-radius:10px;font-family:'Paperlogy',sans-serif;font-size:14px;font-weight:700;cursor:pointer;width:100%">🔮 분석 엔진 실행</button>
+      </div>
+
+      <!-- 음역대 범위 슬라이더 -->
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-label">🎵 음역대 범위</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:16px">수강생 성별에 따라 기본값이 설정됩니다. 양쪽 핸들을 드래그해서 조정하세요.</div>
+        <div id="vocal-range-wrap">
+          <!-- JS로 렌더링 -->
+          <div style="text-align:center;color:var(--muted);font-size:12px">수강생을 선택하면 음역대 슬라이더가 나타납니다</div>
+        </div>
+      </div>
+
+      <!-- 음역대 범위 슬라이더 -->
+      <div class="card" style="margin-bottom:16px" id="vocal-range-card">
+        <div class="card-label">🎵 음역대 범위</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:16px">수강생의 현재 음역대를 드래그로 설정하세요</div>
+
+        <!-- 성별 표시 -->
+        <div id="vocal-range-gender-badge" style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;background:rgba(241,231,195,0.08);border:1px solid rgba(241,231,195,0.15);font-size:11px;color:rgba(241,231,195,0.6);margin-bottom:16px">
+          <span id="vocal-range-gender-icon">🎵</span>
+          <span id="vocal-range-gender-text">성별 미설정</span>
+        </div>
+
+        <!-- 슬라이더 영역 -->
+        <div style="position:relative;padding:0 8px;margin-bottom:8px">
+          <!-- 트랙 배경 -->
+          <div id="range-track-bg" style="height:8px;background:rgba(241,231,195,0.1);border-radius:4px;position:relative;cursor:pointer" onclick="handleTrackClick(event)">
+            <!-- 선택 범위 하이라이트 -->
+            <div id="range-track-fill" style="position:absolute;top:0;height:100%;background:linear-gradient(90deg,#4caf82,#f1e7c3);border-radius:4px;pointer-events:none"></div>
+          </div>
+          <!-- 왼쪽 핸들 (낮은 음) -->
+          <div id="range-handle-low" style="position:absolute;top:-7px;width:22px;height:22px;background:#f1e7c3;border-radius:50%;cursor:grab;box-shadow:0 2px 8px rgba(0,0,0,0.4);transform:translateX(-50%);touch-action:none;transition:transform .1s"
+            onmousedown="startDrag(event,'low')" ontouchstart="startDrag(event,'low')"></div>
+          <!-- 오른쪽 핸들 (높은 음) -->
+          <div id="range-handle-high" style="position:absolute;top:-7px;width:22px;height:22px;background:#f1e7c3;border-radius:50%;cursor:grab;box-shadow:0 2px 8px rgba(0,0,0,0.4);transform:translateX(-50%);touch-action:none;transition:transform .1s"
+            onmousedown="startDrag(event,'high')" ontouchstart="startDrag(event,'high')"></div>
+        </div>
+
+        <!-- 현재 값 표시 -->
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px">
+          <div style="text-align:center">
+            <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:2px">최저음</div>
+            <div id="range-low-label" style="font-family:'Paperlogy',sans-serif;font-size:22px;font-weight:700;color:#4caf82">G2</div>
+          </div>
+          <div style="text-align:center;flex:1;padding:0 12px">
+            <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:4px">음역 폭</div>
+            <div id="range-span-label" style="font-size:13px;font-weight:600;color:rgba(241,231,195,0.7)">—</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:2px">최고음</div>
+            <div id="range-high-label" style="font-family:'Paperlogy',sans-serif;font-size:22px;font-weight:700;color:#f1e7c3">D5</div>
+          </div>
+        </div>
+
+        <!-- 옥타브 마커 -->
+        <div id="range-octave-markers" style="display:flex;justify-content:space-between;padding:0 8px;margin-top:8px"></div>
+      </div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-label">🎙 WAV 파일 분석</div>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.7">스튜디오 녹음 WAV 파일을 올리면 에너지·안정도·명료도를 자동으로 계산해서 위 입력값에 채워줍니다.</p>
+        <label id="wav-drop-zone" style="display:block;border:2px dashed rgba(241,231,195,0.25);border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:all .2s;background:rgba(241,231,195,0.03)"
+          ondragover="event.preventDefault();this.style.borderColor='rgba(241,231,195,0.6)'"
+          ondragleave="this.style.borderColor='rgba(241,231,195,0.25)'"
+          ondrop="handleWavDrop(event)">
+          <input type="file" accept=".wav,.mp3,.m4a,.aac,.flac" style="display:none" id="wav-file-input" onchange="handleWavFile(this.files[0])">
+          <div style="font-size:28px;margin-bottom:8px">🎵</div>
+          <div style="font-size:13px;font-weight:600;color:#f1e7c3;margin-bottom:4px">WAV 파일을 여기에 드래그하거나 탭해서 선택</div>
+          <div style="font-size:11px;color:var(--muted)">WAV · MP3 · M4A · FLAC 지원</div>
+        </label>
+        <div id="wav-analyzing" style="display:none;text-align:center;padding:16px">
+          <div style="font-size:13px;color:var(--muted)">⏳ 오디오 분석 중...</div>
+          <div style="margin-top:8px;height:4px;background:rgba(241,231,195,0.1);border-radius:2px;overflow:hidden">
+            <div id="wav-progress" style="height:100%;width:0%;background:#f1e7c3;border-radius:2px;transition:width .3s"></div>
+          </div>
+        </div>
+        <div id="wav-result" style="display:none;margin-top:12px">
+          <div style="font-family:'Paperlogy',sans-serif;font-size:10px;letter-spacing:1px;color:var(--muted);margin-bottom:10px">📊 자동 측정값 (입력란에 반영됨)</div>
+          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px" id="wav-metrics"></div>
+        </div>
+      </div>
+
+      <!-- ③ RX 스펙트럼 분석 -->
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-label">🖼 RX 스펙트럼 분석 (iZotope RX)</div>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.7">RX 스펙트럼·노이즈·피치 화면 캡처를 올리면 Claude가 읽어서 수치를 추출합니다.</p>
+        <label style="display:block;border:2px dashed rgba(241,231,195,0.25);border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:all .2s;background:rgba(241,231,195,0.03)"
+          ondragover="event.preventDefault();this.style.borderColor='rgba(241,231,195,0.6)'"
+          ondragleave="this.style.borderColor='rgba(241,231,195,0.25)'"
+          ondrop="handleRxDrop(event)">
+          <input type="file" accept="image/*" style="display:none" id="rx-file-input" onchange="handleRxFile(this.files[0])">
+          <div style="font-size:28px;margin-bottom:8px">📸</div>
+          <div style="font-size:13px;font-weight:600;color:#f1e7c3;margin-bottom:4px">RX 캡처 이미지를 여기에 드래그하거나 탭해서 선택</div>
+          <div style="font-size:11px;color:var(--muted)">PNG · JPG · WEBP 지원 · Claude Vision으로 자동 분석</div>
+        </label>
+        <div id="rx-analyzing" style="display:none;text-align:center;padding:16px">
+          <div style="font-size:13px;color:var(--muted)">🔍 Claude가 RX 화면 읽는 중...</div>
+        </div>
+        <div id="rx-result" style="display:none;margin-top:12px">
+          <div style="font-family:'Paperlogy',sans-serif;font-size:10px;letter-spacing:1px;color:var(--muted);margin-bottom:8px">🔬 RX 분석 결과</div>
+          <div id="rx-image-preview" style="margin-bottom:10px"></div>
+          <div id="rx-metrics" style="font-size:12px;line-height:1.8;color:rgba(241,231,195,0.8);background:rgba(241,231,195,0.05);border-radius:8px;padding:12px 14px"></div>
+        </div>
       </div>
 
       <!-- 결과 탭 -->
@@ -1532,6 +1649,9 @@ h1, h2, h3,
       <div id="eng-view-score"  class="eng-view" style="display:none"></div>
       <div id="eng-view-gap"    class="eng-view" style="display:none"></div>
       <div id="eng-view-content" class="eng-view" style="display:none"></div>
+
+      <!-- 숨김 처리 (엔진 호환용) -->
+      <div id="eng-feelings" style="display:none"></div>
     </div>
 
     <!-- 설정 탭 -->
@@ -1896,9 +2016,108 @@ function getTeacherPrice(teacherName) {
   return prices[teacherName] || state.settings.pricePrivate || '₩200,000';
 }
 
+// ═══════════════════════════════════════════
+// 음역대 범위 슬라이더
+// ═══════════════════════════════════════════
+const VOCAL_RANGE = {
+  '남': {
+    notes: ['G2','G#2','A2','A#2','B2','C3','C#3','D3','D#3','E3','F3','F#3','G3','G#3','A3','A#3','B3','C4','C#4','D4','D#4','E4','F4','F#4','G4','G#4','A4','A#4','B4','C5','C#5','D5'],
+    defaultLow: 0, defaultHigh: 31,
+    icon: '👨', label: '남성 (G2–D5)',
+  },
+  '여': {
+    notes: ['D3','D#3','E3','F3','F#3','G3','G#3','A3','A#3','B3','C4','C#4','D4','D#4','E4','F4','F#4','G4','G#4','A4','A#4','B4','C5','C#5','D5','D#5','E5','F5','F#5','G5'],
+    defaultLow: 0, defaultHigh: 29,
+    icon: '👩', label: '여성 (D3–G5)',
+  },
+};
+let _rangeLowIdx = 0, _rangeHighIdx = 31;
+let _rangeNotes  = VOCAL_RANGE['남'].notes;
+
+function initVocalRange(gender) {
+  const cfg = VOCAL_RANGE[gender] || VOCAL_RANGE['남'];
+  _rangeNotes    = cfg.notes;
+  _rangeLowIdx   = cfg.defaultLow;
+  _rangeHighIdx  = cfg.defaultHigh;
+  const icon = document.getElementById('vocal-range-gender-icon');
+  const text = document.getElementById('vocal-range-gender-text');
+  if (icon) icon.textContent = cfg.icon;
+  if (text) text.textContent = cfg.label;
+  // 옥타브 마커
+  const markersEl = document.getElementById('range-octave-markers');
+  if (markersEl) {
+    const octaves = [...new Set(_rangeNotes.map(n => n.replace(/[^0-9]/g,'')))];
+    const total   = _rangeNotes.length - 1;
+    markersEl.innerHTML = octaves.map(oct => {
+      const firstIdx = _rangeNotes.findIndex(n => n.endsWith(oct));
+      const pct = (firstIdx / total * 100).toFixed(1);
+      return `<div style="font-size:9px;color:rgba(241,231,195,0.3);position:absolute;left:${pct}%;transform:translateX(-50%)">${oct}옥</div>`;
+    }).join('');
+    markersEl.style.position = 'relative';
+    markersEl.style.height   = '14px';
+  }
+  updateRangeUI();
+}
+
+function updateRangeUI() {
+  const total    = _rangeNotes.length - 1;
+  const lowPct   = _rangeLowIdx  / total * 100;
+  const highPct  = _rangeHighIdx / total * 100;
+  const fill     = document.getElementById('range-track-fill');
+  const hLow     = document.getElementById('range-handle-low');
+  const hHigh    = document.getElementById('range-handle-high');
+  if (fill)  { fill.style.left = lowPct+'%'; fill.style.width = (highPct-lowPct)+'%'; }
+  if (hLow)  hLow.style.left  = 'calc('+lowPct +'% + 8px)';
+  if (hHigh) hHigh.style.left = 'calc('+highPct+'% + 8px)';
+  const lowEl  = document.getElementById('range-low-label');
+  const highEl = document.getElementById('range-high-label');
+  const spanEl = document.getElementById('range-span-label');
+  if (lowEl)  lowEl.textContent  = _rangeNotes[_rangeLowIdx];
+  if (highEl) highEl.textContent = _rangeNotes[_rangeHighIdx];
+  if (spanEl) spanEl.textContent = (_rangeHighIdx - _rangeLowIdx) + '반음';
+}
+
+function startDrag(e, which) {
+  e.preventDefault();
+  const move = (ev) => {
+    const te    = ev.touches ? ev.touches[0] : ev;
+    const track = document.getElementById('range-track-bg');
+    if (!track) return;
+    const rect  = track.getBoundingClientRect();
+    const pct   = Math.max(0, Math.min(1, (te.clientX - rect.left) / rect.width));
+    const idx   = Math.round(pct * (_rangeNotes.length - 1));
+    if (which === 'low')  _rangeLowIdx  = Math.min(idx, _rangeHighIdx - 1);
+    else                  _rangeHighIdx = Math.max(idx, _rangeLowIdx  + 1);
+    updateRangeUI();
+  };
+  const up = () => {
+    document.removeEventListener('mousemove', move);
+    document.removeEventListener('mouseup', up);
+    document.removeEventListener('touchmove', move);
+    document.removeEventListener('touchend', up);
+  };
+  document.addEventListener('mousemove', move);
+  document.addEventListener('mouseup', up);
+  document.addEventListener('touchmove', move, { passive: false });
+  document.addEventListener('touchend', up);
+}
+
+function handleTrackClick(e) {
+  const track = document.getElementById('range-track-bg');
+  if (!track) return;
+  const rect  = track.getBoundingClientRect();
+  const pct   = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+  const idx   = Math.round(pct * (_rangeNotes.length - 1));
+  if (Math.abs(idx-_rangeLowIdx) <= Math.abs(idx-_rangeHighIdx))
+    _rangeLowIdx  = Math.min(idx, _rangeHighIdx - 1);
+  else
+    _rangeHighIdx = Math.max(idx, _rangeLowIdx + 1);
+  updateRangeUI();
+}
+
 const APPS_URL  = 'https://script.google.com/macros/s/AKfycbzdsDflB3PsPTpMedBb2nH1faaJ8LEdbnvh0LF_okk5RezbwMLnp4shRgAgzJ-6L2bdJQ/exec';
 // 목소리 데이터 전용 시트 URL
-let VOICE_URL = localStorage.getItem('tv_voice_url') || 'https://script.google.com/macros/s/AKfycbwwJ1oO54d7Jqy6N1uFHz_a0JoseSIac9JNI_CtB9Tuh9U6KQRFEAcHglVvwinkacSXGA/exec';
+let VOICE_URL = localStorage.getItem('tv_voice_url') || 'https://script.google.com/macros/s/AKfycbxh2OSaoe77KFD6Oa-xb7zpFaKI5I9YAU0ZxVAG9bcXGuqz96mJP3qQV5umKdyH_yCgNQ/exec';
 let _sheetsLoaded = false;
 
 // Sheets에서 전체 데이터 불러오기 (앱 시작 시)
@@ -2298,8 +2517,9 @@ function renderAdmin() {
               }
               pillsHtml += `</div><div style="font-size:10px;color:var(--muted);margin-top:2px">총 ${st.count}회</div>`;
               const mthStr = st.months > 0 ? `<div style="font-size:10px;color:rgba(241,231,195,0.45)">${st.months}개월차</div>` : '';
+              const gIcon = s.gender === '남' ? '<span style="font-size:10px;opacity:.6">👨</span>' : s.gender === '여' ? '<span style="font-size:10px;opacity:.6">👩</span>' : '';
               return `<tr>
-                <td><strong style="cursor:pointer;text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(241,231,195,0.3)" onclick="openStampCard(${idx})">${s.name}</strong></td>
+                <td><strong style="cursor:pointer;text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(241,231,195,0.3)" onclick="openStampCard(${idx})">${gIcon} ${s.name}</strong></td>
                 <td><span style="padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600;background:rgba(241,231,195,0.12);color:#f1e7c3">${s.type}</span></td>
                 <td>${pillsHtml}</td>
                 <td style="font-size:12px;color:rgba(241,231,195,0.75);font-family:'Paperlogy',sans-serif;font-weight:600">
@@ -2358,6 +2578,7 @@ function showAddStudent() {
 
 function addStudent() {
   const name    = document.getElementById('new-student-name').value.trim();
+  const gender  = document.getElementById('new-student-gender').value;
   const type    = document.getElementById('new-student-type').value;
   const teacher = document.getElementById('new-student-teacher').value;
   const phone   = document.getElementById('new-student-phone').value.trim();
@@ -2366,13 +2587,14 @@ function addStudent() {
   if (state.students.find(s => s.name === name && s.type === type)) {
     showToast('이미 등록된 수강생입니다'); return;
   }
-  state.students.push({ name, type, teacher, phone, memo, lessons: [] });
+  state.students.push({ name, gender, type, teacher, phone, memo, lessons: [] });
   saveState();
   document.getElementById('add-student-form').style.display = 'none';
   document.getElementById('new-student-name').value = '';
+  document.getElementById('new-student-gender').value = '';
   renderAdmin();
   showToast(name + '님이 등록되었습니다 ✓');
-  sheetsAction('saveStudent', { data: { name, type, teacher, phone, memo } });
+  sheetsAction('saveStudent', { data: { name, gender, type, teacher, phone, memo } });
 }
 
 function showAdminTab(tab) {
@@ -3603,7 +3825,8 @@ function initAnalysisTab() {
   sel.innerHTML = '<option value="">-- 선택 --</option>';
   visible.forEach((s,i) => {
     const idx = state.students.indexOf(s);
-    sel.innerHTML += `<option value="${idx}">${s.name} (${s.teacher||'미배정'} · ${s.type})</option>`;
+    const genderIcon = s.gender === '남' ? '👨' : s.gender === '여' ? '👩' : '';
+    sel.innerHTML += `<option value="${idx}">${genderIcon} ${s.name} (${s.teacher||'미배정'} · ${s.type})</option>`;
   });
 
   // 감정 칩 초기화
@@ -3625,7 +3848,209 @@ function initAnalysisTab() {
 function onEngStudentSelect() {
   const idx = parseInt(document.getElementById('eng-student-select').value);
   if (isNaN(idx)) return;
-  // 수강생의 lessonNotes에 Big Five 데이터 있으면 자동 반영 (추후 확장)
+  const s = state.students[idx];
+  if (!s) return;
+
+  // 음역대 슬라이더 — 성별 기반 초기화
+  renderVocalRangeSlider(s.gender || '');
+
+  // 수강생의 마지막 성격검사 결과 BF 수치 표시
+  const lastResult = (s.lessonNotes?.scoreHistory || []).slice(-1)[0];
+  const bf = lastResult?.bf || null;
+  ['E','C','A','N','O','V'].forEach(code => {
+    const el = document.getElementById('bf-' + code + '-val');
+    if (!el) return;
+    if (bf && bf[code] != null) {
+      el.textContent = bf[code] + '%';
+      el.style.color = '#f1e7c3';
+    } else {
+      el.textContent = '—';
+      el.style.color = 'rgba(241,231,195,0.3)';
+    }
+  });
+}
+
+// ══════════════════════════════════════════
+// 음역대 범위 슬라이더
+// ══════════════════════════════════════════
+
+// 전체 음계 배열 (C1 ~ C7)
+const NOTE_NAMES = ['C','D','E','F','G','A','B'];
+const ALL_NOTES = [];
+for (let oct = 1; oct <= 7; oct++) {
+  NOTE_NAMES.forEach(n => ALL_NOTES.push(n + oct));
+}
+// 표시에 쓸 범위: E1 ~ C7
+const DISPLAY_RANGE_START = ALL_NOTES.indexOf('E1');
+const DISPLAY_RANGE_END   = ALL_NOTES.indexOf('C7');
+const DISPLAY_NOTES = ALL_NOTES.slice(DISPLAY_RANGE_START, DISPLAY_RANGE_END + 1);
+
+// 성별 기본 범위
+const RANGE_DEFAULTS = {
+  '남성': { low: 'G2', high: 'D5' },
+  '여성': { low: 'D3', high: 'G5' },
+  '':     { low: 'G2', high: 'G5' },
+};
+
+let vocalRangeLow  = 0;
+let vocalRangeHigh = 0;
+let draggingHandle = null;
+
+function noteToIdx(note) {
+  return DISPLAY_NOTES.indexOf(note);
+}
+
+function renderVocalRangeSlider(gender) {
+  const wrap = document.getElementById('vocal-range-wrap');
+  if (!wrap) return;
+
+  const def = RANGE_DEFAULTS[gender] || RANGE_DEFAULTS[''];
+  vocalRangeLow  = noteToIdx(def.low)  >= 0 ? noteToIdx(def.low)  : noteToIdx('G2');
+  vocalRangeHigh = noteToIdx(def.high) >= 0 ? noteToIdx(def.high) : noteToIdx('G5');
+  const total = DISPLAY_NOTES.length - 1;
+
+  wrap.innerHTML = `
+    <div id="vr-labels" style="display:flex;justify-content:space-between;margin-bottom:6px">
+      <span style="font-size:11px;color:var(--muted)">${DISPLAY_NOTES[0]}</span>
+      <span style="font-size:11px;color:var(--muted)">${DISPLAY_NOTES[Math.floor(total/2)]}</span>
+      <span style="font-size:11px;color:var(--muted)">${DISPLAY_NOTES[total]}</span>
+    </div>
+    <div id="vr-track" style="position:relative;height:40px;margin-bottom:12px;cursor:pointer">
+      <!-- 전체 트랙 -->
+      <div style="position:absolute;top:50%;left:0;right:0;height:4px;background:rgba(241,231,195,0.12);border-radius:2px;transform:translateY(-50%)"></div>
+      <!-- 선택 범위 강조 -->
+      <div id="vr-fill" style="position:absolute;top:50%;height:4px;background:linear-gradient(90deg,#9b59b6,#f1e7c3);border-radius:2px;transform:translateY(-50%);transition:left .05s,width .05s"></div>
+      <!-- 낮은 음 핸들 -->
+      <div id="vr-handle-low" style="position:absolute;top:50%;width:28px;height:28px;background:#f1e7c3;border-radius:50%;transform:translate(-50%,-50%);cursor:grab;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.4);user-select:none;touch-action:none;z-index:2">
+        <span style="font-size:9px;font-weight:700;color:#2a1558" id="vr-low-label">${def.low}</span>
+      </div>
+      <!-- 높은 음 핸들 -->
+      <div id="vr-handle-high" style="position:absolute;top:50%;width:28px;height:28px;background:#9b59b6;border-radius:50%;transform:translate(-50%,-50%);cursor:grab;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.4);user-select:none;touch-action:none;z-index:2">
+        <span style="font-size:9px;font-weight:700;color:#fff" id="vr-high-label">${def.high}</span>
+      </div>
+    </div>
+    <!-- 결과 표시 -->
+    <div style="display:flex;align-items:center;justify-content:center;gap:12px;padding:10px 16px;background:rgba(241,231,195,0.05);border-radius:8px;border:1px solid rgba(241,231,195,0.1)">
+      <div style="text-align:center">
+        <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:2px">최저음</div>
+        <div id="vr-result-low" style="font-family:'Paperlogy',sans-serif;font-size:20px;font-weight:700;color:#f1e7c3">${def.low}</div>
+      </div>
+      <div style="font-size:18px;color:var(--muted)">—</div>
+      <div style="text-align:center">
+        <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:2px">최고음</div>
+        <div id="vr-result-high" style="font-family:'Paperlogy',sans-serif;font-size:20px;font-weight:700;color:#9b59b6">${def.high}</div>
+      </div>
+      <div style="width:1px;height:36px;background:rgba(241,231,195,0.1);margin:0 4px"></div>
+      <div style="text-align:center">
+        <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:2px">음역 폭</div>
+        <div id="vr-result-span" style="font-family:'Paperlogy',sans-serif;font-size:20px;font-weight:700;color:#4caf82">—</div>
+      </div>
+    </div>`;
+
+  updateVrPositions();
+  attachVrDragEvents();
+}
+
+function updateVrPositions() {
+  const track = document.getElementById('vr-track');
+  if (!track) return;
+  const total = DISPLAY_NOTES.length - 1;
+  const lowPct  = (vocalRangeLow  / total) * 100;
+  const highPct = (vocalRangeHigh / total) * 100;
+
+  const handleLow  = document.getElementById('vr-handle-low');
+  const handleHigh = document.getElementById('vr-handle-high');
+  const fill       = document.getElementById('vr-fill');
+
+  if (handleLow)  handleLow.style.left  = lowPct + '%';
+  if (handleHigh) handleHigh.style.left = highPct + '%';
+  if (fill) { fill.style.left = lowPct + '%'; fill.style.width = (highPct - lowPct) + '%'; }
+
+  const lowNote  = DISPLAY_NOTES[vocalRangeLow];
+  const highNote = DISPLAY_NOTES[vocalRangeHigh];
+  const span     = vocalRangeHigh - vocalRangeLow;
+
+  const lblLow  = document.getElementById('vr-low-label');
+  const lblHigh = document.getElementById('vr-high-label');
+  const resLow  = document.getElementById('vr-result-low');
+  const resHigh = document.getElementById('vr-result-high');
+  const resSpan = document.getElementById('vr-result-span');
+
+  if (lblLow)  lblLow.textContent  = lowNote;
+  if (lblHigh) lblHigh.textContent = highNote;
+  if (resLow)  resLow.textContent  = lowNote;
+  if (resHigh) resHigh.textContent = highNote;
+  if (resSpan) resSpan.textContent = span + '반음';
+
+  // 전역 저장
+  window._vocalRangeLow  = lowNote;
+  window._vocalRangeHigh = highNote;
+}
+
+function attachVrDragEvents() {
+  ['low','high'].forEach(type => {
+    const handle = document.getElementById('vr-handle-' + type);
+    if (!handle) return;
+
+    const onStart = (e) => {
+      draggingHandle = type;
+      handle.style.cursor = 'grabbing';
+      e.preventDefault();
+    };
+    handle.addEventListener('mousedown',  onStart);
+    handle.addEventListener('touchstart', onStart, { passive: false });
+  });
+
+  const onMove = (e) => {
+    if (!draggingHandle) return;
+    const track = document.getElementById('vr-track');
+    if (!track) return;
+    const rect   = track.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const pct    = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+    const total  = DISPLAY_NOTES.length - 1;
+    const idx    = Math.round(pct * total);
+
+    if (draggingHandle === 'low') {
+      vocalRangeLow  = Math.min(idx, vocalRangeHigh - 1);
+    } else {
+      vocalRangeHigh = Math.max(idx, vocalRangeLow + 1);
+    }
+    updateVrPositions();
+    e.preventDefault();
+  };
+
+  const onEnd = () => {
+    if (draggingHandle) {
+      const handle = document.getElementById('vr-handle-' + draggingHandle);
+      if (handle) handle.style.cursor = 'grab';
+      draggingHandle = null;
+    }
+  };
+
+  document.addEventListener('mousemove',  onMove);
+  document.addEventListener('touchmove',  onMove, { passive: false });
+  document.addEventListener('mouseup',    onEnd);
+  document.addEventListener('touchend',   onEnd);
+}
+
+// 터칭보이스 완성도 자동 계산
+function calcTVCompletion() {
+  const lower   = parseFloat(document.getElementById('eng-lower-vocal').value);
+  const pharynx = parseFloat(document.getElementById('eng-pharynx').value);
+  const display = document.getElementById('tv-completion-val');
+  const stabilityInput = document.getElementById('eng-stability');
+
+  if (!isNaN(lower) && !isNaN(pharynx)) {
+    const completion = Math.round((lower + pharynx) / 2);
+    display.textContent = completion + '%';
+    display.style.color = completion >= 70 ? '#4caf82' : completion >= 40 ? '#f1e7c3' : '#e05c3a';
+    // 엔진 호환용 stability 값에도 반영
+    if (stabilityInput) stabilityInput.value = completion;
+  } else {
+    display.textContent = '—';
+    display.style.color = '#f1e7c3';
+  }
 }
 
 function showEngTab(id) {
