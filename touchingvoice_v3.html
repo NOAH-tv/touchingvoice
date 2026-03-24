@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>터칭보이스 — 보이스 매트릭스</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;900&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Square:wght@400;700;800&family=Nanum+Square+Round:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg: #f5f3ef;
@@ -24,7 +24,7 @@
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
-body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;min-height:100vh;}
+body{background:var(--bg);color:var(--text);font-family:'NanumSquare','Nanum Square',sans-serif;min-height:100vh;}
 
 /* STEPS */
 .step{display:none;}
@@ -34,13 +34,13 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
 /* HEADER */
 .site-header{padding:28px 24px 0;display:flex;align-items:center;justify-content:space-between;max-width:680px;margin:0 auto;}
 .logo-mark{display:flex;flex-direction:column;gap:1px;}
-.logo-en{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--accent2);text-transform:uppercase;}
+.logo-en{font-family:'NanumSquare','Nanum Square',sans-serif;font-size:9px;letter-spacing:1px;color:var(--accent2);text-transform:uppercase;}
 .logo-kr{font-size:18px;font-weight:600;}
-.step-badge{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:1px;}
+.step-badge{font-family:'NanumSquare','Nanum Square',sans-serif;font-size:11px;color:var(--muted);letter-spacing:1px;}
 
 /* HERO */
 .hero{max-width:680px;margin:0 auto;padding:44px 24px 32px;}
-.hero-eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--accent2);text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.hero-eyebrow{font-family:'NanumSquare','Nanum Square',sans-serif;font-size:10px;letter-spacing:1px;color:var(--accent2);text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:10px;}
 .hero-eyebrow::before{content:'';width:24px;height:1px;background:var(--accent2);}
 .hero-title{font-size:clamp(26px,6vw,46px);font-weight:900;line-height:1.15;letter-spacing:-1px;margin-bottom:16px;}
 .hero-title em{font-style:italic;color:var(--accent);}
@@ -52,12 +52,12 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
 
 /* CARD */
 .card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:28px;margin-bottom:16px;}
-.card-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2.5px;color:var(--muted);text-transform:uppercase;margin-bottom:14px;}
+.card-label{font-family:'NanumSquare','Nanum Square',sans-serif;font-size:9px;letter-spacing:0.8px;color:var(--muted);text-transform:uppercase;margin-bottom:14px;}
 
 /* FORM */
 .form-group{margin-bottom:20px;}
-.form-label{display:block;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--accent2);margin-bottom:8px;text-transform:uppercase;}
-.form-input{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:13px 16px;color:var(--text);font-family:'Noto Serif KR',serif;font-size:14px;outline:none;transition:border-color .2s;-webkit-appearance:none;}
+.form-label{display:block;font-family:'NanumSquare','Nanum Square',sans-serif;font-size:10px;letter-spacing:0.5px;color:var(--accent2);margin-bottom:8px;text-transform:uppercase;}
+.form-input{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:13px 16px;color:var(--text);font-family:'NanumSquare','Nanum Square',sans-serif;font-size:14px;outline:none;transition:border-color .2s;-webkit-appearance:none;}
 .form-input:focus{border-color:var(--accent2);}
 
 /* FILE UPLOAD */
@@ -67,46 +67,46 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
 .fz-icon{width:60px;height:60px;border-radius:50%;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 18px;transition:transform .3s;}
 .file-zone:hover .fz-icon{transform:scale(1.08);}
 .fz-title{font-size:16px;font-weight:600;margin-bottom:6px;}
-.fz-sub{font-size:12px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:.5px;line-height:1.7;}
+.fz-sub{font-size:12px;color:var(--muted);font-family:'NanumSquare','Nanum Square',sans-serif;letter-spacing:.5px;line-height:1.7;}
 .file-bar{display:none;background:var(--accent-light);border:1px solid rgba(64,145,108,.3);border-radius:10px;padding:13px 18px;margin-top:14px;align-items:center;gap:12px;}
 .file-bar.show{display:flex;}
 .fb-name{font-size:13px;font-weight:600;flex:1;}
-.fb-size{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);}
+.fb-size{font-family:'NanumSquare','Nanum Square',sans-serif;font-size:11px;color:var(--muted);}
 
 /* PROGRESS BAR (sticky) */
 .prog-wrap{position:sticky;top:0;z-index:50;background:rgba(245,243,239,.92);backdrop-filter:blur(12px);padding:12px 24px;border-bottom:1px solid var(--border);}
 .prog-inner{max-width:680px;margin:0 auto;display:flex;align-items:center;gap:14px;}
 .prog-bar-track{flex:1;height:3px;background:var(--border2);border-radius:2px;overflow:hidden;}
 .prog-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;transition:width .4s cubic-bezier(.16,1,.3,1);width:0%;}
-.prog-label{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);white-space:nowrap;letter-spacing:.5px;}
+.prog-label{font-family:'NanumSquare','Nanum Square',sans-serif;font-size:11px;color:var(--muted);white-space:nowrap;letter-spacing:.5px;}
 
 /* DOMAIN HEADER */
 .domain-head{display:flex;align-items:center;gap:12px;padding:28px 0 14px;}
 .d-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
 .d-info{}
-.d-code{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:2px;}
+.d-code{font-family:'NanumSquare','Nanum Square',sans-serif;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:2px;}
 .d-name{font-size:15px;font-weight:700;}
 .d-desc{font-size:12px;color:var(--muted);font-weight:300;margin-top:2px;}
 
 /* Q CARD */
 .q-card{background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:20px 20px 16px;margin-bottom:8px;transition:border-color .2s;}
 .q-card.answered{border-left:3px solid var(--accent2);}
-.q-num{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;color:var(--muted);margin-bottom:8px;}
+.q-num{font-family:'NanumSquare','Nanum Square',sans-serif;font-size:9px;letter-spacing:0.5px;color:var(--muted);margin-bottom:8px;}
 .q-text{font-size:14px;line-height:1.75;font-weight:300;margin-bottom:16px;}
 .lk-row{display:flex;gap:5px;}
-.lk-btn{flex:1;height:36px;border:1px solid var(--border2);border-radius:7px;background:var(--surface2);color:var(--muted);font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent;}
+.lk-btn{flex:1;height:36px;border:1px solid var(--border2);border-radius:7px;background:var(--surface2);color:var(--muted);font-family:'NanumSquare','Nanum Square',sans-serif;font-size:12px;cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent;}
 .lk-btn:hover{border-color:var(--accent2);color:var(--accent2);}
 .lk-btn.sel{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600;}
 .lk-labs{display:flex;justify-content:space-between;margin-top:5px;}
-.lk-lab{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);}
+.lk-lab{font-family:'NanumSquare','Nanum Square',sans-serif;font-size:9px;color:var(--muted);}
 
 /* BUTTONS */
-.btn-primary{width:100%;padding:16px;background:var(--accent-btn);color:#fff;border:none;border-radius:12px;font-family:'Noto Serif KR',serif;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;letter-spacing:.5px;}
+.btn-primary{width:100%;padding:16px;background:var(--accent-btn);color:#fff;border:none;border-radius:12px;font-family:'NanumSquare','Nanum Square',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;letter-spacing:.5px;}
 .btn-primary:hover{background:var(--accent);transform:translateY(-1px);box-shadow:0 8px 24px rgba(27,67,50,.25);}
 .btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none;}
-.btn-outline{width:100%;padding:14px;background:transparent;color:var(--accent-btn);border:1.5px solid var(--accent-btn);border-radius:12px;font-family:'Noto Serif KR',serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;margin-top:10px;}
+.btn-outline{width:100%;padding:14px;background:transparent;color:var(--accent-btn);border:1.5px solid var(--accent-btn);border-radius:12px;font-family:'NanumSquare','Nanum Square',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;margin-top:10px;}
 .btn-outline:hover{background:var(--accent-light);}
-.btn-ghost{background:none;border:none;color:var(--muted);font-family:'Noto Serif KR',serif;font-size:13px;cursor:pointer;text-decoration:underline;padding:0;}
+.btn-ghost{background:none;border:none;color:var(--muted);font-family:'NanumSquare','Nanum Square',sans-serif;font-size:13px;cursor:pointer;text-decoration:underline;padding:0;}
 
 /* CONSENT MODAL */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .2s;}
@@ -125,14 +125,14 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
 
 /* RESULTS */
 .res-top-card{background:var(--accent);border-radius:var(--radius);padding:36px 28px;color:#fff;margin-bottom:20px;}
-.rtc-eyebrow{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;opacity:.7;margin-bottom:10px;text-transform:uppercase;}
-.rtc-dominant{font-size:11px;font-weight:300;opacity:.8;margin-bottom:4px;font-family:'DM Mono',monospace;letter-spacing:1px;}
+.rtc-eyebrow{font-family:'NanumSquare','Nanum Square',sans-serif;font-size:9px;letter-spacing:1px;opacity:.7;margin-bottom:10px;text-transform:uppercase;}
+.rtc-dominant{font-size:11px;font-weight:300;opacity:.8;margin-bottom:4px;font-family:'NanumSquare','Nanum Square',sans-serif;letter-spacing:1px;}
 .rtc-type{font-size:32px;font-weight:900;letter-spacing:-1px;margin-bottom:12px;}
 .rtc-desc{font-size:14px;opacity:.88;line-height:1.8;font-weight:300;}
-.rtc-more-btn{margin-top:18px;padding:10px 22px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:8px;color:#fff;font-family:'Noto Serif KR',serif;font-size:13px;cursor:pointer;transition:all .2s;font-weight:600;}
+.rtc-more-btn{margin-top:18px;padding:10px 22px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:8px;color:#fff;font-family:'NanumSquare','Nanum Square',sans-serif;font-size:13px;cursor:pointer;transition:all .2s;font-weight:600;}
 .rtc-more-btn:hover{background:rgba(255,255,255,.25);}
 
-.res-section-title{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.res-section-title{font-family:'NanumSquare','Nanum Square',sans-serif;font-size:10px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:10px;}
 .res-section-title::after{content:'';flex:1;height:1px;background:var(--border2);}
 
 /* SCORE LIST (personality.co style) */
@@ -140,11 +140,11 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
 .score-row{display:flex;align-items:center;gap:14px;margin-bottom:16px;cursor:pointer;transition:opacity .2s;}
 .score-row:last-child{margin-bottom:0;}
 .score-row:hover{opacity:.75;}
-.score-rank{width:24px;height:24px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);flex-shrink:0;}
+.score-rank{width:24px;height:24px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-family:'NanumSquare','Nanum Square',sans-serif;font-size:11px;color:var(--muted);flex-shrink:0;}
 .score-name{width:72px;font-size:14px;font-weight:600;flex-shrink:0;}
 .score-bar-track{flex:1;height:10px;background:var(--surface2);border-radius:5px;overflow:hidden;}
 .score-bar-fill{height:100%;border-radius:5px;width:0%;transition:width 1.1s cubic-bezier(.16,1,.3,1);}
-.score-pct{width:40px;text-align:right;font-family:'DM Mono',monospace;font-size:13px;font-weight:600;flex-shrink:0;}
+.score-pct{width:40px;text-align:right;font-family:'NanumSquare','Nanum Square',sans-serif;font-size:13px;font-weight:600;flex-shrink:0;}
 .score-arrow{font-size:14px;color:var(--muted);flex-shrink:0;}
 
 /* DOMAIN DETAIL MODAL */
@@ -152,13 +152,13 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
 .detail-modal-overlay.hidden{display:none;}
 .detail-sheet{background:var(--surface);border-radius:20px 20px 0 0;padding:0;width:100%;max-width:680px;max-height:90vh;overflow-y:auto;animation:slideUp .3s cubic-bezier(.16,1,.3,1);}
 .detail-tabs{display:flex;border-bottom:1px solid var(--border2);position:sticky;top:0;background:var(--surface);z-index:5;}
-.detail-tab{flex:1;padding:14px 8px;font-size:12px;font-weight:600;text-align:center;cursor:pointer;border:none;background:none;color:var(--muted);transition:all .2s;font-family:'Noto Serif KR',serif;border-bottom:2px solid transparent;}
+.detail-tab{flex:1;padding:14px 8px;font-size:12px;font-weight:600;text-align:center;cursor:pointer;border:none;background:none;color:var(--muted);transition:all .2s;font-family:'NanumSquare','Nanum Square',sans-serif;border-bottom:2px solid transparent;}
 .detail-tab.active{color:var(--accent);border-bottom-color:var(--accent);}
 .detail-content{padding:24px 24px 40px;}
 .detail-handle{width:36px;height:4px;background:var(--border2);border-radius:2px;margin:16px auto 0;}
 .detail-close{position:absolute;top:16px;right:20px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);z-index:6;}
 .detail-header{padding:24px 24px 0;position:relative;}
-.detail-score-tag{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;font-family:'DM Mono',monospace;font-size:12px;font-weight:600;margin-bottom:16px;}
+.detail-score-tag{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;font-family:'NanumSquare','Nanum Square',sans-serif;font-size:12px;font-weight:600;margin-bottom:16px;}
 .detail-domain-name{font-size:26px;font-weight:900;margin-bottom:8px;}
 .detail-domain-intro{font-size:14px;line-height:1.85;font-weight:300;color:var(--muted);}
 .detail-section-text{font-size:14px;line-height:1.9;font-weight:300;color:var(--text);}
@@ -172,7 +172,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
 .voice-card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:24px;margin-bottom:14px;}
 .vc-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;gap:12px;}
 .vc-title{font-size:17px;font-weight:700;}
-.vc-badge{padding:5px 12px;border-radius:999px;font-family:'DM Mono',monospace;font-size:11px;font-weight:600;background:rgba(224,122,42,.12);color:var(--c-V);flex-shrink:0;}
+.vc-badge{padding:5px 12px;border-radius:999px;font-family:'NanumSquare','Nanum Square',sans-serif;font-size:11px;font-weight:600;background:rgba(224,122,42,.12);color:var(--c-V);flex-shrink:0;}
 .vc-desc{font-size:13px;line-height:1.85;font-weight:300;color:var(--text);}
 .vc-tip{margin-top:14px;padding:12px 14px;border-radius:8px;background:rgba(224,122,42,.07);border-left:3px solid var(--c-V);font-size:12px;line-height:1.75;font-weight:300;}
 
@@ -180,7 +180,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
 .vf-row{background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:18px 20px;display:flex;align-items:center;gap:14px;margin-bottom:20px;}
 .vf-icon{width:40px;height:40px;border-radius:10px;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
 .vf-info{}
-.vf-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--accent2);margin-bottom:3px;text-transform:uppercase;}
+.vf-label{font-family:'NanumSquare','Nanum Square',sans-serif;font-size:9px;letter-spacing:2px;color:var(--accent2);margin-bottom:3px;text-transform:uppercase;}
 .vf-name{font-size:13px;font-weight:600;}
 
 .divider{height:1px;background:var(--border2);margin:24px 0;}
@@ -194,44 +194,44 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
 .cross-header{padding:20px 22px 16px;border-bottom:1px solid var(--border);}
 .cross-match-row{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
 .cross-match-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
-.cross-match-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;}
-.cross-match-pct{font-family:'DM Mono',monospace;font-size:11px;font-weight:600;}
+.cross-match-label{font-family:'NanumSquare','Nanum Square',sans-serif;font-size:10px;letter-spacing:0.5px;color:var(--muted);text-transform:uppercase;}
+.cross-match-pct{font-family:'NanumSquare','Nanum Square',sans-serif;font-size:11px;font-weight:600;}
 .cross-title{font-size:16px;font-weight:700;line-height:1.3;}
 .cross-body{padding:18px 22px;}
 .cross-insight{font-size:13px;line-height:1.9;font-weight:300;color:var(--text);margin-bottom:14px;}
 .cross-tag-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;}
-.cross-tag{padding:4px 12px;border-radius:999px;font-size:11px;font-weight:600;font-family:'DM Mono',monospace;}
+.cross-tag{padding:4px 12px;border-radius:999px;font-size:11px;font-weight:600;font-family:'NanumSquare','Nanum Square',sans-serif;}
 .cross-callout{padding:13px 16px;border-radius:8px;font-size:12px;line-height:1.8;font-weight:300;border-left:3px solid;}
 
 /* SYNTH CARD */
 .synth-card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);overflow:hidden;margin-bottom:20px;}
 .synth-top{background:linear-gradient(135deg,var(--accent) 0%,#2d6a4f 100%);padding:28px 28px 24px;color:#fff;}
-.synth-eyebrow{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;opacity:.7;text-transform:uppercase;margin-bottom:10px;}
+.synth-eyebrow{font-family:'NanumSquare','Nanum Square',sans-serif;font-size:9px;letter-spacing:1px;opacity:.7;text-transform:uppercase;margin-bottom:10px;}
 .synth-type-name{font-size:26px;font-weight:900;letter-spacing:-0.5px;margin-bottom:8px;line-height:1.2;}
 .synth-type-sub{font-size:13px;opacity:.88;line-height:1.75;font-weight:300;}
 .synth-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px;}
-.synth-tag{padding:4px 12px;border-radius:999px;font-size:11px;font-weight:600;background:rgba(255,255,255,.18);color:#fff;font-family:'DM Mono',monospace;letter-spacing:.5px;}
+.synth-tag{padding:4px 12px;border-radius:999px;font-size:11px;font-weight:600;background:rgba(255,255,255,.18);color:#fff;font-family:'NanumSquare','Nanum Square',sans-serif;letter-spacing:.5px;}
 .synth-body{padding:24px 28px;}
 .synth-section{margin-bottom:20px;}
 .synth-section:last-child{margin-bottom:0;}
 .synth-section-title{font-size:13px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
 .synth-section-text{font-size:13px;line-height:1.9;font-weight:300;color:var(--text);}
 .synth-pill-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
-.synth-pill{padding:5px 14px;border-radius:999px;font-size:12px;font-weight:600;font-family:'DM Mono',monospace;}
+.synth-pill{padding:5px 14px;border-radius:999px;font-size:12px;font-weight:600;font-family:'NanumSquare','Nanum Square',sans-serif;}
 
 /* VOICE TAB BAR */
 .voice-tab-bar{display:flex;gap:6px;margin-bottom:14px;}
-.voice-tab{flex:1;padding:13px 8px;border-radius:12px;font-family:'Noto Serif KR',serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;border:1.5px solid var(--border2);background:var(--surface);color:var(--muted);}
+.voice-tab{flex:1;padding:13px 8px;border-radius:12px;font-family:'NanumSquare','Nanum Square',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;border:1.5px solid var(--border2);background:var(--surface);color:var(--muted);}
 .voice-tab.active{background:var(--accent);border-color:var(--accent);color:#fff;}
 .voice-panel{}
 
 /* REC ZONE */
 .rec-zone{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);overflow:hidden;}
 .rec-script{background:var(--surface2);border-bottom:1px solid var(--border);padding:18px 20px;}
-.rec-script-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--accent2);text-transform:uppercase;margin-bottom:8px;}
+.rec-script-label{font-family:'NanumSquare','Nanum Square',sans-serif;font-size:9px;letter-spacing:2px;color:var(--accent2);text-transform:uppercase;margin-bottom:8px;}
 .rec-script-text{font-size:13px;line-height:2.1;font-weight:300;color:var(--text);}
 .rec-blank{display:inline-block;border-bottom:1.5px dashed var(--accent2);color:var(--accent2);font-weight:600;padding:0 2px;font-style:italic;}
-.rec-script-tip{margin-top:12px;font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:.5px;line-height:1.6;}
+.rec-script-tip{margin-top:12px;font-size:11px;color:var(--muted);font-family:'NanumSquare','Nanum Square',sans-serif;letter-spacing:.5px;line-height:1.6;}
 .rec-controls{display:flex;flex-direction:column;align-items:center;padding:28px 20px 20px;}
 .rec-orb{width:110px;height:110px;position:relative;cursor:pointer;margin-bottom:16px;flex-shrink:0;}
 .rec-orb-inner{position:absolute;inset:8px;border-radius:50%;background:var(--surface2);border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;transition:all .3s;z-index:1;}
@@ -243,28 +243,28 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
 .rec-ring-bg{fill:none;stroke:var(--border2);stroke-width:3;}
 .rec-ring-fill{fill:none;stroke:var(--accent2);stroke-width:3;stroke-linecap:round;stroke-dasharray:301.6;stroke-dashoffset:301.6;transition:stroke-dashoffset .5s linear;}
 .rec-ring-fill.recording{stroke:#c04a7a;}
-.rec-status{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:6px;}
-.rec-timer{font-family:'DM Mono',monospace;font-size:28px;font-weight:300;letter-spacing:2px;color:var(--text);margin-bottom:14px;}
+.rec-status{font-family:'NanumSquare','Nanum Square',sans-serif;font-size:11px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:6px;}
+.rec-timer{font-family:'NanumSquare','Nanum Square',sans-serif;font-size:28px;font-weight:300;letter-spacing:2px;color:var(--text);margin-bottom:14px;}
 .rec-waveform{width:100%;height:44px;display:flex;align-items:center;justify-content:center;gap:2px;}
 .rec-wv-bar{width:3px;border-radius:2px;background:var(--accent2);transition:height .1s;}
-.rec-hint{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:.5px;}
+.rec-hint{font-size:11px;color:var(--muted);font-family:'NanumSquare','Nanum Square',sans-serif;letter-spacing:.5px;}
 #recDoneBar{padding:0 20px 20px;}
-.rec-btn-redo{flex:1;padding:11px;background:var(--surface2);border:1px solid var(--border2);border-radius:9px;font-family:'Noto Serif KR',serif;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .2s;}
-.rec-btn-use{flex:1;padding:11px;background:var(--accent2);border:none;border-radius:9px;font-family:'Noto Serif KR',serif;font-size:13px;font-weight:600;color:#fff;cursor:pointer;transition:all .2s;}
+.rec-btn-redo{flex:1;padding:11px;background:var(--surface2);border:1px solid var(--border2);border-radius:9px;font-family:'NanumSquare','Nanum Square',sans-serif;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .2s;}
+.rec-btn-use{flex:1;padding:11px;background:var(--accent2);border:none;border-radius:9px;font-family:'NanumSquare','Nanum Square',sans-serif;font-size:13px;font-weight:600;color:#fff;cursor:pointer;transition:all .2s;}
 .rec-btn-use:hover{background:var(--accent);}
 
 /* GENDER BUTTONS */
-.gender-btn{flex:1;padding:11px 4px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;font-family:'Noto Serif KR',serif;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent;}
+.gender-btn{flex:1;padding:11px 4px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;font-family:'NanumSquare','Nanum Square',sans-serif;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent;}
 .gender-btn:hover{border-color:var(--accent2);color:var(--accent2);}
 .gender-btn.sel{background:var(--accent);border-color:var(--accent);color:#fff;}
 
 /* SPECTRUM */
 .freq-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
-.freq-bar-label{width:80px;flex-shrink:0;font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:.5px;text-align:right;}
+.freq-bar-label{width:80px;flex-shrink:0;font-family:'NanumSquare','Nanum Square',sans-serif;font-size:10px;color:var(--muted);letter-spacing:.5px;text-align:right;}
 .freq-bar-track{flex:1;height:20px;background:var(--surface2);border-radius:4px;overflow:hidden;position:relative;}
 .freq-bar-fill{height:100%;border-radius:4px;transition:width 1.2s cubic-bezier(.16,1,.3,1);min-width:2px;}
-.freq-bar-pct{width:38px;flex-shrink:0;font-family:'DM Mono',monospace;font-size:10px;font-weight:600;text-align:right;}
-.freq-level-tag{width:38px;flex-shrink:0;font-family:'DM Mono',monospace;font-size:9px;text-align:center;padding:2px 0;border-radius:3px;}
+.freq-bar-pct{width:38px;flex-shrink:0;font-family:'NanumSquare','Nanum Square',sans-serif;font-size:10px;font-weight:600;text-align:right;}
+.freq-level-tag{width:38px;flex-shrink:0;font-family:'NanumSquare','Nanum Square',sans-serif;font-size:9px;text-align:center;padding:2px 0;border-radius:3px;}
 
 @media(max-width:600px){
   .hero{padding:36px 20px 24px;}
@@ -414,18 +414,18 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
     <div id="spectrumPanel" style="display:none;margin-top:20px">
       <div class="card" style="padding:24px">
         <div class="card-label">🔬 음성 스펙트럼 분석</div>
-        <div id="spectrumLoading" style="text-align:center;padding:24px 0;color:var(--muted);font-size:13px;font-family:'DM Mono',monospace;letter-spacing:1px">
+        <div id="spectrumLoading" style="text-align:center;padding:24px 0;color:var(--muted);font-size:13px;font-family:'NanumSquare','Nanum Square',sans-serif;letter-spacing:1px">
           분석 중...
         </div>
         <div id="spectrumResult" style="display:none">
           <!-- 스펙트로그램 -->
           <div style="margin-bottom:20px">
-            <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:8px">시간축 스펙트로그램</div>
+            <div style="font-family:'NanumSquare','Nanum Square',sans-serif;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:8px">시간축 스펙트로그램</div>
             <canvas id="spectrogramCanvas" style="width:100%;height:120px;border-radius:8px;display:block"></canvas>
           </div>
           <!-- 주파수 대역 바 차트 -->
           <div style="margin-bottom:20px">
-            <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:12px">주파수 대역별 에너지 분포</div>
+            <div style="font-family:'NanumSquare','Nanum Square',sans-serif;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:12px">주파수 대역별 에너지 분포</div>
             <div id="freqBars"></div>
           </div>
           <!-- 고급 지표 -->
@@ -534,14 +534,14 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
     <!-- 공유 버튼 -->
     <div class="res-section-title">결과 공유하기</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
-      <button onclick="shareKakao()" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;background:#FEE500;border:none;border-radius:12px;font-family:'Noto Serif KR',serif;font-size:14px;font-weight:600;color:#191919;cursor:pointer;transition:all .2s" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''">
+      <button onclick="shareKakao()" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;background:#FEE500;border:none;border-radius:12px;font-family:'NanumSquare','Nanum Square',sans-serif;font-size:14px;font-weight:600;color:#191919;cursor:pointer;transition:all .2s" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''">
         <span style="font-size:18px">💬</span> 카카오톡 공유
       </button>
-      <button onclick="copyLink()" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;background:var(--surface);border:1px solid var(--border2);border-radius:12px;font-family:'Noto Serif KR',serif;font-size:14px;font-weight:600;color:var(--text);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='var(--accent2)'" onmouseout="this.style.borderColor='var(--border2)'">
+      <button onclick="copyLink()" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;background:var(--surface);border:1px solid var(--border2);border-radius:12px;font-family:'NanumSquare','Nanum Square',sans-serif;font-size:14px;font-weight:600;color:var(--text);cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='var(--accent2)'" onmouseout="this.style.borderColor='var(--border2)'">
         <span style="font-size:18px">🔗</span> 링크 복사
       </button>
     </div>
-    <button onclick="shareNative()" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;width:100%;background:var(--surface);border:1px solid var(--border2);border-radius:12px;font-family:'Noto Serif KR',serif;font-size:14px;font-weight:600;color:var(--text);cursor:pointer;transition:all .2s;margin-bottom:10px" onmouseover="this.style.borderColor='var(--accent2)'" onmouseout="this.style.borderColor='var(--border2)'">
+    <button onclick="shareNative()" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;width:100%;background:var(--surface);border:1px solid var(--border2);border-radius:12px;font-family:'NanumSquare','Nanum Square',sans-serif;font-size:14px;font-weight:600;color:var(--text);cursor:pointer;transition:all .2s;margin-bottom:10px" onmouseover="this.style.borderColor='var(--accent2)'" onmouseout="this.style.borderColor='var(--border2)'">
       <span style="font-size:18px">📤</span> 더 많은 공유 옵션
     </button>
     <div id="copyToast" style="display:none;text-align:center;padding:10px;background:var(--accent);color:#fff;border-radius:8px;font-size:13px;margin-bottom:10px;animation:stepIn .3s ease">🔗 링크가 복사되었습니다!</div>
@@ -1208,7 +1208,7 @@ const freqPersonalityMap = [
 function renderAdvancedMetrics(harmonicRichness, articulationScore, spectralBalance) {
   const container = document.getElementById('advancedMetrics');
   container.innerHTML = `
-    <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:12px">고급 음성 지표</div>
+    <div style="font-family:'NanumSquare','Nanum Square',sans-serif;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:12px">고급 음성 지표</div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
       ${[
         { label:'배음 풍부도', val: harmonicRichness, color:'#9b59b6',
@@ -1222,10 +1222,10 @@ function renderAdvancedMetrics(harmonicRichness, articulationScore, spectralBala
           tip: '저음 대비 고음 에너지 비율' },
       ].map(m => `
         <div style="background:var(--surface2);border-radius:10px;padding:14px 12px;text-align:center">
-          <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;color:var(--muted);margin-bottom:8px;text-transform:uppercase">${m.label}</div>
-          <div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:600;color:${m.color};margin-bottom:4px">${m.val}%</div>
+          <div style="font-family:'NanumSquare','Nanum Square',sans-serif;font-size:9px;letter-spacing:1px;color:var(--muted);margin-bottom:8px;text-transform:uppercase">${m.label}</div>
+          <div style="font-family:'NanumSquare','Nanum Square',sans-serif;font-size:22px;font-weight:600;color:${m.color};margin-bottom:4px">${m.val}%</div>
           <div style="font-size:11px;font-weight:600;color:${m.color};margin-bottom:6px">${m.desc}</div>
-          <div style="font-size:10px;color:var(--muted);line-height:1.5;font-family:'DM Mono',monospace">${m.tip}</div>
+          <div style="font-size:10px;color:var(--muted);line-height:1.5;font-family:'NanumSquare','Nanum Square',sans-serif">${m.tip}</div>
         </div>
       `).join('')}
     </div>
@@ -1245,16 +1245,16 @@ function renderFreqComment(bandEnergy, harmonicRichness = 50, articulationScore 
   const weakMap = freqPersonalityMap[weak]['low'];
 
   container.innerHTML = `
-    <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--accent2);text-transform:uppercase;margin-bottom:8px">주파수 성격 코멘트</div>
+    <div style="font-family:'NanumSquare','Nanum Square',sans-serif;font-size:9px;letter-spacing:2px;color:var(--accent2);text-transform:uppercase;margin-bottom:8px">주파수 성격 코멘트</div>
     <div style="margin-bottom:12px">
-      <span style="display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;background:${domBand.color}22;color:${domBand.color};font-family:'DM Mono',monospace;margin-bottom:6px">🔊 가장 발달한 대역 · ${domBand.label.replace('\n',' ')}</span>
+      <span style="display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;background:${domBand.color}22;color:${domBand.color};font-family:'NanumSquare','Nanum Square',sans-serif;margin-bottom:6px">🔊 가장 발달한 대역 · ${domBand.label.replace('\n',' ')}</span>
       <div style="font-size:13px;line-height:1.8;font-weight:300"><strong style="font-weight:600">[${domMap.trait}]</strong> ${domMap.comment}</div>
     </div>
     <div>
-      <span style="display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;background:rgba(0,0,0,.06);color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:6px">📉 성장 가능 대역 · ${weakBand.label.replace('\n',' ')}</span>
+      <span style="display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;background:rgba(0,0,0,.06);color:var(--muted);font-family:'NanumSquare','Nanum Square',sans-serif;margin-bottom:6px">📉 성장 가능 대역 · ${weakBand.label.replace('\n',' ')}</span>
       <div style="font-size:13px;line-height:1.8;font-weight:300">${weakMap.comment}</div>
     </div>
-    <div style="margin-top:10px;font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;line-height:1.6">※ 주파수-성격 연결은 현재 연구 데이터 축적 중입니다. 참고용으로만 활용해 주세요.</div>
+    <div style="margin-top:10px;font-size:11px;color:var(--muted);font-family:'NanumSquare','Nanum Square',sans-serif;line-height:1.6">※ 주파수-성격 연결은 현재 연구 데이터 축적 중입니다. 참고용으로만 활용해 주세요.</div>
   `;
 }
 
@@ -1665,7 +1665,7 @@ function buildResults() {
       <div class="score-name">${d.name}</div>
       <div class="score-bar-track"><div class="score-bar-fill" id="bar-${d.code}" style="background:${colorMap[d.code]}"></div></div>
       <div class="score-pct" style="color:${colorMap[d.code]}">${d.score}%</div>
-      <div style="width:52px;flex-shrink:0;font-family:'DM Mono',monospace;font-size:9px;text-align:center;padding:3px 0;border-radius:4px;background:${colorMap[d.code]}15;color:${colorMap[d.code]}">${lm.emoji} ${lm.label}</div>
+      <div style="width:52px;flex-shrink:0;font-family:'NanumSquare','Nanum Square',sans-serif;font-size:9px;text-align:center;padding:3px 0;border-radius:4px;background:${colorMap[d.code]}15;color:${colorMap[d.code]}">${lm.emoji} ${lm.label}</div>
       <div class="score-arrow">›</div>
     `;
     scoreListCard.appendChild(row);
@@ -1792,7 +1792,7 @@ function showSaveStatus(state) {
   if (!el) {
     el = document.createElement('div');
     el.id = 'saveStatusBar';
-    el.style.cssText = `position:fixed;bottom:24px;right:24px;z-index:9999;padding:10px 18px;border-radius:10px;font-size:12px;font-family:'DM Mono',monospace;letter-spacing:.5px;display:flex;align-items:center;gap:8px;box-shadow:0 4px 20px rgba(0,0,0,.15);transition:all .3s;`;
+    el.style.cssText = `position:fixed;bottom:24px;right:24px;z-index:9999;padding:10px 18px;border-radius:10px;font-size:12px;font-family:'NanumSquare','Nanum Square',sans-serif;letter-spacing:.5px;display:flex;align-items:center;gap:8px;box-shadow:0 4px 20px rgba(0,0,0,.15);transition:all .3s;`;
     document.body.appendChild(el);
   }
   const s = {
@@ -2112,14 +2112,14 @@ function buildSynthCard(scores, name) {
           <div class="synth-section-text">${syn.growthPath}</div>
         </div>
         <div style="margin-top:20px;padding:16px;background:var(--surface2);border-radius:10px;">
-          <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:8px">점수 조합 요약</div>
+          <div style="font-family:'NanumSquare','Nanum Square',sans-serif;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:8px">점수 조합 요약</div>
           <div style="font-size:12px;color:var(--muted);line-height:1.85;font-weight:300">
             ${['E','C','A','N','O'].map(c=>{
               const lk = getLevelKey(S[c]);
               const lm = levelMeta[lk];
               const names = {E:'외향성',C:'성실성',A:'우호성',N:'신경성',O:'개방성'};
               const cols = {E:'var(--c-E)',C:'var(--c-C)',A:'var(--c-A)',N:'var(--c-N)',O:'var(--c-O)'};
-              return `<span style="display:inline-flex;align-items:center;gap:4px;margin:2px 4px 2px 0;padding:3px 10px;border-radius:999px;background:${cols[c]}12;color:${cols[c]};font-weight:600;font-family:'DM Mono',monospace;font-size:10px">${names[c]} ${S[c]}% ${lm.emoji}</span>`;
+              return `<span style="display:inline-flex;align-items:center;gap:4px;margin:2px 4px 2px 0;padding:3px 10px;border-radius:999px;background:${cols[c]}12;color:${cols[c]};font-weight:600;font-family:'NanumSquare','Nanum Square',sans-serif;font-size:10px">${names[c]} ${S[c]}% ${lm.emoji}</span>`;
             }).join('')}
           </div>
         </div>
@@ -2391,7 +2391,7 @@ function buildVoiceSpecial(pct) {
       <div class="vc-header">
         <div>
           <div class="vc-title">보이스 스페셜</div>
-          <div style="font-size:12px;color:var(--muted);margin-top:3px;font-family:'DM Mono',monospace;">${pct}% · ${interp.label}</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:3px;font-family:'NanumSquare','Nanum Square',sans-serif;">${pct}% · ${interp.label}</div>
         </div>
         <div class="vc-badge">${interp.label}</div>
       </div>
@@ -2415,24 +2415,24 @@ function buildVoiceSpecial(pct) {
         <div style="font-size:14px;font-weight:700;color:#f1e7c3;margin-bottom:4px">탭해서 나와 비슷한 가수 보기</div>
         <div style="font-size:11px;color:rgba(241,231,195,0.6)">성격·발성 에너지 매칭</div>
       </div>
-      <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:12px">🎤 나와 목소리·성격이 비슷한 가수는?</div>
+      <div style="font-family:'NanumSquare','Nanum Square',sans-serif;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:12px">🎤 나와 목소리·성격이 비슷한 가수는?</div>
       <div style="font-size:13px;color:var(--muted);font-weight:300;line-height:1.75;margin-bottom:18px">성격 검사 결과와 보이스 스페셜 수치를 바탕으로 비슷한 발성 에너지와 감성을 가진 가수들을 매칭했어요.</div>
 
       <div style="margin-bottom:16px">
-        <div style="font-size:11px;font-family:'DM Mono',monospace;letter-spacing:1.5px;color:var(--accent2);margin-bottom:10px;text-transform:uppercase">🇰🇷 국내 가수</div>
+        <div style="font-size:11px;font-family:'NanumSquare','Nanum Square',sans-serif;letter-spacing:0.5px;color:var(--accent2);margin-bottom:10px;text-transform:uppercase">🇰🇷 국내 가수</div>
         <div style="display:flex;flex-wrap:wrap;gap:8px">
           ${artists.kr.map(a=>`<div style="padding:7px 14px;background:var(--surface2);border-radius:999px;font-size:13px;font-weight:600">${a}</div>`).join('')}
         </div>
       </div>
 
       <div>
-        <div style="font-size:11px;font-family:'DM Mono',monospace;letter-spacing:1.5px;color:var(--accent2);margin-bottom:10px;text-transform:uppercase">🌍 해외 가수</div>
+        <div style="font-size:11px;font-family:'NanumSquare','Nanum Square',sans-serif;letter-spacing:0.5px;color:var(--accent2);margin-bottom:10px;text-transform:uppercase">🌍 해외 가수</div>
         <div style="display:flex;flex-wrap:wrap;gap:8px">
           ${artists.intl.map(a=>`<div style="padding:7px 14px;background:var(--surface2);border-radius:999px;font-size:13px;font-weight:600">${a}</div>`).join('')}
         </div>
       </div>
 
-      <div style="margin-top:16px;padding:12px 14px;border-radius:8px;background:rgba(224,122,42,.07);font-size:11px;color:var(--muted);line-height:1.75;font-family:'DM Mono',monospace">
+      <div style="margin-top:16px;padding:12px 14px;border-radius:8px;background:rgba(224,122,42,.07);font-size:11px;color:var(--muted);line-height:1.75;font-family:'NanumSquare','Nanum Square',sans-serif">
         ※ 이 매칭은 성격-발성 상관관계 연구를 기반으로 한 재미 요소입니다. 더 많은 데이터가 쌓일수록 정확도가 높아집니다.
       </div>
     </div>
