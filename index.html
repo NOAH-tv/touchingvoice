@@ -1191,14 +1191,14 @@ h1, h2, h3,
     </div>
 
     <!-- 탭 -->
-    <div class="tab-bar">
-      <button class="tab-btn active" onclick="showAdminTab('students')">수강생 목록</button>
-      <button class="tab-btn" onclick="showAdminTab('teachers')">선생님별 현황</button>
-      <button class="tab-btn" onclick="showAdminTab('absent')">출석 관리</button>
-      <button class="tab-btn" onclick="showAdminTab('payment')">입금 내역</button>
-      
-      <button class="tab-btn" onclick="showAdminTab('analysis')">🔮 보이스 분석</button>
-      <button class="tab-btn" onclick="showAdminTab('settings')">설정</button>
+    <div class="tab-bar" style="overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;scrollbar-width:none">
+      <button class="tab-btn active" onclick="showAdminTab('students')" style="white-space:nowrap">수강생 목록</button>
+      <button class="tab-btn" onclick="showAdminTab('teachers')" style="white-space:nowrap">선생님별 현황</button>
+      <button class="tab-btn" onclick="showAdminTab('absent')" style="white-space:nowrap">출석 관리</button>
+      <button class="tab-btn" onclick="showAdminTab('payment')" style="white-space:nowrap">입금 내역</button>
+      <button class="tab-btn" onclick="showAdminTab('notices')" style="white-space:nowrap">공지 관리</button>
+      <button class="tab-btn" onclick="showAdminTab('analysis')" style="white-space:nowrap">🔮 보이스 분석</button>
+      <button class="tab-btn" onclick="showAdminTab('settings')" style="white-space:nowrap">설정</button>
     </div>
 
     <!-- 수강생 목록 탭 -->
@@ -1412,6 +1412,10 @@ h1, h2, h3,
         </table>
       </div>
     </div>
+    </div>
+
+    <!-- 공지 관리 탭 -->
+    <div id="admin-notices" style="display:none">
       <div style="margin-bottom:16px">
         <button onclick="showAddNotice()" style="padding:8px 16px;background:#f1e7c3;color:#2a1558;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-family:'Paperlogy',sans-serif">+ 공지 작성</button>
       </div>
@@ -1439,40 +1443,30 @@ h1, h2, h3,
         </div>
       </div>
       <div class="card" id="admin-notice-list"></div>
+
     </div>
 
     <!-- 🔮 보이스 분석 탭 -->
     <div id="admin-analysis" style="display:none">
 
-      <!-- ① 수강생 선택 및 지표 확인 -->
+      <!-- ① 수강생 선택 + 성격검사 수치 + 음역대 + 터칭보이스 완성도 -->
       <div class="card" style="margin-bottom:16px">
         <div class="card-label">수강생 선택 및 지표 확인</div>
-        <div class="grid-2" style="margin-top:8px">
+
+        <!-- 수강생 선택 -->
+        <div style="margin-top:8px">
           <div class="form-group">
             <label class="form-label">수강생</label>
             <select class="form-select" id="eng-student-select" onchange="onEngStudentSelect()">
               <option value="">-- 선택 --</option>
             </select>
           </div>
-          <div class="form-group">
-            <label class="form-label">명료도 (1–10) <span id="eng-clarity-src" style="font-size:10px;color:var(--warm)"></span></label>
-            <input type="number" class="form-input" id="eng-clarity" min="1" max="10" value="6">
-          </div>
-          <div class="form-group">
-            <label class="form-label">공명 (1–10) <span id="eng-resonance-src" style="font-size:10px;color:var(--warm)"></span></label>
-            <input type="number" class="form-input" id="eng-resonance" min="1" max="10" value="5">
-          </div>
-          <div class="form-group">
-            <label class="form-label">에너지 (%) <span id="eng-energy-src" style="font-size:10px;color:var(--warm)"></span></label>
-            <input type="number" class="form-input" id="eng-energy" min="0" max="100" value="60">
-          </div>
         </div>
 
         <!-- 성격검사 기반 항목별 발달 수치 -->
-        <div style="margin-top:16px">
+        <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(241,231,195,0.1)">
           <div class="form-label" style="margin-bottom:10px">성격검사 기반 항목별 발달 수치</div>
-          <div id="bf-scores-display" style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px">
-            <!-- JS로 렌더링 -->
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
             <div style="background:rgba(241,231,195,0.05);border-radius:8px;padding:10px 12px;text-align:center">
               <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:4px">E 외향성</div>
               <div id="bf-E-val" style="font-size:20px;font-weight:700;color:#f1e7c3">—</div>
@@ -1494,28 +1488,63 @@ h1, h2, h3,
               <div id="bf-O-val" style="font-size:20px;font-weight:700;color:#f1e7c3">—</div>
             </div>
             <div style="background:rgba(241,231,195,0.05);border-radius:8px;padding:10px 12px;text-align:center">
-              <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:4px">V 보이스스페셜</div>
+              <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:4px">V 보이스</div>
               <div id="bf-V-val" style="font-size:20px;font-weight:700;color:#f1e7c3">—</div>
             </div>
           </div>
           <div style="font-size:11px;color:var(--muted);margin-top:8px">성격검사 완료 시 자동 표시됩니다</div>
         </div>
 
+        <!-- 음역대 범위 -->
+        <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(241,231,195,0.1)">
+          <div class="form-label" style="margin-bottom:6px">🎵 음역대 범위</div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:12px">수강생 성별에 따라 기본값이 설정됩니다. 양쪽 핸들을 드래그해서 조정하세요.</div>
+          <div id="vocal-range-card">
+            <!-- 성별 뱃지 -->
+            <div id="vocal-range-gender-badge" style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;background:rgba(241,231,195,0.08);border:1px solid rgba(241,231,195,0.15);font-size:11px;color:rgba(241,231,195,0.6);margin-bottom:16px">
+              <span id="vocal-range-gender-icon">🎵</span>
+              <span id="vocal-range-gender-text">성별 미설정</span>
+            </div>
+            <!-- 슬라이더 -->
+            <div style="position:relative;padding:0 8px;margin-bottom:8px">
+              <div id="range-track-bg" style="height:8px;background:rgba(241,231,195,0.1);border-radius:4px;position:relative;cursor:pointer" onclick="handleTrackClick(event)">
+                <div id="range-track-fill" style="position:absolute;top:0;height:100%;background:linear-gradient(90deg,#4caf82,#f1e7c3);border-radius:4px;pointer-events:none"></div>
+              </div>
+              <div id="range-handle-low" style="position:absolute;top:-7px;width:22px;height:22px;background:#f1e7c3;border-radius:50%;cursor:grab;box-shadow:0 2px 8px rgba(0,0,0,0.4);transform:translateX(-50%);touch-action:none"
+                onmousedown="startDrag(event,'low')" ontouchstart="startDrag(event,'low')"></div>
+              <div id="range-handle-high" style="position:absolute;top:-7px;width:22px;height:22px;background:#f1e7c3;border-radius:50%;cursor:grab;box-shadow:0 2px 8px rgba(0,0,0,0.4);transform:translateX(-50%);touch-action:none"
+                onmousedown="startDrag(event,'high')" ontouchstart="startDrag(event,'high')"></div>
+            </div>
+            <!-- 값 표시 -->
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px">
+              <div style="text-align:center">
+                <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:2px">최저음</div>
+                <div id="range-low-label" style="font-family:'Paperlogy',sans-serif;font-size:22px;font-weight:700;color:#4caf82">G2</div>
+              </div>
+              <div style="text-align:center;flex:1;padding:0 12px">
+                <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:4px">음역 폭</div>
+                <div id="range-span-label" style="font-size:13px;font-weight:600;color:rgba(241,231,195,0.7)">—</div>
+              </div>
+              <div style="text-align:center">
+                <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:2px">최고음</div>
+                <div id="range-high-label" style="font-family:'Paperlogy',sans-serif;font-size:22px;font-weight:700;color:#f1e7c3">D5</div>
+              </div>
+            </div>
+            <div id="range-octave-markers" style="display:flex;justify-content:space-between;padding:0 8px;margin-top:8px"></div>
+          </div>
+        </div>
+
         <!-- 터칭보이스 완성도 -->
-        <div style="margin-top:16px;padding-top:16px;border-top:1px solid rgba(241,231,195,0.1)">
+        <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(241,231,195,0.1)">
           <div class="form-label" style="margin-bottom:10px">터칭보이스 완성도</div>
           <div class="grid-2">
             <div class="form-group">
               <label class="form-label">하부성대 발달 (%)</label>
-              <input type="number" class="form-input" id="eng-lower-vocal" min="0" max="100" value=""
-                placeholder="0–100"
-                oninput="calcTVCompletion()">
+              <input type="number" class="form-input" id="eng-lower-vocal" min="0" max="100" placeholder="0–100" oninput="calcTVCompletion()">
             </div>
             <div class="form-group">
               <label class="form-label">인두근육 발달 (%)</label>
-              <input type="number" class="form-input" id="eng-pharynx" min="0" max="100" value=""
-                placeholder="0–100"
-                oninput="calcTVCompletion()">
+              <input type="number" class="form-input" id="eng-pharynx" min="0" max="100" placeholder="0–100" oninput="calcTVCompletion()">
             </div>
           </div>
           <div style="margin-top:12px;background:rgba(241,231,195,0.06);border:1px solid rgba(241,231,195,0.15);border-radius:10px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between">
@@ -1525,73 +1554,26 @@ h1, h2, h3,
             </div>
             <div id="tv-completion-val" style="font-family:'Paperlogy',sans-serif;font-size:32px;font-weight:700;color:#f1e7c3">—</div>
           </div>
-          <!-- 숨겨진 stability 입력 (엔진 호환용) -->
-          <input type="hidden" id="eng-stability" value="65">
-          <span id="eng-stability-src" style="display:none"></span>
-          <span id="eng-stability-val" style="display:none">65</span>
         </div>
 
-        <button onclick="runAnalysisEngine()" style="margin-top:16px;padding:13px 28px;background:#f1e7c3;color:#2a1558;border:none;border-radius:10px;font-family:'Paperlogy',sans-serif;font-size:14px;font-weight:700;cursor:pointer;width:100%">🔮 분석 엔진 실행</button>
+        <!-- 숨김 처리 (엔진 호환용) -->
+        <input type="hidden" id="eng-stability" value="65">
+        <input type="hidden" id="eng-clarity" value="6">
+        <input type="hidden" id="eng-resonance" value="5">
+        <input type="hidden" id="eng-energy" value="60">
+        <span id="eng-stability-src" style="display:none"></span>
+        <span id="eng-stability-val" style="display:none">65</span>
+        <span id="eng-clarity-src" style="display:none"></span>
+        <span id="eng-resonance-src" style="display:none"></span>
+        <span id="eng-energy-src" style="display:none"></span>
+
+        <button onclick="runAnalysisEngine()" style="margin-top:20px;padding:13px 28px;background:#f1e7c3;color:#2a1558;border:none;border-radius:10px;font-family:'Paperlogy',sans-serif;font-size:14px;font-weight:700;cursor:pointer;width:100%">🔮 분석 엔진 실행</button>
       </div>
 
-      <!-- 음역대 범위 슬라이더 -->
-      <div class="card" style="margin-bottom:16px">
-        <div class="card-label">🎵 음역대 범위</div>
-        <div style="font-size:11px;color:var(--muted);margin-bottom:16px">수강생 성별에 따라 기본값이 설정됩니다. 양쪽 핸들을 드래그해서 조정하세요.</div>
-        <div id="vocal-range-wrap">
-          <!-- JS로 렌더링 -->
-          <div style="text-align:center;color:var(--muted);font-size:12px">수강생을 선택하면 음역대 슬라이더가 나타납니다</div>
-        </div>
-      </div>
-
-      <!-- 음역대 범위 슬라이더 -->
-      <div class="card" style="margin-bottom:16px" id="vocal-range-card">
-        <div class="card-label">🎵 음역대 범위</div>
-        <div style="font-size:11px;color:var(--muted);margin-bottom:16px">수강생의 현재 음역대를 드래그로 설정하세요</div>
-
-        <!-- 성별 표시 -->
-        <div id="vocal-range-gender-badge" style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;background:rgba(241,231,195,0.08);border:1px solid rgba(241,231,195,0.15);font-size:11px;color:rgba(241,231,195,0.6);margin-bottom:16px">
-          <span id="vocal-range-gender-icon">🎵</span>
-          <span id="vocal-range-gender-text">성별 미설정</span>
-        </div>
-
-        <!-- 슬라이더 영역 -->
-        <div style="position:relative;padding:0 8px;margin-bottom:8px">
-          <!-- 트랙 배경 -->
-          <div id="range-track-bg" style="height:8px;background:rgba(241,231,195,0.1);border-radius:4px;position:relative;cursor:pointer" onclick="handleTrackClick(event)">
-            <!-- 선택 범위 하이라이트 -->
-            <div id="range-track-fill" style="position:absolute;top:0;height:100%;background:linear-gradient(90deg,#4caf82,#f1e7c3);border-radius:4px;pointer-events:none"></div>
-          </div>
-          <!-- 왼쪽 핸들 (낮은 음) -->
-          <div id="range-handle-low" style="position:absolute;top:-7px;width:22px;height:22px;background:#f1e7c3;border-radius:50%;cursor:grab;box-shadow:0 2px 8px rgba(0,0,0,0.4);transform:translateX(-50%);touch-action:none;transition:transform .1s"
-            onmousedown="startDrag(event,'low')" ontouchstart="startDrag(event,'low')"></div>
-          <!-- 오른쪽 핸들 (높은 음) -->
-          <div id="range-handle-high" style="position:absolute;top:-7px;width:22px;height:22px;background:#f1e7c3;border-radius:50%;cursor:grab;box-shadow:0 2px 8px rgba(0,0,0,0.4);transform:translateX(-50%);touch-action:none;transition:transform .1s"
-            onmousedown="startDrag(event,'high')" ontouchstart="startDrag(event,'high')"></div>
-        </div>
-
-        <!-- 현재 값 표시 -->
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px">
-          <div style="text-align:center">
-            <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:2px">최저음</div>
-            <div id="range-low-label" style="font-family:'Paperlogy',sans-serif;font-size:22px;font-weight:700;color:#4caf82">G2</div>
-          </div>
-          <div style="text-align:center;flex:1;padding:0 12px">
-            <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:4px">음역 폭</div>
-            <div id="range-span-label" style="font-size:13px;font-weight:600;color:rgba(241,231,195,0.7)">—</div>
-          </div>
-          <div style="text-align:center">
-            <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:2px">최고음</div>
-            <div id="range-high-label" style="font-family:'Paperlogy',sans-serif;font-size:22px;font-weight:700;color:#f1e7c3">D5</div>
-          </div>
-        </div>
-
-        <!-- 옥타브 마커 -->
-        <div id="range-octave-markers" style="display:flex;justify-content:space-between;padding:0 8px;margin-top:8px"></div>
-      </div>
+      <!-- ② WAV 파일 분석 -->
       <div class="card" style="margin-bottom:16px">
         <div class="card-label">🎙 WAV 파일 분석</div>
-        <p style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.7">스튜디오 녹음 WAV 파일을 올리면 에너지·안정도·명료도를 자동으로 계산해서 위 입력값에 채워줍니다.</p>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.7">스튜디오 녹음 WAV 파일을 올리면 에너지·안정도·명료도를 자동으로 계산합니다.</p>
         <label id="wav-drop-zone" style="display:block;border:2px dashed rgba(241,231,195,0.25);border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:all .2s;background:rgba(241,231,195,0.03)"
           ondragover="event.preventDefault();this.style.borderColor='rgba(241,231,195,0.6)'"
           ondragleave="this.style.borderColor='rgba(241,231,195,0.25)'"
@@ -1608,7 +1590,7 @@ h1, h2, h3,
           </div>
         </div>
         <div id="wav-result" style="display:none;margin-top:12px">
-          <div style="font-family:'Paperlogy',sans-serif;font-size:10px;letter-spacing:1px;color:var(--muted);margin-bottom:10px">📊 자동 측정값 (입력란에 반영됨)</div>
+          <div style="font-family:'Paperlogy',sans-serif;font-size:10px;letter-spacing:1px;color:var(--muted);margin-bottom:10px">📊 자동 측정값</div>
           <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px" id="wav-metrics"></div>
         </div>
       </div>
