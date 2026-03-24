@@ -451,9 +451,12 @@ body{background:var(--bg);color:var(--text);font-family:'NanumSquare','Nanum Squ
 <!-- ═══════════ STEP 2: SURVEY ═══════════ -->
 <div class="step" id="step-2">
   <header class="site-header">
-    <div class="logo-mark">
-      <span class="logo-en">TouchingVoice</span>
-      <span class="logo-kr">터칭보이스</span>
+    <div style="display:flex;align-items:center;gap:12px">
+      <button onclick="switchStep('step-1')" style="background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;padding:4px;line-height:1;-webkit-tap-highlight-color:transparent">‹</button>
+      <div class="logo-mark">
+        <span class="logo-en">TouchingVoice</span>
+        <span class="logo-kr">터칭보이스</span>
+      </div>
     </div>
     <span class="step-badge">02 / 02</span>
   </header>
@@ -481,9 +484,12 @@ body{background:var(--bg);color:var(--text);font-family:'NanumSquare','Nanum Squ
 <!-- ═══════════ STEP 3: RESULTS ═══════════ -->
 <div class="step" id="step-3">
   <header class="site-header">
-    <div class="logo-mark">
-      <span class="logo-en">TouchingVoice</span>
-      <span class="logo-kr">터칭보이스</span>
+    <div style="display:flex;align-items:center;gap:12px">
+      <button onclick="switchStep('step-2')" style="background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;padding:4px;line-height:1;-webkit-tap-highlight-color:transparent">‹</button>
+      <div class="logo-mark">
+        <span class="logo-en">TouchingVoice</span>
+        <span class="logo-kr">터칭보이스</span>
+      </div>
     </div>
     <span class="step-badge">결과</span>
   </header>
@@ -547,7 +553,7 @@ body{background:var(--bg);color:var(--text);font-family:'NanumSquare','Nanum Squ
     </button>
     <div id="copyToast" style="display:none;text-align:center;padding:10px;background:var(--accent);color:#fff;border-radius:8px;font-size:13px;margin-bottom:10px;animation:stepIn .3s ease">🔗 링크가 복사되었습니다!</div>
 
-    <button class="btn-outline" onclick="restart()">처음으로 돌아가기</button>
+    <button class="btn-outline" onclick="window.location.href='https://noah-tv.github.io/touchingvoice/'">처음으로 돌아가기</button>
   </div>
 </div>
 
@@ -2428,68 +2434,101 @@ function animateBars() {
 }
 
 // ═══════════════════════════
-// SIMILAR ARTIST MAP
+// SIMILAR ARTIST MAP (성별 분리 버전)
 // ═══════════════════════════
 const artistMap = {
   // 외향적 + 개방적 → 에너지 넘치고 트렌디한 퍼포머
   E_high_O_high: {
-    kr:   ['지코', '박재범', 'G-DRAGON', '청하', '이효리', 'CL', 'BIGBANG', '현아'],
-    intl: ['Bruno Mars', 'Justin Timberlake', 'Ariana Grande', 'Lizzo', 'Harry Styles', 'Dua Lipa', 'The Weeknd']
+    kr_m: ['지코', '박재범', 'G-DRAGON', '비오', 'pH-1', 'BIGBANG', '릴러말즈', '식케이'],
+    kr_f: ['청하', '이효리', 'CL', '현아', '화사', '제니', '이채연', '민니'],
+    intl_m: ['Bruno Mars', 'Justin Timberlake', 'Harry Styles', 'The Weeknd', 'Drake', 'Usher', 'Pharrell', 'Childish Gambino'],
+    intl_f: ['Ariana Grande', 'Lizzo', 'Dua Lipa', 'Beyoncé', 'Lady Gaga', 'Rihanna', 'Nicki Minaj', 'Cardi B'],
   },
   // 외향적 + 보수적 → 대중 친화적, 정통 감성
   E_high_O_low: {
-    kr:   ['이찬원', '임영웅', '나훈아', '박현빈', '송가인', '장민호', '영탁', '김호중'],
-    intl: ['Ed Sheeran', 'Sam Smith', 'Adele', 'Michael Bublé', 'Josh Groban', 'Celine Dion', 'Il Divo']
+    kr_m: ['임영웅', '이찬원', '나훈아', '장민호', '영탁', '김호중', '이승기', '박효신'],
+    kr_f: ['송가인', '홍진영', '강민경', '악동뮤지션', '박기영', '박선주', '태연', '아이유'],
+    intl_m: ['Ed Sheeran', 'Sam Smith', 'Michael Bublé', 'Josh Groban', 'Adam Levine', 'John Legend', 'Bruno Mars', 'Shawn Mendes'],
+    intl_f: ['Adele', 'Celine Dion', 'Taylor Swift', 'Katy Perry', 'Kelly Clarkson', 'Pink', 'Meghan Trainor', 'Demi Lovato'],
   },
   // 내향적 + 개방적 → 아티스틱하고 독창적
   E_low_O_high: {
-    kr:   ['아이유', '빈지노', '우원재', 'Dean', '백예린', '잔나비', 'epik high', '이랑'],
-    intl: ['Frank Ocean', 'Billie Eilish', 'Lana Del Rey', 'Bon Iver', 'Sufjan Stevens', 'Phoebe Bridgers', 'James Blake']
+    kr_m: ['빈지노', '우원재', 'Dean', '잔나비', 'epik high', '이센스', '기리보이', 'Colde'],
+    kr_f: ['아이유', '백예린', '이랑', '수란', '호아', '새소년', '권진아', '하림'],
+    intl_m: ['Frank Ocean', 'Bon Iver', 'James Blake', 'Sufjan Stevens', 'Thom Yorke', 'Nick Drake', 'Elliott Smith', 'Iron & Wine'],
+    intl_f: ['Billie Eilish', 'Lana Del Rey', 'Phoebe Bridgers', 'Fiona Apple', 'St. Vincent', 'FKA twigs', 'Feist', 'Beach House'],
   },
   // 내향적 + 보수적 → 서정적, 깊고 묵직한 감성
   E_low_O_low: {
-    kr:   ['성시경', '조용필', '이소라', '김광석', '이문세', '변진섭', '이승환', '심수봉'],
-    intl: ['Leonard Cohen', 'Norah Jones', 'Johnny Cash', 'Nick Drake', 'Cat Stevens', 'James Taylor', 'Simon & Garfunkel']
+    kr_m: ['성시경', '김광석', '이문세', '이승환', '변진섭', '신승훈', '이적', '김동률'],
+    kr_f: ['이소라', '심수봉', '이선희', '나얼', '거미', '박정현', '소향', '백지영'],
+    intl_m: ['Leonard Cohen', 'Johnny Cash', 'James Taylor', 'Cat Stevens', 'Paul Simon', 'Neil Young', 'Bob Dylan', 'Tom Waits'],
+    intl_f: ['Norah Jones', 'Joni Mitchell', 'Carole King', 'Joan Baez', 'Emmylou Harris', 'Eva Cassidy', 'Nina Simone', 'Tracy Chapman'],
   },
   // 친화성 높음 + 신경증 높음 → 감정 표현 강하고 공감 능력 높음
   A_high_N_high: {
-    kr:   ['아이유', '백예린', '태연', '폴킴', '헤이즈', '이하이', '송하예', '거미'],
-    intl: ['Adele', 'Billie Eilish', 'Amy Winehouse', 'Lorde', 'Olivia Rodrigo', 'Fiona Apple', 'Alanis Morissette']
+    kr_m: ['폴킴', '정승환', '헨리', '정인', '장범준', '박원', '로이킴', '선우정아'],
+    kr_f: ['태연', '백예린', '헤이즈', '이하이', '거미', '송하예', '악뮤 이수현', '아이유'],
+    intl_m: ['Sam Smith', 'Lewis Capaldi', 'James Arthur', 'James Bay', 'Hozier', 'Dermot Kennedy', 'Tom Odell', 'Ben Platt'],
+    intl_f: ['Adele', 'Billie Eilish', 'Olivia Rodrigo', 'Amy Winehouse', 'Lorde', 'Alanis Morissette', 'Sia', 'Florence Welch'],
   },
   // 친화성 높음 + 신경증 낮음 → 따뜻하고 안정적인 감성
   A_high_N_low: {
-    kr:   ['성시경', '폴킴', '박효신', '이적', '정승환', '김필', '권진아', '김동률'],
-    intl: ['John Mayer', 'Jack Johnson', 'Jason Mraz', 'Coldplay', 'James Bay', 'Ben Howard', 'Passenger']
+    kr_m: ['성시경', '박효신', '이적', '김동률', '김필', '10cm', '적재', '멜로망스'],
+    kr_f: ['권진아', '볼빨간사춘기', '수란', '정세운', '오반', '이진아', '김나영', '하림'],
+    intl_m: ['John Mayer', 'Jack Johnson', 'Jason Mraz', 'Ben Howard', 'James Bay', 'Passenger', 'City & Colour', 'Gregory Alan Isakov'],
+    intl_f: ['Norah Jones', 'Sara Bareilles', 'Ingrid Michaelson', 'Colbie Caillat', 'Jewel', 'KT Tunstall', 'Lenka', 'Birdy'],
   },
   // 성실성 높음 → 강한 무대 장악력, 완성도 높은 퍼포머
   C_high: {
-    kr:   ['보아', '이하이', '비', '씨스타', '2NE1', 'SHINee', '동방신기', '소녀시대'],
-    intl: ['Beyoncé', 'Michael Jackson', 'Whitney Houston', 'Janet Jackson', 'Mariah Carey', 'Usher', 'Jennifer Lopez']
+    kr_m: ['비', 'SHINee', '동방신기', '슈퍼주니어', '강다니엘', '뉴이스트', 'JK 정국', '태민'],
+    kr_f: ['보아', '소녀시대', '2NE1', 'BLACKPINK', '씨스타', '마마무', '에스파', '아이브'],
+    intl_m: ['Michael Jackson', 'Justin Timberlake', 'Usher', 'Chris Brown', 'Ne-Yo', 'Jason Derulo', 'Bruno Mars', 'The Weeknd'],
+    intl_f: ['Beyoncé', 'Whitney Houston', 'Janet Jackson', 'Mariah Carey', 'Jennifer Lopez', 'Ciara', 'Aaliyah', 'Normani'],
   },
   // 신경증 높음 + 보이스스페셜 높음 → 강렬한 감정선, 극적인 보컬
   N_high_V_high: {
-    kr:   ['박효신', '임재범', '나얼', '이선희', '소향', '김범수', '신용재', '조규만'],
-    intl: ['Jeff Buckley', 'Radiohead', 'Bon Iver', 'Chris Cornell', 'Thom Yorke', 'Matt Bellamy', 'Freddie Mercury']
+    kr_m: ['임재범', '박효신', '나얼', '김범수', '신용재', '이승철', '윤도현', '허각'],
+    kr_f: ['소향', '이선희', '이하이', '박정현', '씨스타 효린', '백지영', '마야', '김연우'],
+    intl_m: ['Jeff Buckley', 'Chris Cornell', 'Matt Bellamy', 'Thom Yorke', 'Freddie Mercury', 'Layne Staley', 'Kurt Cobain', 'Eddie Vedder'],
+    intl_f: ['Celine Dion', 'Mariah Carey', 'Whitney Houston', 'Toni Braxton', 'Amy Winehouse', 'Sia', 'Florence Welch', 'Evanescence Amy'],
   },
   // 기본값 → 균형잡힌 감성
   default: {
-    kr:   ['이문세', '신승훈', '노을', '버스커버스커', '10cm', '볼빨간사춘기', '멜로망스', '적재'],
-    intl: ['Coldplay', 'The Beatles', 'Sting', 'U2', 'Elton John', 'David Bowie', 'Fleetwood Mac']
+    kr_m: ['이문세', '신승훈', '노을', '버스커버스커', '10cm', '멜로망스', '적재', '이종훈'],
+    kr_f: ['볼빨간사춘기', '악동뮤지션', '권진아', '이진아', '오마이걸', '에픽하이', '수란', '문문'],
+    intl_m: ['Coldplay', 'The Beatles', 'Sting', 'U2', 'Elton John', 'David Bowie', 'Radiohead', 'The 1975'],
+    intl_f: ['Fleetwood Mac', 'Carole King', 'Alanis Morissette', 'Sheryl Crow', 'Joni Mitchell', 'Natalie Imbruglia', 'Dido', 'Mazzy Star'],
   },
 };
 
 function getSimilarArtists(scores) {
   const E = scores.E >= 60, O = scores.O >= 60, A = scores.A >= 60;
   const N = scores.N >= 60, C = scores.C >= 65, V = scores.V >= 65;
-  if (C && scores.C >= 70) return artistMap.C_high;
-  if (N && V) return artistMap.N_high_V_high;
-  if (A && N) return artistMap.A_high_N_high;
-  if (A && !N) return artistMap.A_high_N_low;
-  if (E && O) return artistMap.E_high_O_high;
-  if (E && !O) return artistMap.E_high_O_low;
-  if (!E && O) return artistMap.E_low_O_high;
-  if (!E && !O) return artistMap.E_low_O_low;
-  return artistMap.default;
+  let map;
+  if (C && scores.C >= 70) map = artistMap.C_high;
+  else if (N && V)          map = artistMap.N_high_V_high;
+  else if (A && N)          map = artistMap.A_high_N_high;
+  else if (A && !N)         map = artistMap.A_high_N_low;
+  else if (E && O)          map = artistMap.E_high_O_high;
+  else if (E && !O)         map = artistMap.E_high_O_low;
+  else if (!E && O)         map = artistMap.E_low_O_high;
+  else if (!E && !O)        map = artistMap.E_low_O_low;
+  else                      map = artistMap.default;
+
+  // 성별 분리 적용
+  const g = (typeof selectedGender !== 'undefined' && selectedGender) ? selectedGender : null;
+  if (g === '남성') {
+    return { kr: map.kr_m || map.kr || [], intl: map.intl_m || map.intl || [] };
+  } else if (g === '여성') {
+    return { kr: map.kr_f || map.kr || [], intl: map.intl_f || map.intl || [] };
+  } else {
+    // 성별 미선택 시 남녀 섞어서 표시
+    return {
+      kr:   [...(map.kr_m || []).slice(0,4), ...(map.kr_f || []).slice(0,4)],
+      intl: [...(map.intl_m || []).slice(0,4), ...(map.intl_f || []).slice(0,4)],
+    };
+  }
 }
 
 function buildVoiceSpecial(pct) {
