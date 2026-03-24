@@ -487,6 +487,32 @@ body { background:var(--bg); color:#f1e7c3; font-family:'Paperlogy',sans-serif; 
   font-size:18px; transition:all .2s;
 }
 .mypage-stamp-slot.filled { border-color:rgba(241,231,195,0.35); background:rgba(63,35,120,0.6); }
+
+/* ── 엔진 탭 ── */
+.eng-tab {
+  padding:7px 14px; border-radius:8px; border:1px solid rgba(241,231,195,0.2);
+  background:none; font-family:'Paperlogy',sans-serif; font-size:12px; font-weight:600;
+  color:rgba(241,231,195,0.5); cursor:pointer; transition:all .15s; white-space:nowrap;
+}
+.eng-tab.active { background:rgba(241,231,195,0.15); color:#f1e7c3; border-color:rgba(241,231,195,0.35); }
+.eng-view { animation:fadeIn .25s ease; }
+.eng-feeling-chip {
+  padding:5px 12px; border-radius:999px; font-size:11px; font-weight:500;
+  cursor:pointer; border:1px solid rgba(241,231,195,0.15); background:none;
+  color:rgba(241,231,195,0.5); font-family:'Paperlogy',sans-serif; transition:all .15s;
+}
+.eng-feeling-chip.on { background:rgba(241,231,195,0.15); color:#f1e7c3; border-color:rgba(241,231,195,0.4); }
+.tv-score-ring {
+  width:120px; height:120px; border-radius:50%;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  margin:0 auto 16px;
+}
+.score-history-item {
+  display:flex; align-items:center; gap:12px; padding:10px 0;
+  border-bottom:1px solid rgba(241,231,195,0.08);
+}
+.score-history-item:last-child { border-bottom:none; }
+
 .teacher-modal-header {
   padding:32px 32px 20px;
   display:flex; gap:20px; align-items:flex-start;
@@ -876,10 +902,33 @@ h1, h2, h3,
         </div>
       </div>
     </div>
+    <!-- TV Score 히스토리 -->
+    <div class="card" style="margin-top:16px">
+      <div class="card-label" style="margin-bottom:4px">나의 성격 유형 변화</div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.6">검사를 반복할수록 TV Score와 성격 유형이 어떻게 변화하는지 확인할 수 있어요.</p>
+
+      <!-- 이름 입력 -->
+      <div id="score-history-login" style="display:flex;gap:8px">
+        <input type="text" class="form-input" id="score-history-name" placeholder="이름 입력" style="flex:1">
+        <button onclick="loadScoreHistory()" style="padding:12px 18px;background:rgba(241,231,195,0.12);border:1px solid rgba(241,231,195,0.2);border-radius:8px;color:#f1e7c3;font-family:'Paperlogy',sans-serif;font-size:13px;cursor:pointer;white-space:nowrap">확인 →</button>
+      </div>
+
+      <!-- 히스토리 결과 -->
+      <div id="score-history-result" style="display:none;margin-top:16px">
+        <!-- TV Score 그래프 -->
+        <div style="margin-bottom:16px">
+          <div style="font-family:'Paperlogy',sans-serif;font-size:10px;letter-spacing:1.5px;color:rgba(241,231,195,0.45);text-transform:uppercase;margin-bottom:10px">TV Score 변화</div>
+          <div id="score-chart-wrap" style="position:relative;height:80px;background:rgba(241,231,195,0.03);border-radius:8px;overflow:hidden">
+            <canvas id="score-chart" style="width:100%;height:100%"></canvas>
+          </div>
+        </div>
+        <!-- 히스토리 목록 -->
+        <div id="score-history-list"></div>
+      </div>
+    </div>
+
   </div>
 </div>
-
-<!-- ════════════ FEED ════════════ -->
 <div class="page" id="page-feed">
   <div class="wrap" style="padding-top:40px;padding-bottom:60px">
     <div class="card-label" style="margin-bottom:8px">콘텐츠 · Content</div>
@@ -1070,6 +1119,7 @@ h1, h2, h3,
       <button class="tab-btn" onclick="showAdminTab('absent')">출석 관리</button>
       <button class="tab-btn" onclick="showAdminTab('payment')">입금 내역</button>
       <button class="tab-btn" onclick="showAdminTab('notices')">공지 관리</button>
+      <button class="tab-btn" onclick="showAdminTab('analysis')">🔮 보이스 분석</button>
       <button class="tab-btn" onclick="showAdminTab('settings')">설정</button>
     </div>
 
@@ -1295,6 +1345,63 @@ h1, h2, h3,
         </div>
       </div>
       <div class="card" id="admin-notice-list"></div>
+    </div>
+
+    <!-- 🔮 보이스 분석 탭 -->
+    <div id="admin-analysis" style="display:none">
+      <!-- 수강생 선택 -->
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-label">분석할 수강생 선택</div>
+        <div class="grid-2" style="margin-top:8px">
+          <div class="form-group">
+            <label class="form-label">수강생</label>
+            <select class="form-select" id="eng-student-select" onchange="onEngStudentSelect()">
+              <option value="">-- 선택 --</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">음성 안정도 (%)</label>
+            <input type="range" id="eng-stability" min="0" max="100" value="65"
+              oninput="document.getElementById('eng-stability-val').textContent=this.value"
+              style="width:100%;margin-top:8px">
+            <span id="eng-stability-val" style="font-size:12px;color:var(--muted)">65</span>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">명료도 (1–10)</label>
+            <input type="number" class="form-input" id="eng-clarity" min="1" max="10" value="6">
+          </div>
+          <div class="form-group">
+            <label class="form-label">공명 (1–10)</label>
+            <input type="number" class="form-input" id="eng-resonance" min="1" max="10" value="5">
+          </div>
+          <div class="form-group">
+            <label class="form-label">에너지 (%)</label>
+            <input type="number" class="form-input" id="eng-energy" min="0" max="100" value="60">
+          </div>
+        </div>
+        <!-- 감정 선택 -->
+        <div style="margin-top:12px">
+          <div class="form-label" style="margin-bottom:8px">오늘 감정 상태</div>
+          <div id="eng-feelings" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+        </div>
+        <button onclick="runAnalysisEngine()" style="margin-top:16px;padding:13px 28px;background:#f1e7c3;color:#2a1558;border:none;border-radius:10px;font-family:'Paperlogy',sans-serif;font-size:14px;font-weight:700;cursor:pointer;width:100%">🔮 분석 엔진 실행</button>
+      </div>
+
+      <!-- 결과 탭 -->
+      <div style="display:flex;gap:6px;margin-bottom:16px;overflow-x:auto;padding-bottom:4px" id="eng-tabs">
+        <button class="eng-tab active" onclick="showEngTab('ux')">① 코칭 톤</button>
+        <button class="eng-tab" onclick="showEngTab('score')">② TV Score</button>
+        <button class="eng-tab" onclick="showEngTab('gap')">③ 괴리 감지</button>
+        <button class="eng-tab" onclick="showEngTab('content')">④ 콘텐츠 추천</button>
+      </div>
+      <div id="eng-view-ux" class="eng-view active">
+        <div class="card"><div class="card-label">대기 중</div><div style="font-size:14px;color:var(--muted)">수강생을 선택하고 분석 엔진을 실행해 주세요.</div></div>
+      </div>
+      <div id="eng-view-score"  class="eng-view" style="display:none"></div>
+      <div id="eng-view-gap"    class="eng-view" style="display:none"></div>
+      <div id="eng-view-content" class="eng-view" style="display:none"></div>
     </div>
 
     <!-- 설정 탭 -->
@@ -2087,16 +2194,17 @@ function addStudent() {
 }
 
 function showAdminTab(tab) {
-  ['students','teachers','absent','payment','notices','settings'].forEach(t => {
+  ['students','teachers','absent','payment','notices','analysis','settings'].forEach(t => {
     const el = document.getElementById('admin-' + t);
     if (el) el.style.display = t === tab ? 'block' : 'none';
   });
   document.querySelectorAll('.tab-btn').forEach((b,i) => {
-    b.classList.toggle('active', ['students','teachers','absent','payment','notices','settings'][i] === tab);
+    b.classList.toggle('active', ['students','teachers','absent','payment','notices','analysis','settings'][i] === tab);
   });
   if (tab === 'teachers') renderTeacherStats();
   if (tab === 'absent')   { renderAbsent(); renderAttendance(); showAttTab('attend'); }
   if (tab === 'payment')  renderPayments();
+  if (tab === 'analysis') initAnalysisTab();
 }
 
 // ── 선생님별 현황 ──
@@ -2564,6 +2672,401 @@ function renderMypage() {
     });
   }
   notesList.innerHTML = html;
+}
+
+// ═══════════════════════════════════════════
+// 터칭보이스 내부 엔진 v1 (tv_engine.html 이식)
+// ═══════════════════════════════════════════
+
+const TV_FEELINGS = [
+  {e:'Joyful',    k:'즐거움',   valence:1,   arousal:.7 },
+  {e:'Peaceful',  k:'평화로움', valence:1,   arousal:.2 },
+  {e:'Energetic', k:'에너지넘침',valence:.8, arousal:.9 },
+  {e:'Confident', k:'자신감',   valence:.9,  arousal:.6 },
+  {e:'Hopeful',   k:'희망적',   valence:.8,  arousal:.5 },
+  {e:'Anxious',   k:'불안함',   valence:-.7, arousal:.8 },
+  {e:'Insecure',  k:'불안정',   valence:-.8, arousal:.5 },
+  {e:'Worried',   k:'걱정됨',   valence:-.6, arousal:.7 },
+  {e:'Numb',      k:'무감각',   valence:-.5, arousal:.1 },
+  {e:'Withdrawn', k:'위축됨',   valence:-.7, arousal:.2 },
+  {e:'Lonely',    k:'외로움',   valence:-.8, arousal:.2 },
+  {e:'Empty',     k:'공허함',   valence:-.9, arousal:.1 },
+  {e:'Ashamed',   k:'부끄러움', valence:-.7, arousal:.4 },
+  {e:'Inspired',  k:'영감받음', valence:.9,  arousal:.8 },
+  {e:'Amazed',    k:'경이로움', valence:.7,  arousal:.7 },
+];
+
+let engSelectedFeelings = new Set();
+
+// ── ① 적응형 UX 엔진 ──
+const UX_ENGINE = {
+  getTone(bf) {
+    const N=bf.N, E=bf.E, A=bf.A;
+    if (N>=75) return 'nurturing';
+    if (N>=55) return 'supportive';
+    if (E>=70) return 'energetic';
+    if (A>=70) return 'warm';
+    if (bf.C>=70) return 'logical';
+    return 'balanced';
+  },
+  getMessages(tone) {
+    const m = {
+      nurturing:  { greeting:"오늘도 용기내어 목소리를 내줬어요. 그것만으로도 충분해요 🤍", feedback_pos:"정말 잘하고 있어요. 작은 변화도 모두 의미있어요.", feedback_neg:"조금 어려웠더라도 괜찮아요. 천천히 함께 찾아가면 돼요.", progress:"눈에 보이지 않아도, 목소리는 조금씩 자신을 찾아가고 있어요.", cta:"오늘의 작은 시도가 내일의 목소리를 만들어가요" },
+      supportive: { greeting:"오늘도 수고했어요. 목소리로 자신을 표현하는 용기, 멋져요.", feedback_pos:"좋아지고 있어요! 이 방향으로 계속 가봐요.", feedback_neg:"어렵게 느껴지는 게 자연스러워요. 같이 풀어봐요.", progress:"오늘 목소리가 어제보다 훨씬 편안해졌어요.", cta:"다음 단계로 함께 가볼까요?" },
+      energetic:  { greeting:"오늘도 에너지 넘치게 시작해봐요! 🔥", feedback_pos:"완벽해요! 그 에너지 그대로 더 밀어붙여봐요!", feedback_neg:"한 번 더! 할 수 있어요. 더 강하게 나가봐요.", progress:"실력이 눈에 띄게 올라오고 있어요. 계속 가봐요!", cta:"다음 레벨 도전할 준비됐나요?" },
+      warm:       { greeting:"따뜻한 마음으로 오늘도 함께해요 🌷", feedback_pos:"목소리에서 따뜻함이 느껴져요. 정말 아름다워요.", feedback_neg:"함께니까 괜찮아요. 조금씩 같이 가봐요.", progress:"목소리가 점점 더 당신다워지고 있어요.", cta:"이 따뜻함을 더 많은 사람에게 전해봐요" },
+      logical:    { greeting:"오늘의 목표를 설정하고 체계적으로 시작해봐요.", feedback_pos:"목표치 대비 92% 달성. 매우 양호한 진행입니다.", feedback_neg:"3가지 개선 포인트를 파악했어요. 순서대로 접근해봐요.", progress:"지난 4주 대비 호흡 안정도 +18% 향상되었어요.", cta:"다음 단계 훈련을 시작할 준비가 됐습니다" },
+      balanced:   { greeting:"오늘 목소리가 어떤지 함께 들어봐요.", feedback_pos:"잘 되고 있어요. 이 느낌을 기억해 두세요.", feedback_neg:"조금 더 연습이 필요한 부분이 있어요. 같이 보완해봐요.", progress:"꾸준히 성장하고 있어요.", cta:"다음 연습을 시작해볼까요?" },
+    };
+    return m[tone] || m.balanced;
+  },
+  getStyle(bf) {
+    const s=[];
+    if(bf.N>=65) s.push({label:'소통',val:'격려 우선, 교정은 샌드위치 기법으로'});
+    if(bf.E<=35) s.push({label:'속도',val:'천천히, 논리적 설명 → 실습 순서'});
+    if(bf.E>=65) s.push({label:'속도',val:'빠른 피드백, 즉각 도전 과제 제시'});
+    if(bf.A>=65) s.push({label:'관계',val:'라포 형성 우선, 개인적 이야기 공유'});
+    if(bf.C>=65) s.push({label:'구조',val:'명확한 목표와 체크리스트 제공'});
+    if(bf.O>=65) s.push({label:'방식',val:'실험적 접근, 다양한 방법 탐색 허용'});
+    if(!s.length) s.push({label:'기본',val:'균형잡힌 피드백과 표준 커리큘럼'});
+    return s;
+  },
+  run(bf) {
+    const tone=this.getTone(bf);
+    return { tone, msgs:this.getMessages(tone), style:this.getStyle(bf) };
+  }
+};
+
+// ── ② TV Score 엔진 ──
+const SCORE_ENGINE = {
+  calc(bf, feelings, voice) {
+    const voiceScore = voice.clarity/10*.4 + voice.stability/100*.35 + voice.resonance/10*.25;
+    const feelArr=[...feelings];
+    let eV=0, eA=0;
+    if(feelArr.length>0){
+      feelArr.forEach(e=>{ const f=TV_FEELINGS.find(x=>x.e===e); if(f){eV+=f.valence;eA+=f.arousal;} });
+      eV/=feelArr.length; eA/=feelArr.length;
+    }
+    const vV=(voice.energy/100)*2-1;
+    const gapScore=1-Math.abs(eV-vV)/2;
+    const vals=Object.values(bf).map(v=>v/100);
+    const mean=vals.reduce((s,v)=>s+v,0)/vals.length;
+    const variance=vals.reduce((s,v)=>s+Math.pow(v-mean,2),0)/vals.length;
+    const bfBalance=Math.max(0,1-variance*3);
+    const total=Math.round(voiceScore*35+gapScore*30+bfBalance*20+0.15*15);
+    return { total:Math.min(99,Math.max(1,total)), breakdown:{ voiceScore:Math.round(voiceScore*100), alignScore:Math.round(gapScore*100), bfBalance:Math.round(bfBalance*100), growth:15 } };
+  },
+  getMessage(score, N) {
+    if(score>=85) return N>=65?"목소리가 너무 아름다워요. 이렇게 편안한 모습, 정말 잘 해냈어요 🤍":"목소리에서 내면의 평온이 온전히 느껴져요. 당신의 목소리는 지금 가장 건강해요.";
+    if(score>=70) return N>=65?"많이 성장했어요. 목소리에서 따뜻함이 느껴지기 시작했어요.":"목소리가 내면과 꽤 잘 맞춰지고 있어요. 조금만 더 가면 완전히 자신의 목소리예요.";
+    if(score>=55) return N>=65?"천천히 가도 괜찮아요. 목소리는 이미 변화하고 있어요.":"목소리가 조금씩 자신을 찾아가는 중이에요. 꾸준히 함께해요.";
+    if(score>=40) return N>=65?"지금이 가장 중요한 시기예요. 함께 차근차근 찾아가요.":"아직 목소리가 본래 모습을 찾는 중이에요. 함께 방향을 잡아볼게요.";
+    return N>=65?"많이 힘들었죠. 지금은 그냥 숨만 쉬어도 충분해요. 옆에 있을게요 🤍":"목소리가 많이 지쳐 있는 것 같아요. 잠깐 쉬어가도 괜찮아요.";
+  },
+  run(bf,feelings,voice){ const r=this.calc(bf,feelings,voice); return {...r,message:this.getMessage(r.total,bf.N)}; }
+};
+
+// ── ③ 괴리 감지 엔진 ──
+const GAP_ENGINE = {
+  TYPES: {
+    ALIGNED:       {label:'🎯 건강한 일치',       color:'#4caf82',bg:'rgba(76,175,130,.15)'},
+    UNDERESTIMATE: {label:'🌱 자의식 왜곡(저평가)',color:'#ffc107',bg:'rgba(255,193,7,.15)'},
+    SUPPRESSED:    {label:'🧊 감정 억압',          color:'#42a5f5',bg:'rgba(66,165,245,.15)'},
+    OVERESTIMATE:  {label:'⚡ 과잉 인식',           color:'#ef5350',bg:'rgba(239,83,80,.15)'},
+    DISCONNECTED:  {label:'🌫 감정-음성 분리',      color:'#ab47bc',bg:'rgba(171,71,188,.15)'},
+  },
+  run(feelings,voice,bf){
+    const feelArr=[...feelings]; let aV=0,aA=0;
+    if(feelArr.length>0){ feelArr.forEach(e=>{const f=TV_FEELINGS.find(x=>x.e===e);if(f){aV+=f.valence;aA+=f.arousal;}}); aV/=feelArr.length; aA/=feelArr.length; }
+    const vE=voice.energy/100, vS=voice.stability/100, vV=vE*2-1;
+    const vDiff=aV-vV, aDiff=aA-vE, totalGap=Math.sqrt(vDiff**2+aDiff**2);
+    let type='DISCONNECTED';
+    if(totalGap<0.3) type='ALIGNED';
+    else if(aV<-0.3&&vE>0.5) type='UNDERESTIMATE';
+    else if(Math.abs(aA)<0.2&&vE>0.5) type='SUPPRESSED';
+    else if(aV>0.3&&vS<0.4) type='OVERESTIMATE';
+    const strategies={
+      ALIGNED:{title:"현재 방향 유지 + 심화 확장",actions:["현재 발성 습관 강화 훈련","음역대 확장 프로그램 시작","표현력 다양화 과정 추천"]},
+      UNDERESTIMATE:{title:"자존감 회복형 보이스 코칭",actions:["내 목소리의 장점 3가지 발견하기 세션","긍정 피드백 강화 커리큘럼 우선 배치","녹음 비교 체험 — '들으면 다르다' 프로그램",bf.N>=65?"✦ 신경성 높음: 특히 따뜻한 격려 방식으로 접근":null].filter(Boolean)},
+      SUPPRESSED:{title:"표현력 확장 스피치 훈련",actions:["감정 언어화 훈련 — 느낌을 소리로","자유 발성 세션 (판단 없이 소리내기)","신체 공명 인식 훈련",bf.E<=35?"✦ 내향성: 1:1 소규모 환경에서 점진적으로":null].filter(Boolean)},
+      OVERESTIMATE:{title:"안정화 + 정교화 훈련",actions:["호흡 안정화 기초 훈련","발성 지지근 강화 프로그램","녹음 피드백 세션 — 객관적 자기 인식"]},
+      DISCONNECTED:{title:"감정-음성 연결 회복 프로그램",actions:["감각 인식 훈련 — 몸과 소리 연결","Feelings Wheel 기반 감정 표현 세션","마음챙김 발성 명상"]},
+    };
+    return {...this.TYPES[type],type,valenceDiff:vDiff.toFixed(2),arousalDiff:aDiff.toFixed(2),totalGap:totalGap.toFixed(2),subjective:{valence:aV.toFixed(2),arousal:aA.toFixed(2)},objective:{valence:vV.toFixed(2),arousal:vE.toFixed(2)},strategy:strategies[type]};
+  }
+};
+
+// ── ④ 콘텐츠 추천 엔진 ──
+const CONTENT_ENGINE = {
+  CONTENTS:[
+    {id:'c01',icon:'🌬',tag:'호흡 기초',  name:'숨의 기초 — 복식호흡 마스터',    desc:'발성의 토대가 되는 복식호흡을 체계적으로 훈련합니다.',type:'FOUNDATION'},
+    {id:'c02',icon:'🌿',tag:'자존감 회복',name:'내 목소리의 장점 발견하기',       desc:'녹음을 통해 미처 몰랐던 내 목소리의 매력을 찾아봅니다.',type:'ESTEEM'},
+    {id:'c03',icon:'🔥',tag:'표현력 확장',name:'감정을 소리로 — 자유 발성 세션', desc:'판단 없이 자유롭게 소리내며 감정 표현의 폭을 넓힙니다.',type:'EXPRESSION'},
+    {id:'c04',icon:'🎯',tag:'음역대 개발',name:'내 음역대의 끝까지 탐험하기',    desc:'안전하게 음역대를 넓히는 단계별 발성 훈련입니다.',type:'RANGE'},
+    {id:'c05',icon:'🧘',tag:'안정화',     name:'목소리 안정화 — 떨림 없애기',   desc:'불안정한 발성을 잡아주는 지지근 강화 프로그램입니다.',type:'STABILITY'},
+    {id:'c06',icon:'💎',tag:'공명 훈련',  name:'울림 있는 목소리 만들기',        desc:'가슴·머리 공명을 활용한 풍부한 음색 트레이닝입니다.',type:'RESONANCE'},
+    {id:'c07',icon:'🌊',tag:'감정 연결',  name:'마음챙김 발성 — 몸과 소리 연결',desc:'내면의 감정과 목소리를 연결하는 마음챙김 훈련입니다.',type:'MINDFUL'},
+    {id:'c08',icon:'⚡',tag:'에너지 확장',name:'파워 보이스 — 에너지 끌어올리기',desc:'목소리의 에너지와 존재감을 극대화하는 훈련입니다.',type:'POWER'},
+  ],
+  run(gapType,bf,tvScore){
+    const typeMap={UNDERESTIMATE:{ESTEEM:40,MINDFUL:20},SUPPRESSED:{EXPRESSION:40,MINDFUL:30},OVERESTIMATE:{STABILITY:40,FOUNDATION:20},DISCONNECTED:{MINDFUL:40,EXPRESSION:30},ALIGNED:{RANGE:30,RESONANCE:20,POWER:20}};
+    const weights=typeMap[gapType]||{};
+    return this.CONTENTS.map(c=>({
+      ...c,
+      priority:(()=>{
+        let p=50+(weights[c.type]||0);
+        if(bf.N>=65&&c.type==='ESTEEM')p+=20;
+        if(bf.E<=35&&c.type==='POWER')p-=15;
+        if(bf.C>=65&&c.type==='FOUNDATION')p+=10;
+        if(bf.O>=65&&c.type==='EXPRESSION')p+=15;
+        if(tvScore<50&&c.type==='FOUNDATION')p+=20;
+        if(tvScore>75&&c.type==='RANGE')p+=15;
+        return p;
+      })()
+    })).sort((a,b)=>b.priority-a.priority).slice(0,4);
+  }
+};
+
+// ── 분석 탭 초기화 ──
+function initAnalysisTab() {
+  // 수강생 셀렉트 채우기
+  const sel = document.getElementById('eng-student-select');
+  if (!sel) return;
+  const visible = getVisibleStudents();
+  sel.innerHTML = '<option value="">-- 선택 --</option>';
+  visible.forEach((s,i) => {
+    const idx = state.students.indexOf(s);
+    sel.innerHTML += `<option value="${idx}">${s.name} (${s.teacher||'미배정'} · ${s.type})</option>`;
+  });
+
+  // 감정 칩 초기화
+  const feelWrap = document.getElementById('eng-feelings');
+  if (feelWrap && !feelWrap.children.length) {
+    TV_FEELINGS.forEach(f => {
+      const chip = document.createElement('button');
+      chip.className = 'eng-feeling-chip';
+      chip.textContent = `${f.k}`;
+      chip.onclick = () => {
+        engSelectedFeelings.has(f.e) ? engSelectedFeelings.delete(f.e) : engSelectedFeelings.add(f.e);
+        chip.classList.toggle('on', engSelectedFeelings.has(f.e));
+      };
+      feelWrap.appendChild(chip);
+    });
+  }
+}
+
+function onEngStudentSelect() {
+  const idx = parseInt(document.getElementById('eng-student-select').value);
+  if (isNaN(idx)) return;
+  // 수강생의 lessonNotes에 Big Five 데이터 있으면 자동 반영 (추후 확장)
+}
+
+function showEngTab(id) {
+  document.querySelectorAll('.eng-view').forEach(v => v.style.display = 'none');
+  document.querySelectorAll('.eng-tab').forEach(b => b.classList.remove('active'));
+  const el = document.getElementById('eng-view-' + id);
+  if (el) { el.style.display = 'block'; }
+  event.target.classList.add('active');
+}
+
+function runAnalysisEngine() {
+  const selIdx = parseInt(document.getElementById('eng-student-select').value);
+  if (isNaN(selIdx)) { showToast('수강생을 선택해 주세요'); return; }
+  const s = state.students[selIdx];
+  if (!s) return;
+
+  // Big Five — touchingvoice_v3 결과가 있으면 사용, 없으면 기본값
+  const lastResult = (s.lessonNotes?.scoreHistory || []).slice(-1)[0];
+  const bf = lastResult?.bf || { O:50, C:50, E:50, A:50, N:50 };
+
+  const voice = {
+    clarity:   parseInt(document.getElementById('eng-clarity').value)   || 6,
+    resonance: parseInt(document.getElementById('eng-resonance').value) || 5,
+    energy:    parseInt(document.getElementById('eng-energy').value)    || 60,
+    stability: parseInt(document.getElementById('eng-stability').value) || 65,
+  };
+  const feelings = engSelectedFeelings;
+
+  const uxR      = UX_ENGINE.run(bf);
+  const scoreR   = SCORE_ENGINE.run(bf, feelings, voice);
+  const gapR     = GAP_ENGINE.run(feelings, voice, bf);
+  const contentR = CONTENT_ENGINE.run(gapR.type, bf, scoreR.total);
+
+  renderEngUX(uxR, bf, s);
+  renderEngScore(scoreR);
+  renderEngGap(gapR);
+  renderEngContent(contentR);
+
+  // 결과를 학생 데이터에 저장 (히스토리)
+  if (!s.lessonNotes) s.lessonNotes = {};
+  if (!s.lessonNotes.scoreHistory) s.lessonNotes.scoreHistory = [];
+  s.lessonNotes.scoreHistory.push({
+    date:    new Date().toLocaleDateString('ko-KR'),
+    tvScore: scoreR.total,
+    gapType: gapR.type,
+    bf,
+    tone:    uxR.tone,
+  });
+  saveState();
+  showToast(`${s.name}님 분석 완료 · TV Score ${scoreR.total}`);
+}
+
+function renderEngUX(r, bf, s) {
+  const TONE_LABEL = {nurturing:'💜 극도 지지형',supportive:'💚 격려형',energetic:'🔥 활기형',warm:'🌸 공감형',logical:'🔷 논리형',balanced:'⚖️ 균형형'};
+  document.getElementById('eng-view-ux').innerHTML = `
+    <div class="card">
+      <div class="card-label">적용된 코칭 톤</div>
+      <div style="font-size:18px;font-weight:700;margin-bottom:6px">${TONE_LABEL[r.tone]||r.tone}</div>
+      <div style="font-size:12px;color:var(--muted)">신경성 ${bf.N}% · 외향성 ${bf.E}% · 우호성 ${bf.A}%</div>
+    </div>
+    <div class="card">
+      <div class="card-label">상황별 코칭 문구</div>
+      ${Object.entries({'👋 첫 인사':r.msgs.greeting,'✅ 긍정 피드백':r.msgs.feedback_pos,'🔧 개선 피드백':r.msgs.feedback_neg,'📈 진행 메시지':r.msgs.progress,'➡️ 다음 단계':r.msgs.cta}).map(([label,msg])=>`
+        <div style="margin-bottom:12px">
+          <div style="font-size:10px;font-weight:600;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-bottom:4px">${label}</div>
+          <div style="font-size:13px;background:rgba(241,231,195,.05);padding:10px 14px;border-radius:8px;border-left:3px solid rgba(241,231,195,.2);line-height:1.7">"${msg}"</div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="card">
+      <div class="card-label">코칭 스타일 가이드</div>
+      ${r.style.map(s=>`<div style="display:flex;gap:12px;margin-bottom:8px"><span style="font-size:11px;font-weight:600;color:var(--muted);width:50px;flex-shrink:0">${s.label}</span><span style="font-size:12px">${s.val}</span></div>`).join('')}
+    </div>`;
+}
+
+function renderEngScore(r) {
+  const color = r.total>=75?'#4caf82':r.total>=50?'#ffc107':'#ef5350';
+  document.getElementById('eng-view-score').innerHTML = `
+    <div class="card">
+      <div class="tv-score-ring" style="background:conic-gradient(${color} ${r.total}%,rgba(241,231,195,.08) 0%);box-shadow:0 0 0 6px rgba(42,21,88,1),0 0 0 8px ${color}33">
+        <div style="font-size:36px;font-weight:700;color:${color};line-height:1">${r.total}</div>
+        <div style="font-size:12px;color:var(--muted)">/100</div>
+      </div>
+      <div style="font-size:14px;font-weight:500;text-align:center;color:rgba(241,231,195,.8);line-height:1.7;margin-bottom:20px">"${r.message}"</div>
+    </div>
+    <div class="card">
+      <div class="card-label">세부 지표</div>
+      ${[{name:'음성 안정도',val:r.breakdown.voiceScore,color:'#42a5f5',w:'35%'},{name:'감정 일치도',val:r.breakdown.alignScore,color:'#4caf82',w:'30%'},{name:'성격 균형도',val:r.breakdown.bfBalance,color:'#ab47bc',w:'20%'},{name:'성장 추이',val:r.breakdown.growth,color:'#ffc107',w:'15%'}].map(s=>`
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+          <span style="font-size:11px;font-weight:600;width:80px;flex-shrink:0;color:${s.color}">${s.name}<span style="font-size:9px;opacity:.5;margin-left:3px">·${s.w}</span></span>
+          <div style="flex:1;height:5px;background:rgba(241,231,195,.08);border-radius:3px"><div style="height:100%;width:${s.val}%;background:${s.color};border-radius:3px;transition:width .6s"></div></div>
+          <span style="font-size:11px;color:var(--muted);width:28px;text-align:right">${s.val}</span>
+        </div>`).join('')}
+    </div>`;
+}
+
+function renderEngGap(r) {
+  document.getElementById('eng-view-gap').innerHTML = `
+    <div class="card">
+      <div class="card-label">괴리 유형</div>
+      <div style="display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:10px;font-size:14px;font-weight:700;background:${r.bg};color:${r.color};border:1px solid ${r.color}44;margin-bottom:16px">${r.label}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+        <div style="background:rgba(241,231,195,.04);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center">
+          <div style="font-size:9px;font-weight:600;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-bottom:6px">주관 (감정)</div>
+          <div style="font-size:24px;font-weight:700;color:#42a5f5">V ${r.subjective.valence}</div>
+          <div style="font-size:11px;color:var(--muted)">A ${r.subjective.arousal}</div>
+        </div>
+        <div style="background:rgba(241,231,195,.04);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center">
+          <div style="font-size:9px;font-weight:600;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-bottom:6px">객관 (음성)</div>
+          <div style="font-size:24px;font-weight:700;color:#4caf82">V ${r.objective.valence}</div>
+          <div style="font-size:11px;color:var(--muted)">A ${r.objective.arousal}</div>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--muted);display:flex;gap:16px;flex-wrap:wrap">
+        <div>Valence 차이: <strong style="color:${r.color}">${r.valenceDiff}</strong></div>
+        <div>Arousal 차이: <strong style="color:${r.color}">${r.arousalDiff}</strong></div>
+        <div>총 괴리: <strong style="color:${r.color}">${r.totalGap}</strong></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">권장 대응 전략</div>
+      <div style="font-size:16px;font-weight:700;margin-bottom:12px">${r.strategy.title}</div>
+      ${r.strategy.actions.map((a,i)=>`<div style="display:flex;gap:10px;margin-bottom:8px"><span style="font-size:11px;font-weight:700;color:${r.color};width:18px;flex-shrink:0">${i+1}.</span><span style="font-size:13px;color:rgba(241,231,195,.8);line-height:1.7">${a}</span></div>`).join('')}
+    </div>`;
+}
+
+function renderEngContent(contents) {
+  document.getElementById('eng-view-content').innerHTML = `
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-label">콘텐츠 추천 (TOP 4)</div>
+      <div style="font-size:12px;color:var(--muted)">괴리 유형 + Big Five + TV Score 기반 우선순위 산정</div>
+    </div>
+    ${contents.map((c,i)=>`
+      <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:12px;padding:16px 18px;margin-bottom:10px;display:flex;gap:14px;align-items:flex-start">
+        <div style="width:40px;height:40px;border-radius:10px;background:rgba(241,231,195,.08);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">${c.icon}</div>
+        <div style="flex:1">
+          <div style="font-size:9px;font-weight:600;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-bottom:3px">${c.tag}</div>
+          <div style="font-size:14px;font-weight:700;margin-bottom:4px">${c.name}</div>
+          <div style="font-size:12px;color:rgba(241,231,195,.7);line-height:1.6;margin-bottom:8px">${c.desc}</div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;background:rgba(241,231,195,.1);color:var(--muted)">추천 ${i+1}위</span>
+            <div style="flex:1;height:3px;background:rgba(241,231,195,.08);border-radius:2px"><div style="height:100%;width:${Math.min(100,c.priority)}%;background:${i===0?'#4caf82':i===1?'#ffc107':'rgba(241,231,195,.3)'};border-radius:2px"></div></div>
+            <span style="font-size:10px;color:var(--muted)">${c.priority}점</span>
+          </div>
+        </div>
+      </div>`).join('')}`;
+}
+
+// ── 학생 TV Score 히스토리 ──
+function loadScoreHistory() {
+  const name = document.getElementById('score-history-name').value.trim();
+  if (!name) { showToast('이름을 입력해 주세요'); return; }
+  const s = state.students.find(st => st.name === name);
+  if (!s) { showToast('등록된 수강생을 찾을 수 없어요'); return; }
+
+  const history = s.lessonNotes?.scoreHistory || [];
+  const result  = document.getElementById('score-history-result');
+  const list    = document.getElementById('score-history-list');
+  result.style.display = 'block';
+
+  if (!history.length) {
+    list.innerHTML = '<div style="text-align:center;color:var(--muted);padding:24px;font-size:13px">아직 분석 기록이 없어요.<br>선생님과 함께 보이스 분석을 진행해 보세요!</div>';
+    return;
+  }
+
+  // 미니 꺾은선 그래프 (Canvas)
+  const canvas = document.getElementById('score-chart');
+  const ctx    = canvas.getContext('2d');
+  canvas.width  = canvas.offsetWidth  * 2;
+  canvas.height = canvas.offsetHeight * 2;
+  ctx.scale(2,2);
+  const W = canvas.offsetWidth/2, H = canvas.offsetHeight/2;
+  const scores = history.map(h => h.tvScore);
+  const maxS = 100, minS = 0;
+  ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle = '#f1e7c3';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  scores.forEach((v,i) => {
+    const x = (i/(scores.length-1||1)) * (W-20) + 10;
+    const y = H - ((v-minS)/(maxS-minS)) * (H-16) - 8;
+    i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+  scores.forEach((v,i) => {
+    const x = (i/(scores.length-1||1)) * (W-20) + 10;
+    const y = H - ((v-minS)/(maxS-minS)) * (H-16) - 8;
+    const color = v>=75?'#4caf82':v>=50?'#ffc107':'#ef5350';
+    ctx.beginPath(); ctx.arc(x,y,3,0,Math.PI*2);
+    ctx.fillStyle = color; ctx.fill();
+  });
+
+  // 목록
+  const GAP_TYPE_LABELS = {ALIGNED:'🎯 일치',UNDERESTIMATE:'🌱 저평가',SUPPRESSED:'🧊 억압',OVERESTIMATE:'⚡ 과잉',DISCONNECTED:'🌫 분리'};
+  const TONE_LABELS = {nurturing:'💜 극도 지지',supportive:'💚 격려',energetic:'🔥 활기',warm:'🌸 공감',logical:'🔷 논리',balanced:'⚖️ 균형'};
+  list.innerHTML = [...history].reverse().map((h,i) => {
+    const color = h.tvScore>=75?'#4caf82':h.tvScore>=50?'#ffc107':'#ef5350';
+    return `<div class="score-history-item">
+      <div style="font-family:'Paperlogy',sans-serif;font-size:28px;font-weight:700;color:${color};width:48px;text-align:center;flex-shrink:0">${h.tvScore}</div>
+      <div style="flex:1">
+        <div style="font-size:12px;font-weight:600;margin-bottom:3px">${h.date}</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          ${h.gapType ? `<span style="font-size:10px;padding:2px 8px;border-radius:4px;background:rgba(241,231,195,.1);color:var(--muted)">${GAP_TYPE_LABELS[h.gapType]||h.gapType}</span>` : ''}
+          ${h.tone    ? `<span style="font-size:10px;padding:2px 8px;border-radius:4px;background:rgba(241,231,195,.1);color:var(--muted)">${TONE_LABELS[h.tone]||h.tone}</span>` : ''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 // ─────────────── 스탬프 카드 ───────────────
