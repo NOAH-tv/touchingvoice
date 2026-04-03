@@ -2861,7 +2861,6 @@ function showAdminTab(tab) {
   if (tab === 'students') {
     showStudentTab(_studentSubTab || 'private');
   }
-  }
   if (tab === 'teachers') renderTeacherStats();
   if (tab === 'absent')   { renderAbsent(); renderAttendance(); showAttTab('attend'); }
   if (tab === 'payment')  renderPayments();
@@ -5517,29 +5516,16 @@ async function handleExcelUpload(event) {
     console.error(e);
   }
 }
-        await sheetsAction('updateLessons', { name: s.name, type: s.type, lessons: s.lessons });
-      }
-    }
-
-    saveState();
-    renderAdmin();
-
-    let msg = `✅ ${newStudents.length}명 등록 완료!`;
-    if (skipped.length) msg += ` (건너뜀 ${skipped.length}명)`;
-    showToast(msg);
-
-    if (skipped.length) {
-      console.warn('건너뜀:', skipped.join(', '));
-      setTimeout(() => showToast(`건너뜀: ${skipped.slice(0,3).join(', ')}${skipped.length > 3 ? ' 외 ' + (skipped.length - 3) + '명' : ''}`), 3000);
-    }
-
-  } catch (e) {
-    showToast('❌ 파일 읽기 실패: ' + e.message);
-    console.error(e);
-  }
-}
 
 // 그룹 레슨 엑셀 양식 다운로드
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = src; s.onload = resolve; s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+
 async function downloadGroupTemplate(e) {
   e.preventDefault();
   showToast('📥 양식 생성 중...');
@@ -5579,12 +5565,6 @@ async function downloadGroupTemplate(e) {
   } catch(e) {
     showToast('❌ 다운로드 실패: ' + e.message);
   }
-}
-  return new Promise((resolve, reject) => {
-    const s = document.createElement('script');
-    s.src = src; s.onload = resolve; s.onerror = reject;
-    document.head.appendChild(s);
-  });
 }
 
 // ─────────────── 강사 데이터 ───────────────
