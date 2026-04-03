@@ -1384,28 +1384,6 @@ h1, h2, h3,
         <button onclick="openAddGroupStudent()" style="padding:9px 18px;background:#f1e7c3;color:#2a1558;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Paperlogy',sans-serif">+ 수강생 추가</button>
       </div>
 
-      <!-- 일괄 출석 입력 -->
-      <div class="card" style="margin-bottom:20px;background:rgba(63,35,120,0.4);border-color:rgba(241,231,195,0.2)">
-        <div class="card-label" style="margin-bottom:12px">⚡ 그룹 일괄 출석</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
-          <div class="form-group" style="margin-bottom:0">
-            <label class="form-label">반 선택</label>
-            <select class="form-select" id="bulk-group-select" onchange="onBulkGroupSelect()">
-              <option value="">-- 반 선택 --</option>
-            </select>
-          </div>
-          <div class="form-group" style="margin-bottom:0">
-            <label class="form-label">출석 날짜</label>
-            <input type="date" class="form-input" id="bulk-attend-date">
-          </div>
-        </div>
-        <div id="bulk-student-preview" style="margin-bottom:12px;display:none">
-          <div style="font-size:11px;color:rgba(241,231,195,0.5);margin-bottom:8px;letter-spacing:0.5px">출석 처리될 수강생</div>
-          <div id="bulk-student-list" style="display:flex;flex-wrap:wrap;gap:6px"></div>
-        </div>
-        <button onclick="doBulkAttendance()" style="width:100%;padding:13px;background:#f1e7c3;color:#2a1558;border:none;border-radius:8px;font-family:'Paperlogy',sans-serif;font-size:14px;font-weight:700;cursor:pointer">반 전체 출석 처리</button>
-      </div>
-
       <div id="group-classes-wrap"></div>
     </div>
 
@@ -1851,7 +1829,7 @@ h1, h2, h3,
 
 <!-- ════ 그룹 수강생 추가 모달 ════ -->
 <div class="modal-overlay" id="add-group-student-modal" onclick="if(event.target===this)closeAddGroupStudent()">
-  <div class="modal-box" style="max-width:420px">
+  <div class="modal-box" style="max-width:440px">
     <button class="modal-close" onclick="closeAddGroupStudent()">✕</button>
     <div style="padding:28px">
       <div class="card-label" style="margin-bottom:4px">그룹 레슨 수강생 등록</div>
@@ -1860,41 +1838,33 @@ h1, h2, h3,
         <label class="form-label">이름</label>
         <input type="text" class="form-input" id="gs-name" placeholder="성함">
       </div>
+      <!-- 그룹(기업/기관) 선택 -->
+      <div class="form-group">
+        <label class="form-label">그룹 (기업/기관)</label>
+        <div style="display:flex;gap:8px">
+          <select class="form-select" id="gs-org" style="flex:1" onchange="onGsOrgChange()">
+          </select>
+          <button onclick="openAddOrgModal()" style="padding:0 14px;background:rgba(241,231,195,0.12);border:1px solid rgba(241,231,195,0.2);border-radius:8px;color:#f1e7c3;font-family:'Paperlogy',sans-serif;font-size:12px;cursor:pointer;white-space:nowrap">+ 신규</button>
+        </div>
+      </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
         <div class="form-group">
           <label class="form-label">반</label>
-          <select class="form-select" id="gs-class" onchange="syncGroupLabel()">
-            <option value="A">A반</option>
-            <option value="B">B반</option>
-            <option value="C">C반</option>
-            <option value="D">D반</option>
-            <option value="E">E반</option>
-            <option value="F">F반</option>
-            <option value="G">G반</option>
-            <option value="H">H반</option>
-            <option value="I">I반</option>
-            <option value="J">J반</option>
-            <option value="K">K반</option>
-            <option value="L">L반</option>
-            <option value="M">M반</option>
-            <option value="N">N반</option>
-            <option value="O">O반</option>
-            <option value="P">P반</option>
-            <option value="Q">Q반</option>
-            <option value="R">R반</option>
-            <option value="S">S반</option>
-            <option value="T">T반</option>
-            <option value="U">U반</option>
-            <option value="V">V반</option>
-            <option value="W">W반</option>
-            <option value="X">X반</option>
-            <option value="Y">Y반</option>
-            <option value="Z">Z반</option>
+          <select class="form-select" id="gs-class">
+            <option value="A">A반</option><option value="B">B반</option><option value="C">C반</option>
+            <option value="D">D반</option><option value="E">E반</option><option value="F">F반</option>
+            <option value="G">G반</option><option value="H">H반</option><option value="I">I반</option>
+            <option value="J">J반</option><option value="K">K반</option><option value="L">L반</option>
+            <option value="M">M반</option><option value="N">N반</option><option value="O">O반</option>
+            <option value="P">P반</option><option value="Q">Q반</option><option value="R">R반</option>
+            <option value="S">S반</option><option value="T">T반</option><option value="U">U반</option>
+            <option value="V">V반</option><option value="W">W반</option><option value="X">X반</option>
+            <option value="Y">Y반</option><option value="Z">Z반</option>
           </select>
         </div>
         <div class="form-group">
           <label class="form-label">수업 시간</label>
-          <select class="form-select" id="gs-time" onchange="syncGroupLabel()">
+          <select class="form-select" id="gs-time">
             <option value="12:00">12:00 (점심)</option>
             <option value="18:00">18:00 (저녁)</option>
             <option value="19:00">19:00 (저녁)</option>
@@ -1916,6 +1886,25 @@ h1, h2, h3,
       <div style="display:flex;gap:10px">
         <button onclick="saveAddGroupStudent()" style="flex:1;padding:13px;background:#f1e7c3;color:#2a1558;border:none;border-radius:8px;font-family:'Paperlogy',sans-serif;font-size:14px;font-weight:700;cursor:pointer">등록하기</button>
         <button onclick="closeAddGroupStudent()" style="padding:13px 18px;border:1px solid rgba(241,231,195,0.2);background:rgba(241,231,195,0.06);border-radius:8px;font-family:'Paperlogy',sans-serif;font-size:14px;cursor:pointer;color:#f1e7c3">취소</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ 신규 그룹(기업/기관) 추가 모달 ════ -->
+<div class="modal-overlay" id="add-org-modal" onclick="if(event.target===this)closeAddOrgModal()">
+  <div class="modal-box" style="max-width:360px">
+    <button class="modal-close" onclick="closeAddOrgModal()">✕</button>
+    <div style="padding:28px">
+      <div class="card-label" style="margin-bottom:4px">그룹 추가</div>
+      <h3 style="font-size:18px;font-weight:700;margin-bottom:20px;color:#f1e7c3">새 그룹 등록</h3>
+      <div class="form-group">
+        <label class="form-label">그룹명 (기업/학교/기관)</label>
+        <input type="text" class="form-input" id="new-org-name" placeholder="예: 넥슨코리아, 홍익대학교, 동아리명">
+      </div>
+      <div style="display:flex;gap:10px">
+        <button onclick="saveNewOrg()" style="flex:1;padding:13px;background:#f1e7c3;color:#2a1558;border:none;border-radius:8px;font-family:'Paperlogy',sans-serif;font-size:14px;font-weight:700;cursor:pointer">추가하기</button>
+        <button onclick="closeAddOrgModal()" style="padding:13px 18px;border:1px solid rgba(241,231,195,0.2);background:rgba(241,231,195,0.06);border-radius:8px;font-family:'Paperlogy',sans-serif;font-size:14px;cursor:pointer;color:#f1e7c3">취소</button>
       </div>
     </div>
   </div>
@@ -2728,7 +2717,11 @@ function renderAdmin() {
               const gIcon = s.gender === '남' ? '<span style="font-size:10px;opacity:.6">👨</span>' : s.gender === '여' ? '<span style="font-size:10px;opacity:.6">👩</span>' : '';
               return `<tr>
                 <td><strong style="cursor:pointer;text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(241,231,195,0.3)" onclick="openStampCard(${idx})">${gIcon} ${s.name}</strong></td>
-                <td><span style="padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600;background:rgba(241,231,195,0.12);color:#f1e7c3">${s.type}${s.group ? ' · '+s.group : ''}</span></td>
+                <td><span style="padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600;background:rgba(241,231,195,0.12);color:#f1e7c3">${
+                  s.type === '그룹'
+                    ? `그룹${s.orgGroup ? ' · '+s.orgGroup : ''}${s.group ? ' · '+s.group.split(' ')[0] : ''}`
+                    : s.type
+                }</span></td>
                 <td>${pillsHtml}</td>
                 <td style="font-size:12px;color:rgba(241,231,195,0.75);font-family:'Paperlogy',sans-serif;font-weight:600">
                   ${st.count}회 ${mthStr}
@@ -2818,9 +2811,6 @@ function showAdminTab(tab) {
   });
   if (tab === 'grouptab') {
     renderGroupLessons();
-    // 일괄출석 날짜 오늘로 기본값 설정
-    const bulkDate = document.getElementById('bulk-attend-date');
-    if (bulkDate && !bulkDate.value) bulkDate.value = new Date().toISOString().split('T')[0];
   }
   if (tab === 'teachers') renderTeacherStats();
   if (tab === 'absent')   { renderAbsent(); renderAttendance(); showAttTab('attend'); }
@@ -2877,138 +2867,170 @@ function renderGroupLessons() {
   const bankInfo = state.settings.bankInfo || '';
   const isAdmin = !state.currentTeacher || state.currentTeacher === '천우경';
 
-  // 그룹레슨 학생 = type이 '그룹' + group 필드 있는 학생
-  // 방건주 담당 그룹레슨 학생도 포함 (group 필드 없으면 자동 배정)
-  // 방건주의 그룹 학생 중 group 없는 경우 → group 자동 세팅
+  // 방건주 담당 그룹 학생 중 orgGroup 없는 경우 → 넥슨코리아 자동 배정
   state.students.forEach(s => {
-    if (s.type === '그룹' && s.teacher === '방건주' && !s.group) {
-      s.group = '방건주반';
+    if (s.type === '그룹') {
+      if (!s.orgGroup) s.orgGroup = '넥슨코리아';
+      // 구버전 '방건주반' group 값 정리
+      if (s.group === '방건주반') s.group = 'A반 12:00';
     }
   });
 
-  const groups = getRegisteredGroups();
+  // 그룹(기업/기관)별로 분리
+  const orgs = [...new Set(
+    state.students
+      .filter(s => s.type === '그룹')
+      .map(s => s.orgGroup || '넥슨코리아')
+  )].sort();
 
-  if (!groups.length) {
+  if (!orgs.length) {
     wrap.innerHTML = `<div style="text-align:center;color:rgba(241,231,195,0.35);padding:60px 24px;font-size:14px">
       <div style="font-size:32px;margin-bottom:16px">🎤</div>
       아직 등록된 그룹 수강생이 없어요<br>
       <span style="font-size:12px;opacity:.7">위의 "+ 수강생 추가" 버튼으로 등록해 주세요</span>
     </div>`;
-    // 일괄출석 드롭다운 비우기
     const sel = document.getElementById('bulk-group-select');
     if (sel) sel.innerHTML = '<option value="">-- 반 없음 --</option>';
     return;
   }
 
-  // 일괄출석 드롭다운 업데이트
+  // 일괄출석 드롭다운 업데이트 (전체 반 목록)
+  const allGroups = [];
+  orgs.forEach(org => {
+    const orgStudents = state.students.filter(s => s.type === '그룹' && (s.orgGroup || '넥슨코리아') === org);
+    const classes = [...new Set(orgStudents.map(s => s.group).filter(Boolean))].sort();
+    classes.forEach(g => allGroups.push({ org, group: g, label: `${org} · ${g.split(' ')[0]}` }));
+  });
+
   const bulkSel = document.getElementById('bulk-group-select');
   if (bulkSel) {
     bulkSel.innerHTML = '<option value="">-- 반 선택 --</option>' +
-      groups.map(g => `<option value="${g}">${g}</option>`).join('');
+      allGroups.map(g => `<option value="${g.org}__${g.group}">${g.label}</option>`).join('');
   }
 
-  groups.forEach(groupLabel => {
-    const cfg = settings[groupLabel] || { teacher: '', price: '₩120,000' };
-    const students = state.students.filter(s => s.type === '그룹' && s.group === groupLabel);
+  // 기관별 카드 렌더링
+  orgs.forEach(org => {
+    const orgStudents = state.students.filter(s => s.type === '그룹' && (s.orgGroup || '넥슨코리아') === org);
+    const classes = [...new Set(orgStudents.map(s => s.group).filter(Boolean))].sort((a, b) => {
+      const [ca] = a.split('반 '), [cb] = b.split('반 ');
+      return ca < cb ? -1 : ca > cb ? 1 : 0;
+    });
 
-    if (!isAdmin && cfg.teacher && cfg.teacher !== state.currentTeacher) return;
+    // 기관 헤더
+    const orgHeader = document.createElement('div');
+    orgHeader.style.cssText = 'margin-bottom:8px;margin-top:20px';
+    orgHeader.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div style="font-size:16px;font-weight:700;color:#f1e7c3">🏢 ${org}</div>
+        <span style="font-size:11px;color:rgba(241,231,195,0.4)">${orgStudents.length}명 · ${classes.length}개 반</span>
+      </div>`;
+    wrap.appendChild(orgHeader);
 
-    const card = document.createElement('div');
-    card.className = 'group-class-card';
+    classes.forEach(groupLabel => {
+      const key = `${org}__${groupLabel}`;
+      const cfg = settings[key] || settings[groupLabel] || { teacher: '', price: '₩120,000' };
+      const students = orgStudents.filter(s => s.group === groupLabel);
 
-    const [clsPart, timePart] = groupLabel.split('반 ');
-    const displayName = `${clsPart}반`;
-    const displayTime = timePart || '';
+      if (!isAdmin && cfg.teacher && cfg.teacher !== state.currentTeacher) return;
 
-    const dueStudents = students.filter(s => s.lessons.length > 0 && s.lessons.length % 4 === 0 && !isPaymentConfirmedForCycle(s));
-    const hasDue = dueStudents.length > 0;
+      const card = document.createElement('div');
+      card.className = 'group-class-card';
 
-    card.innerHTML = `
-      <div class="group-class-header">
-        <div>
-          <div class="group-class-badge">🎤 넥슨코리아${cfg.teacher ? ' · ' + cfg.teacher : ''}</div>
-          <div class="group-class-name">${displayName} <span style="font-weight:300;color:rgba(241,231,195,0.6);font-size:15px">${displayTime}</span></div>
-          <div class="group-class-meta">${students.length}명 · ${cfg.price} / 4회</div>
-        </div>
-        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
-          ${hasDue ? `<span style="padding:4px 10px;background:rgba(212,170,58,0.2);border:1px solid rgba(212,170,58,0.4);border-radius:999px;font-size:11px;font-weight:600;color:var(--warm);font-family:'Paperlogy',sans-serif">💰 입금 ${dueStudents.length}명</span>` : ''}
-          <button class="group-edit-btn" onclick="openEditGroupModal('${groupLabel.replace(/'/g,"\\'")}')">⚙ 반 설정</button>
-        </div>
-      </div>
-      <div id="group-students-${encodeURIComponent(groupLabel)}"></div>
-    `;
-    wrap.appendChild(card);
+      const [clsPart, timePart] = groupLabel.split('반 ');
+      const displayName = `${clsPart}반`;
+      const displayTime = timePart || '';
 
-    const studentsWrap = card.querySelector(`#group-students-${encodeURIComponent(groupLabel)}`);
+      const dueStudents = students.filter(s => s.lessons.length > 0 && s.lessons.length % 4 === 0 && !isPaymentConfirmedForCycle(s));
+      const hasDue = dueStudents.length > 0;
 
-    if (!students.length) {
-      studentsWrap.innerHTML = `<div style="padding:24px;text-align:center;font-size:13px;color:rgba(241,231,195,0.3)">등록된 수강생이 없습니다</div>`;
-    } else {
-      students.forEach(s => {
-        const idx = state.students.indexOf(s);
-        const count = s.lessons.length;
-        const cyclePos = count > 0 ? ((count - 1) % 4) + 1 : 0;
-        const isDue = count > 0 && count % 4 === 0 && !isPaymentConfirmedForCycle(s);
-        const last = s.lessons.length ? s.lessons[s.lessons.length - 1] : '—';
-
-        const row = document.createElement('div');
-        row.className = 'group-student-row';
-
-        let dotsHtml = '<div class="group-cycle-dots">';
-        for (let i = 1; i <= 4; i++) {
-          const dc = i < cyclePos ? 'done' : i === cyclePos ? 'current' : '';
-          dotsHtml += `<div class="group-cycle-dot ${dc}">${i}</div>`;
-        }
-        dotsHtml += '</div>';
-
-        row.innerHTML = `
-          <div style="flex:1;min-width:0">
-            <div style="font-size:14px;font-weight:700;color:#f1e7c3;cursor:pointer" onclick="openStampCard(${idx})">${s.name}</div>
-            <div style="font-size:11px;color:rgba(241,231,195,0.4);margin-top:1px">총 ${count}회 · 마지막 ${last}${s.phone ? ' · 📱 '+s.phone : ''}</div>
+      card.innerHTML = `
+        <div class="group-class-header">
+          <div>
+            <div class="group-class-badge">🎤 ${org}${cfg.teacher ? ' · ' + cfg.teacher : ''}</div>
+            <div class="group-class-name">${displayName} <span style="font-weight:300;color:rgba(241,231,195,0.6);font-size:15px">${displayTime}</span></div>
+            <div class="group-class-meta">${students.length}명 · ${cfg.price} / 4회</div>
           </div>
-          ${dotsHtml}
-          <div style="display:flex;gap:6px;align-items:center;margin-left:8px">
-            ${isDue ? `<span style="padding:3px 8px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(212,170,58,0.2);color:var(--warm);border:1px solid rgba(212,170,58,0.35);white-space:nowrap">💰 입금필요</span>` : ''}
-            <button class="group-add-lesson-btn" onclick="groupAddLesson(${idx})">+ 출석</button>
-            <button onclick="deleteStudent(${idx})" style="padding:5px 8px;border:1px solid rgba(255,120,120,0.2);background:rgba(255,100,100,0.07);border-radius:6px;font-size:11px;cursor:pointer;color:rgba(255,150,150,0.7)">✕</button>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+            ${hasDue ? `<span style="padding:4px 10px;background:rgba(212,170,58,0.2);border:1px solid rgba(212,170,58,0.4);border-radius:999px;font-size:11px;font-weight:600;color:var(--warm);font-family:'Paperlogy',sans-serif">💰 입금 ${dueStudents.length}명</span>` : ''}
+            <button class="group-edit-btn" onclick="openEditGroupModal('${key.replace(/'/g,"\\'")}')">⚙ 반 설정</button>
           </div>
-        `;
-        studentsWrap.appendChild(row);
+        </div>
+        <div id="group-students-${encodeURIComponent(key)}"></div>
+      `;
+      wrap.appendChild(card);
 
-        if (isDue) {
-          const banner = document.createElement('div');
-          banner.className = 'group-payment-banner';
-          banner.innerHTML = `
-            <div>
-              <h5>🎉 ${s.name}님 4회 완료!</h5>
-              <p>${cfg.price} 입금 요청 · ${bankInfo}</p>
+      const studentsWrap = card.querySelector(`#group-students-${encodeURIComponent(key)}`);
+
+      if (!students.length) {
+        studentsWrap.innerHTML = `<div style="padding:24px;text-align:center;font-size:13px;color:rgba(241,231,195,0.3)">등록된 수강생이 없습니다</div>`;
+      } else {
+        students.forEach(s => {
+          const idx = state.students.indexOf(s);
+          const count = s.lessons.length;
+          const cyclePos = count > 0 ? ((count - 1) % 4) + 1 : 0;
+          const isDue = count > 0 && count % 4 === 0 && !isPaymentConfirmedForCycle(s);
+          const last = s.lessons.length ? s.lessons[s.lessons.length - 1] : '—';
+
+          const row = document.createElement('div');
+          row.className = 'group-student-row';
+
+          let dotsHtml = '<div class="group-cycle-dots">';
+          for (let i = 1; i <= 4; i++) {
+            const dc = i < cyclePos ? 'done' : i === cyclePos ? 'current' : '';
+            dotsHtml += `<div class="group-cycle-dot ${dc}">${i}</div>`;
+          }
+          dotsHtml += '</div>';
+
+          row.innerHTML = `
+            <div style="flex:1;min-width:0">
+              <div style="font-size:14px;font-weight:700;color:#f1e7c3;cursor:pointer" onclick="openStampCard(${idx})">${s.name}</div>
+              <div style="font-size:11px;color:rgba(241,231,195,0.4);margin-top:1px">총 ${count}회 · 마지막 ${last}${s.phone ? ' · 📱 '+s.phone : ''}</div>
             </div>
-            <button class="group-confirm-btn" onclick="confirmGroupPayment(${idx})">입금 확인 ✓</button>
+            ${dotsHtml}
+            <div style="display:flex;gap:6px;align-items:center;margin-left:8px">
+              ${isDue ? `<span style="padding:3px 8px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(212,170,58,0.2);color:var(--warm);border:1px solid rgba(212,170,58,0.35);white-space:nowrap">💰 입금필요</span>` : ''}
+              <button class="group-add-lesson-btn" onclick="groupAddLesson(${idx})">+ 출석</button>
+              <button onclick="deleteStudent(${idx})" style="padding:5px 8px;border:1px solid rgba(255,120,120,0.2);background:rgba(255,100,100,0.07);border-radius:6px;font-size:11px;cursor:pointer;color:rgba(255,150,150,0.7)">✕</button>
+            </div>
           `;
-          studentsWrap.appendChild(banner);
-        }
-      });
-    }
+          studentsWrap.appendChild(row);
 
-    const addRow = document.createElement('div');
-    addRow.style.cssText = 'padding:12px 24px;border-top:1px solid rgba(241,231,195,0.07)';
-    addRow.innerHTML = `<button onclick="openAddGroupStudentForClass('${groupLabel.replace(/'/g,"\\'")}','${displayTime}')" style="font-size:12px;color:rgba(241,231,195,0.45);background:none;border:none;cursor:pointer;font-family:'Paperlogy',sans-serif;padding:0">+ 이 반에 수강생 추가</button>`;
-    card.appendChild(addRow);
+          if (isDue) {
+            const banner = document.createElement('div');
+            banner.className = 'group-payment-banner';
+            banner.innerHTML = `
+              <div>
+                <h5>🎉 ${s.name}님 4회 완료!</h5>
+                <p>${cfg.price} 입금 요청 · ${bankInfo}</p>
+              </div>
+              <button class="group-confirm-btn" onclick="confirmGroupPayment(${idx})">입금 확인 ✓</button>
+            `;
+            studentsWrap.appendChild(banner);
+          }
+        });
+      }
+
+      const addRow = document.createElement('div');
+      addRow.style.cssText = 'padding:12px 24px;border-top:1px solid rgba(241,231,195,0.07)';
+      addRow.innerHTML = `<button onclick="openAddGroupStudentForClass('${groupLabel.replace(/'/g,"\\'")}','${displayTime}','${org.replace(/'/g,"\\'")}') " style="font-size:12px;color:rgba(241,231,195,0.45);background:none;border:none;cursor:pointer;font-family:'Paperlogy',sans-serif;padding:0">+ 이 반에 수강생 추가</button>`;
+      card.appendChild(addRow);
+    });
   });
 }
 
 // 일괄 출석 — 반 선택 시 학생 미리보기
 function onBulkGroupSelect() {
-  const groupLabel = document.getElementById('bulk-group-select').value;
-  const preview    = document.getElementById('bulk-student-preview');
-  const listEl     = document.getElementById('bulk-student-list');
-  if (!groupLabel || !preview || !listEl) return;
+  const val     = document.getElementById('bulk-group-select').value;
+  const preview = document.getElementById('bulk-student-preview');
+  const listEl  = document.getElementById('bulk-student-list');
+  if (!val || !preview || !listEl) return;
 
-  const students = state.students.filter(s => s.type === '그룹' && s.group === groupLabel);
-  if (!students.length) {
-    preview.style.display = 'none';
-    return;
-  }
+  const [org, groupLabel] = val.split('__');
+  const students = state.students.filter(s =>
+    s.type === '그룹' && s.group === groupLabel && (s.orgGroup || '넥슨코리아') === org
+  );
+  if (!students.length) { preview.style.display = 'none'; return; }
+
   listEl.innerHTML = students.map(s =>
     `<span style="padding:4px 10px;border-radius:999px;font-size:12px;font-weight:600;background:rgba(241,231,195,0.12);color:#f1e7c3;border:1px solid rgba(241,231,195,0.2)">${s.name}</span>`
   ).join('');
@@ -3017,16 +3039,19 @@ function onBulkGroupSelect() {
 
 // 일괄 출석 실행
 function doBulkAttendance() {
-  const groupLabel = document.getElementById('bulk-group-select').value;
-  const dateVal    = document.getElementById('bulk-attend-date').value;
+  const val     = document.getElementById('bulk-group-select').value;
+  const dateVal = document.getElementById('bulk-attend-date').value;
 
-  if (!groupLabel) { showToast('반을 선택해 주세요'); return; }
-  if (!dateVal)    { showToast('날짜를 선택해 주세요'); return; }
+  if (!val)     { showToast('반을 선택해 주세요'); return; }
+  if (!dateVal) { showToast('날짜를 선택해 주세요'); return; }
 
+  const [org, groupLabel] = val.split('__');
   const [y, m, d] = dateVal.split('-');
-  const formatted  = `${y}. ${parseInt(m)}. ${parseInt(d)}.`;
+  const formatted = `${y}. ${parseInt(m)}. ${parseInt(d)}.`;
 
-  const students = state.students.filter(s => s.type === '그룹' && s.group === groupLabel);
+  const students = state.students.filter(s =>
+    s.type === '그룹' && s.group === groupLabel && (s.orgGroup || '넥슨코리아') === org
+  );
   if (!students.length) { showToast('해당 반 수강생이 없습니다'); return; }
 
   let added = 0, skipped = 0;
@@ -3043,8 +3068,8 @@ function doBulkAttendance() {
   renderAdmin();
 
   if (added > 0 && skipped > 0)  showToast(`✅ ${added}명 출석 완료 · ${skipped}명 이미 기록됨`);
-  else if (added > 0)             showToast(`✅ ${groupLabel} ${added}명 전체 출석 완료!`);
-  else                            showToast(`이미 모두 출석 기록된 날짜예요`);
+  else if (added > 0)             showToast(`✅ ${org} ${groupLabel} ${added}명 출석 완료!`);
+  else                            showToast('이미 모두 출석 기록된 날짜예요');
 }
 
 // 사이클별 입금 확인 여부 체크
@@ -3088,24 +3113,78 @@ function groupAddLesson(idx) {
 }
 
 // 그룹 수강생 추가 모달
+// ─────────────────────────────────────────
+// 그룹(기업/기관) 관리
+// ─────────────────────────────────────────
+
+function getOrgs() {
+  const saved = JSON.parse(localStorage.getItem('tv_orgs') || 'null');
+  if (saved && saved.length) return saved;
+  return ['넥슨코리아'];
+}
+
+function saveOrgs(orgs) {
+  localStorage.setItem('tv_orgs', JSON.stringify(orgs));
+}
+
+function populateOrgSelect(selectId, selectedOrg) {
+  const sel = document.getElementById(selectId);
+  if (!sel) return;
+  const orgs = getOrgs();
+  sel.innerHTML = orgs.map(o =>
+    `<option value="${o}" ${o === selectedOrg ? 'selected' : ''}>${o}</option>`
+  ).join('');
+}
+
+function onGsOrgChange() { /* 추후 확장 가능 */ }
+
+function openAddOrgModal() {
+  document.getElementById('new-org-name').value = '';
+  document.getElementById('add-org-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => document.getElementById('new-org-name').focus(), 100);
+}
+
+function closeAddOrgModal() {
+  document.getElementById('add-org-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function saveNewOrg() {
+  const name = document.getElementById('new-org-name').value.trim();
+  if (!name) { showToast('그룹명을 입력해 주세요'); return; }
+  const orgs = getOrgs();
+  if (orgs.includes(name)) { showToast('이미 존재하는 그룹명입니다'); return; }
+  orgs.push(name);
+  saveOrgs(orgs);
+  closeAddOrgModal();
+  populateOrgSelect('gs-org', name);
+  showToast(`${name} 그룹이 추가되었습니다 ✓`);
+}
+
+// ─────────────────────────────────────────
+// 그룹 수강생 추가
+// ─────────────────────────────────────────
+
 function openAddGroupStudent() {
   document.getElementById('gs-name').value = '';
   document.getElementById('gs-phone').value = '';
   document.getElementById('gs-class').value = 'A';
   document.getElementById('gs-time').value = '12:00';
-  document.getElementById('gs-teacher').value = '김수종';
+  document.getElementById('gs-teacher').value = '방건주';
+  populateOrgSelect('gs-org', getOrgs()[0]);
   document.getElementById('add-group-student-modal').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
 
-function openAddGroupStudentForClass(classLabel, time) {
+function openAddGroupStudentForClass(classLabel, time, org) {
   document.getElementById('gs-name').value = '';
   document.getElementById('gs-phone').value = '';
-  // 레이블에서 반 + 시간 파싱
-  const match = classLabel.match(/^([A-Z])반 (.+)$/);
+  populateOrgSelect('gs-org', org || getOrgs()[0]);
+  const match = classLabel.match(/^([A-Z])반(?:\s+(.+))?$/);
   if (match) {
     document.getElementById('gs-class').value = match[1];
-    document.getElementById('gs-time').value = match[2];
+    if (match[2]) document.getElementById('gs-time').value = match[2];
   }
   document.getElementById('add-group-student-modal').classList.add('open');
   document.body.style.overflow = 'hidden';
@@ -3118,26 +3197,32 @@ function closeAddGroupStudent() {
 
 function saveAddGroupStudent() {
   const name    = document.getElementById('gs-name').value.trim();
+  const org     = document.getElementById('gs-org').value;
   const cls     = document.getElementById('gs-class').value;
   const time    = document.getElementById('gs-time').value;
-  const group   = `${cls}반 ${time}`;
+  const group   = `${cls}반 ${time}`;   // 내부 키: "A반 12:00"
+  const orgGroup = org;                 // 소속 그룹명: "넥슨코리아"
   const teacher = document.getElementById('gs-teacher').value;
   const phone   = document.getElementById('gs-phone').value.trim();
+
   if (!name) { showToast('이름을 입력해 주세요'); return; }
   if (state.students.find(s => s.name === name && s.type === '그룹')) {
     showToast('이미 그룹 레슨에 등록된 수강생입니다'); return;
   }
-  state.students.push({ name, type: '그룹', group, teacher, phone, memo: '', lessons: [] });
+
+  state.students.push({ name, type: '그룹', group, orgGroup, teacher, phone, memo: '', lessons: [] });
   saveState();
-  // 반 설정에 강사 기본값 저장
+
   const settings = getGroupClassSettings();
-  if (!settings[group]) settings[group] = { teacher, price: '₩120,000' };
+  const key = `${orgGroup}__${group}`;
+  if (!settings[key]) settings[key] = { teacher, price: '₩120,000', org: orgGroup };
   saveGroupClassSettings(settings);
+
   closeAddGroupStudent();
   renderGroupLessons();
   renderAdmin();
-  showToast(`${name}님이 ${group}에 등록되었습니다 ✓`);
-  sheetsAction('saveStudent', { data: { name, type: '그룹', group, teacher, phone, memo: '' } });
+  showToast(`${name}님이 ${orgGroup} ${cls}반에 등록되었습니다 ✓`);
+  sheetsAction('saveStudent', { data: { name, type: '그룹', group, orgGroup, teacher, phone, memo: '' } });
 }
 
 // 반 설정 편집 모달
