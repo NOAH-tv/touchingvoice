@@ -1276,96 +1276,113 @@ h1, h2, h3,
 
     <!-- 수강생 목록 탭 -->
     <div id="admin-students">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-        <div style="font-size:13px;color:var(--muted)" id="student-count-label">수강생 0명</div>
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-          <button onclick="showAddStudent()" style="padding:8px 16px;background:#f1e7c3;color:#2a1558;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-family:'Paperlogy',sans-serif">+ 수강생 추가</button>
-          <label style="padding:8px 16px;background:rgba(241,231,195,0.12);color:#f1e7c3;border:1px solid rgba(241,231,195,0.25);border-radius:8px;font-size:13px;cursor:pointer;font-family:'Paperlogy',sans-serif">
-            📂 엑셀 일괄 등록
-            <input type="file" accept=".xlsx,.xls" style="display:none" onchange="handleExcelUpload(event)">
-          </label>
-        </div>
+
+      <!-- 개인/그룹 서브탭 -->
+      <div style="display:flex;gap:8px;margin-bottom:20px">
+        <button id="stud-tab-private" onclick="showStudentTab('private')"
+          style="padding:10px 24px;border-radius:10px;font-family:'Paperlogy',sans-serif;font-size:14px;font-weight:700;cursor:pointer;background:#f1e7c3;color:#2a1558;border:none;transition:all .2s">
+          👤 개인 레슨
+        </button>
+        <button id="stud-tab-group" onclick="showStudentTab('group')"
+          style="padding:10px 24px;border-radius:10px;font-family:'Paperlogy',sans-serif;font-size:14px;font-weight:700;cursor:pointer;background:rgba(241,231,195,0.12);color:#f1e7c3;border:1px solid rgba(241,231,195,0.2);transition:all .2s">
+          🎤 그룹 레슨
+        </button>
       </div>
 
-      <!-- 수강생 추가 폼 -->
-      <div id="add-student-form" style="display:none" class="card" style="margin-bottom:16px">
-        <div class="card-label">새 수강생 등록</div>
-        <div class="grid-2" style="margin-top:8px">
-          <div class="form-group">
-            <label class="form-label">이름</label>
-            <input type="text" class="form-input" id="new-student-name" placeholder="성함">
+      <!-- 개인 레슨 패널 -->
+      <div id="stud-panel-private">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <div style="font-size:13px;color:var(--muted)" id="student-count-label">수강생 0명</div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <button onclick="showAddStudent()" style="padding:8px 16px;background:#f1e7c3;color:#2a1558;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-family:'Paperlogy',sans-serif">+ 수강생 추가</button>
+            <label style="padding:8px 16px;background:rgba(241,231,195,0.12);color:#f1e7c3;border:1px solid rgba(241,231,195,0.25);border-radius:8px;font-size:13px;cursor:pointer;font-family:'Paperlogy',sans-serif">
+              📂 엑셀 일괄 등록
+              <input type="file" accept=".xlsx,.xls" style="display:none" onchange="handleExcelUpload(event)">
+            </label>
           </div>
-          <div class="form-group">
-            <label class="form-label">성별</label>
-            <select class="form-select" id="new-student-gender">
-              <option value="">선택 안 함</option>
-              <option value="남">남자</option>
-              <option value="여">여자</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">레슨 유형</label>
-            <select class="form-select" id="new-student-type" onchange="onNewStudentTypeChange()">
-              <option value="개인">개인 레슨</option>
-              <option value="그룹">그룹 레슨</option>
-            </select>
-          </div>
-          <div class="form-group" id="new-student-group-wrap" style="display:none">
-            <label class="form-label">그룹반</label>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-              <select class="form-select" id="new-student-class">
-                <option value="A">A반</option><option value="B">B반</option><option value="C">C반</option>
-                <option value="D">D반</option><option value="E">E반</option><option value="F">F반</option>
-                <option value="G">G반</option><option value="H">H반</option><option value="I">I반</option>
-                <option value="J">J반</option><option value="K">K반</option><option value="L">L반</option>
-                <option value="M">M반</option><option value="N">N반</option><option value="O">O반</option>
-                <option value="P">P반</option><option value="Q">Q반</option><option value="R">R반</option>
-                <option value="S">S반</option><option value="T">T반</option><option value="U">U반</option>
-                <option value="V">V반</option><option value="W">W반</option><option value="X">X반</option>
-                <option value="Y">Y반</option><option value="Z">Z반</option>
+        </div>
+
+        <!-- 수강생 추가 폼 -->
+        <div id="add-student-form" style="display:none" class="card" style="margin-bottom:16px">
+          <div class="card-label">새 수강생 등록</div>
+          <div class="grid-2" style="margin-top:8px">
+            <div class="form-group">
+              <label class="form-label">이름</label>
+              <input type="text" class="form-input" id="new-student-name" placeholder="성함">
+            </div>
+            <div class="form-group">
+              <label class="form-label">성별</label>
+              <select class="form-select" id="new-student-gender">
+                <option value="">선택 안 함</option>
+                <option value="남">남자</option>
+                <option value="여">여자</option>
               </select>
-              <select class="form-select" id="new-student-time">
-                <option value="12:00">12:00 (점심)</option>
-                <option value="18:00">18:00 (저녁)</option>
-                <option value="19:00">19:00 (저녁)</option>
+            </div>
+            <div class="form-group">
+              <label class="form-label">레슨 유형</label>
+              <select class="form-select" id="new-student-type" onchange="onNewStudentTypeChange()">
+                <option value="개인">개인 레슨</option>
+                <option value="그룹">그룹 레슨</option>
+              </select>
+            </div>
+            <div class="form-group" id="new-student-group-wrap" style="display:none">
+              <label class="form-label">그룹반</label>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                <select class="form-select" id="new-student-class">
+                  <option value="A">A반</option><option value="B">B반</option><option value="C">C반</option>
+                  <option value="D">D반</option><option value="E">E반</option><option value="F">F반</option>
+                  <option value="G">G반</option><option value="H">H반</option><option value="I">I반</option>
+                  <option value="J">J반</option><option value="K">K반</option><option value="L">L반</option>
+                  <option value="M">M반</option><option value="N">N반</option><option value="O">O반</option>
+                  <option value="P">P반</option><option value="Q">Q반</option><option value="R">R반</option>
+                  <option value="S">S반</option><option value="T">T반</option><option value="U">U반</option>
+                  <option value="V">V반</option><option value="W">W반</option><option value="X">X반</option>
+                  <option value="Y">Y반</option><option value="Z">Z반</option>
+                </select>
+                <select class="form-select" id="new-student-time">
+                  <option value="12:00">12:00 (점심)</option>
+                  <option value="18:00">18:00 (저녁)</option>
+                  <option value="19:00">19:00 (저녁)</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">담당 선생님</label>
+              <select class="form-select" id="new-student-teacher">
+                <option value="천우경">천우경</option>
+                <option value="김수종">김수종</option>
+                <option value="방건주">방건주</option>
+                <option value="탁상우">탁상우</option>
               </select>
             </div>
           </div>
-          <div class="form-group">
-            <label class="form-label">담당 선생님</label>
-            <select class="form-select" id="new-student-teacher">
-              <option value="천우경">천우경</option>
-              <option value="김수종">김수종</option>
-              <option value="방건주">방건주</option>
-              <option value="탁상우">탁상우</option>
-            </select>
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label">연락처 (선택)</label>
+              <input type="text" class="form-input" id="new-student-phone" placeholder="010-0000-0000">
+            </div>
+            <div class="form-group">
+              <label class="form-label">메모 (선택)</label>
+              <input type="text" class="form-input" id="new-student-memo" placeholder="특이사항">
+            </div>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button onclick="addStudent()" style="flex:1;padding:12px;background:#f1e7c3;color:#2a1558;border:none;border-radius:8px;font-family:'Paperlogy',sans-serif;font-size:14px;font-weight:700;cursor:pointer">등록하기</button>
+            <button onclick="document.getElementById('add-student-form').style.display='none'" style="padding:12px 20px;border:1px solid rgba(241,231,195,0.2);background:rgba(241,231,195,0.06);border-radius:8px;font-family:'Paperlogy',sans-serif;font-size:14px;cursor:pointer;color:#f1e7c3">취소</button>
           </div>
         </div>
-        <div class="grid-2">
-          <div class="form-group">
-            <label class="form-label">성별</label>
-            <select class="form-select" id="new-student-gender">
-              <option value="">선택 안함</option>
-              <option value="남성">남성</option>
-              <option value="여성">여성</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">연락처 (선택)</label>
-            <input type="text" class="form-input" id="new-student-phone" placeholder="010-0000-0000">
-          </div>
-          <div class="form-group">
-            <label class="form-label">메모 (선택)</label>
-            <input type="text" class="form-input" id="new-student-memo" placeholder="특이사항">
-          </div>
-        </div>
-        <div style="display:flex;gap:10px">
-          <button onclick="addStudent()" style="flex:1;padding:12px;background:#f1e7c3;color:#2a1558;border:none;border-radius:8px;font-family:'Paperlogy',sans-serif;font-size:14px;font-weight:700;cursor:pointer">등록하기</button>
-          <button onclick="document.getElementById('add-student-form').style.display='none'" style="padding:12px 20px;border:1px solid rgba(241,231,195,0.2);background:rgba(241,231,195,0.06);border-radius:8px;font-family:'Paperlogy',sans-serif;font-size:14px;cursor:pointer;color:#f1e7c3">취소</button>
-        </div>
+
+        <div id="student-by-teacher"></div>
       </div>
 
-      <div id="student-by-teacher"></div>
+      <!-- 그룹 레슨 패널 (그룹레슨 탭과 동일 렌더링) -->
+      <div id="stud-panel-group" style="display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <div style="font-size:12px;color:rgba(241,231,195,0.45)">반별 4회 사이클 관리 · 수강료 입금 추적</div>
+          <button onclick="openAddGroupStudent()" style="padding:9px 18px;background:#f1e7c3;color:#2a1558;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Paperlogy',sans-serif">+ 수강생 추가</button>
+        </div>
+        <div id="group-classes-wrap-students"></div>
+      </div>
 
     </div>
 
@@ -2686,21 +2703,24 @@ function renderAdmin() {
       ? `${state.currentTeacher} 선생님 · 수강생 ${visible.length}명 · 누적 ${totalLessons}회`
       : `수강생 ${base.length}명 · 누적 ${totalLessons}회${_studentFilter !== 'all' ? ' (필터 적용 중)' : ''}`;
 
-  // 수강생 목록 — 선생님별 그룹
+  // 수강생 목록 — 개인 레슨만 표시 (그룹은 서브탭에서 별도 표시)
   const wrap = document.getElementById('student-by-teacher');
   if (wrap) {
     wrap.innerHTML = '';
     const isAdminAll = !state.currentTeacher || state.currentTeacher === '천우경';
     const teachers   = ['천우경','김수종','방건주','탁상우'];
 
+    // 개인 레슨만 필터
+    const privateVisible = visible.filter(s => s.type === '개인');
+
     const groupsToShow = isAdminAll
       ? (() => {
-          const noTeacher = visible.filter(s => !s.teacher || !teachers.includes(s.teacher));
-          const g = teachers.map(t => ({ teacher: t, students: visible.filter(s => s.teacher === t) }));
+          const noTeacher = privateVisible.filter(s => !s.teacher || !teachers.includes(s.teacher));
+          const g = teachers.map(t => ({ teacher: t, students: privateVisible.filter(s => s.teacher === t) }));
           if (noTeacher.length) g.push({ teacher: '미배정', students: noTeacher });
           return g;
         })()
-      : [{ teacher: state.currentTeacher, students: visible }];
+      : [{ teacher: state.currentTeacher, students: privateVisible }];
 
     groupsToShow.forEach(g => {
       if (!g.students.length) return;
@@ -2758,8 +2778,8 @@ function renderAdmin() {
       wrap.appendChild(groupEl);
     });
 
-    if (!visible.length) {
-      wrap.innerHTML = '<div style="text-align:center;color:rgba(241,231,195,0.4);padding:40px;font-size:13px">등록된 수강생이 없습니다</div>';
+    if (!privateVisible.length) {
+      wrap.innerHTML = '<div style="text-align:center;color:rgba(241,231,195,0.4);padding:40px;font-size:13px">등록된 개인 레슨 수강생이 없습니다</div>';
     }
   }
 
@@ -2828,8 +2848,9 @@ function showAdminTab(tab) {
   document.querySelectorAll('.tab-btn').forEach((b,i) => {
     b.classList.toggle('active', ['students','grouptab','teachers','absent','payment','notices','analysis','settings'][i] === tab);
   });
-  if (tab === 'grouptab') {
-    renderGroupLessons();
+  if (tab === 'students') {
+    showStudentTab(_studentSubTab || 'private');
+  }
   }
   if (tab === 'teachers') renderTeacherStats();
   if (tab === 'absent')   { renderAbsent(); renderAttendance(); showAttTab('attend'); }
@@ -3244,7 +3265,46 @@ function saveAddGroupStudent() {
   sheetsAction('saveStudent', { data: { name, type: '그룹', group, orgGroup, teacher, phone, memo: '' } });
 }
 
-// 스탬프카드에서 그룹 반/시간 변경 저장
+// 수강생 목록 탭 내 개인/그룹 서브탭 전환
+let _studentSubTab = 'private'; // 'private' | 'group'
+
+function showStudentTab(tab) {
+  _studentSubTab = tab;
+  const isPrivate = tab === 'private';
+
+  document.getElementById('stud-panel-private').style.display = isPrivate ? 'block' : 'none';
+  document.getElementById('stud-panel-group').style.display   = isPrivate ? 'none'  : 'block';
+
+  const btnPrivate = document.getElementById('stud-tab-private');
+  const btnGroup   = document.getElementById('stud-tab-group');
+  if (btnPrivate) {
+    btnPrivate.style.background = isPrivate ? '#f1e7c3' : 'rgba(241,231,195,0.12)';
+    btnPrivate.style.color      = isPrivate ? '#2a1558' : '#f1e7c3';
+    btnPrivate.style.border     = isPrivate ? 'none' : '1px solid rgba(241,231,195,0.2)';
+  }
+  if (btnGroup) {
+    btnGroup.style.background = !isPrivate ? '#f1e7c3' : 'rgba(241,231,195,0.12)';
+    btnGroup.style.color      = !isPrivate ? '#2a1558' : '#f1e7c3';
+    btnGroup.style.border     = !isPrivate ? 'none' : '1px solid rgba(241,231,195,0.2)';
+  }
+
+  if (!isPrivate) renderGroupLessonsInStudents();
+  else renderAdmin();
+}
+
+// 수강생 목록 탭의 그룹 패널에 렌더링 (group-classes-wrap-students 사용)
+function renderGroupLessonsInStudents() {
+  const originalWrap = document.getElementById('group-classes-wrap');
+  const targetWrap   = document.getElementById('group-classes-wrap-students');
+  if (!targetWrap) return;
+
+  // group-classes-wrap을 임시로 교체해서 renderGroupLessons 재활용
+  if (originalWrap) originalWrap.id = 'group-classes-wrap-temp';
+  targetWrap.id = 'group-classes-wrap';
+  renderGroupLessons();
+  targetWrap.id = 'group-classes-wrap-students';
+  if (originalWrap) originalWrap.id = 'group-classes-wrap';
+}
 function saveStampCardGroupEdit() {
   if (stampStudentIdx < 0) return;
   const s    = state.students[stampStudentIdx];
