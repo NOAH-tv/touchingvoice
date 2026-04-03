@@ -1376,13 +1376,36 @@ h1, h2, h3,
 
     <!-- 🎤 그룹 레슨 탭 -->
     <div id="admin-grouptab" style="display:none">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:12px">
         <div>
           <div style="font-size:18px;font-weight:700;color:#f1e7c3;margin-bottom:4px">넥슨코리아 그룹 레슨</div>
           <div style="font-size:12px;color:rgba(241,231,195,0.5)">반별 4회 사이클 관리 · 수강료 입금 추적</div>
         </div>
         <button onclick="openAddGroupStudent()" style="padding:9px 18px;background:#f1e7c3;color:#2a1558;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Paperlogy',sans-serif">+ 수강생 추가</button>
       </div>
+
+      <!-- 일괄 출석 입력 -->
+      <div class="card" style="margin-bottom:20px;background:rgba(63,35,120,0.4);border-color:rgba(241,231,195,0.2)">
+        <div class="card-label" style="margin-bottom:12px">⚡ 그룹 일괄 출석</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">반 선택</label>
+            <select class="form-select" id="bulk-group-select" onchange="onBulkGroupSelect()">
+              <option value="">-- 반 선택 --</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">출석 날짜</label>
+            <input type="date" class="form-input" id="bulk-attend-date">
+          </div>
+        </div>
+        <div id="bulk-student-preview" style="margin-bottom:12px;display:none">
+          <div style="font-size:11px;color:rgba(241,231,195,0.5);margin-bottom:8px;letter-spacing:0.5px">출석 처리될 수강생</div>
+          <div id="bulk-student-list" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+        </div>
+        <button onclick="doBulkAttendance()" style="width:100%;padding:13px;background:#f1e7c3;color:#2a1558;border:none;border-radius:8px;font-family:'Paperlogy',sans-serif;font-size:14px;font-weight:700;cursor:pointer">반 전체 출석 처리</button>
+      </div>
+
       <div id="group-classes-wrap"></div>
     </div>
 
@@ -2793,7 +2816,12 @@ function showAdminTab(tab) {
   document.querySelectorAll('.tab-btn').forEach((b,i) => {
     b.classList.toggle('active', ['students','grouptab','teachers','absent','payment','notices','analysis','settings'][i] === tab);
   });
-  if (tab === 'grouptab') renderGroupLessons();
+  if (tab === 'grouptab') {
+    renderGroupLessons();
+    // 일괄출석 날짜 오늘로 기본값 설정
+    const bulkDate = document.getElementById('bulk-attend-date');
+    if (bulkDate && !bulkDate.value) bulkDate.value = new Date().toISOString().split('T')[0];
+  }
   if (tab === 'teachers') renderTeacherStats();
   if (tab === 'absent')   { renderAbsent(); renderAttendance(); showAttTab('attend'); }
   if (tab === 'payment')  renderPayments();
@@ -2849,7 +2877,15 @@ function renderGroupLessons() {
   const bankInfo = state.settings.bankInfo || '';
   const isAdmin = !state.currentTeacher || state.currentTeacher === '천우경';
 
-  // 등록된 반 목록 추출
+  // 그룹레슨 학생 = type이 '그룹' + group 필드 있는 학생
+  // 방건주 담당 그룹레슨 학생도 포함 (group 필드 없으면 자동 배정)
+  // 방건주의 그룹 학생 중 group 없는 경우 → group 자동 세팅
+  state.students.forEach(s => {
+    if (s.type === '그룹' && s.teacher === '방건주' && !s.group) {
+      s.group = '방건주반';
+    }
+  });
+
   const groups = getRegisteredGroups();
 
   if (!groups.length) {
@@ -2858,20 +2894,28 @@ function renderGroupLessons() {
       아직 등록된 그룹 수강생이 없어요<br>
       <span style="font-size:12px;opacity:.7">위의 "+ 수강생 추가" 버튼으로 등록해 주세요</span>
     </div>`;
+    // 일괄출석 드롭다운 비우기
+    const sel = document.getElementById('bulk-group-select');
+    if (sel) sel.innerHTML = '<option value="">-- 반 없음 --</option>';
     return;
+  }
+
+  // 일괄출석 드롭다운 업데이트
+  const bulkSel = document.getElementById('bulk-group-select');
+  if (bulkSel) {
+    bulkSel.innerHTML = '<option value="">-- 반 선택 --</option>' +
+      groups.map(g => `<option value="${g}">${g}</option>`).join('');
   }
 
   groups.forEach(groupLabel => {
     const cfg = settings[groupLabel] || { teacher: '', price: '₩120,000' };
     const students = state.students.filter(s => s.type === '그룹' && s.group === groupLabel);
 
-    // 강사 필터
     if (!isAdmin && cfg.teacher && cfg.teacher !== state.currentTeacher) return;
 
     const card = document.createElement('div');
     card.className = 'group-class-card';
 
-    // 반 이름 파싱
     const [clsPart, timePart] = groupLabel.split('반 ');
     const displayName = `${clsPart}반`;
     const displayTime = timePart || '';
@@ -2951,6 +2995,56 @@ function renderGroupLessons() {
     addRow.innerHTML = `<button onclick="openAddGroupStudentForClass('${groupLabel.replace(/'/g,"\\'")}','${displayTime}')" style="font-size:12px;color:rgba(241,231,195,0.45);background:none;border:none;cursor:pointer;font-family:'Paperlogy',sans-serif;padding:0">+ 이 반에 수강생 추가</button>`;
     card.appendChild(addRow);
   });
+}
+
+// 일괄 출석 — 반 선택 시 학생 미리보기
+function onBulkGroupSelect() {
+  const groupLabel = document.getElementById('bulk-group-select').value;
+  const preview    = document.getElementById('bulk-student-preview');
+  const listEl     = document.getElementById('bulk-student-list');
+  if (!groupLabel || !preview || !listEl) return;
+
+  const students = state.students.filter(s => s.type === '그룹' && s.group === groupLabel);
+  if (!students.length) {
+    preview.style.display = 'none';
+    return;
+  }
+  listEl.innerHTML = students.map(s =>
+    `<span style="padding:4px 10px;border-radius:999px;font-size:12px;font-weight:600;background:rgba(241,231,195,0.12);color:#f1e7c3;border:1px solid rgba(241,231,195,0.2)">${s.name}</span>`
+  ).join('');
+  preview.style.display = 'block';
+}
+
+// 일괄 출석 실행
+function doBulkAttendance() {
+  const groupLabel = document.getElementById('bulk-group-select').value;
+  const dateVal    = document.getElementById('bulk-attend-date').value;
+
+  if (!groupLabel) { showToast('반을 선택해 주세요'); return; }
+  if (!dateVal)    { showToast('날짜를 선택해 주세요'); return; }
+
+  const [y, m, d] = dateVal.split('-');
+  const formatted  = `${y}. ${parseInt(m)}. ${parseInt(d)}.`;
+
+  const students = state.students.filter(s => s.type === '그룹' && s.group === groupLabel);
+  if (!students.length) { showToast('해당 반 수강생이 없습니다'); return; }
+
+  let added = 0, skipped = 0;
+  students.forEach(s => {
+    if (s.lessons.includes(formatted)) { skipped++; return; }
+    s.lessons.push(formatted);
+    s.lessons.sort();
+    sheetsAction('saveLesson', { data: { name: s.name, type: '그룹', teacher: s.teacher || '', date: formatted, seq: s.lessons.length } });
+    added++;
+  });
+
+  saveState();
+  renderGroupLessons();
+  renderAdmin();
+
+  if (added > 0 && skipped > 0)  showToast(`✅ ${added}명 출석 완료 · ${skipped}명 이미 기록됨`);
+  else if (added > 0)             showToast(`✅ ${groupLabel} ${added}명 전체 출석 완료!`);
+  else                            showToast(`이미 모두 출석 기록된 날짜예요`);
 }
 
 // 사이클별 입금 확인 여부 체크
