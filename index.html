@@ -2114,6 +2114,9 @@ h1, h2, h3,
         ✏️
       </button>
     </div>
+
+    <!-- 그룹 반/시간 변경 (그룹 학생만 표시) -->
+    <div id="sc-group-edit" style="display:none"></div>
   </div>
 </div>
 
@@ -2160,6 +2163,22 @@ function saveState() {
   if (state.currentTeacher) sessionStorage.setItem('tv_teacher', state.currentTeacher);
   else sessionStorage.removeItem('tv_teacher');
 }
+
+// 기존 그룹 학생 데이터 마이그레이션
+// - orgGroup 없는 경우 → '넥슨코리아'
+// - group '방건주반' 또는 없는 경우 → 'A반 12:00' (수강생 카드에서 수정 가능)
+(function migrateGroupStudents() {
+  let changed = false;
+  state.students.forEach(s => {
+    if (s.type === '그룹') {
+      if (!s.orgGroup) { s.orgGroup = '넥슨코리아'; changed = true; }
+      if (!s.group || s.group === '방건주반' || s.group === '방건주반반') {
+        s.group = 'A반 12:00'; changed = true;
+      }
+    }
+  });
+  if (changed) saveState();
+})();
 
 // ── 누적 레슨 통계 계산 ──
 function getLessonStats(student) {
@@ -2719,7 +2738,7 @@ function renderAdmin() {
                 <td><strong style="cursor:pointer;text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(241,231,195,0.3)" onclick="openStampCard(${idx})">${gIcon} ${s.name}</strong></td>
                 <td><span style="padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600;background:rgba(241,231,195,0.12);color:#f1e7c3">${
                   s.type === '그룹'
-                    ? `그룹${s.orgGroup ? ' · '+s.orgGroup : ''}${s.group ? ' · '+s.group.split(' ')[0] : ''}`
+                    ? `${s.orgGroup || '넥슨코리아'}${s.group ? ' · '+s.group.split(' ')[0] : ''}`
                     : s.type
                 }</span></td>
                 <td>${pillsHtml}</td>
@@ -3225,8 +3244,25 @@ function saveAddGroupStudent() {
   sheetsAction('saveStudent', { data: { name, type: '그룹', group, orgGroup, teacher, phone, memo: '' } });
 }
 
-// 반 설정 편집 모달
-let _editGroupLabel = '';
+// 스탬프카드에서 그룹 반/시간 변경 저장
+function saveStampCardGroupEdit() {
+  if (stampStudentIdx < 0) return;
+  const s    = state.students[stampStudentIdx];
+  const org  = document.getElementById('sc-org-sel')?.value;
+  const cls  = document.getElementById('sc-cls-sel')?.value;
+  const time = document.getElementById('sc-time-sel')?.value;
+  if (!org || !cls || !time) return;
+
+  const oldGroup = s.group;
+  s.orgGroup = org;
+  s.group    = `${cls}반 ${time}`;
+
+  saveState();
+  renderGroupLessons();
+  renderAdmin();
+  renderStampCard(); // 변경 내용 즉시 반영
+  showToast(`${s.name}님 → ${org} ${cls}반 ${time} 변경 완료 ✓`);
+}
 
 function openEditGroupModal(groupLabel) {
   _editGroupLabel = groupLabel;
@@ -5032,6 +5068,46 @@ function renderStampCard() {
   document.getElementById('sc-cycle-label').textContent = isDue
     ? `${cycle-1}사이클 완료 ✓`
     : `${cycle}사이클 · ${cyclePos}/4회차`;
+
+  // 그룹 학생 반/시간 변경 섹션
+  const scGroupEdit = document.getElementById('sc-group-edit');
+  if (scGroupEdit) {
+    if (s.type === '그룹') {
+      const orgs = getOrgs();
+      const currentOrg   = s.orgGroup || '넥슨코리아';
+      const currentCls   = s.group ? s.group.split('반 ')[0] : 'A';
+      const currentTime  = s.group ? (s.group.split('반 ')[1] || '12:00') : '12:00';
+      const clsOptions   = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
+        .map(c => `<option value="${c}" ${c===currentCls?'selected':''}>${c}반</option>`).join('');
+      const timeOptions  = ['12:00','18:00','19:00']
+        .map(t => `<option value="${t}" ${t===currentTime?'selected':''}>${t}</option>`).join('');
+      const orgOptions   = orgs.map(o => `<option value="${o}" ${o===currentOrg?'selected':''}>${o}</option>`).join('');
+      scGroupEdit.style.display = 'block';
+      scGroupEdit.innerHTML = `
+        <div style="border-top:1px solid rgba(241,231,195,0.1);margin-top:16px;padding-top:16px">
+          <div style="font-size:11px;letter-spacing:1px;color:rgba(241,231,195,0.45);margin-bottom:10px">🏢 그룹 · 반 정보</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
+            <div>
+              <div style="font-size:10px;color:rgba(241,231,195,0.4);margin-bottom:4px">그룹</div>
+              <select id="sc-org-sel" class="form-select" style="font-size:12px;padding:7px 8px">${orgOptions}</select>
+            </div>
+            <div>
+              <div style="font-size:10px;color:rgba(241,231,195,0.4);margin-bottom:4px">반</div>
+              <select id="sc-cls-sel" class="form-select" style="font-size:12px;padding:7px 8px">${clsOptions}</select>
+            </div>
+            <div>
+              <div style="font-size:10px;color:rgba(241,231,195,0.4);margin-bottom:4px">시간</div>
+              <select id="sc-time-sel" class="form-select" style="font-size:12px;padding:7px 8px">${timeOptions}</select>
+            </div>
+          </div>
+          <button onclick="saveStampCardGroupEdit()" style="width:100%;padding:9px;background:rgba(241,231,195,0.12);border:1px solid rgba(241,231,195,0.2);border-radius:8px;font-family:'Paperlogy',sans-serif;font-size:12px;font-weight:600;color:#f1e7c3;cursor:pointer">반/시간 변경 저장</button>
+        </div>
+      `;
+    } else {
+      scGroupEdit.style.display = 'none';
+      scGroupEdit.innerHTML = '';
+    }
+  }
 
   // 강사별 금액
   const price = getTeacherPrice(s.teacher);
