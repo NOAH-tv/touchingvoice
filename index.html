@@ -2974,11 +2974,11 @@ function renderGroupLessons() {
             <button class="group-edit-btn" onclick="openEditGroupModal('${key.replace(/'/g,"\\'")}')">⚙ 반 설정</button>
           </div>
         </div>
-        <div id="group-students-${encodeURIComponent(key)}"></div>
+        <div class="group-students-wrap" data-key="${key}"></div>
       `;
       wrap.appendChild(card);
 
-      const studentsWrap = card.querySelector(`#group-students-${encodeURIComponent(key)}`);
+      const studentsWrap = card.querySelector('.group-students-wrap[data-key="' + key + '"]');
 
       if (!students.length) {
         studentsWrap.innerHTML = `<div style="padding:24px;text-align:center;font-size:13px;color:rgba(241,231,195,0.3)">등록된 수강생이 없습니다</div>`;
