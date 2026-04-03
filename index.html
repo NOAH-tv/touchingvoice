@@ -1265,7 +1265,6 @@ h1, h2, h3,
     <!-- 탭 -->
     <div class="tab-bar" style="overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;scrollbar-width:none">
       <button class="tab-btn active" onclick="showAdminTab('students')" style="white-space:nowrap">수강생 목록</button>
-      <button class="tab-btn" onclick="showAdminTab('grouptab')" style="white-space:nowrap">🎤 그룹 레슨</button>
       <button class="tab-btn" onclick="showAdminTab('teachers')" style="white-space:nowrap">선생님별 현황</button>
       <button class="tab-btn" onclick="showAdminTab('absent')" style="white-space:nowrap">출석 관리</button>
       <button class="tab-btn" onclick="showAdminTab('payment')" style="white-space:nowrap">입금 내역</button>
@@ -2851,12 +2850,12 @@ function addStudent() {
 }
 
 function showAdminTab(tab) {
-  ['students','grouptab','teachers','absent','payment','notices','analysis','settings'].forEach(t => {
+  ['students','teachers','absent','payment','notices','analysis','settings'].forEach(t => {
     const el = document.getElementById('admin-' + t);
     if (el) el.style.display = t === tab ? 'block' : 'none';
   });
   document.querySelectorAll('.tab-btn').forEach((b,i) => {
-    b.classList.toggle('active', ['students','grouptab','teachers','absent','payment','notices','analysis','settings'][i] === tab);
+    b.classList.toggle('active', ['students','teachers','absent','payment','notices','analysis','settings'][i] === tab);
   });
   if (tab === 'students') {
     showStudentTab(_studentSubTab || 'private');
