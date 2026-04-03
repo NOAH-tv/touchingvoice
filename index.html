@@ -1377,9 +1377,19 @@ h1, h2, h3,
 
       <!-- 그룹 레슨 패널 (그룹레슨 탭과 동일 렌더링) -->
       <div id="stud-panel-group" style="display:none">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
           <div style="font-size:12px;color:rgba(241,231,195,0.45)">반별 4회 사이클 관리 · 수강료 입금 추적</div>
-          <button onclick="openAddGroupStudent()" style="padding:9px 18px;background:#f1e7c3;color:#2a1558;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Paperlogy',sans-serif">+ 수강생 추가</button>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <a id="group-excel-download" href="#" onclick="downloadGroupTemplate(event)"
+              style="padding:9px 16px;background:rgba(241,231,195,0.12);color:#f1e7c3;border:1px solid rgba(241,231,195,0.25);border-radius:8px;font-size:13px;cursor:pointer;font-family:'Paperlogy',sans-serif;text-decoration:none">
+              📥 양식 다운로드
+            </a>
+            <label style="padding:9px 16px;background:rgba(241,231,195,0.12);color:#f1e7c3;border:1px solid rgba(241,231,195,0.25);border-radius:8px;font-size:13px;cursor:pointer;font-family:'Paperlogy',sans-serif">
+              📂 엑셀 일괄 등록
+              <input type="file" accept=".xlsx,.xls" style="display:none" onchange="handleExcelUpload(event)">
+            </label>
+            <button onclick="openAddGroupStudent()" style="padding:9px 18px;background:#f1e7c3;color:#2a1558;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Paperlogy',sans-serif">+ 수강생 추가</button>
+          </div>
         </div>
         <div id="group-classes-wrap-students"></div>
       </div>
@@ -5396,12 +5406,11 @@ function closeEditLesson() {
 async function handleExcelUpload(event) {
   const file = event.target.files[0];
   if (!file) return;
-  event.target.value = ''; // 동일 파일 재업로드 가능하게 초기화
+  event.target.value = '';
 
   showToast('📂 엑셀 파일 읽는 중...');
 
   try {
-    // SheetJS 로드 (CDN)
     if (typeof XLSX === 'undefined') {
       await loadScript('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js');
     }
@@ -5409,24 +5418,27 @@ async function handleExcelUpload(event) {
     const data = await file.arrayBuffer();
     const workbook = XLSX.read(data, { type: 'array' });
 
-    // 첫 번째 시트 또는 "수강생 목록" 시트 사용
-    const sheetName = workbook.SheetNames.includes('수강생 목록')
-      ? '수강생 목록'
-      : workbook.SheetNames[0];
+    const sheetName = workbook.SheetNames.find(n => n.includes('수강생') || n.includes('그룹'))
+      || workbook.SheetNames[0];
     const sheet = workbook.Sheets[sheetName];
     const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
 
-    // 헤더 행 찾기 (이름/레슨유형/담당선생님 포함된 행)
+    // 헤더 행 찾기
     let headerRow = -1;
     for (let i = 0; i < rows.length; i++) {
       const r = rows[i].map(c => String(c).trim());
-      if (r.includes('이름') && r.includes('레슨유형')) { headerRow = i; break; }
+      if (r.includes('이름') && (r.includes('레슨유형') || r.includes('그룹명') || r.includes('반'))) {
+        headerRow = i; break;
+      }
     }
     if (headerRow < 0) { showToast('❌ 헤더를 찾을 수 없어요. 양식을 확인해 주세요.'); return; }
 
-    const headers = rows[headerRow].map(c => String(c).trim());
+    const headers  = rows[headerRow].map(c => String(c).trim());
     const iName    = headers.indexOf('이름');
-    const iType    = headers.indexOf('레슨유형');
+    const iType    = headers.indexOf('레슨유형');       // 개인/그룹 구분 (없으면 그룹으로 처리)
+    const iOrg     = headers.indexOf('그룹명');          // 넥슨코리아 등
+    const iClass   = headers.indexOf('반');
+    const iTime    = headers.indexOf('시간');
     const iTeacher = headers.indexOf('담당선생님');
     const iPhone   = headers.indexOf('연락처');
     const iMemo    = headers.indexOf('메모');
@@ -5436,48 +5448,75 @@ async function handleExcelUpload(event) {
     const skipped = [];
 
     for (let i = headerRow + 1; i < rows.length; i++) {
-      const r = rows[i];
+      const r    = rows[i];
       const name = String(r[iName] || '').trim();
-      const type = String(r[iType] || '').trim();
-      if (!name || !type) continue;
+      if (!name) continue;
+      if (['홍길동','김민지','이수진','박순예시'].includes(name)) continue;
 
-      // 예시 데이터 필터링
-      if (['홍길동','김민지','이수진'].includes(name)) continue;
-
+      // 레슨유형 결정 (그룹명이나 반 있으면 그룹, 없으면 개인)
+      let type = iType >= 0 ? String(r[iType] || '').trim() : '';
+      if (!type) type = (iOrg >= 0 && r[iOrg]) || (iClass >= 0 && r[iClass]) ? '그룹' : '개인';
       if (!['개인','그룹'].includes(type)) {
-        skipped.push(`${name} (레슨유형 오류: "${type}")`);
-        continue;
+        skipped.push(`${name} (레슨유형 오류: "${type}")`); continue;
       }
 
-      const teacher = String(r[iTeacher] || '').trim();
-      const phone   = String(r[iPhone]   || '').trim();
-      const memo    = String(r[iMemo]    || '').trim();
-      const seq     = parseInt(r[iSeq])  || 0;
+      const teacher  = String(r[iTeacher] || '').trim();
+      const phone    = String(r[iPhone]   || '').trim();
+      const memo     = String(r[iMemo]    || '').trim();
+      const seq      = parseInt(r[iSeq])  || 0;
+
+      // 그룹 필드
+      const orgGroup = iOrg   >= 0 ? String(r[iOrg]   || '').trim() || '넥슨코리아' : '넥슨코리아';
+      const cls      = iClass >= 0 ? String(r[iClass]  || '').trim().replace('반','').toUpperCase() || 'A' : 'A';
+      const time     = iTime  >= 0 ? String(r[iTime]   || '').trim() || '12:00' : '12:00';
+      const group    = `${cls}반 ${time}`;
 
       // 중복 체크
       if (state.students.find(s => s.name === name && s.type === type)) {
-        skipped.push(`${name} (이미 등록됨)`);
-        continue;
+        skipped.push(`${name} (이미 등록됨)`); continue;
       }
 
-      // lessons 배열 생성 (총 레슨 횟수만큼 빈 날짜 채움 — 날짜 불명)
       const lessons = seq > 0
         ? Array.from({ length: seq }, (_, k) => `이전수업 ${k + 1}회`)
         : [];
 
-      newStudents.push({ name, type, teacher, phone, memo, lessons });
+      const student = { name, type, teacher, phone, memo, lessons };
+      if (type === '그룹') { student.orgGroup = orgGroup; student.group = group; }
+      newStudents.push(student);
     }
 
     if (!newStudents.length && !skipped.length) {
       showToast('등록할 수강생이 없어요.'); return;
     }
 
-    // state에 추가 + Sheets에 저장
     for (const s of newStudents) {
       state.students.push(s);
-      await sheetsAction('saveStudent', { data: { name: s.name, type: s.type, teacher: s.teacher, phone: s.phone, memo: s.memo } });
-      // 레슨 횟수 있으면 updateLessons
+      await sheetsAction('saveStudent', { data: { name: s.name, type: s.type, teacher: s.teacher, phone: s.phone, memo: s.memo, orgGroup: s.orgGroup || '', group: s.group || '' } });
       if (s.lessons.length > 0) {
+        await sheetsAction('updateLessons', { name: s.name, type: s.type, lessons: s.lessons });
+      }
+    }
+
+    saveState();
+    renderAdmin();
+    renderGroupLessons();
+    if (document.getElementById('stud-panel-group')?.style.display === 'block') {
+      renderGroupLessonsInStudents();
+    }
+
+    let msg = `✅ ${newStudents.length}명 등록 완료!`;
+    if (skipped.length) msg += ` (건너뜀 ${skipped.length}명)`;
+    showToast(msg);
+
+    if (skipped.length) {
+      setTimeout(() => showToast(`건너뜀: ${skipped.slice(0,3).join(', ')}${skipped.length > 3 ? ' 외 ' + (skipped.length - 3) + '명' : ''}`), 3000);
+    }
+
+  } catch (e) {
+    showToast('❌ 파일 읽기 실패: ' + e.message);
+    console.error(e);
+  }
+}
         await sheetsAction('updateLessons', { name: s.name, type: s.type, lessons: s.lessons });
       }
     }
@@ -5500,7 +5539,47 @@ async function handleExcelUpload(event) {
   }
 }
 
-function loadScript(src) {
+// 그룹 레슨 엑셀 양식 다운로드
+async function downloadGroupTemplate(e) {
+  e.preventDefault();
+  showToast('📥 양식 생성 중...');
+  try {
+    if (typeof XLSX === 'undefined') {
+      await loadScript('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js');
+    }
+    const wb = XLSX.utils.book_new();
+    const headers = ['이름', '그룹명', '반', '시간', '담당선생님', '연락처', '메모', '총레슨횟수'];
+    const examples = [
+      ['박순', '넥슨코리아', 'A', '12:00', '방건주', '010-0000-0001', '', 0],
+      ['김철수', '넥슨코리아', 'A', '12:00', '방건주', '010-0000-0002', '', 0],
+      ['이영희', '넥슨코리아', 'B', '18:00', '방건주', '010-0000-0003', '', 0],
+    ];
+    const wsData = [headers, ...examples];
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+    // 컬럼 너비
+    ws['!cols'] = [12,16,6,8,12,16,18,12].map(w => ({ wch: w }));
+
+    // 안내 행 추가
+    const guide = [
+      [],
+      ['📌 작성 안내'],
+      ['그룹명: 기업/기관 이름 (예: 넥슨코리아)'],
+      ['반: 알파벳 대문자 1글자 (예: A, B, C)'],
+      ['시간: 12:00 / 18:00 / 19:00 중 선택'],
+      ['담당선생님: 방건주 / 김수종 / 탁상우 중 선택'],
+      ['총레슨횟수: 이미 수업한 횟수 (없으면 0)'],
+    ];
+    guide.forEach(r => wsData.push(r));
+    XLSX.utils.sheet_add_aoa(ws, guide, { origin: { r: examples.length + 2, c: 0 } });
+
+    XLSX.utils.book_append_sheet(wb, ws, '그룹레슨 수강생');
+    XLSX.writeFile(wb, '터칭보이스_그룹레슨_등록양식.xlsx');
+    showToast('✅ 양식 다운로드 완료!');
+  } catch(e) {
+    showToast('❌ 다운로드 실패: ' + e.message);
+  }
+}
   return new Promise((resolve, reject) => {
     const s = document.createElement('script');
     s.src = src; s.onload = resolve; s.onerror = reject;
