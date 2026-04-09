@@ -3015,7 +3015,13 @@ function renderGroupLessons() {
 
   // 기관별 카드 렌더링
   orgs.forEach(org => {
-    const orgStudents = state.students.filter(s => s.type === '그룹' && (s.orgGroup || '넥슨코리아') === org);
+    // 비관리자(천우경 제외)는 자기 학생만 표시
+    const orgStudents = state.students.filter(s =>
+      s.type === '그룹' &&
+      (s.orgGroup || '넥슨코리아') === org &&
+      (isAdmin || s.teacher === state.currentTeacher)
+    );
+    if (!isAdmin && orgStudents.length === 0) return; // 해당 기관에 내 학생 없으면 스킵
     const classes = [...new Set(orgStudents.map(s => s.group).filter(Boolean))].sort((a, b) => {
       const [ca] = a.split('반 '), [cb] = b.split('반 ');
       return ca < cb ? -1 : ca > cb ? 1 : 0;
@@ -3036,7 +3042,7 @@ function renderGroupLessons() {
       const cfg = settings[key] || settings[groupLabel] || { teacher: '', price: '₩120,000' };
       const students = orgStudents.filter(s => s.group === groupLabel);
 
-      if (!isAdmin && cfg.teacher && cfg.teacher !== state.currentTeacher) return;
+      // 학생 필터는 orgStudents 단계에서 이미 처리됨
 
       const card = document.createElement('div');
       card.className = 'group-class-card';
