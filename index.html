@@ -2190,20 +2190,71 @@ function saveState() {
   else sessionStorage.removeItem('tv_teacher');
 }
 
-// 기존 그룹 학생 데이터 마이그레이션
-// - orgGroup 없는 경우 → '넥슨코리아'
-// - group '방건주반' 또는 없는 경우 → 'A반 12:00' (수강생 카드에서 수정 가능)
+// 그룹 학생 데이터 마이그레이션 — 페이지 로드 시 항상 실행
 (function migrateGroupStudents() {
+  // 확정 반 배정 테이블 (스탬프카드에서 개별 변경 가능)
+  const CLASS_MAP = {
+    // 방건주 — 화(B반) 12:00
+    '박순':    { teacher: '방건주', group: 'B반 12:00' },
+    '이규호':  { teacher: '방건주', group: 'B반 12:00' },
+    // 방건주 — 화(K반) 18:00
+    '정일광':  { teacher: '방건주', group: 'K반 18:00' },
+    '김혜린':  { teacher: '방건주', group: 'K반 18:00' },
+    '박예찬':  { teacher: '방건주', group: 'K반 18:00' },
+    // 방건주 — 화(G반) 19:00
+    '유지민':  { teacher: '방건주', group: 'G반 19:00' },
+    '최정한':  { teacher: '방건주', group: 'G반 19:00' },
+    // 방건주 — 금(A반) 12:00
+    '박정인':  { teacher: '방건주', group: 'A반 12:00' },
+    '남소희':  { teacher: '방건주', group: 'A반 12:00' },
+    // 방건주 — 금(A반) 12:00 추가
+    '김주한':  { teacher: '방건주', group: 'A반 12:00' },
+    // 김수종 — 월(H반) 12:00
+    '김미연':  { teacher: '김수종', group: 'H반 12:00' },
+    '최진혁':  { teacher: '김수종', group: 'H반 12:00' },
+    '이동현':  { teacher: '김수종', group: 'H반 12:00' },
+    // 김수종 — 화(E반) 12:00
+    '이봄':    { teacher: '김수종', group: 'E반 12:00' },
+    '성제형':  { teacher: '김수종', group: 'E반 12:00' },
+    '이해인':  { teacher: '김수종', group: 'E반 12:00' },
+    '강현신':  { teacher: '김수종', group: 'E반 12:00' },
+    // 김수종 — 수(C반) 12:00
+    '김정은':  { teacher: '김수종', group: 'C반 12:00' },
+    '조영준':  { teacher: '김수종', group: 'C반 12:00' },
+    '인효연':  { teacher: '김수종', group: 'C반 12:00' },
+    // 김수종 — 목(N반) 12:00
+    '정봉광':  { teacher: '김수종', group: 'N반 12:00' },
+    '김민수':  { teacher: '김수종', group: 'N반 12:00' },
+    '양창완':  { teacher: '김수종', group: 'N반 12:00' },
+    // 탁상우 — 화(L반) 19:00
+    '강현우':  { teacher: '탁상우', group: 'L반 19:00' },
+    '손혜성':  { teacher: '탁상우', group: 'L반 19:00' },
+    // 탁상우 — 월(O반) 19:00
+    '윤지혜':  { teacher: '탁상우', group: 'O반 19:00' },
+    '임하운':  { teacher: '탁상우', group: 'O반 19:00' },
+  };
+
   let changed = false;
   state.students.forEach(s => {
-    if (s.type === '그룹') {
-      if (!s.orgGroup) { s.orgGroup = '넥슨코리아'; changed = true; }
-      if (!s.group || s.group === '방건주반' || s.group === '방건주반반') {
-        s.group = 'A반 12:00'; changed = true;
+    if (s.type !== '그룹') return;
+    // orgGroup 없으면 넥슨코리아 기본값
+    if (!s.orgGroup) { s.orgGroup = '넥슨코리아'; changed = true; }
+    // CLASS_MAP에 있는 학생은 확정 반으로 배정
+    if (CLASS_MAP[s.name]) {
+      const m = CLASS_MAP[s.name];
+      if (s.teacher !== m.teacher || s.group !== m.group) {
+        s.teacher = m.teacher;
+        s.group   = m.group;
+        changed   = true;
       }
+    } else if (!s.group || s.group === '방건주반' || s.group === '방건주반반') {
+      // 방건주 담당이거나 미배정인 경우 기본값
+      s.group = 'A반 12:00'; changed = true;
     }
   });
-  if (changed) saveState();
+  if (changed) {
+    localStorage.setItem('tv_students', JSON.stringify(state.students));
+  }
 })();
 
 // ── 누적 레슨 통계 계산 ──
@@ -2412,8 +2463,11 @@ async function loadFromSheets() {
           ...sheetS,
           lessons:     sheetsLessons.length > 0 ? sheetsLessons : (local?.lessons || []),
           lessonNotes,
-          phone:       local?.phone || sheetS.phone || '',
-          memo:        local?.memo  || sheetS.memo  || '',
+          phone:       local?.phone    || sheetS.phone    || '',
+          memo:        local?.memo     || sheetS.memo     || '',
+          // 반/기관 정보는 로컬 우선 (스탬프카드에서 변경한 값 보존)
+          orgGroup:    local?.orgGroup || sheetS.orgGroup || '',
+          group:       local?.group    || sheetS.group    || '',
         };
       });
       // localStorage에만 있는 수강생도 유지
@@ -2915,14 +2969,17 @@ function renderGroupLessons() {
   const bankInfo = state.settings.bankInfo || '';
   const isAdmin = !state.currentTeacher || state.currentTeacher === '천우경';
 
-  // 방건주 담당 그룹 학생 중 orgGroup 없는 경우 → 넥슨코리아 자동 배정
+  // 그룹 학생 마이그레이션 (매 렌더링마다 체크 — 신규 기기 대응)
+  let _migChanged = false;
   state.students.forEach(s => {
     if (s.type === '그룹') {
-      if (!s.orgGroup) s.orgGroup = '넥슨코리아';
-      // 구버전 '방건주반' group 값 정리
-      if (s.group === '방건주반') s.group = 'A반 12:00';
+      if (!s.orgGroup) { s.orgGroup = '넥슨코리아'; _migChanged = true; }
+      if (!s.group || s.group === '방건주반' || s.group === '방건주반반') {
+        s.group = 'A반 12:00'; _migChanged = true;
+      }
     }
   });
+  if (_migChanged) localStorage.setItem('tv_students', JSON.stringify(state.students));
 
   // 그룹(기업/기관)별로 분리
   const orgs = [...new Set(
