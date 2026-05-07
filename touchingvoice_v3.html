@@ -1467,29 +1467,29 @@ function renderFreqComment(bandEnergy, harmonicRichness = 50, articulationScore 
 
     <div style="margin-bottom:14px;padding:12px;background:rgba(255,255,255,0.5);border-radius:10px">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-        <span style="padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700;background:\${dom1Band.color}22;color:\${dom1Band.color};font-family:'NanumSquare','Nanum Square',sans-serif">🔊 \${dom1Band.label.replace('\n',' ')}</span>
-        <span style="font-size:10px;color:var(--muted)">\${bandPosition(top1.i, gender)}</span>
+        <span style="padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700;background:${dom1Band.color}22;color:${dom1Band.color};font-family:'NanumSquare','Nanum Square',sans-serif">🔊 ${dom1Band.label.replace('\n',' ')}</span>
+        <span style="font-size:10px;color:var(--muted)">${bandPosition(top1.i, gender)}</span>
       </div>
       <div style="font-size:13px;line-height:1.8;font-weight:300">
-        <strong style="font-weight:700;color:\${dom1Band.color}">[\${dom1Map.trait}]</strong> \${dom1Map.comment}
+        <strong style="font-weight:700;color:${dom1Band.color}">[${dom1Map.trait}]</strong> ${dom1Map.comment}
       </div>
     </div>
 
     <div style="margin-bottom:14px;padding:12px;background:rgba(255,255,255,0.35);border-radius:10px">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-        <span style="padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700;background:\${dom2Band.color}22;color:\${dom2Band.color};font-family:'NanumSquare','Nanum Square',sans-serif">🎵 \${dom2Band.label.replace('\n',' ')}</span>
-        <span style="font-size:10px;color:var(--muted)">\${bandPosition(top2.i, gender)}</span>
+        <span style="padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700;background:${dom2Band.color}22;color:${dom2Band.color};font-family:'NanumSquare','Nanum Square',sans-serif">🎵 ${dom2Band.label.replace('\n',' ')}</span>
+        <span style="font-size:10px;color:var(--muted)">${bandPosition(top2.i, gender)}</span>
       </div>
       <div style="font-size:13px;line-height:1.8;font-weight:300">
-        <strong style="font-weight:700;color:\${dom2Band.color}">[\${dom2Map.trait}]</strong> \${dom2Map.comment}
+        <strong style="font-weight:700;color:${dom2Band.color}">[${dom2Map.trait}]</strong> ${dom2Map.comment}
       </div>
     </div>
 
     <div style="padding:12px;background:rgba(0,0,0,0.04);border-radius:10px">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-        <span style="padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;background:rgba(0,0,0,.06);color:var(--muted);font-family:'NanumSquare','Nanum Square',sans-serif">📈 성장 가능 대역 · \${weakBand.label.replace('\n',' ')}</span>
+        <span style="padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;background:rgba(0,0,0,.06);color:var(--muted);font-family:'NanumSquare','Nanum Square',sans-serif">📈 성장 가능 대역 · ${weakBand.label.replace('\n',' ')}</span>
       </div>
-      <div style="font-size:12px;line-height:1.8;color:var(--muted)">\${weakMap.comment}</div>
+      <div style="font-size:12px;line-height:1.8;color:var(--muted)">${weakMap.comment}</div>
     </div>
 
     <div style="margin-top:10px;font-size:10px;color:var(--muted);font-family:'NanumSquare','Nanum Square',sans-serif;line-height:1.6;opacity:0.7">
