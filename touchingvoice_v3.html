@@ -1094,13 +1094,21 @@ let currentDetailTab = 0;
 // ═══════════════════════════
 let freqBandData = null; // 나중에 성격 결과와 연결용
 
+// 핸드폰 최적화 대역 (100Hz~4kHz 집중, 남/여 특성 반영)
+// 남성 기본음: 85~180Hz / 여성 기본음: 165~255Hz
 const FREQ_BANDS = [
-  { label: '저음\n63Hz',    min: 20,    max: 125,   color: '#4a7fe0', desc: '흉성 공명·묵직함' },
-  { label: '중저음\n250Hz', min: 125,   max: 500,   color: '#40916c', desc: '말소리 핵심 대역' },
-  { label: '중음\n1kHz',    min: 500,   max: 2000,  color: '#d4a017', desc: '음성 명료도' },
-  { label: '고중음\n4kHz',  min: 2000,  max: 6000,  color: '#e05c3a', desc: '존재감·투사력' },
-  { label: '고음\n8kHz',    min: 6000,  max: 12000, color: '#9b59b6', desc: '밝기·배음' },
-  { label: '초고음\n16kHz', min: 12000, max: 20000, color: '#e07a2a', desc: '공기감·마찰음' },
+  { label: '흉성\n100Hz',  min: 80,   max: 200,  color: '#4a7fe0', desc: '흉성 공명 · 남성 기본음역',
+    male: { ref: 130, desc: '남성 기본음 핵심' }, female: { ref: 200, desc: '여성 저음 지지대' } },
+  { label: '온기\n300Hz',  min: 200,  max: 450,  color: '#40916c', desc: '따뜻함 · 신뢰감',
+    male: { ref: 300, desc: '남성 말소리 온기' }, female: { ref: 300, desc: '여성 흉성 공명' } },
+  { label: '말소리\n600Hz',min: 450,  max: 900,  color: '#2196f3', desc: '모음 선명도 · 전달력',
+    male: { ref: 600, desc: '남성 모음 포먼트' }, female: { ref: 600, desc: '여성 모음 포먼트' } },
+  { label: '명료도\n1.2kHz',min: 900, max: 1800, color: '#d4a017', desc: '자음·딕션 선명도',
+    male: { ref: 1200, desc: '남성 딕션 핵심' }, female: { ref: 1200, desc: '여성 딕션 핵심' } },
+  { label: '존재감\n2.5kHz',min: 1800,max: 3500, color: '#e05c3a', desc: '가창자 포먼트 · 투사력',
+    male: { ref: 2500, desc: '남성 Singer\'s Formant' }, female: { ref: 2800, desc: '여성 Singer\'s Formant' } },
+  { label: '공기감\n4kHz', min: 3500, max: 6000, color: '#9b59b6', desc: '밝기 · 배음 · 공기감',
+    male: { ref: 4000, desc: '남성 고음 투사' }, female: { ref: 4000, desc: '여성 화사함' } },
 ];
 
 async function analyzeSpectrum(file) {
@@ -1216,10 +1224,10 @@ async function analyzeSpectrum(file) {
       ? Math.min(100, Math.round((onsetStrengths.reduce((a,b)=>a+b,0) / onsetStrengths.length) * 600))
       : 20;
 
-    // 스펙트럼 밸런스 (저음 vs 고음 비율)
-    const lowEnergy = (bandEnergy[0] + bandEnergy[1]) / 2;
-    const highEnergy = (bandEnergy[4] + bandEnergy[5]) / 2;
-    const spectralBalance = Math.round(highEnergy / Math.max(lowEnergy, 1) * 50); // 50 = 균형
+    // 스펙트럼 밸런스 (핸드폰 최적화 — 흉성 vs 존재감/공기감 비율)
+    const lowEnergy  = (bandEnergy[0] + bandEnergy[1]) / 2;  // 흉성+온기
+    const highEnergy = (bandEnergy[4] + bandEnergy[5]) / 2;  // 존재감+공기감
+    const spectralBalance = Math.round(highEnergy / Math.max(lowEnergy, 1) * 50);
 
     renderSpectrogram(spectroRows, binCount);
     renderFreqBars(bandEnergy);
@@ -1313,38 +1321,73 @@ function renderFreqBars(bandEnergy) {
   });
 }
 
-const freqPersonalityMap = [
-  { // 저음 63Hz
-    high: { trait: '외향성(E) · 성실성(C)', comment: '저음역 에너지가 풍부합니다. 목소리에 무게감과 신뢰감이 실려 있으며, 공간을 채우는 흉성 공명이 잘 발달되어 있습니다.' },
-    mid:  { trait: '균형', comment: '저음역이 안정적입니다. 흉성 공명이 자연스럽게 활용되고 있습니다.' },
-    low:  { trait: '개방성(O) · 신경성(N)', comment: '저음역 에너지가 낮습니다. 두성 위주의 발성이거나, 긴장 시 가슴 울림이 닫히는 패턴일 수 있습니다.' }
-  },
-  { // 중저음 250Hz
-    high: { trait: '우호성(A) · 성실성(C)', comment: '말소리의 핵심 대역인 250Hz가 발달해 있습니다. 따뜻하고 안정적인 음색으로 신뢰를 주는 목소리입니다.' },
-    mid:  { trait: '균형', comment: '중저음역이 고른 편입니다. 대화에서 편안함을 전달하는 소리입니다.' },
-    low:  { trait: '신경성(N)', comment: '중저음역 에너지가 약합니다. 가늘거나 얇은 소리가 날 수 있으며, 복식호흡 훈련으로 이 대역을 키울 수 있습니다.' }
-  },
-  { // 중음 1kHz
-    high: { trait: '외향성(E) · 우호성(A)', comment: '음성 명료도의 핵심인 1kHz 대역이 강합니다. 청중에게 가장 선명하게 들리는 소리로, 전달력이 뛰어납니다.' },
-    mid:  { trait: '균형', comment: '중음역 명료도가 적절합니다.' },
-    low:  { trait: '성실성(C) 낮음', comment: '중음역 에너지가 부족합니다. 딕션이나 공명 연습으로 말소리의 선명도를 높일 수 있습니다.' }
-  },
-  { // 고중음 4kHz
-    high: { trait: '외향성(E)', comment: '4kHz 가창자 포먼트(Singer\'s Formant)가 강합니다. 악기 소리 위에서도 목소리가 묻히지 않는 투사력의 핵심 대역입니다.' },
-    mid:  { trait: '균형', comment: '고중음 투사 에너지가 안정적입니다.' },
-    low:  { trait: '신경성(N) 주의', comment: '4kHz 에너지가 낮습니다. 존재감이 약해 보일 수 있으며, 이 대역을 의식적으로 여는 발성 훈련이 효과적입니다.' }
-  },
-  { // 고음 8kHz
-    high: { trait: '개방성(O)', comment: '8kHz 이상의 고주파 배음이 풍부합니다. 소리가 반짝이고 밝으며, 즉흥성과 창의적 표현력이 소리에 담겨 있습니다.' },
-    mid:  { trait: '균형', comment: '고음 배음이 자연스럽습니다.' },
-    low:  { trait: '성실성(C) 강함', comment: '고주파 배음이 적습니다. 소리가 차분하고 안정적이지만, 가끔 밋밋하게 들릴 수 있습니다.' }
-  },
-  { // 초고음 16kHz
-    high: { trait: '개방성(O) · 보이스 스페셜', comment: '초고음역 공기감이 살아있습니다. 소리에 "숨결"이 느껴지는 에어리(airy) 텍스처로, 감성적 깊이를 더합니다.' },
-    mid:  { trait: '균형', comment: '초고음역이 자연스럽게 존재합니다.' },
-    low:  { trait: '성실성(C)', comment: '초고음역이 차단된 편입니다. 단단하고 집중된 소리이지만, 공기감 훈련으로 소리의 레이어를 더할 수 있습니다.' }
-  },
-];
+// 성별 분리 주파수-성격 맵 (핸드폰 최적화 6대역)
+const freqPersonalityMap = {
+  '남성': [
+    { // 흉성 100Hz — 남성 기본음 핵심
+      high: { trait: '성실성(C) · 외향성(E)', comment: '흉성 공명이 풍부하게 열려 있습니다. 말에 무게와 신뢰감이 실리며, 남성 특유의 안정된 저음 기반이 탄탄합니다.' },
+      mid:  { trait: '균형', comment: '흉성 공명이 자연스러운 수준입니다. 기초 공명이 잘 유지되고 있습니다.' },
+      low:  { trait: '신경성(N) 주의', comment: '흉성 공명이 약합니다. 긴장 시 가슴 울림이 닫히는 패턴일 수 있으며, 복식호흡과 흉성 공명 훈련이 도움이 됩니다.' }
+    },
+    { // 온기 300Hz
+      high: { trait: '우호성(A) · 성실성(C)', comment: '남성 말소리의 온기 대역이 충분합니다. 목소리에 따뜻하고 포용적인 느낌이 실려 상대를 편안하게 합니다.' },
+      mid:  { trait: '균형', comment: '온기 대역이 안정적입니다. 대화에서 자연스러운 신뢰감을 줍니다.' },
+      low:  { trait: '개방성(O) 활성', comment: '온기 대역이 낮아 소리가 날카롭거나 차갑게 들릴 수 있습니다. 구강 공명을 넓히는 연습이 효과적입니다.' }
+    },
+    { // 말소리 600Hz
+      high: { trait: '외향성(E) · 우호성(A)', comment: '모음 포먼트가 선명합니다. 말소리가 또렷하게 전달되며, 청중과의 소통에서 강한 존재감을 발휘합니다.' },
+      mid:  { trait: '균형', comment: '모음 명료도가 적절합니다.' },
+      low:  { trait: '성실성(C) 부족', comment: '모음 선명도가 낮습니다. 구강 내 공간을 더 열고 입술 움직임을 키우는 연습이 필요합니다.' }
+    },
+    { // 명료도 1.2kHz
+      high: { trait: '성실성(C) · 외향성(E)', comment: '자음과 딕션이 선명합니다. 전달하고자 하는 내용이 정확히 전해지며, 발표나 강의에서 특히 강점이 됩니다.' },
+      mid:  { trait: '균형', comment: '딕션 명료도가 자연스럽습니다.' },
+      low:  { trait: '신경성(N)', comment: '딕션이 다소 뭉개집니다. 자음 발음 강화와 입 모양 훈련으로 선명도를 높일 수 있습니다.' }
+    },
+    { // 존재감 2.5kHz — Singer's Formant
+      high: { trait: '외향성(E) · 개방성(O)', comment: '가창자 포먼트(2~3kHz)가 강합니다. 악기 반주 위에서도 목소리가 묻히지 않는 투사력의 핵심입니다. 무대 위 존재감이 탁월합니다.' },
+      mid:  { trait: '균형', comment: '투사 에너지가 안정적입니다.' },
+      low:  { trait: '우호성(A) 우세', comment: '투사 포먼트가 낮습니다. 목소리가 부드럽게 들리지만, 큰 공간에서 묻힐 수 있습니다. 앞쪽 공명 훈련이 필요합니다.' }
+    },
+    { // 공기감 4kHz
+      high: { trait: '개방성(O)', comment: '고음 배음과 공기감이 풍부합니다. 소리가 밝고 생기 있으며, 표현의 폭이 넓고 즉흥적인 창의성이 소리에 담겨 있습니다.' },
+      mid:  { trait: '균형', comment: '고음 배음이 자연스럽습니다.' },
+      low:  { trait: '성실성(C) 강함', comment: '고음 배음이 억제된 편입니다. 소리가 집중적이고 안정적이지만, 밝기 훈련으로 소리의 레이어를 더할 수 있습니다.' }
+    },
+  ],
+  '여성': [
+    { // 흉성 100Hz — 여성 저음 지지대
+      high: { trait: '성실성(C) · 우호성(A)', comment: '여성 기준 저음 지지대가 단단합니다. 목소리에 깊이와 안정감이 실려 있으며, 신뢰감 있는 인상을 줍니다.' },
+      mid:  { trait: '균형', comment: '저음 기반이 자연스럽게 유지됩니다.' },
+      low:  { trait: '개방성(O) 활성', comment: '저음 지지대가 약합니다. 소리가 가볍거나 얇게 들릴 수 있으며, 흉성 공명 훈련이 소리의 깊이를 더합니다.' }
+    },
+    { // 온기 300Hz
+      high: { trait: '우호성(A) · 성실성(C)', comment: '여성 흉성 공명의 핵심 대역이 발달해 있습니다. 따뜻하고 포근한 음색으로 상대에게 안심감을 줍니다.' },
+      mid:  { trait: '균형', comment: '온기 대역이 자연스럽습니다.' },
+      low:  { trait: '신경성(N) 주의', comment: '온기 대역이 낮아 소리가 차갑거나 긴장된 인상을 줄 수 있습니다. 편안한 발성 상태에서 소리가 더 따뜻해질 수 있습니다.' }
+    },
+    { // 말소리 600Hz
+      high: { trait: '외향성(E) · 우호성(A)', comment: '여성 모음 포먼트가 선명합니다. 말소리가 생동감 있게 전달되며, 표현력이 풍부하고 소통이 자연스럽습니다.' },
+      mid:  { trait: '균형', comment: '모음 명료도가 적절합니다.' },
+      low:  { trait: '성실성(C)', comment: '모음 에너지가 낮습니다. 입 모양을 더 크게 활용하고 앞쪽 공명을 의식하는 훈련이 효과적입니다.' }
+    },
+    { // 명료도 1.2kHz
+      high: { trait: '성실성(C) · 외향성(E)', comment: '딕션과 자음이 선명합니다. 발음이 정확하고 전달력이 높으며, 프레젠테이션이나 강의에서 강한 인상을 남깁니다.' },
+      mid:  { trait: '균형', comment: '딕션이 자연스러운 수준입니다.' },
+      low:  { trait: '신경성(N)', comment: '자음 선명도가 다소 낮습니다. 딕션 훈련과 입술 앞쪽 자음 연습이 전달력을 높여줍니다.' }
+    },
+    { // 존재감 2.5kHz — 여성 Singer's Formant
+      high: { trait: '외향성(E) · 개방성(O)', comment: '여성 Singer\'s Formant(2.8kHz)가 강합니다. 소리가 공간을 가득 채우며, 청중의 귀를 사로잡는 존재감 있는 목소리입니다.' },
+      mid:  { trait: '균형', comment: '투사 에너지가 안정적입니다.' },
+      low:  { trait: '우호성(A) 우세', comment: '투사 에너지가 낮습니다. 친근하고 부드러운 인상이지만, 큰 무대에서 소리가 묻힐 수 있습니다. 앞쪽 공명을 키우는 훈련이 도움이 됩니다.' }
+    },
+    { // 공기감 4kHz
+      high: { trait: '개방성(O) · 신경성(N) 낮음', comment: '여성 특유의 화사한 고음 배음이 살아있습니다. 소리에 빛이 나고 감성적인 깊이가 느껴지며, 표현의 폭이 매우 넓습니다.' },
+      mid:  { trait: '균형', comment: '고음 배음이 자연스럽습니다.' },
+      low:  { trait: '성실성(C) 강함', comment: '고음 배음이 억제되어 있습니다. 소리가 집중적이고 안정적이지만, 두성 공명 훈련으로 화사함을 더할 수 있습니다.' }
+    },
+  ],
+};
 
 function renderAdvancedMetrics(harmonicRichness, articulationScore, spectralBalance) {
   const container = document.getElementById('advancedMetrics');
@@ -1375,27 +1418,83 @@ function renderAdvancedMetrics(harmonicRichness, articulationScore, spectralBala
 
 function renderFreqComment(bandEnergy, harmonicRichness = 50, articulationScore = 50) {
   const container = document.getElementById('freqComment');
-  const dominant = bandEnergy.indexOf(Math.max(...bandEnergy));
-  const weak = bandEnergy.indexOf(Math.min(...bandEnergy));
+  if (!container) return;
 
-  const domBand = FREQ_BANDS[dominant];
-  const domLevel = bandEnergy[dominant] >= 55 ? 'high' : bandEnergy[dominant] >= 30 ? 'mid' : 'low';
-  const domMap = freqPersonalityMap[dominant][domLevel];
+  // 성별 기반 맵 선택
+  const gender = (typeof selectedGender !== 'undefined' && selectedGender) ? selectedGender : '남성';
+  const pMap = freqPersonalityMap[gender] || freqPersonalityMap['남성'];
 
-  const weakBand = FREQ_BANDS[weak];
-  const weakMap = freqPersonalityMap[weak]['low'];
+  // ── 상대 비율 분석 (AGC 보정) ──
+  const avg = bandEnergy.reduce((a, b) => a + b, 0) / bandEnergy.length || 1;
+  const relEnergy = bandEnergy.map(v => v / avg); // 1.0 = 평균
+
+  // 상위 2개 대역 찾기 (상대 에너지 기준)
+  const sorted = relEnergy.map((v, i) => ({ i, v })).sort((a, b) => b.v - a.v);
+  const top1 = sorted[0];
+  const top2 = sorted[1];
+
+  // 가장 낮은 대역 (weak)
+  const weak = sorted[sorted.length - 1];
+
+  // 레벨 판정 (상대 비율 기준 — AGC 영향 제거)
+  const getLevel = (rel) => rel >= 1.4 ? 'high' : rel >= 0.75 ? 'mid' : 'low';
+
+  const dom1Band = FREQ_BANDS[top1.i];
+  const dom1Map  = pMap[top1.i][getLevel(top1.v)];
+  const dom2Band = FREQ_BANDS[top2.i];
+  const dom2Map  = pMap[top2.i][getLevel(top2.v)];
+  const weakBand = FREQ_BANDS[weak.i];
+  const weakMap  = pMap[weak.i]['low'];
+
+  // 성별 기준 음역 위치 태그
+  const bandPosition = (idx, g) => {
+    if (g === '남성') {
+      if (idx <= 1) return '🔵 남성 기반음역';
+      if (idx <= 3) return '🟢 말소리 핵심역';
+      return '🟡 투사·배음역';
+    } else {
+      if (idx === 0) return '🔵 여성 저음 기반';
+      if (idx <= 2) return '🟢 여성 핵심음역';
+      if (idx <= 4) return '🟡 투사·존재감역';
+      return '✨ 여성 화사함역';
+    }
+  };
 
   container.innerHTML = `
-    <div style="font-family:'NanumSquare','Nanum Square',sans-serif;font-size:9px;letter-spacing:2px;color:var(--accent2);text-transform:uppercase;margin-bottom:8px">주파수 성격 코멘트</div>
-    <div style="margin-bottom:12px">
-      <span style="display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;background:${domBand.color}22;color:${domBand.color};font-family:'NanumSquare','Nanum Square',sans-serif;margin-bottom:6px">🔊 가장 발달한 대역 · ${domBand.label.replace('\n',' ')}</span>
-      <div style="font-size:13px;line-height:1.8;font-weight:300"><strong style="font-weight:600">[${domMap.trait}]</strong> ${domMap.comment}</div>
+    <div style="font-family:'NanumSquare','Nanum Square',sans-serif;font-size:9px;letter-spacing:2px;color:var(--accent2);text-transform:uppercase;margin-bottom:10px">
+      🎤 ${gender} 주파수 성격 분석
     </div>
-    <div>
-      <span style="display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;background:rgba(0,0,0,.06);color:var(--muted);font-family:'NanumSquare','Nanum Square',sans-serif;margin-bottom:6px">📉 성장 가능 대역 · ${weakBand.label.replace('\n',' ')}</span>
-      <div style="font-size:13px;line-height:1.8;font-weight:300">${weakMap.comment}</div>
+
+    <div style="margin-bottom:14px;padding:12px;background:rgba(255,255,255,0.5);border-radius:10px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <span style="padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700;background:\${dom1Band.color}22;color:\${dom1Band.color};font-family:'NanumSquare','Nanum Square',sans-serif">🔊 \${dom1Band.label.replace('\n',' ')}</span>
+        <span style="font-size:10px;color:var(--muted)">\${bandPosition(top1.i, gender)}</span>
+      </div>
+      <div style="font-size:13px;line-height:1.8;font-weight:300">
+        <strong style="font-weight:700;color:\${dom1Band.color}">[\${dom1Map.trait}]</strong> \${dom1Map.comment}
+      </div>
     </div>
-    <div style="margin-top:10px;font-size:11px;color:var(--muted);font-family:'NanumSquare','Nanum Square',sans-serif;line-height:1.6">※ 주파수-성격 연결은 현재 연구 데이터 축적 중입니다. 참고용으로만 활용해 주세요.</div>
+
+    <div style="margin-bottom:14px;padding:12px;background:rgba(255,255,255,0.35);border-radius:10px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <span style="padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700;background:\${dom2Band.color}22;color:\${dom2Band.color};font-family:'NanumSquare','Nanum Square',sans-serif">🎵 \${dom2Band.label.replace('\n',' ')}</span>
+        <span style="font-size:10px;color:var(--muted)">\${bandPosition(top2.i, gender)}</span>
+      </div>
+      <div style="font-size:13px;line-height:1.8;font-weight:300">
+        <strong style="font-weight:700;color:\${dom2Band.color}">[\${dom2Map.trait}]</strong> \${dom2Map.comment}
+      </div>
+    </div>
+
+    <div style="padding:12px;background:rgba(0,0,0,0.04);border-radius:10px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <span style="padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;background:rgba(0,0,0,.06);color:var(--muted);font-family:'NanumSquare','Nanum Square',sans-serif">📈 성장 가능 대역 · \${weakBand.label.replace('\n',' ')}</span>
+      </div>
+      <div style="font-size:12px;line-height:1.8;color:var(--muted)">\${weakMap.comment}</div>
+    </div>
+
+    <div style="margin-top:10px;font-size:10px;color:var(--muted);font-family:'NanumSquare','Nanum Square',sans-serif;line-height:1.6;opacity:0.7">
+      ※ 핸드폰 마이크 기준 측정 (100Hz~4kHz) · 성별 보정 적용 · 참고용 데이터
+    </div>
   `;
 }
 
@@ -1948,7 +2047,7 @@ function buildResults() {
 // ═══════════════════════════
 // GOOGLE DRIVE + SHEETS 저장
 // ═══════════════════════════
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwekPcbpjcvKwVlrqLzUGYwNZ6rsRXCuMEWGmMHsjGTxfnb_-qoWQwhHRSiE_ivuOhheg/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxh2OSaoe77KFD6Oa-xb7zpFaKI5I9YAU0ZxVAG9bcXGuqz96mJP3qQV5umKdyH_yCgNQ/exec';
 
 // 전역 Drive 파일 URL (업로드 완료 후 채워짐)
 let introFileUrl  = '';  // 자기소개/후렴 녹음
