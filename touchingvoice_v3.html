@@ -1997,13 +1997,17 @@ async function uploadAudioToDrive(blob, fileName, category) {
 async function saveToSheets(scores, name) {
   showSaveStatus('saving');
   try {
-    // 1. 음성 파일들 Drive 업로드 (대본 또는 애창곡 후렴)
+    // 1. 음성 파일들 Drive 업로드 (음성 있을 때만)
     const activeBlob = recBlob || chorusBlob || null;
     const activeName = voiceFileName || chorusFileName || '';
-    const [iUrl] = await Promise.all([
-      activeBlob ? uploadAudioToDrive(activeBlob, activeName, 'intro') : Promise.resolve(''),
-    ]);
-    introFileUrl = iUrl;
+    let introFileUrl = '';
+    if (activeBlob) {
+      try {
+        introFileUrl = await uploadAudioToDrive(activeBlob, activeName, 'intro');
+      } catch(uploadErr) {
+        console.warn('[터칭보이스] 음성 업로드 실패 (저장은 계속):', uploadErr);
+      }
+    }
 
     // 2. Sheets 저장
     const syn        = getSynthType(scores);
@@ -2017,7 +2021,7 @@ async function saveToSheets(scores, name) {
       scores : { E:scores.E, C:scores.C, A:scores.A, N:scores.N, O:scores.O, V:scores.V },
       synthType     : syn.typeName,
       voiceFileName : voiceFileName || '',
-      introFileUrl,
+        introFileUrl,
       freqBands        : freqBandData || [],
       harmonicRichness : window._harmonicRichness || '',
       articulationScore: window._articulationScore || '',
@@ -2854,9 +2858,11 @@ function restart() {
 
 // Drag
 const zone = document.getElementById('uploadZone');
-zone.addEventListener('dragover', e=>{e.preventDefault();zone.classList.add('over');});
-zone.addEventListener('dragleave',()=>zone.classList.remove('over'));
-zone.addEventListener('drop',e=>{e.preventDefault();zone.classList.remove('over');if(e.dataTransfer.files.length){const dt=new DataTransfer();dt.items.add(e.dataTransfer.files[0]);const input=document.getElementById('voiceFile');input.files=dt.files;handleFile(input);}});
+if (zone) {
+  zone.addEventListener('dragover', e=>{e.preventDefault();zone.classList.add('over');});
+  zone.addEventListener('dragleave',()=>zone.classList.remove('over'));
+  zone.addEventListener('drop',e=>{e.preventDefault();zone.classList.remove('over');if(e.dataTransfer.files.length){const dt=new DataTransfer();dt.items.add(e.dataTransfer.files[0]);const input=document.getElementById('voiceFile');input.files=dt.files;handleFile(input);}});
+}
 
 // ═══════════════════════════
 // SHARE FUNCTIONS
