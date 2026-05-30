@@ -511,6 +511,15 @@ body{background:var(--bg);color:var(--text);font-family:'NanumSquare','Nanum Squ
       <div class="rtc-dominant" id="rtcDominant">—</div>
       <div class="rtc-type" id="rtcType">—</div>
       <div class="rtc-desc" id="rtcDesc">—</div>
+      <div id="rtcInsight" style="margin-top:14px;padding:12px 14px;background:rgba(83,74,183,0.06);border-left:3px solid #534AB7;border-radius:0 6px 6px 0;font-size:13px;line-height:1.75;color:#333;display:none;text-align:left">
+        <div style="font-size:9px;letter-spacing:.15em;color:#534AB7;font-weight:700;margin-bottom:6px">📌 당신만의 디테일</div>
+        <div id="rtcInsightText" style="font-size:13.5px">—</div>
+      </div>
+      <div id="rtcVInsight" style="margin-top:10px;padding:10px 14px;background:rgba(120,120,120,0.05);border-left:3px solid #999;border-radius:0 6px 6px 0;font-size:12px;line-height:1.7;color:#555;display:none;text-align:left">
+        <div style="font-size:9px;letter-spacing:.15em;color:#888;font-weight:700;margin-bottom:4px">🎤 보컬 자신감 (참고용)</div>
+        <div id="rtcVInsightText" style="font-size:12.5px">—</div>
+        <div style="font-size:10px;color:#999;margin-top:6px;font-style:italic">※ 자가보고 기반 점수로, 객관 측정값과 다를 수 있습니다.</div>
+      </div>
       <button class="rtc-more-btn" onclick="openDetailModal(currentDominant)">더 보기 →</button>
     </div>
 
@@ -1869,6 +1878,29 @@ function buildResults() {
   document.getElementById('rtcDominant').textContent = `당신의 지배적인 특성`;
   document.getElementById('rtcType').textContent = dom.name;
   document.getElementById('rtcDesc').textContent = getDomainOneLiner(dom.code, dom.score);
+  // ★ Big5 인사이트 생성 (V 제외)
+  try {
+    const insightEl = document.getElementById('rtcInsight');
+    const insightTextEl = document.getElementById('rtcInsightText');
+    if (insightEl && insightTextEl) {
+      const insight = generateInsight(scores);
+      insightTextEl.textContent = insight;
+      insightEl.style.display = 'block';
+    }
+  } catch(e) { console.error('insight err', e); }
+  // ★ V(보컬 자신감) 별도 인사이트
+  try {
+    const vEl = document.getElementById('rtcVInsight');
+    const vTextEl = document.getElementById('rtcVInsightText');
+    const vScore = scores.V || 0;
+    if (vEl && vTextEl && vScore > 0) {
+      const vInsight = generateVInsight(vScore);
+      if (vInsight) {
+        vTextEl.textContent = vInsight;
+        vEl.style.display = 'block';
+      }
+    }
+  } catch(e) { console.error('v insight err', e); }
   document.getElementById('resTopCard').style.background = dom.color.replace('var(--c-','').replace(')','');
   const colorMap = { E:'var(--c-E)', C:'var(--c-C)', A:'var(--c-A)', N:'var(--c-N)', O:'var(--c-O)' };
   document.getElementById('resTopCard').style.background = colorMap[dom.code];
@@ -3085,6 +3117,74 @@ async function shareResultImage(btn) {
     btn.textContent = oldTxt;
     btn.disabled = false;
   }
+}
+</script>
+
+<script>
+// Big5 5차원 통합 인사이트 (V 제외)
+function generateInsight(scores) {
+  if (!scores) return '';
+  const codes = ['E','C','A','N','O'];
+  const traits = {
+    E: { high: '외향성', low: '내향성' },
+    C: { high: '성실성', low: '자유로움' },
+    A: { high: '우호성', low: '독립성' },
+    N: { high: '감정 민감성', low: '정서 안정성' },
+    O: { high: '개방성', low: '안정 추구' }
+  };
+  function grade(s) {
+    if (s >= 90) return '압도적인';
+    if (s >= 80) return '매우 강한';
+    if (s >= 70) return '뚜렷한';
+    if (s >= 60) return '다소 강한';
+    if (s >= 50) return '평균 위의';
+    if (s >= 40) return '균형의';
+    if (s >= 30) return '다소 낮은';
+    if (s >= 20) return '낮은';
+    if (s >= 10) return '매우 낮은';
+    return '극단적으로 낮은';
+  }
+  function gradeFor(score) {
+    if (score >= 50) return grade(score);
+    return grade(100 - score);
+  }
+  function trait(code, score) {
+    return score >= 50 ? traits[code].high : traits[code].low;
+  }
+  function intensity(code) {
+    const s = scores[code] || 50;
+    return Math.abs(s - 50);
+  }
+  const sorted = codes.map(c => ({ code:c, score:scores[c] || 0, intensity:intensity(c) }))
+                       .sort((a,b) => b.intensity - a.intensity);
+  const top1 = sorted[0], top2 = sorted[1], top3 = sorted[2];
+  const g1 = gradeFor(top1.score);
+  const g2 = gradeFor(top2.score);
+  const g3 = gradeFor(top3.score);
+  const t1 = trait(top1.code, top1.score);
+  const t2 = trait(top2.code, top2.score);
+  const t3 = trait(top3.code, top3.score);
+  let s1;
+  if (g1 === g2) {
+    s1 = g1 + ' ' + t1 + '(' + top1.score + ')과 ' + t2 + '(' + top2.score + ')이 핵심 특성입니다.';
+  } else {
+    s1 = g1 + ' ' + t1 + '(' + top1.score + ')과 ' + g2 + ' ' + t2 + '(' + top2.score + ')이 핵심 특성입니다.';
+  }
+  let s2 = '';
+  if (top3.intensity >= 10) {
+    s2 = ' 여기에 ' + g3 + ' ' + t3 + '(' + top3.score + ')이 더해져 당신만의 균형을 만듭니다.';
+  }
+  return s1 + s2;
+}
+
+// V(보컬 자신감) 별도 인사이트
+function generateVInsight(vScore) {
+  if (!vScore || vScore === 0) return null;
+  if (vScore >= 90) return vScore + '점 — 매우 높은 자기 인식 수준으로, 자기 목소리에 대한 강한 확신과 깊은 이해 단계입니다.';
+  if (vScore >= 75) return vScore + '점 — 높은 자기 인식 수준으로, 견고한 자기 신뢰 단계에 있습니다.';
+  if (vScore >= 60) return vScore + '점 — 안정적인 자기 인식 수준으로, 자기 발성에 대한 인식이 형성되어 있습니다.';
+  if (vScore >= 40) return vScore + '점 — 발견 중인 단계로, 자기 목소리를 알아가고 있습니다.';
+  return vScore + '점 — 탐색 시작 단계로, 자기 목소리를 발견할 여지가 많이 남아있습니다.';
 }
 </script>
 </body>
