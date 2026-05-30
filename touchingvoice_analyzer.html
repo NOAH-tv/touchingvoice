@@ -2080,8 +2080,7 @@ function markdownToHtml(md) {
     .replace(/\*(.+?)\*/g, '<em>$1</em>')
     .replace(/`(.+?)`/g, '<code style="background:var(--gray-100);padding:1px 5px;border-radius:3px;font-family:JetBrains Mono,monospace;font-size:11px">$1</code>')
     .replace(/^- (.+)$/gm, '<li style="margin:4px 0;padding-left:4px">$1</li>')
-    .replace(/(<li.*<\/li>
-?)+/g, '<ul style="list-style:disc;padding-left:18px;margin:8px 0">$&</ul>')
+    .replace(new RegExp('(<li.*<\\/li>\\n?)+', 'g'), '<ul style="list-style:disc;padding-left:18px;margin:8px 0">$&</ul>')
     .replace(/^\d+\. (.+)$/gm, '<li style="margin:4px 0">$1</li>')
     .replace(new RegExp('\\n{2,}', 'g'), '<br><br>')
     .replace(new RegExp('\\n', 'g'), '<br>');
