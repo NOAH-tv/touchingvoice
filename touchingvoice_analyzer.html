@@ -1,0 +1,2130 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TouchingVoice — 음성 분석 입력 시스템</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F7F6F3;
+  --white: #FFFFFF;
+  --black: #111110;
+  --gray-800: #2C2C2A;
+  --gray-600: #5C5C58;
+  --gray-400: #9C9C96;
+  --gray-200: #E4E4DF;
+  --gray-100: #F0F0EB;
+  --accent: #534AB7;
+  --accent-light: #EEEDFE;
+  --green: #166534;
+  --green-light: #DCFCE7;
+  --red: #991B1B;
+  --red-light: #FEE2E2;
+  --amber: #92400E;
+  --amber-light: #FEF3C7;
+  --border: #E4E4DF;
+  --shadow: 0 1px 3px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.04);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--bg);
+  color: var(--black);
+  min-height: 100vh;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ── 레이아웃 ── */
+.app { display: flex; min-height: 100vh; }
+
+/* ── 사이드바 ── */
+.sidebar {
+  width: 240px; flex-shrink: 0;
+  background: var(--black);
+  padding: 28px 0;
+  position: sticky; top: 0; height: 100vh;
+  display: flex; flex-direction: column;
+}
+.sidebar-logo { padding: 0 24px 24px; border-bottom: 1px solid #2a2a28; margin-bottom: 20px; }
+.sidebar-logo-mark { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: .2em; color: #666; text-transform: uppercase; margin-bottom: 6px; }
+.sidebar-logo-name { font-size: 16px; font-weight: 700; color: #fff; }
+.sidebar-logo-sub { font-size: 10px; color: #666; margin-top: 2px; }
+
+.nav-section { padding: 0 12px; margin-bottom: 6px; }
+.nav-label { font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: #444; padding: 4px 12px 8px; display: block; font-weight: 600; }
+.nav-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px; border-radius: 6px; cursor: pointer;
+  font-size: 13px; color: #888; transition: all .15s;
+  border: none; background: none; width: 100%; text-align: left;
+}
+.nav-item:hover { background: #1a1a18; color: #fff; }
+.nav-item.active { background: var(--accent); color: #fff; }
+.nav-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+.sidebar-bottom { margin-top: auto; padding: 20px 24px; border-top: 1px solid #1a1a18; font-size: 11px; color: #444; line-height: 1.7; }
+
+/* ── 메인 ── */
+.main { flex: 1; overflow-y: auto; }
+
+/* ── 패널 ── */
+.panel { display: none; padding: 40px 48px; max-width: 1100px; }
+.panel.active { display: block; }
+
+.panel-header { margin-bottom: 32px; }
+.panel-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--accent); letter-spacing: .15em; text-transform: uppercase; margin-bottom: 8px; }
+.panel-title { font-size: 24px; font-weight: 900; letter-spacing: -.02em; margin-bottom: 6px; }
+.panel-desc { font-size: 14px; color: var(--gray-600); font-weight: 300; }
+
+/* ── 카드 ── */
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 24px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+}
+.card-title {
+  font-size: 12px; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--gray-600);
+  margin-bottom: 16px; padding-bottom: 12px;
+  border-bottom: 1px solid var(--gray-100);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.card-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.card-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+
+/* ── 폼 요소 ── */
+.field { margin-bottom: 14px; }
+.field:last-child { margin-bottom: 0; }
+label {
+  display: block; font-size: 11px; font-weight: 600;
+  color: var(--gray-600); margin-bottom: 5px;
+  letter-spacing: .04em; text-transform: uppercase;
+}
+input[type="text"], input[type="number"], input[type="date"], select, textarea {
+  width: 100%; padding: 9px 12px;
+  border: 1px solid var(--border); border-radius: 6px;
+  font-family: inherit; font-size: 13px; color: var(--black);
+  background: var(--white); transition: border-color .15s;
+  outline: none;
+}
+input[type="text"]:focus, input[type="number"]:focus,
+input[type="date"]:focus, select:focus, textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(83,74,183,.1);
+}
+input[type="number"] { font-family: 'JetBrains Mono', monospace; }
+textarea { resize: vertical; min-height: 72px; }
+.field-unit { position: relative; }
+.field-unit input { padding-right: 36px; }
+.unit-label {
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  font-size: 10px; color: var(--gray-400); font-family: 'JetBrains Mono', monospace;
+  pointer-events: none;
+}
+.radio-group { display: flex; gap: 8px; }
+.radio-btn {
+  flex: 1; padding: 8px; border: 1px solid var(--border); border-radius: 6px;
+  text-align: center; font-size: 13px; cursor: pointer;
+  transition: all .15s; user-select: none;
+}
+.radio-btn:hover { border-color: var(--accent); background: var(--accent-light); }
+.radio-btn.sel { border-color: var(--accent); background: var(--accent); color: #fff; font-weight: 600; }
+
+/* ── 이미지 업로드 ── */
+.img-upload-zone {
+  border: 2px dashed var(--border); border-radius: 8px;
+  padding: 20px; text-align: center; cursor: pointer;
+  transition: all .2s; background: var(--bg); min-height: 100px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+  position: relative; overflow: hidden;
+}
+.img-upload-zone:hover { border-color: var(--accent); background: var(--accent-light); }
+.img-upload-zone.has-img { border-style: solid; border-color: var(--accent); padding: 0; }
+.mtab { outline: none; }
+.img-upload-zone img { width: 100%; height: 100px; object-fit: cover; object-position: center 40%; border-radius: 6px; display: block; }
+.img-upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.upload-icon { font-size: 22px; }
+.upload-text { font-size: 11px; color: var(--gray-400); }
+.upload-name { font-size: 10px; color: var(--accent); font-weight: 600; margin-top: 4px; }
+
+/* ── 버튼 ── */
+.btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 10px 20px; border-radius: 7px; border: none;
+  font-family: inherit; font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: all .15s;
+}
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: #3c3489; }
+.btn-secondary { background: var(--gray-100); color: var(--gray-800); }
+.btn-secondary:hover { background: var(--gray-200); }
+.btn-danger { background: var(--red-light); color: var(--red); }
+.btn-success { background: var(--green-light); color: var(--green); }
+.btn-lg { padding: 14px 28px; font-size: 14px; border-radius: 8px; }
+.btn-full { width: 100%; justify-content: center; }
+.btn-row { display: flex; gap: 10px; margin-top: 20px; }
+
+/* ── 배지 ── */
+.badge {
+  display: inline-block; padding: 2px 8px; border-radius: 3px;
+  font-size: 10px; font-weight: 600; font-family: 'JetBrains Mono', monospace;
+}
+.badge-accent { background: var(--accent-light); color: var(--accent); }
+.badge-green  { background: var(--green-light);  color: var(--green);  }
+.badge-red    { background: var(--red-light);    color: var(--red);    }
+.badge-amber  { background: var(--amber-light);  color: var(--amber);  }
+.badge-gray   { background: var(--gray-100);     color: var(--gray-600); }
+
+/* ── 포먼트 입력 바 ── */
+.formant-input-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 0; border-bottom: 1px solid var(--gray-100);
+}
+.formant-input-row:last-child { border-bottom: none; }
+.fi-label { font-size: 12px; font-weight: 700; width: 28px; flex-shrink: 0; }
+.fi-name  { font-size: 11px; color: var(--gray-600); flex: 1; }
+.fi-input { width: 90px; }
+.fi-bar-wrap { flex: 2; height: 5px; background: var(--gray-100); border-radius: 3px; overflow: hidden; }
+.fi-bar { height: 5px; border-radius: 3px; transition: width .4s ease; }
+.fi-tag { font-size: 10px; font-family: 'JetBrains Mono', monospace; color: var(--gray-400); width: 60px; text-align: right; }
+
+/* ── 주파수 대역 ── */
+.freq-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+.freq-cell { text-align: center; }
+.freq-cell label { font-size: 9px; text-transform: uppercase; letter-spacing: .06em; }
+.freq-bar-wrap { height: 60px; background: var(--gray-100); border-radius: 4px; margin: 6px 0 4px; position: relative; overflow: hidden; display: flex; align-items: flex-end; }
+.freq-bar-fill { width: 100%; border-radius: 4px 4px 0 0; transition: height .4s ease; min-height: 2px; }
+.freq-pct { font-size: 10px; font-family: 'JetBrains Mono', monospace; font-weight: 500; }
+
+/* ── 레포트 미리보기 ── */
+.report-preview {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 10px; overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.report-header {
+  background: var(--black); color: #fff;
+  padding: 20px 24px;
+  display: flex; justify-content: space-between; align-items: flex-start;
+}
+.report-header-left {}
+.report-badge { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: .15em; color: #888; margin-bottom: 6px; }
+.report-name { font-size: 20px; font-weight: 900; letter-spacing: -.02em; }
+.report-meta { font-size: 11px; color: #666; margin-top: 4px; }
+.report-header-right { text-align: right; }
+.report-score-label { font-size: 9px; color: #666; margin-bottom: 4px; }
+.report-score { font-family: 'JetBrains Mono', monospace; font-size: 32px; font-weight: 500; color: #fff; }
+
+.report-body { padding: 20px 24px; }
+.report-section { margin-bottom: 20px; }
+.report-section-title {
+  font-size: 9px; letter-spacing: .15em; text-transform: uppercase;
+  color: var(--accent); font-weight: 700; margin-bottom: 10px;
+  padding-bottom: 6px; border-bottom: 1px solid var(--accent-light);
+}
+
+/* 스펙트로그램 */
+.spec-row { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 16px; }
+.spec-img-box { border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.spec-img-label { background: var(--gray-100); padding: 5px 10px; font-size: 10px; font-weight: 600; border-bottom: 1px solid var(--border); }
+.spec-img-box img { width: 100%; height: 80px; object-fit: cover; object-position: center 40%; display: block; }
+.spec-img-empty { height: 80px; display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--gray-400); background: var(--gray-100); }
+
+/* 진단 테이블 */
+.diag-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.diag-table th { background: var(--black); color: #fff; padding: 6px 10px; text-align: left; font-size: 10px; font-weight: 600; }
+.diag-table td { padding: 7px 10px; border-bottom: 1px solid var(--gray-100); vertical-align: middle; }
+.diag-table tr:last-child td { border-bottom: none; }
+.diag-table tr:nth-child(even) td { background: var(--gray-100); }
+.val-num { font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 12px; }
+.bar-cell { display: flex; align-items: center; gap: 6px; }
+.bar-mini { height: 4px; border-radius: 2px; flex-shrink: 0; }
+
+/* 진단 코멘트 */
+.diag-comment { background: var(--black); color: #ccc; border-radius: 8px; padding: 14px 16px; margin-top: 12px; font-size: 11px; line-height: 1.8; }
+.diag-comment strong { color: #fff; }
+.diag-comment .dc-title { font-size: 9px; letter-spacing: .15em; color: #888; text-transform: uppercase; margin-bottom: 8px; font-weight: 600; }
+
+/* 코칭 박스 */
+.coaching-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 10px; }
+.coaching-item { padding: 10px 12px; border-radius: 6px; border: 1px solid; }
+.coaching-item .ci-title { font-size: 10px; font-weight: 700; margin-bottom: 4px; }
+.coaching-item .ci-body { font-size: 10px; line-height: 1.65; color: var(--gray-600); }
+
+/* ── 저장 기록 패널 ── */
+.record-list { }
+.record-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 16px; background: var(--white);
+  border: 1px solid var(--border); border-radius: 8px;
+  margin-bottom: 8px; cursor: pointer; transition: all .15s;
+}
+.record-item:hover { border-color: var(--accent); box-shadow: 0 2px 8px rgba(83,74,183,.12); }
+.record-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--accent-light); color: var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700; flex-shrink: 0;
+}
+.record-info { flex: 1; }
+.record-name { font-size: 14px; font-weight: 600; }
+.record-meta { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+.record-badges { display: flex; gap: 4px; }
+
+/* ── 토스트 ── */
+.toast {
+  position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+  background: var(--black); color: #fff;
+  padding: 12px 18px; border-radius: 8px;
+  font-size: 13px; display: none; align-items: center; gap: 8px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.2);
+}
+.toast.show { display: flex; }
+.toast.success { background: #166534; }
+.toast.error   { background: var(--red); }
+
+/* ── 저장 상태 ── */
+.save-status { display: flex; align-items: center; gap: 8px; font-size: 12px; padding: 8px 12px; border-radius: 6px; }
+.save-status.saving { background: var(--amber-light); color: var(--amber); }
+.save-status.saved  { background: var(--green-light);  color: var(--green);  }
+.save-status.error  { background: var(--red-light);    color: var(--red);    }
+
+/* ── 반응형 ── */
+@media (max-width: 900px) {
+  .sidebar { display: none; }
+  .panel { padding: 20px; }
+  .card-grid-2, .card-grid-3 { grid-template-columns: 1fr; }
+  .coaching-grid { grid-template-columns: 1fr; }
+  .freq-grid { grid-template-columns: repeat(3, 1fr); }
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ── 사이드바 ── -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-mark">TouchingVoice</div>
+    <div class="sidebar-logo-name">음성 분석 시스템</div>
+    <div class="sidebar-logo-sub">강사용 진단 입력 도구</div>
+  </div>
+
+  <div class="nav-section">
+    <span class="nav-label">분석</span>
+    <button class="nav-item active" onclick="showPanel('input')">
+      <span class="nav-dot"></span> 데이터 입력
+    </button>
+    <button class="nav-item" onclick="showPanel('report')">
+      <span class="nav-dot"></span> 진단 리포트
+    </button>
+  </div>
+  <div class="nav-section">
+    <span class="nav-label">관리</span>
+    <button class="nav-item" onclick="showPanel('records')">
+      <span class="nav-dot"></span> 분석 기록
+    </button>
+    <button class="nav-item" onclick="showPanel('settings')">
+      <span class="nav-dot"></span> 설정
+    </button>
+  </div>
+
+  <div class="sidebar-bottom">
+    터칭보이스 발성심리지도사<br>
+    음성 분석 입력 시스템 v1.0
+  </div>
+</aside>
+
+<!-- ── 메인 ── -->
+<main class="main">
+
+  <!-- ══════ 패널1: 데이터 입력 ══════ -->
+  <div class="panel active" id="panel-input">
+    <div class="panel-header">
+      <div class="panel-eyebrow">Voice Analysis Input</div>
+      <h1 class="panel-title">음성 데이터 입력</h1>
+      <p class="panel-desc">RX 스펙트로그램과 측정값을 입력하면 자동으로 진단 리포트를 생성합니다.</p>
+    </div>
+
+    <!-- 기본 정보 -->
+    <div class="card">
+      <div class="card-title">기본 정보</div>
+      <div class="card-grid-3">
+        <div class="field">
+          <label>이름</label>
+          <input type="text" id="inp-name" placeholder="홍길동">
+        </div>
+        <div class="field">
+          <label>성별</label>
+          <div class="radio-group">
+            <div class="radio-btn" onclick="setGender('남성',this)">남성</div>
+            <div class="radio-btn" onclick="setGender('여성',this)">여성</div>
+          </div>
+        </div>
+        <div class="field">
+          <label>나이</label>
+          <div class="field-unit">
+            <input type="number" id="inp-age" min="1" max="99" placeholder="25">
+            <span class="unit-label">세</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>분석일</label>
+          <input type="date" id="inp-date">
+        </div>
+        <div class="field">
+          <label>담당 강사</label>
+          <input type="text" id="inp-instructor" placeholder="천우경">
+        </div>
+        <div class="field">
+          <label>곡명</label>
+          <input type="text" id="inp-song" placeholder="응급실">
+        </div>
+        <div class="field">
+          <label>구간</label>
+          <input type="text" id="inp-section" placeholder="예: 1차 후렴, 전체, 브릿지">
+        </div>
+      </div>
+    </div>
+
+
+    <!-- 미디어 업로드 & 오디오 자체 분석 -->
+    <div class="card" id="media-card">
+      <div class="card-title">
+        스펙트로그램 & 오디오 업로드
+        <span class="badge badge-accent">자동 분석</span>
+      </div>
+
+      <!-- 탭 -->
+      <div style="display:flex;gap:0;margin-bottom:16px;border:1px solid var(--border);border-radius:7px;overflow:hidden">
+        <button id="mtab-spec" class="mtab active" onclick="switchMediaTab('spec',this)"
+          style="flex:1;padding:9px;font-size:12px;font-weight:600;border:none;cursor:pointer;background:var(--accent);color:#fff;transition:all .15s">
+          📊 스펙트로그램
+        </button>
+        <button id="mtab-audio" class="mtab" onclick="switchMediaTab('audio',this)"
+          style="flex:1;padding:9px;font-size:12px;font-weight:600;border:none;cursor:pointer;background:var(--gray-100);color:var(--gray-600);transition:all .15s">
+          🎵 오디오 파형 분석
+        </button>
+      </div>
+
+      <!-- 스펙트로그램 탭 -->
+      <div id="mtab-content-spec">
+        <div class="card-grid-2">
+          <div class="field">
+            <label>전체 구간 스펙트로그램</label>
+            <div class="img-upload-zone" id="zone-full" onclick="triggerUpload('file-full')">
+              <input type="file" id="file-full" accept="image/*" onchange="handleImgUpload('full',this)" style="display:none">
+              <div class="upload-icon">📊</div>
+              <div class="upload-text">RX 전체 스펙트로그램 업로드</div>
+            </div>
+          </div>
+          <div class="field">
+            <label>후렴 구간 스펙트로그램</label>
+            <div class="img-upload-zone" id="zone-chorus" onclick="triggerUpload('file-chorus')">
+              <input type="file" id="file-chorus" accept="image/*" onchange="handleImgUpload('chorus',this)" style="display:none">
+              <div class="upload-icon">🎵</div>
+              <div class="upload-text">RX 후렴 스펙트로그램 업로드</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 오디오 탭 -->
+      <div id="mtab-content-audio" style="display:none">
+        <div class="field">
+          <label>오디오 파일 업로드 (WAV / MP3 / WebM)</label>
+          <div class="img-upload-zone" id="zone-audio" onclick="triggerUpload('file-audio')"
+            style="min-height:80px;flex-direction:row;gap:12px">
+            <input type="file" id="file-audio" accept="audio/*,.wav,.mp3,.webm,.ogg,.m4a" onchange="handleAudioUpload(this)" style="display:none">
+            <div style="font-size:28px">🎙</div>
+            <div>
+              <div style="font-size:13px;font-weight:600;margin-bottom:3px">오디오 파일을 업로드하면 자동 분석합니다</div>
+              <div class="upload-text">WAV · MP3 · WebM · M4A 지원 · 최대 50MB</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 분석 진행 -->
+        <div id="audio-progress" style="display:none">
+          <div style="display:flex;align-items:center;gap:10px;padding:12px;background:var(--accent-light);border-radius:7px;margin-bottom:12px">
+            <div id="audio-progress-icon" style="font-size:18px">⏳</div>
+            <div>
+              <div id="audio-progress-title" style="font-size:12px;font-weight:700;color:var(--accent)">오디오 분석 중...</div>
+              <div id="audio-progress-sub" style="font-size:11px;color:var(--gray-600)">Web Audio API로 포먼트 분석 중</div>
+            </div>
+          </div>
+          <div style="background:var(--gray-100);border-radius:4px;height:6px;overflow:hidden">
+            <div id="audio-progress-bar" style="height:6px;background:var(--accent);width:0%;transition:width .3s;border-radius:4px"></div>
+          </div>
+        </div>
+
+        <!-- 분석 결과 미리보기 -->
+        <div id="audio-result" style="display:none">
+          <div style="background:var(--green-light);border:1px solid #86EFAC;border-radius:7px;padding:12px 14px;margin-bottom:12px">
+            <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:8px">✅ 오디오 분석 완료 — 아래 항목에 자동 입력됐습니다</div>
+            <div id="audio-result-summary" style="font-size:11px;color:var(--green);line-height:1.8;font-family:'JetBrains Mono',monospace"></div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-secondary" onclick="reAnalyzeAudio()" style="font-size:12px;padding:7px 14px">🔄 재분석</button>
+            <button class="btn btn-primary" onclick="applyAudioResult()" style="font-size:12px;padding:7px 14px">✅ 값 적용</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Big5 점수 -->
+    <div class="card">
+      <div class="card-title">
+        Big5 성격 검사 점수
+        <span class="badge badge-gray">0~100점</span>
+      </div>
+      <div class="card-grid-3">
+        <div class="field">
+          <label>외향성 E</label>
+          <div class="field-unit">
+            <input type="number" id="b5-E" min="0" max="100" placeholder="67" oninput="updateB5Bar('E')">
+            <span class="unit-label">pt</span>
+          </div>
+          <div style="margin-top:5px;height:4px;background:var(--gray-100);border-radius:2px;overflow:hidden">
+            <div id="bar-E" style="height:4px;background:#534AB7;border-radius:2px;width:0%;transition:width .3s"></div>
+          </div>
+        </div>
+        <div class="field">
+          <label>성실성 C</label>
+          <div class="field-unit">
+            <input type="number" id="b5-C" min="0" max="100" placeholder="65" oninput="updateB5Bar('C')">
+            <span class="unit-label">pt</span>
+          </div>
+          <div style="margin-top:5px;height:4px;background:var(--gray-100);border-radius:2px;overflow:hidden">
+            <div id="bar-C" style="height:4px;background:#1D9E75;border-radius:2px;width:0%;transition:width .3s"></div>
+          </div>
+        </div>
+        <div class="field">
+          <label>우호성 A</label>
+          <div class="field-unit">
+            <input type="number" id="b5-A" min="0" max="100" placeholder="92" oninput="updateB5Bar('A')">
+            <span class="unit-label">pt</span>
+          </div>
+          <div style="margin-top:5px;height:4px;background:var(--gray-100);border-radius:2px;overflow:hidden">
+            <div id="bar-A" style="height:4px;background:#378ADD;border-radius:2px;width:0%;transition:width .3s"></div>
+          </div>
+        </div>
+        <div class="field">
+          <label>신경성 N</label>
+          <div class="field-unit">
+            <input type="number" id="b5-N" min="0" max="100" placeholder="20" oninput="updateB5Bar('N')">
+            <span class="unit-label">pt</span>
+          </div>
+          <div style="margin-top:5px;height:4px;background:var(--gray-100);border-radius:2px;overflow:hidden">
+            <div id="bar-N" style="height:4px;background:#E24B4A;border-radius:2px;width:0%;transition:width .3s"></div>
+          </div>
+        </div>
+        <div class="field">
+          <label>개방성 O</label>
+          <div class="field-unit">
+            <input type="number" id="b5-O" min="0" max="100" placeholder="92" oninput="updateB5Bar('O')">
+            <span class="unit-label">pt</span>
+          </div>
+          <div style="margin-top:5px;height:4px;background:var(--gray-100);border-radius:2px;overflow:hidden">
+            <div id="bar-O" style="height:4px;background:#EF9F27;border-radius:2px;width:0%;transition:width .3s"></div>
+          </div>
+        </div>
+        <div class="field">
+          <label>보컬특성 V</label>
+          <div class="field-unit">
+            <input type="number" id="b5-V" min="0" max="100" placeholder="75" oninput="updateB5Bar('V')">
+            <span class="unit-label">pt</span>
+          </div>
+          <div style="margin-top:5px;height:4px;background:var(--gray-100);border-radius:2px;overflow:hidden">
+            <div id="bar-V" style="height:4px;background:#A855F7;border-radius:2px;width:0%;transition:width .3s"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 포먼트 측정값 F1~F7 + 바이오마커 -->
+    <div class="card">
+      <div class="card-title">
+        포먼트 F1~F7 & 음성 바이오마커
+        <span class="badge badge-accent">자동 분석 / 수동 입력</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div>
+          <div style="font-size:10px;font-weight:700;color:var(--gray-600);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">포먼트 (F1~F7)</div>
+          <div class="formant-input-row">
+            <span class="fi-label" style="color:#534AB7">F1</span>
+            <span class="fi-name" style="font-size:10px">흉성공명 · 혀 높낮이</span>
+            <div class="field-unit fi-input"><input type="number" id="f-F1" placeholder="659" min="0" max="2000" oninput="updateFormantBar('F1')"><span class="unit-label">Hz</span></div>
+            <div class="fi-bar-wrap"><div id="fbar-F1" class="fi-bar" style="background:#534AB7;width:0%"></div></div>
+          </div>
+          <div class="formant-input-row">
+            <span class="fi-label" style="color:#185FA5">F2</span>
+            <span class="fi-name" style="font-size:10px">모음명료도 · 혀 앞뒤</span>
+            <div class="field-unit fi-input"><input type="number" id="f-F2" placeholder="3575" min="0" max="5000" oninput="updateFormantBar('F2')"><span class="unit-label">Hz</span></div>
+            <div class="fi-bar-wrap"><div id="fbar-F2" class="fi-bar" style="background:#185FA5;width:0%"></div></div>
+          </div>
+          <div class="formant-input-row">
+            <span class="fi-label" style="color:#1D9E75">F3</span>
+            <span class="fi-name" style="font-size:10px">음색개성 · Singer's F.</span>
+            <div class="field-unit fi-input"><input type="number" id="f-F3" placeholder="3755" min="0" max="6000" oninput="updateFormantBar('F3')"><span class="unit-label">Hz</span></div>
+            <div class="fi-bar-wrap"><div id="fbar-F3" class="fi-bar" style="background:#1D9E75;width:0%"></div></div>
+          </div>
+          <div class="formant-input-row">
+            <span class="fi-label" style="color:#EF9F27">F4</span>
+            <span class="fi-name" style="font-size:10px">성도 개인차 · 밝기</span>
+            <div class="field-unit fi-input"><input type="number" id="f-F4" placeholder="4200" min="0" max="7000" oninput="updateFormantBar('F4')"><span class="unit-label">Hz</span></div>
+            <div class="fi-bar-wrap"><div id="fbar-F4" class="fi-bar" style="background:#EF9F27;width:0%"></div></div>
+          </div>
+          <div class="formant-input-row">
+            <span class="fi-label" style="color:#E24B4A">F5</span>
+            <span class="fi-name" style="font-size:10px">공기감 · 에어리 텍스처</span>
+            <div class="field-unit fi-input"><input type="number" id="f-F5" placeholder="5000" min="0" max="8000" oninput="updateFormantBar('F5')"><span class="unit-label">Hz</span></div>
+            <div class="fi-bar-wrap"><div id="fbar-F5" class="fi-bar" style="background:#E24B4A;width:0%"></div></div>
+          </div>
+          <div class="formant-input-row">
+            <span class="fi-label" style="color:#A855F7">F6</span>
+            <span class="fi-name" style="font-size:10px">고배음 · 존재감 상단</span>
+            <div class="field-unit fi-input"><input type="number" id="f-F6" placeholder="6100" min="0" max="10000" oninput="updateFormantBar('F6')"><span class="unit-label">Hz</span></div>
+            <div class="fi-bar-wrap"><div id="fbar-F6" class="fi-bar" style="background:#A855F7;width:0%"></div></div>
+          </div>
+          <div class="formant-input-row">
+            <span class="fi-label" style="color:#EC4899">F7</span>
+            <span class="fi-name" style="font-size:10px">초고배음 · 광채</span>
+            <div class="field-unit fi-input"><input type="number" id="f-F7" placeholder="7200" min="0" max="12000" oninput="updateFormantBar('F7')"><span class="unit-label">Hz</span></div>
+            <div class="fi-bar-wrap"><div id="fbar-F7" class="fi-bar" style="background:#EC4899;width:0%"></div></div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:700;color:var(--gray-600);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">음성 바이오마커</div>
+          <div class="formant-input-row">
+            <span class="fi-label" style="color:#888">RMS</span>
+            <span class="fi-name" style="font-size:10px">평균 음량</span>
+            <div class="field-unit fi-input"><input type="number" id="f-RMS" placeholder="0.027" min="0" max="1" step="0.001" oninput="updateFormantBar('RMS')"></div>
+            <div class="fi-bar-wrap"><div id="fbar-RMS" class="fi-bar" style="background:#888;width:0%"></div></div>
+          </div>
+          <div class="formant-input-row">
+            <span class="fi-label" style="color:#EF9F27">DR</span>
+            <span class="fi-name" style="font-size:10px">다이나믹레인지</span>
+            <div class="field-unit fi-input"><input type="number" id="f-DR" placeholder="11.5" min="0" max="40" step="0.1" oninput="updateFormantBar('DR')"><span class="unit-label">dB</span></div>
+            <div class="fi-bar-wrap"><div id="fbar-DR" class="fi-bar" style="background:#EF9F27;width:0%"></div></div>
+          </div>
+          <div class="formant-input-row">
+            <span class="fi-label" style="color:#E24B4A">HNR</span>
+            <span class="fi-name" style="font-size:10px">배음/잡음비</span>
+            <div class="field-unit fi-input"><input type="number" id="f-HNR" placeholder="18.5" min="0" max="40" step="0.1" oninput="updateFormantBar('HNR')"><span class="unit-label">dB</span></div>
+            <div class="fi-bar-wrap"><div id="fbar-HNR" class="fi-bar" style="background:#E24B4A;width:0%"></div></div>
+          </div>
+          <div class="formant-input-row">
+            <span class="fi-label" style="color:#06B6D4">JIT</span>
+            <span class="fi-name" style="font-size:10px">피치 주기 변동 (지터)</span>
+            <div class="field-unit fi-input"><input type="number" id="f-JIT" placeholder="0.5" min="0" max="5" step="0.01" oninput="updateFormantBar('JIT')"><span class="unit-label">%</span></div>
+            <div class="fi-bar-wrap"><div id="fbar-JIT" class="fi-bar" style="background:#06B6D4;width:0%"></div></div>
+          </div>
+          <div class="formant-input-row">
+            <span class="fi-label" style="color:#8B5CF6">SHI</span>
+            <span class="fi-name" style="font-size:10px">진폭 변동 (시머)</span>
+            <div class="field-unit fi-input"><input type="number" id="f-SHI" placeholder="2.5" min="0" max="10" step="0.01" oninput="updateFormantBar('SHI')"><span class="unit-label">%</span></div>
+            <div class="fi-bar-wrap"><div id="fbar-SHI" class="fi-bar" style="background:#8B5CF6;width:0%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 주파수 대역 에너지 (9대역, 8kHz까지) -->
+    <div class="card">
+      <div class="card-title">
+        주파수 대역별 에너지
+        <span class="badge badge-gray">9대역 · 0~100%</span>
+      </div>
+      <div class="freq-grid" style="grid-template-columns:repeat(9,1fr)">
+        <div class="freq-cell">
+          <label>흉성<br>100Hz</label>
+          <div class="freq-bar-wrap">
+            <div id="freq-100" class="freq-bar-fill" style="background:#534AB7;height:0%"></div>
+          </div>
+          <input type="number" id="finp-100" min="0" max="100" placeholder="70"
+            style="width:100%;padding:4px;text-align:center;font-size:11px;font-family:'JetBrains Mono',monospace;border:1px solid var(--border);border-radius:4px" oninput="updateFreqBar('100')">
+        </div>
+        <div class="freq-cell">
+          <label>온기<br>300Hz</label>
+          <div class="freq-bar-wrap">
+            <div id="freq-300" class="freq-bar-fill" style="background:#378ADD;height:0%"></div>
+          </div>
+          <input type="number" id="finp-300" min="0" max="100" placeholder="68"
+            style="width:100%;padding:4px;text-align:center;font-size:11px;font-family:'JetBrains Mono',monospace;border:1px solid var(--border);border-radius:4px" oninput="updateFreqBar('300')">
+        </div>
+        <div class="freq-cell">
+          <label>말소리<br>600Hz</label>
+          <div class="freq-bar-wrap">
+            <div id="freq-600" class="freq-bar-fill" style="background:#1D9E75;height:0%"></div>
+          </div>
+          <input type="number" id="finp-600" min="0" max="100" placeholder="75"
+            style="width:100%;padding:4px;text-align:center;font-size:11px;font-family:'JetBrains Mono',monospace;border:1px solid var(--border);border-radius:4px" oninput="updateFreqBar('600')">
+        </div>
+        <div class="freq-cell">
+          <label>명료도<br>1.2kHz</label>
+          <div class="freq-bar-wrap">
+            <div id="freq-1200" class="freq-bar-fill" style="background:#EF9F27;height:0%"></div>
+          </div>
+          <input type="number" id="finp-1200" min="0" max="100" placeholder="80"
+            style="width:100%;padding:4px;text-align:center;font-size:11px;font-family:'JetBrains Mono',monospace;border:1px solid var(--border);border-radius:4px" oninput="updateFreqBar('1200')">
+        </div>
+        <div class="freq-cell">
+          <label>존재감<br>2.5kHz</label>
+          <div class="freq-bar-wrap">
+            <div id="freq-2500" class="freq-bar-fill" style="background:#E24B4A;height:0%"></div>
+          </div>
+          <input type="number" id="finp-2500" min="0" max="100" placeholder="58"
+            style="width:100%;padding:4px;text-align:center;font-size:11px;font-family:'JetBrains Mono',monospace;border:1px solid var(--border);border-radius:4px" oninput="updateFreqBar('2500')">
+        </div>
+        <div class="freq-cell">
+          <label>공기감<br>4kHz</label>
+          <div class="freq-bar-wrap">
+            <div id="freq-4000" class="freq-bar-fill" style="background:#A855F7;height:0%"></div>
+          </div>
+          <input type="number" id="finp-4000" min="0" max="100" placeholder="45"
+            style="width:100%;padding:4px;text-align:center;font-size:11px;font-family:'JetBrains Mono',monospace;border:1px solid var(--border);border-radius:4px" oninput="updateFreqBar('4000')">
+        </div>
+        <div class="freq-cell">
+          <label>고배음<br>5.5kHz</label>
+          <div class="freq-bar-wrap">
+            <div id="freq-5500" class="freq-bar-fill" style="background:#EC4899;height:0%"></div>
+          </div>
+          <input type="number" id="finp-5500" min="0" max="100" placeholder="32"
+            style="width:100%;padding:4px;text-align:center;font-size:11px;font-family:'JetBrains Mono',monospace;border:1px solid var(--border);border-radius:4px" oninput="updateFreqBar('5500')">
+        </div>
+        <div class="freq-cell">
+          <label>광채<br>7kHz</label>
+          <div class="freq-bar-wrap">
+            <div id="freq-7000" class="freq-bar-fill" style="background:#06B6D4;height:0%"></div>
+          </div>
+          <input type="number" id="finp-7000" min="0" max="100" placeholder="22"
+            style="width:100%;padding:4px;text-align:center;font-size:11px;font-family:'JetBrains Mono',monospace;border:1px solid var(--border);border-radius:4px" oninput="updateFreqBar('7000')">
+        </div>
+        <div class="freq-cell">
+          <label>초고음<br>8kHz</label>
+          <div class="freq-bar-wrap">
+            <div id="freq-8000" class="freq-bar-fill" style="background:#8B5CF6;height:0%"></div>
+          </div>
+          <input type="number" id="finp-8000" min="0" max="100" placeholder="15"
+            style="width:100%;padding:4px;text-align:center;font-size:11px;font-family:'JetBrains Mono',monospace;border:1px solid var(--border);border-radius:4px" oninput="updateFreqBar('8000')">
+        </div>
+      </div>
+    </div>
+
+
+    <!-- 버튼 -->
+    <div class="btn-row">
+      <button class="btn btn-primary btn-lg" onclick="generateReport()">
+        📋 진단 리포트 생성
+      </button>
+      <button class="btn btn-lg" onclick="runClaudeAnalysis()"
+        style="background:linear-gradient(135deg,#534AB7,#8B5CF6);color:#fff">
+        🤖 Claude AI 정밀 분석
+      </button>
+      <button class="btn btn-success btn-lg" onclick="saveToSheets()">
+        💾 Sheets에 저장
+      </button>
+      <button class="btn btn-secondary" onclick="clearForm()">
+        초기화
+      </button>
+    </div>
+    <div id="save-status" style="margin-top:12px;display:none"></div>
+  </div>
+
+  <!-- ══════ 패널2: 진단 리포트 ══════ -->
+  <div class="panel" id="panel-report">
+    <div class="panel-header">
+      <div class="panel-eyebrow">Diagnostic Report</div>
+      <h1 class="panel-title">음성 진단 리포트</h1>
+      <p class="panel-desc">입력된 데이터 기반 자동 생성 리포트입니다.</p>
+    </div>
+
+    <!-- Claude AI 분석 결과 섹션 -->
+    <div id="claude-analysis-section" style="display:none;margin-bottom:16px">
+      <div class="card" style="border:2px solid #534AB7">
+        <div class="card-title" style="color:#534AB7">
+          🤖 Claude AI 정밀 분석 결과
+          <span id="claude-analysis-status" class="badge badge-accent">분석 중...</span>
+        </div>
+        <div id="claude-analysis-content" style="font-size:13px;line-height:1.85;color:var(--gray-800)">
+          <div style="display:flex;align-items:center;gap:10px;color:var(--gray-400)">
+            <span style="font-size:20px">⏳</span>
+            <span>스펙트로그램을 분석하고 있습니다...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="report-output">
+      <div style="text-align:center;padding:60px;color:var(--gray-400)">
+        <div style="font-size:32px;margin-bottom:12px">📋</div>
+        <div>데이터를 입력하고 "진단 리포트 생성"을 눌러주세요</div>
+      </div>
+    </div>
+
+    <!-- 강사 진단 메모 (리포트 생성 후 입력) -->
+    <div class="card" id="memo-section" style="display:none;margin-top:16px">
+      <div class="card-title">
+        강사 진단 메모
+        <span class="badge badge-accent">리포트 생성 후 입력</span>
+      </div>
+      <div class="card-grid-2">
+        <div class="field">
+          <label>강점 (스펙트로그램 근거)</label>
+          <textarea id="report-memo-strength" placeholder="F2 3,575Hz — 고명료도 모음 공간&#10;N20 성대 이완 상태 유지&#10;배음 조밀하고 안정적" style="min-height:80px"></textarea>
+        </div>
+        <div class="field">
+          <label>개발 포인트</label>
+          <textarea id="report-memo-develop" placeholder="다이나믹레인지 11.5dB — 약함&#10;공기감 4kHz 구간 미발달" style="min-height:80px"></textarea>
+        </div>
+        <div class="field">
+          <label>코칭 처방</label>
+          <textarea id="report-memo-coaching" placeholder="다이나믹 확장 훈련&#10;에어리 믹스 보이스&#10;감정 진폭 넓히기" style="min-height:80px"></textarea>
+        </div>
+        <div class="field">
+          <label>종합 한줄 진단</label>
+          <textarea id="report-memo-summary" placeholder="선명하고 신뢰감 있는 안정형 중심음. 다이나믹 확장 시 더 입체적 발전 가능." style="min-height:48px"></textarea>
+        </div>
+      </div>
+      <div class="btn-row" style="margin-top:4px">
+        <button class="btn btn-primary" onclick="applyMemoToReport()">📋 메모를 리포트에 반영</button>
+        <button class="btn btn-success" onclick="saveToSheets()">💾 Sheets 저장</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ 패널3: 분석 기록 ══════ -->
+  <div class="panel" id="panel-records">
+    <div class="panel-header">
+      <div class="panel-eyebrow">Records</div>
+      <h1 class="panel-title">분석 기록</h1>
+      <p class="panel-desc">저장된 음성 분석 기록입니다.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">저장된 분석 <span id="record-count" class="badge badge-gray">0건</span></div>
+      <div id="record-list">
+        <div style="text-align:center;padding:32px;color:var(--gray-400);font-size:13px">
+          저장된 분석 기록이 없습니다
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ 패널4: 설정 ══════ -->
+  <div class="panel" id="panel-settings">
+    <div class="panel-header">
+      <div class="panel-eyebrow">Settings</div>
+      <h1 class="panel-title">설정</h1>
+    </div>
+    <div class="card">
+      <div class="card-title">Google Sheets 연동</div>
+      <div class="field">
+        <label>Apps Script URL</label>
+        <input type="text" id="setting-url" placeholder="https://script.google.com/macros/s/..." style="font-family:'JetBrains Mono',monospace;font-size:11px">
+      </div>
+      <div class="field">
+        <label>기본 강사명</label>
+        <input type="text" id="setting-instructor" placeholder="천우경">
+      </div>
+      <button class="btn btn-primary" onclick="saveSettings()" style="margin-top:8px">설정 저장</button>
+    </div>
+    <div class="card">
+      <div class="card-title">Apps Script 설정 안내</div>
+      <div style="font-size:12px;color:var(--gray-600);line-height:1.9">
+        보이스 데이터 Apps Script URL을 입력하면 분석 데이터가 자동으로 Google Sheets에 저장됩니다.<br>
+        <br>
+        <strong>저장되는 데이터:</strong> 이름, 성별, 날짜, Big5 점수, F1/F2/F3, RMS, DR, HNR, 주파수 대역, 강사 메모<br>
+        <br>
+        <code style="background:var(--gray-100);padding:2px 6px;border-radius:3px;font-size:11px">
+          https://script.google.com/macros/s/AKfycbx7Pq9FujnDs.../exec
+        </code>
+      </div>
+    </div>
+  </div>
+
+</main>
+</div>
+
+<!-- 토스트 -->
+<div class="toast" id="toast"></div>
+
+<script>
+
+// ═══════════════════════════════════════════
+// 오디오 자체 분석 엔진 (Web Audio API + FFT)
+// ═══════════════════════════════════════════
+
+let audioAnalysisResult = null;
+
+// 미디어 탭 전환
+function switchMediaTab(name, el) {
+  document.querySelectorAll('.mtab').forEach(b => {
+    b.style.background = 'var(--gray-100)';
+    b.style.color = 'var(--gray-600)';
+  });
+  el.style.background = 'var(--accent)';
+  el.style.color = '#fff';
+  document.getElementById('mtab-content-spec').style.display = name === 'spec' ? '' : 'none';
+  document.getElementById('mtab-content-audio').style.display = name === 'audio' ? '' : 'none';
+}
+
+// 오디오 업로드 핸들러
+function handleAudioUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+
+  // 업로드 존 UI 업데이트
+  const zone = document.getElementById('zone-audio');
+  zone.innerHTML = `
+    <input type="file" id="file-audio" accept="audio/*" onchange="handleAudioUpload(this)" style="display:none">
+    <div style="font-size:28px">🎙</div>
+    <div>
+      <div style="font-size:13px;font-weight:600;margin-bottom:3px">${file.name}</div>
+      <div style="font-size:11px;color:var(--gray-400)">${(file.size/1024/1024).toFixed(1)}MB · ${file.type || 'audio'}</div>
+    </div>
+  `;
+  zone.classList.add('has-img');
+
+  analyzeAudioFile(file);
+}
+
+// 오디오 분석 메인 함수
+async function analyzeAudioFile(file) {
+  const progressEl = document.getElementById('audio-progress');
+  const resultEl   = document.getElementById('audio-result');
+  const barEl      = document.getElementById('audio-progress-bar');
+  const titleEl    = document.getElementById('audio-progress-title');
+  const subEl      = document.getElementById('audio-progress-sub');
+
+  progressEl.style.display = '';
+  resultEl.style.display   = 'none';
+  barEl.style.width = '10%';
+
+  try {
+    // 1. ArrayBuffer로 읽기
+    titleEl.textContent = '파일 읽는 중...';
+    subEl.textContent   = 'ArrayBuffer 변환';
+    const arrayBuffer = await file.arrayBuffer();
+    barEl.style.width = '25%';
+
+    // 2. AudioContext 생성 및 디코딩
+    titleEl.textContent = '오디오 디코딩 중...';
+    subEl.textContent   = 'Web Audio API 초기화';
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 44100 });
+    const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+    barEl.style.width = '45%';
+
+    // 3. 오프라인 분석
+    titleEl.textContent = '포먼트 분석 중...';
+    subEl.textContent   = `${audioBuffer.numberOfChannels}ch · ${audioBuffer.sampleRate}Hz · ${audioBuffer.duration.toFixed(1)}초`;
+
+    const result = await performAudioAnalysis(audioBuffer);
+    barEl.style.width = '85%';
+
+    await audioCtx.close();
+    barEl.style.width = '100%';
+
+    // 결과 저장
+    audioAnalysisResult = result;
+
+    // 결과 표시
+    titleEl.textContent = '✅ 분석 완료!';
+    document.getElementById('audio-progress-icon').textContent = '✅';
+    subEl.textContent = '포먼트·주파수·RMS·다이나믹레인지 추출 완료';
+
+    setTimeout(() => {
+      progressEl.style.display = 'none';
+      resultEl.style.display   = '';
+      document.getElementById('audio-result-summary').innerHTML = formatAudioResult(result);
+      // 자동 적용
+      applyAudioResult();
+    }, 600);
+
+  } catch (err) {
+    console.error('[TV Analyzer] 오디오 분석 오류:', err);
+    titleEl.textContent = '⚠️ 분석 실패';
+    subEl.textContent   = err.message || '오디오 형식을 확인해주세요';
+    document.getElementById('audio-progress-icon').textContent = '⚠️';
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// 핵심 분석 함수 — F1~F7 + 9대역 + JIT/SHI + 8kHz
+// ═══════════════════════════════════════════════════
+async function performAudioAnalysis(audioBuffer) {
+  const sampleRate = audioBuffer.sampleRate;
+  const data       = audioBuffer.getChannelData(0);
+  const duration   = audioBuffer.duration;
+
+  // ── RMS ──
+  let sumSq = 0;
+  for (let i = 0; i < data.length; i++) sumSq += data[i] * data[i];
+  const rms = Math.sqrt(sumSq / data.length);
+
+  // ── 다이나믹레인지 (p10~p90) ──
+  const frameSize = Math.floor(sampleRate * 0.05);
+  const frameRMS = [];
+  for (let i = 0; i + frameSize < data.length; i += frameSize) {
+    let fSq = 0;
+    for (let j = i; j < i + frameSize; j++) fSq += data[j] * data[j];
+    const fRms = Math.sqrt(fSq / frameSize);
+    if (fRms > 0.001) frameRMS.push(20 * Math.log10(fRms));
+  }
+  frameRMS.sort((a, b) => a - b);
+  const p10 = frameRMS[Math.floor(frameRMS.length * 0.1)] || -60;
+  const p90 = frameRMS[Math.floor(frameRMS.length * 0.9)] || -20;
+  const dr  = Math.max(0, p90 - p10);
+
+  // ── Jitter 추정 (기본 피치 주기 변동) ──
+  // 제로크로싱 기반 간단 피치 추정
+  const pitchPeriods = [];
+  const minPitch = Math.floor(sampleRate / 400); // 400Hz 상한
+  const maxPitch = Math.floor(sampleRate / 70);  // 70Hz 하한
+  let lastZero = -1;
+  for (let i = 1; i < Math.min(data.length, sampleRate * 0.5); i++) {
+    if (data[i-1] < 0 && data[i] >= 0) { // 상향 제로크로싱
+      if (lastZero > 0) {
+        const period = i - lastZero;
+        if (period >= minPitch && period <= maxPitch) pitchPeriods.push(period);
+      }
+      lastZero = i;
+    }
+  }
+  let jitter = 0;
+  if (pitchPeriods.length > 2) {
+    let diffSum = 0;
+    for (let i = 1; i < pitchPeriods.length; i++) {
+      diffSum += Math.abs(pitchPeriods[i] - pitchPeriods[i-1]);
+    }
+    const avgPeriod = pitchPeriods.reduce((a,b)=>a+b,0) / pitchPeriods.length;
+    jitter = parseFloat(((diffSum / (pitchPeriods.length-1)) / avgPeriod * 100).toFixed(2));
+    jitter = Math.min(jitter, 5);
+  }
+
+  // ── Shimmer 추정 (진폭 변동) ──
+  const frameAmp = [];
+  const shimFrameSize = Math.floor(sampleRate * 0.02);
+  for (let i = 0; i + shimFrameSize < data.length; i += shimFrameSize) {
+    let maxAmp = 0;
+    for (let j = i; j < i + shimFrameSize; j++) {
+      if (Math.abs(data[j]) > maxAmp) maxAmp = Math.abs(data[j]);
+    }
+    if (maxAmp > 0.01) frameAmp.push(maxAmp);
+  }
+  let shimmer = 0;
+  if (frameAmp.length > 2) {
+    let diffSum = 0;
+    for (let i = 1; i < frameAmp.length; i++) {
+      diffSum += Math.abs(frameAmp[i] - frameAmp[i-1]);
+    }
+    const avgAmp = frameAmp.reduce((a,b)=>a+b,0) / frameAmp.length;
+    shimmer = parseFloat(((diffSum / (frameAmp.length-1)) / avgAmp * 100).toFixed(2));
+    shimmer = Math.min(shimmer, 10);
+  }
+
+  // ── FFT 고해상도 (8192, sampleRate 44100 → 최대 22kHz) ──
+  const fftSize = 8192; // 2배 해상도 → binHz = 5.4Hz
+  const startSample = Math.floor(data.length * 0.33);
+  const analyzeLen  = Math.min(fftSize * 8, data.length - startSample);
+  const segment     = data.slice(startSample, startSample + analyzeLen);
+
+  const offlineCtx     = new OfflineAudioContext(1, analyzeLen, sampleRate);
+  const analysisBuffer = offlineCtx.createBuffer(1, analyzeLen, sampleRate);
+  analysisBuffer.copyToChannel(segment, 0);
+
+  const source   = offlineCtx.createBufferSource();
+  const analyser = offlineCtx.createAnalyser();
+  analyser.fftSize          = fftSize;
+  analyser.smoothingTimeConstant = 0;
+
+  source.buffer = analysisBuffer;
+  source.connect(analyser);
+  analyser.connect(offlineCtx.destination);
+  source.start();
+  await offlineCtx.startRendering();
+
+  const freqData = new Float32Array(analyser.frequencyBinCount);
+  analyser.getFloatFrequencyData(freqData);
+
+  const binHz = sampleRate / fftSize; // ~5.4Hz per bin
+
+  function getBinIdx(hz) { return Math.round(hz / binHz); }
+  function getBandEnergy(loHz, hiHz) {
+    const lo = getBinIdx(loHz);
+    const hi = Math.min(getBinIdx(hiHz), freqData.length - 1);
+    if (lo > hi) return 0;
+    let sum = 0, cnt = 0;
+    for (let i = lo; i <= hi; i++) {
+      if (freqData[i] > -100) { sum += Math.pow(10, freqData[i] / 20); cnt++; }
+    }
+    return cnt > 0 ? sum / cnt : 0;
+  }
+
+  // ── 9대역 에너지 (100Hz ~ 8kHz) ──
+  const bandEnergies = {
+    hz100:  getBandEnergy(60,   200),
+    hz300:  getBandEnergy(200,  500),
+    hz600:  getBandEnergy(500,  900),
+    hz1200: getBandEnergy(900,  1800),
+    hz2500: getBandEnergy(1800, 3500),
+    hz4000: getBandEnergy(3500, 5000),
+    hz5500: getBandEnergy(5000, 6200),
+    hz7000: getBandEnergy(6200, 7500),
+    hz8000: getBandEnergy(7500, 8500),
+  };
+
+  // 정규화 (최대 100%)
+  const maxE = Math.max(...Object.values(bandEnergies), 0.0001);
+  const freqPct = {};
+  for (const [k, v] of Object.entries(bandEnergies)) {
+    freqPct[k] = Math.round(Math.min(100, (v / maxE) * 100));
+  }
+
+  // ── 선형 스펙트럼 + 스무딩 (포먼트 추정용) ──
+  const linSpec = new Float32Array(freqData.length);
+  for (let i = 0; i < freqData.length; i++) {
+    linSpec[i] = freqData[i] > -100 ? Math.pow(10, freqData[i] / 20) : 0;
+  }
+
+  // 가우시안 스무딩 (윈도우 12)
+  function smooth(arr, w) {
+    const out = new Float32Array(arr.length);
+    for (let i = 0; i < arr.length; i++) {
+      let sum = 0, wSum = 0;
+      for (let j = Math.max(0, i-w); j <= Math.min(arr.length-1, i+w); j++) {
+        const g = Math.exp(-0.5 * ((j-i)/w)**2);
+        sum += arr[j] * g; wSum += g;
+      }
+      out[i] = sum / wSum;
+    }
+    return out;
+  }
+  const smoothed = smooth(linSpec, 12);
+
+  // 극대값(피크) 탐지 — 최소 거리 조건 포함
+  function findFormants(spec, ranges) {
+    return ranges.map(([lo, hi]) => {
+      const loB = getBinIdx(lo), hiB = Math.min(getBinIdx(hi), spec.length - 1);
+      let maxV = -Infinity, maxI = loB;
+      for (let i = loB; i <= hiB; i++) {
+        // 극대값 조건 (주변보다 높아야 함)
+        if (spec[i] > maxV && (i === loB || spec[i] >= spec[i-1]) && (i === hiB || spec[i] >= spec[i+1])) {
+          maxV = spec[i]; maxI = i;
+        }
+      }
+      return Math.round(maxI * binHz);
+    });
+  }
+
+  // F1~F7 범위 정의 (음성 포먼트 표준 범위)
+  const [F1,F2,F3,F4,F5,F6,F7] = findFormants(smoothed, [
+    [250,  900],   // F1: 흉성 공명
+    [800,  3000],  // F2: 모음 명료도
+    [2500, 4200],  // F3: Singer's Formant
+    [3800, 5200],  // F4: 성도 개인차
+    [4800, 6200],  // F5: 공기감
+    [5800, 7200],  // F6: 고배음
+    [6800, 8500],  // F7: 초고배음
+  ]);
+
+  // HNR (배음 vs 잡음)
+  const harmE  = getBandEnergy(80,  3000);
+  const noiseE = getBandEnergy(7000, 9000);
+  const hnr = noiseE > 0
+    ? parseFloat(Math.min(35, Math.max(0, 10 * Math.log10(harmE/(noiseE+1e-10)) + 8)).toFixed(1))
+    : 20.0;
+
+  return {
+    rms:  parseFloat(rms.toFixed(4)),
+    dr:   parseFloat(dr.toFixed(1)),
+    hnr,
+    jitter:  jitter,
+    shimmer: shimmer,
+    F1, F2, F3, F4, F5, F6, F7,
+    freqPct,
+    duration: parseFloat(duration.toFixed(1)),
+    sampleRate,
+  };
+}
+
+// 결과 포맷
+function formatAudioResult(r) {
+  return [
+    `F1:${r.F1}Hz  F2:${r.F2}Hz  F3:${r.F3}Hz  F4:${r.F4}Hz`,
+    `F5:${r.F5}Hz  F6:${r.F6}Hz  F7:${r.F7}Hz`,
+    `RMS:${r.rms}  DR:${r.dr}dB  HNR:${r.hnr}dB  JIT:${r.jitter}%  SHI:${r.shimmer}%`,
+    `흉성:${r.freqPct.hz100}%  온기:${r.freqPct.hz300}%  말소리:${r.freqPct.hz600}%  명료도:${r.freqPct.hz1200}%`,
+    `존재감:${r.freqPct.hz2500}%  공기감:${r.freqPct.hz4000}%  고배음:${r.freqPct.hz5500}%  광채:${r.freqPct.hz7000}%  초고음:${r.freqPct.hz8000}%`,
+  ].join('<br>');
+}
+
+// 분석 결과 → 입력 폼에 자동 적용
+function applyAudioResult() {
+  const r = audioAnalysisResult;
+  if (!r) return;
+
+  // 포먼트 F1~F7 + 바이오마커
+  const fmap = {
+    F1: r.F1, F2: r.F2, F3: r.F3,
+    F4: r.F4, F5: r.F5, F6: r.F6, F7: r.F7,
+    RMS: r.rms, DR: r.dr, HNR: r.hnr,
+    JIT: r.jitter, SHI: r.shimmer,
+  };
+  for (const [k, v] of Object.entries(fmap)) {
+    const el = document.getElementById('f-' + k);
+    if (el && v !== undefined) { el.value = v; updateFormantBar(k); }
+  }
+  // 주파수 9대역
+  for (const [k, v] of Object.entries(r.freqPct)) {
+    const hz = k.replace('hz','');
+    const el = document.getElementById('finp-' + hz);
+    if (el) { el.value = v; updateFreqBar(hz); }
+  }
+  showToast('오디오 분석값이 자동 입력됐어요 ✅', 'success');
+}
+
+// 재분석
+function reAnalyzeAudio() {
+  document.getElementById('file-audio').click();
+}
+
+// ── 전역 상태 ──
+let selectedGender = null;
+let uploadedImages = { full: null, chorus: null };
+let savedRecords = JSON.parse(localStorage.getItem('tv_analysis_records') || '[]');
+
+// ── 초기화 ──
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('inp-date').value = new Date().toISOString().slice(0,10);
+  const s = getSettings();
+  if (s.url) document.getElementById('setting-url').value = s.url;
+  if (s.instructor) {
+    document.getElementById('setting-instructor').value = s.instructor;
+    document.getElementById('inp-instructor').value = s.instructor;
+  }
+  renderRecords();
+});
+
+// ── 패널 전환 ──
+function showPanel(name) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+// ── 성별 선택 ──
+function setGender(g, el) {
+  selectedGender = g;
+  document.querySelectorAll('.radio-btn').forEach(b => b.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+// ── Big5 바 업데이트 ──
+const b5Colors = { E:'#534AB7', C:'#1D9E75', A:'#378ADD', N:'#E24B4A', O:'#EF9F27', V:'#A855F7' };
+function updateB5Bar(code) {
+  const val = parseInt(document.getElementById('b5-' + code).value) || 0;
+  document.getElementById('bar-' + code).style.width = Math.min(100, val) + '%';
+}
+
+// ── 포먼트 바 업데이트 ──
+const formantMaxes = { F1:1500, F2:5000, F3:6000, F4:7000, F5:8000, F6:10000, F7:12000, RMS:0.1, DR:30, HNR:35, JIT:5, SHI:10 };
+function updateFormantBar(key) {
+  const el = document.getElementById('f-' + key);
+  const max = formantMaxes[key];
+  const val = parseFloat(el.value) || 0;
+  const pct = Math.min(100, (val / max) * 100);
+  document.getElementById('fbar-' + key).style.width = pct + '%';
+}
+
+// ── 주파수 바 업데이트 ──
+function updateFreqBar(hz) {
+  const val = parseInt(document.getElementById('finp-' + hz).value) || 0;
+  document.getElementById('freq-' + hz).style.height = Math.min(100, val) + '%';
+}
+
+// ── 이미지 업로드 ──
+function triggerUpload(id) {
+  document.getElementById(id).click();
+}
+function handleImgUpload(type, input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    uploadedImages[type] = e.target.result;
+    const zone = document.getElementById('zone-' + type);
+    zone.classList.add('has-img');
+    zone.innerHTML = `<img src="${e.target.result}" alt="spectrogram">
+      <input type="file" id="file-${type}" accept="image/*" onchange="handleImgUpload('${type}',this)" style="position:absolute;inset:0;opacity:0;cursor:pointer">
+      <div style="position:absolute;bottom:4px;right:6px;background:rgba(0,0,0,.5);color:#fff;font-size:9px;padding:2px 6px;border-radius:3px">${file.name}</div>`;
+  };
+  reader.readAsDataURL(file);
+}
+
+// ── 데이터 수집 ──
+function collectData() {
+  return {
+    name: document.getElementById('inp-name').value.trim(),
+    age: document.getElementById('inp-age').value.trim(),
+    gender: selectedGender,
+    date: document.getElementById('inp-date').value,
+    instructor: document.getElementById('inp-instructor').value.trim(),
+    song: document.getElementById('inp-song').value.trim(),
+    section: document.getElementById('inp-section').value,
+    big5: {
+      E: parseInt(document.getElementById('b5-E').value) || 0,
+      C: parseInt(document.getElementById('b5-C').value) || 0,
+      A: parseInt(document.getElementById('b5-A').value) || 0,
+      N: parseInt(document.getElementById('b5-N').value) || 0,
+      O: parseInt(document.getElementById('b5-O').value) || 0,
+      V: parseInt(document.getElementById('b5-V').value) || 0,
+    },
+    formants: {
+      F1:  parseFloat(document.getElementById('f-F1').value)  || 0,
+      F2:  parseFloat(document.getElementById('f-F2').value)  || 0,
+      F3:  parseFloat(document.getElementById('f-F3').value)  || 0,
+      RMS: parseFloat(document.getElementById('f-RMS').value) || 0,
+      DR:  parseFloat(document.getElementById('f-DR').value)  || 0,
+      HNR: parseFloat(document.getElementById('f-HNR').value) || 0,
+    },
+    freq: {
+      hz100:  parseInt(document.getElementById('finp-100').value)  || 0,
+      hz300:  parseInt(document.getElementById('finp-300').value)  || 0,
+      hz600:  parseInt(document.getElementById('finp-600').value)  || 0,
+      hz1200: parseInt(document.getElementById('finp-1200').value) || 0,
+      hz2500: parseInt(document.getElementById('finp-2500').value) || 0,
+      hz4000: parseInt(document.getElementById('finp-4000').value) || 0,
+    },
+    memo: {
+      strength: (document.getElementById('report-memo-strength') || {value:''}).value.trim(),
+      develop:  (document.getElementById('report-memo-develop')  || {value:''}).value.trim(),
+      coaching: (document.getElementById('report-memo-coaching') || {value:''}).value.trim(),
+      summary:  (document.getElementById('report-memo-summary')  || {value:''}).value.trim(),
+    },
+    images: { ...uploadedImages },
+  };
+}
+
+// ── 진단 자동 생성 로직 ──
+function autoInterpret(d) {
+  const { big5, formants } = d;
+  const findings = [];
+  const coachings = [];
+
+  // N↑ = F2↓ 가설
+  if (big5.N >= 60 && formants.F2 > 0 && formants.F2 < 2500) {
+    findings.push({ type: 'warn', text: `신경성(${big5.N}pt)이 높고 F2(${formants.F2}Hz)가 낮습니다. N↑=F2↓ 패턴 확인 — 모음 명료도 약화 가능성.` });
+    coachings.push({ title: '모음 공간 확장', body: '구강 개방 훈련으로 F2 포먼트를 높여 딕션 선명도 향상.', color: '#E24B4A', bgColor: '#FEE2E2' });
+  }
+
+  // C↑ = DR↑ 가설
+  if (big5.C >= 70 && formants.DR > 0 && formants.DR >= 15) {
+    findings.push({ type: 'good', text: `성실성(${big5.C}pt)이 높고 다이나믹레인지(${formants.DR}dB)가 큽니다. C↑=DR↑ 패턴 확인 — 강약 컨트롤 우수.` });
+  }
+
+  // Singer's Formant
+  if (formants.F3 > 0 && formants.F3 >= 3500) {
+    findings.push({ type: 'good', text: `F3(${formants.F3}Hz)가 Singer's Formant 구간(3.5kHz+)에 위치합니다. 무대 투사력 발달.` });
+  }
+
+  // 고음 에너지 부족 + 과잉 에너지
+  if (d.freq.hz4000 > 0 && d.freq.hz4000 < 40 && formants.RMS > 0.035) {
+    findings.push({ type: 'warn', text: `RMS(${formants.RMS}) 에너지 과잉 + 공기감(4kHz: ${d.freq.hz4000}%) 부족. 성대 압박으로 고배음 억제 가능성.` });
+    coachings.push({ title: '에너지 효율 훈련', body: '10% 힘 빼기 훈련으로 성대 이완. 공기감 4kHz 개방.', color: '#92400E', bgColor: '#FEF3C7' });
+  }
+
+  // 다이나믹레인지 낮음
+  if (formants.DR > 0 && formants.DR < 13) {
+    findings.push({ type: 'note', text: `다이나믹레인지(${formants.DR}dB)가 낮습니다. 감정 표현 폭 확장이 필요합니다.` });
+    coachings.push({ title: '다이나믹 확장', body: 'pp~ff 강약 대비 훈련. 음악적 다이나믹 폭 넓히기.', color: '#185FA5', bgColor: '#DBEAFE' });
+  }
+
+  // 흉성 공명 우수
+  if (formants.F1 > 0 && formants.F1 >= 700) {
+    findings.push({ type: 'good', text: `F1(${formants.F1}Hz)이 높아 흉성 공명이 발달되어 있습니다. 소리의 두께와 안정감 우수.` });
+  }
+
+  // Big5 기반 보이스 아이덴티티
+  const dom = ['E','C','A','N','O'].sort((a,b) => big5[b] - big5[a])[0];
+  const domNames = { E:'외향성', C:'성실성', A:'우호성', N:'신경성', O:'개방성' };
+  const domDesc = {
+    E: '투사력 있고 공간을 채우는 보이스 스타일',
+    C: '안정적이고 정확한 발성, 높은 다이나믹 컨트롤',
+    A: '따뜻하고 부드러운 음색, 공감적 소통',
+    N: '감정이 풍부하게 실리는 날것의 진정성',
+    O: '창의적 색채와 배음이 풍부한 에어리 보이스',
+  };
+
+  return { findings, coachings, dom, domName: domNames[dom], domDesc: domDesc[dom] };
+}
+
+// ── 리포트 생성 ──
+function generateReport() {
+  const d = collectData();
+  if (!d.name) { showToast('이름을 입력해주세요', 'error'); return; }
+
+  const interp = autoInterpret(d);
+
+  // Big5 지배 특성 계산
+  const b5Sorted = Object.entries(d.big5).filter(([k]) => k !== 'V').sort((a,b) => b[1]-a[1]);
+  const domScore = b5Sorted[0]?.[1] || 0;
+
+  const freqBars = [
+    { label:'흉성 100Hz', val: d.freq.hz100,  color:'#534AB7' },
+    { label:'온기 300Hz', val: d.freq.hz300,  color:'#378ADD' },
+    { label:'말소리 600Hz', val: d.freq.hz600, color:'#1D9E75' },
+    { label:'명료도 1.2k', val: d.freq.hz1200, color:'#EF9F27' },
+    { label:'존재감 2.5k', val: d.freq.hz2500, color:'#E24B4A' },
+    { label:'공기감 4kHz', val: d.freq.hz4000, color:'#A855F7' },
+  ];
+
+  const formantRows = [
+    { key:'F1', label:'흉성 공명', val: d.formants.F1,  unit:'Hz',  max:1500, color:'#534AB7' },
+    { key:'F2', label:'모음 명료도', val: d.formants.F2, unit:'Hz', max:5000, color:'#185FA5' },
+    { key:'F3', label:'음색 개성', val: d.formants.F3,  unit:'Hz',  max:6000, color:'#1D9E75' },
+    { key:'RMS', label:'평균 음량', val: d.formants.RMS, unit:'',   max:0.1,  color:'#888' },
+    { key:'DR',  label:'다이나믹레인지', val: d.formants.DR, unit:'dB', max:30, color:'#EF9F27' },
+    { key:'HNR', label:'배음/잡음비', val: d.formants.HNR, unit:'dB', max:35, color:'#E24B4A' },
+  ];
+
+  const html = `
+    <div class="report-preview">
+      <!-- 헤더 -->
+      <div class="report-header">
+        <div class="report-header-left">
+          <div class="report-badge">TOUCHINGVOICE · 발성심리 진단 리포트</div>
+          <div class="report-name">${d.name || '—'}</div>
+          <div class="report-meta">
+            ${d.gender || ''} ${d.age ? d.age + '세' : ''} &nbsp;·&nbsp; ${d.date || ''} &nbsp;·&nbsp; ${d.song ? d.song + ' ' + d.section : ''} &nbsp;·&nbsp; 담당: ${d.instructor || ''}
+          </div>
+        </div>
+        <div class="report-header-right">
+          <div class="report-score-label">지배 특성</div>
+          <div class="report-score">${interp.domName}</div>
+          <div style="font-size:11px;color:#666;margin-top:4px">${domScore}pt</div>
+        </div>
+      </div>
+
+      <div class="report-body">
+
+        <!-- 스펙트로그램 -->
+        ${(d.images.full || d.images.chorus) ? `
+        <div class="report-section">
+          <div class="report-section-title">RX Spectrogram</div>
+          <div style="display:grid;grid-template-columns:${d.images.full && d.images.chorus ? '1fr 1fr' : '1fr'};gap:8px">
+            ${d.images.full ? `<div class="spec-img-box"><div class="spec-img-label">전체 구간</div><img src="${d.images.full}" alt="전체 스펙트로그램"></div>` : ''}
+            ${d.images.chorus ? `<div class="spec-img-box"><div class="spec-img-label">${d.section}</div><img src="${d.images.chorus}" alt="후렴 스펙트로그램"></div>` : ''}
+          </div>
+        </div>` : ''}
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+
+          <!-- 포먼트 수치 -->
+          <div class="report-section">
+            <div class="report-section-title">포먼트 & 음성 바이오마커</div>
+            <table class="diag-table">
+              <thead><tr><th>항목</th><th>의미</th><th>측정값</th><th>수준</th></tr></thead>
+              <tbody>
+                ${formantRows.filter(r => r.val > 0).map(r => {
+                  const pct = Math.min(100, (r.val / r.max) * 100);
+                  return `<tr>
+                    <td style="font-weight:700;color:${r.color};font-family:'JetBrains Mono',monospace">${r.key}</td>
+                    <td style="font-size:10px;color:var(--gray-600)">${r.label}</td>
+                    <td>
+                      <div class="bar-cell">
+                        <div class="bar-mini" style="width:${pct * 0.6}px;background:${r.color}"></div>
+                        <span class="val-num" style="color:${r.color}">${r.val}${r.unit}</span>
+                      </div>
+                    </td>
+                    <td>${getFormantLevel(r.key, r.val)}</td>
+                  </tr>`;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
+
+          <!-- 주파수 대역 -->
+          <div class="report-section">
+            <div class="report-section-title">주파수 대역 에너지</div>
+            ${freqBars.filter(f => f.val > 0).map(f => `
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
+                <span style="font-size:10px;color:var(--gray-600);width:80px;flex-shrink:0">${f.label}</span>
+                <div style="flex:1;height:6px;background:var(--gray-100);border-radius:3px;overflow:hidden">
+                  <div style="height:6px;background:${f.color};width:${f.val}%;border-radius:3px"></div>
+                </div>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;color:${f.color};width:30px;text-align:right">${f.val}%</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+    
+    <!-- 미디어 업로드 & 오디오 자체 분석 -->
+    <div class="card" id="media-card">
+      <div class="card-title">
+        스펙트로그램 & 오디오 업로드
+        <span class="badge badge-accent">자동 분석</span>
+      </div>
+
+      <!-- 탭 -->
+      <div style="display:flex;gap:0;margin-bottom:16px;border:1px solid var(--border);border-radius:7px;overflow:hidden">
+        <button id="mtab-spec" class="mtab active" onclick="switchMediaTab('spec',this)"
+          style="flex:1;padding:9px;font-size:12px;font-weight:600;border:none;cursor:pointer;background:var(--accent);color:#fff;transition:all .15s">
+          📊 스펙트로그램
+        </button>
+        <button id="mtab-audio" class="mtab" onclick="switchMediaTab('audio',this)"
+          style="flex:1;padding:9px;font-size:12px;font-weight:600;border:none;cursor:pointer;background:var(--gray-100);color:var(--gray-600);transition:all .15s">
+          🎵 오디오 파형 분석
+        </button>
+      </div>
+
+      <!-- 스펙트로그램 탭 -->
+      <div id="mtab-content-spec">
+        <div class="card-grid-2">
+          <div class="field">
+            <label>전체 구간 스펙트로그램</label>
+            <div class="img-upload-zone" id="zone-full" onclick="triggerUpload('file-full')">
+              <input type="file" id="file-full" accept="image/*" onchange="handleImgUpload('full',this)" style="display:none">
+              <div class="upload-icon">📊</div>
+              <div class="upload-text">RX 전체 스펙트로그램 업로드</div>
+            </div>
+          </div>
+          <div class="field">
+            <label>후렴 구간 스펙트로그램</label>
+            <div class="img-upload-zone" id="zone-chorus" onclick="triggerUpload('file-chorus')">
+              <input type="file" id="file-chorus" accept="image/*" onchange="handleImgUpload('chorus',this)" style="display:none">
+              <div class="upload-icon">🎵</div>
+              <div class="upload-text">RX 후렴 스펙트로그램 업로드</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 오디오 탭 -->
+      <div id="mtab-content-audio" style="display:none">
+        <div class="field">
+          <label>오디오 파일 업로드 (WAV / MP3 / WebM)</label>
+          <div class="img-upload-zone" id="zone-audio" onclick="triggerUpload('file-audio')"
+            style="min-height:80px;flex-direction:row;gap:12px">
+            <input type="file" id="file-audio" accept="audio/*,.wav,.mp3,.webm,.ogg,.m4a" onchange="handleAudioUpload(this)" style="display:none">
+            <div style="font-size:28px">🎙</div>
+            <div>
+              <div style="font-size:13px;font-weight:600;margin-bottom:3px">오디오 파일을 업로드하면 자동 분석합니다</div>
+              <div class="upload-text">WAV · MP3 · WebM · M4A 지원 · 최대 50MB</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 분석 진행 -->
+        <div id="audio-progress" style="display:none">
+          <div style="display:flex;align-items:center;gap:10px;padding:12px;background:var(--accent-light);border-radius:7px;margin-bottom:12px">
+            <div id="audio-progress-icon" style="font-size:18px">⏳</div>
+            <div>
+              <div id="audio-progress-title" style="font-size:12px;font-weight:700;color:var(--accent)">오디오 분석 중...</div>
+              <div id="audio-progress-sub" style="font-size:11px;color:var(--gray-600)">Web Audio API로 포먼트 분석 중</div>
+            </div>
+          </div>
+          <div style="background:var(--gray-100);border-radius:4px;height:6px;overflow:hidden">
+            <div id="audio-progress-bar" style="height:6px;background:var(--accent);width:0%;transition:width .3s;border-radius:4px"></div>
+          </div>
+        </div>
+
+        <!-- 분석 결과 미리보기 -->
+        <div id="audio-result" style="display:none">
+          <div style="background:var(--green-light);border:1px solid #86EFAC;border-radius:7px;padding:12px 14px;margin-bottom:12px">
+            <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:8px">✅ 오디오 분석 완료 — 아래 항목에 자동 입력됐습니다</div>
+            <div id="audio-result-summary" style="font-size:11px;color:var(--green);line-height:1.8;font-family:'JetBrains Mono',monospace"></div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-secondary" onclick="reAnalyzeAudio()" style="font-size:12px;padding:7px 14px">🔄 재분석</button>
+            <button class="btn btn-primary" onclick="applyAudioResult()" style="font-size:12px;padding:7px 14px">✅ 값 적용</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Big5 점수 -->
+        <div class="report-section">
+          <div class="report-section-title">Big5 성격 검사</div>
+          <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px">
+            ${[
+              {code:'E',name:'외향성',color:'#534AB7'},
+              {code:'C',name:'성실성',color:'#1D9E75'},
+              {code:'A',name:'우호성',color:'#378ADD'},
+              {code:'N',name:'신경성',color:'#E24B4A'},
+              {code:'O',name:'개방성',color:'#EF9F27'},
+              {code:'V',name:'보컬특성',color:'#A855F7'},
+            ].map(t => `
+              <div style="text-align:center;padding:10px 6px;background:var(--gray-100);border-radius:6px">
+                <div style="font-size:9px;color:var(--gray-600);margin-bottom:4px">${t.name}</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;color:${t.color}">${d.big5[t.code]}</div>
+                <div style="font-size:8px;color:var(--gray-400);margin-top:2px">pt</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- 자동 진단 소견 -->
+        ${interp.findings.length > 0 ? `
+        <div class="report-section">
+          <div class="report-section-title">자동 진단 소견</div>
+          ${interp.findings.map(f => `
+            <div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:6px;padding:8px 10px;border-radius:6px;background:${f.type==='good'?'var(--green-light)':f.type==='warn'?'var(--red-light)':'var(--amber-light)'}">
+              <span style="font-size:12px;flex-shrink:0">${f.type==='good'?'✅':f.type==='warn'?'⚠️':'💡'}</span>
+              <span style="font-size:11px;line-height:1.6;color:${f.type==='good'?'var(--green)':f.type==='warn'?'var(--red)':'var(--amber)'}">${f.text}</span>
+            </div>
+          `).join('')}
+        </div>` : ''}
+
+        <!-- 강사 메모 -->
+        <div class="report-section" id="report-memo-block">
+          <div class="report-section-title">강사 진단 메모</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+            <div class="coaching-item" style="border-color:#86EFAC;background:var(--green-light)">
+              <div class="ci-title" style="color:var(--green)">✅ 강점</div>
+              <div class="ci-body memo-strength-content" style="min-height:24px">${d.memo.strength ? d.memo.strength.replace(/\n/g,'<br>') : '<span style="color:var(--gray-400);font-style:italic">리포트 하단에서 입력하세요</span>'}</div>
+            </div>
+            <div class="coaching-item" style="border-color:#FCD34D;background:var(--amber-light)">
+              <div class="ci-title" style="color:var(--amber)">🎯 개발 포인트</div>
+              <div class="ci-body memo-develop-content" style="min-height:24px">${d.memo.develop ? d.memo.develop.replace(/\n/g,'<br>') : '<span style="color:var(--gray-400);font-style:italic">리포트 하단에서 입력하세요</span>'}</div>
+            </div>
+            <div class="coaching-item" style="border-color:#BFDBFE;background:#EFF6FF">
+              <div class="ci-title" style="color:var(--accent)">🏋️ 코칭 처방</div>
+              <div class="ci-body memo-coaching-content" style="min-height:24px">${d.memo.coaching ? d.memo.coaching.replace(/\n/g,'<br>') : '<span style="color:var(--gray-400);font-style:italic">리포트 하단에서 입력하세요</span>'}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 자동 코칭 추천 -->
+        ${interp.coachings.length > 0 ? `
+        <div class="coaching-grid">
+          ${interp.coachings.map(c => `
+            <div class="coaching-item" style="border-color:${c.color}44;background:${c.bgColor}">
+              <div class="ci-title" style="color:${c.color}">${c.title}</div>
+              <div class="ci-body">${c.body}</div>
+            </div>
+          `).join('')}
+        </div>` : ''}
+
+        <!-- 종합 한줄 -->
+        <div class="diag-comment">
+          <div class="dc-title">종합 진단</div>
+          <div class="memo-summary-content">${d.memo.summary || '<span style="opacity:.5;font-style:italic">리포트 하단 강사 메모에서 입력하세요</span>'}</div>
+          <div style="margin-top:6px;font-size:10px;color:#888">발성심리 아이덴티티: <strong style="color:#fff">${interp.domName} 유형</strong> — ${interp.domDesc}</div>
+        </div>
+
+        <!-- 리포트 푸터 -->
+        <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-size:9px;color:var(--gray-400);font-family:'JetBrains Mono',monospace">
+          <span>TouchingVoice · 발성심리지도사 ${d.instructor || ''} · 음성 진단 리포트</span>
+          <span>${d.date || ''} · F1/F2/F3/RMS/DR/HNR · RX Spectrogram 기반</span>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="btn-row" style="margin-top:16px">
+      <button class="btn btn-secondary" onclick="window.print()">🖨️ 인쇄</button>
+      <button class="btn btn-success" onclick="saveToSheets()">💾 Sheets 저장</button>
+    </div>
+  `;
+
+  document.getElementById('report-output').innerHTML = html;
+
+  // 강사 메모 섹션 표시
+  const memoSec = document.getElementById('memo-section');
+  if (memoSec) memoSec.style.display = '';
+
+  // 리포트 패널로 이동
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('panel-report').classList.add('active');
+  document.querySelectorAll('.nav-item')[1].classList.add('active');
+
+  showToast('리포트가 생성됐어요! 메모를 입력해주세요 📋', 'success');
+}
+
+// 메모를 리포트에 반영
+function applyMemoToReport() {
+  const strength = document.getElementById('report-memo-strength').value.trim();
+  const develop  = document.getElementById('report-memo-develop').value.trim();
+  const coaching = document.getElementById('report-memo-coaching').value.trim();
+  const summary  = document.getElementById('report-memo-summary').value.trim();
+
+  // 리포트 내 메모 섹션 업데이트
+  const strengthEl = document.querySelector('#report-output .memo-strength-content');
+  const developEl  = document.querySelector('#report-output .memo-develop-content');
+  const coachingEl = document.querySelector('#report-output .memo-coaching-content');
+  const summaryEl  = document.querySelector('#report-output .memo-summary-content');
+
+  if (strengthEl) strengthEl.innerHTML = strength.replace(/\n/g,'<br>') || '—';
+  if (developEl)  developEl.innerHTML  = develop.replace(/\n/g,'<br>') || '—';
+  if (coachingEl) coachingEl.innerHTML = coaching.replace(/\n/g,'<br>') || '—';
+  if (summaryEl)  summaryEl.innerHTML  = summary || '—';
+
+  showToast('메모가 리포트에 반영됐어요 ✅', 'success');
+}
+
+// ── 포먼트 레벨 판단 ──
+function getFormantLevel(key, val) {
+  const levels = {
+    F1:  val > 750 ? '<span class="badge badge-green">높음</span>' : val > 600 ? '<span class="badge badge-accent">보통</span>' : '<span class="badge badge-gray">낮음</span>',
+    F2:  val > 3000 ? '<span class="badge badge-green">높음</span>' : val > 2000 ? '<span class="badge badge-accent">보통</span>' : '<span class="badge badge-red">낮음</span>',
+    F3:  val > 3500 ? '<span class="badge badge-green">Singer\'s F.</span>' : '<span class="badge badge-gray">보통</span>',
+    RMS: val > 0.035 ? '<span class="badge badge-amber">과잉</span>' : val > 0.015 ? '<span class="badge badge-green">적정</span>' : '<span class="badge badge-gray">약함</span>',
+    DR:  val > 15 ? '<span class="badge badge-green">우수</span>' : val > 11 ? '<span class="badge badge-accent">보통</span>' : '<span class="badge badge-amber">협소</span>',
+    HNR: val > 20 ? '<span class="badge badge-green">우수</span>' : val > 14 ? '<span class="badge badge-accent">보통</span>' : '<span class="badge badge-red">잡음↑</span>',
+  };
+  return levels[key] || '';
+}
+
+// ── Sheets 저장 ──
+async function saveToSheets() {
+  const d = collectData();
+  if (!d.name) { showToast('이름을 입력해주세요', 'error'); return; }
+
+  const statusEl = document.getElementById('save-status');
+  statusEl.style.display = 'flex';
+  statusEl.className = 'save-status saving';
+  statusEl.innerHTML = '⏳ Sheets에 저장 중...';
+
+  const settings = getSettings();
+  const url = settings.url || 'https://script.google.com/macros/s/AKfycbx7Pq9FujnDsGZRDD85C39ml6AlikH935lL0BB2n-RwXzm2O_kM059nV4eV87AgLo16dg/exec';
+
+  try {
+    const payload = {
+      type: 'voiceAnalysis',
+      name: d.name,
+      age: d.age || '',
+      gender: d.gender || '',
+      date: d.date,
+      instructor: d.instructor,
+      song: d.song,
+      section: d.section,
+      big5E: d.big5.E, big5C: d.big5.C, big5A: d.big5.A,
+      big5N: d.big5.N, big5O: d.big5.O, big5V: d.big5.V,
+      F1: d.formants.F1, F2: d.formants.F2, F3: d.formants.F3,
+      RMS: d.formants.RMS, DR: d.formants.DR, HNR: d.formants.HNR,
+      freq100: d.freq.hz100, freq300: d.freq.hz300, freq600: d.freq.hz600,
+      freq1200: d.freq.hz1200, freq2500: d.freq.hz2500, freq4000: d.freq.hz4000,
+      memoStrength: d.memo.strength,
+      memoDevelop: d.memo.develop,
+      memoCoaching: d.memo.coaching,
+      memoSummary: d.memo.summary,
+      timestamp: new Date().toISOString(),
+    };
+
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(payload),
+    });
+    const json = await res.json();
+
+    if (json.success || json.status === 'ok') {
+      statusEl.className = 'save-status saved';
+      statusEl.innerHTML = '✅ Sheets에 저장 완료!';
+      showToast('저장됐어요 ✅', 'success');
+      // 로컬 기록에도 저장
+      saveLocalRecord(d);
+      renderRecords();
+    } else {
+      throw new Error(json.msg || '저장 실패');
+    }
+  } catch (err) {
+    // Apps Script에 voiceAnalysis 타입이 없을 수 있음 → 로컬만 저장
+    statusEl.className = 'save-status saved';
+    statusEl.innerHTML = '📁 로컬 저장 완료 (Sheets 연동은 설정에서 확인)';
+    saveLocalRecord(d);
+    renderRecords();
+    showToast('로컬에 저장됐어요 📁', 'success');
+  }
+}
+
+// ── 로컬 기록 저장 ──
+function saveLocalRecord(d) {
+  const record = {
+    id: Date.now(),
+    name: d.name,
+    gender: d.gender,
+    date: d.date,
+    instructor: d.instructor,
+    song: d.song,
+    section: d.section,
+    big5: d.big5,
+    formants: d.formants,
+    freq: d.freq,
+    memo: d.memo,
+  };
+  savedRecords.unshift(record);
+  if (savedRecords.length > 100) savedRecords = savedRecords.slice(0, 100);
+  localStorage.setItem('tv_analysis_records', JSON.stringify(savedRecords));
+}
+
+// ── 기록 렌더링 ──
+function renderRecords() {
+  const list = document.getElementById('record-list');
+  const count = document.getElementById('record-count');
+  count.textContent = savedRecords.length + '건';
+
+  if (savedRecords.length === 0) {
+    list.innerHTML = '<div style="text-align:center;padding:32px;color:var(--gray-400);font-size:13px">저장된 분석 기록이 없습니다</div>';
+    return;
+  }
+  list.innerHTML = savedRecords.map(r => `
+    <div class="record-item" onclick="loadRecord(${r.id})">
+      <div class="record-avatar">${r.name?.[0] || '?'}</div>
+      <div class="record-info">
+        <div class="record-name">${r.name} <span style="font-size:11px;color:var(--gray-400)">${r.gender || ''}</span></div>
+        <div class="record-meta">${r.date} · ${r.song || ''} ${r.section || ''} · 담당: ${r.instructor || ''}</div>
+      </div>
+      <div class="record-badges">
+        ${r.big5 ? `<span class="badge badge-accent">E${r.big5.E}·N${r.big5.N}</span>` : ''}
+        ${r.formants?.F2 ? `<span class="badge badge-gray">F2:${r.formants.F2}Hz</span>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── 기록 불러오기 ──
+function loadRecord(id) {
+  const r = savedRecords.find(rec => rec.id === id);
+  if (!r) return;
+  document.getElementById('inp-name').value = r.name || '';
+  document.getElementById('inp-date').value = r.date || '';
+  document.getElementById('inp-instructor').value = r.instructor || '';
+  document.getElementById('inp-song').value = r.song || '';
+  if (r.gender) {
+    selectedGender = r.gender;
+    document.querySelectorAll('.radio-btn').forEach(b => {
+      b.classList.toggle('sel', b.textContent === r.gender);
+    });
+  }
+  Object.entries(r.big5 || {}).forEach(([k,v]) => {
+    const el = document.getElementById('b5-' + k);
+    if (el) { el.value = v; updateB5Bar(k); }
+  });
+  Object.entries(r.formants || {}).forEach(([k,v]) => {
+    const el = document.getElementById('f-' + k);
+    if (el) { el.value = v; updateFormantBar(k); }
+  });
+  Object.entries(r.freq || {}).forEach(([k,v]) => {
+    const hz = k.replace('hz','');
+    const el = document.getElementById('finp-' + hz);
+    if (el) { el.value = v; updateFreqBar(hz); }
+  });
+  document.getElementById('memo-strength').value = r.memo?.strength || '';
+  document.getElementById('memo-develop').value = r.memo?.develop || '';
+  document.getElementById('memo-coaching').value = r.memo?.coaching || '';
+  document.getElementById('memo-summary').value = r.memo?.summary || '';
+
+  // 입력 패널로 이동
+  showPanel('input');
+  document.querySelectorAll('.nav-item')[0].classList.add('active');
+  showToast(r.name + ' 기록을 불러왔어요', 'success');
+}
+
+// ── 폼 초기화 ──
+function clearForm() {
+  if (!confirm('입력된 내용을 모두 지우시겠습니까?')) return;
+  ['inp-name','inp-age','inp-song',
+   'f-F1','f-F2','f-F3','f-F4','f-F5','f-F6','f-F7',
+   'f-RMS','f-DR','f-HNR','f-JIT','f-SHI',
+   'b5-E','b5-C','b5-A','b5-N','b5-O','b5-V',
+   'finp-100','finp-300','finp-600','finp-1200','finp-2500','finp-4000','finp-5500','finp-7000','finp-8000',
+   'report-memo-strength','report-memo-develop','report-memo-coaching','report-memo-summary',
+   'inp-section'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  // 바 초기화
+  ['E','C','A','N','O','V'].forEach(k => {
+    const b = document.getElementById('bar-' + k);
+    if (b) b.style.width = '0%';
+  });
+  ['F1','F2','F3','F4','F5','F6','F7','RMS','DR','HNR','JIT','SHI'].forEach(k => {
+    const b = document.getElementById('fbar-' + k);
+    if (b) b.style.width = '0%';
+  });
+  ['100','300','600','1200','2500','4000','5500','7000','8000'].forEach(hz => {
+    const b = document.getElementById('freq-' + hz);
+    if (b) b.style.height = '0%';
+  });
+  uploadedImages = { full: null, chorus: null };
+  ['zone-full','zone-chorus'].forEach(id => {
+    const z = document.getElementById(id);
+    if (z) z.innerHTML = `<input type="file" id="file-${id.replace('zone-','')}" accept="image/*" onchange="handleImgUpload('${id.replace('zone-','')}',this)" style="display:none">
+      <div class="upload-icon">${id==='zone-full'?'📊':'🎵'}</div>
+      <div class="upload-text">${id==='zone-full'?'RX 전체 스펙트로그램 업로드':'RX 후렴 스펙트로그램 업로드'}</div>`;
+    z.classList.remove('has-img');
+  });
+  selectedGender = null;
+  document.querySelectorAll('.radio-btn').forEach(b => b.classList.remove('sel'));
+  document.getElementById('save-status').style.display = 'none';
+}
+
+// ── 설정 ──
+function getSettings() {
+  return JSON.parse(localStorage.getItem('tv_analyzer_settings') || '{}');
+}
+function saveSettings() {
+  const s = {
+    url: document.getElementById('setting-url').value.trim(),
+    instructor: document.getElementById('setting-instructor').value.trim(),
+  };
+  localStorage.setItem('tv_analyzer_settings', JSON.stringify(s));
+  if (s.instructor) document.getElementById('inp-instructor').value = s.instructor;
+  showToast('설정이 저장됐어요 ✅', 'success');
+}
+
+// ── 토스트 ──
+function showToast(msg, type = '') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show' + (type ? ' ' + type : '');
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// ═══════════════════════════════════════════════════════════
+// Claude AI 정밀 분석 엔진
+// RX 스펙트로그램 이미지 + Web Audio 수치 → Claude 비전 분석
+// ═══════════════════════════════════════════════════════════
+
+async function runClaudeAnalysis() {
+  const d = collectData();
+  if (!d.name) { showToast('이름을 입력해주세요', 'error'); return; }
+
+  // 스펙트로그램 이미지 확인
+  const hasSpec = d.images.full || d.images.chorus;
+  if (!hasSpec && !audioAnalysisResult) {
+    showToast('스펙트로그램 이미지 또는 오디오 파일을 먼저 업로드해주세요', 'error');
+    return;
+  }
+
+  // 리포트 패널로 이동하면서 분석 섹션 표시
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('panel-report').classList.add('active');
+  document.querySelectorAll('.nav-item')[1].classList.add('active');
+
+  const section   = document.getElementById('claude-analysis-section');
+  const statusEl  = document.getElementById('claude-analysis-status');
+  const contentEl = document.getElementById('claude-analysis-content');
+
+  section.style.display = '';
+  statusEl.className    = 'badge badge-amber';
+  statusEl.textContent  = '분석 중...';
+  contentEl.innerHTML   = `
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 0">
+      <div style="width:18px;height:18px;border:2px solid #534AB7;border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite"></div>
+      <span style="color:var(--gray-600)">RX 스펙트로그램을 읽고 포먼트를 교정하고 있습니다...</span>
+    </div>
+    <style>@keyframes spin{to{transform:rotate(360deg)}}</style>`;
+
+  // 먼저 리포트도 생성
+  if (document.getElementById('report-output').querySelector('[style*="60px"]')) {
+    generateReport();
+  }
+
+  try {
+    // ── 프롬프트 구성 ──
+    const big5Summary = `E:${d.big5.E} C:${d.big5.C} A:${d.big5.A} N:${d.big5.N} O:${d.big5.O} V:${d.big5.V}`;
+    const audioSummary = audioAnalysisResult ? `
+Web Audio API 자동 분석값:
+- F1:${audioAnalysisResult.F1}Hz F2:${audioAnalysisResult.F2}Hz F3:${audioAnalysisResult.F3}Hz
+- F4:${audioAnalysisResult.F4}Hz F5:${audioAnalysisResult.F5}Hz F6:${audioAnalysisResult.F6}Hz F7:${audioAnalysisResult.F7}Hz
+- RMS:${audioAnalysisResult.rms} DR:${audioAnalysisResult.dr}dB HNR:${audioAnalysisResult.hnr}dB
+- Jitter:${audioAnalysisResult.jitter}% Shimmer:${audioAnalysisResult.shimmer}%
+- 주파수 대역 에너지: 100Hz:${audioAnalysisResult.freqPct.hz100}% 300Hz:${audioAnalysisResult.freqPct.hz300}% 600Hz:${audioAnalysisResult.freqPct.hz600}% 1.2kHz:${audioAnalysisResult.freqPct.hz1200}% 2.5kHz:${audioAnalysisResult.freqPct.hz2500}% 4kHz:${audioAnalysisResult.freqPct.hz4000}% 5.5kHz:${audioAnalysisResult.freqPct.hz5500}% 7kHz:${audioAnalysisResult.freqPct.hz7000}% 8kHz:${audioAnalysisResult.freqPct.hz8000}%` : '(오디오 파일 미업로드)';
+
+    const manualValues = `
+강사 수동 입력값:
+- F1:${d.formants.F1||'미입력'}Hz F2:${d.formants.F2||'미입력'}Hz F3:${d.formants.F3||'미입력'}Hz
+- RMS:${d.formants.RMS||'미입력'} DR:${d.formants.DR||'미입력'}dB HNR:${d.formants.HNR||'미입력'}dB`;
+
+    const systemPrompt = `당신은 터칭보이스(TouchingVoice)의 발성심리 분석 AI입니다.
+발성심리지도사 천우경이 개발한 Big5 성격-목소리 상관관계 연구 방법론을 기반으로 분석합니다.
+
+핵심 연구 가설:
+- N↑ = F2↓ (신경성이 높을수록 F2 포먼트가 낮아져 모음 명료도 약화)
+- C↑ = DR↑ (성실성이 높을수록 다이나믹레인지가 넓어짐)
+- Singer's Formant: F3 3.5kHz+ 발달 시 무대 투사력 강화
+- 흉성 과잉(RMS↑) + 4kHz↓ = 성대 압박으로 고배음 억제
+
+분석 시 반드시 포함할 내용:
+1. 스펙트로그램 이미지에서 직접 읽은 포먼트 F1~F7 교정값
+2. 주파수 대역별 발달 수준 (스펙트로그램 밝기 기준)
+3. Big5 성격과 음성 특성의 상관관계 소견
+4. 발성심리 진단 (강점 / 개발 포인트)
+5. 코칭 처방 (구체적 훈련법)
+
+출력 형식: 마크다운 사용, 한국어, 임상 진단서 스타일로 작성`;
+
+    const userPrompt = `
+참여자: ${d.name} (${d.gender||''} ${d.age||''}세)
+분석 곡: ${d.song||''} ${d.section||''}
+담당 강사: ${d.instructor||''}
+분석일: ${d.date||''}
+
+Big5 성격 검사: ${big5Summary}
+${audioSummary}
+${manualValues}
+
+업로드된 RX 스펙트로그램 이미지를 직접 보고 다음을 수행해주세요:
+
+**[1] 스펙트로그램 시각 분석**
+- 이미지에서 포먼트 F1~F7 위치를 직접 읽어 수치 교정
+- Web Audio 자동 분석값과 비교하여 오차 지적
+- 주파수 대역별 에너지 분포 시각 판독
+
+**[2] Big5-음성 상관관계 진단**
+- N↑=F2↓ 가설 적용 (신경성 ${d.big5.N}pt 기준)
+- C↑=DR↑ 가설 적용 (성실성 ${d.big5.C}pt 기준)
+- 기타 Big5 특성과 발성 패턴 연결
+
+**[3] 임상 진단 소견**
+보이스 아이덴티티, 강점, 개발 포인트, 코칭 처방을 발성심리지도사 스타일로 작성
+
+**[4] 수정 권고값**
+정확한 포먼트 수치와 주파수 에너지 교정값 제시 (JSON 형식으로도 포함)`;
+
+    // ── 메시지 구성 (이미지 포함) ──
+    const content = [];
+
+    // 스펙트로그램 이미지 추가
+    if (d.images.full) {
+      const base64 = d.images.full.split(',')[1];
+      const mtype  = d.images.full.split(';')[0].split(':')[1];
+      content.push({
+        type: 'image',
+        source: { type: 'base64', media_type: mtype, data: base64 }
+      });
+      content.push({ type: 'text', text: '위 이미지는 전체 구간 RX 스펙트로그램입니다.' });
+    }
+    if (d.images.chorus) {
+      const base64 = d.images.chorus.split(',')[1];
+      const mtype  = d.images.chorus.split(';')[0].split(':')[1];
+      content.push({
+        type: 'image',
+        source: { type: 'base64', media_type: mtype, data: base64 }
+      });
+      content.push({ type: 'text', text: '위 이미지는 후렴 구간 RX 스펙트로그램입니다.' });
+    }
+
+    content.push({ type: 'text', text: userPrompt });
+
+    // ── Anthropic API 호출 ──
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: [{ role: 'user', content }],
+      }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error?.message || '분석 실패');
+
+    const analysisText = data.content?.map(b => b.text || '').join('') || '';
+
+    // ── 결과 파싱 및 표시 ──
+    statusEl.className   = 'badge badge-green';
+    statusEl.textContent = '분석 완료';
+
+    // 마크다운 → HTML 간단 변환
+    const html = markdownToHtml(analysisText);
+    contentEl.innerHTML = html;
+
+    // JSON 교정값 추출해서 폼에 자동 적용
+    tryApplyCorrectedValues(analysisText);
+
+    // 메모 섹션 표시
+    const memoSec = document.getElementById('memo-section');
+    if (memoSec) memoSec.style.display = '';
+
+    showToast('Claude AI 분석 완료! 📊', 'success');
+
+  } catch (err) {
+    console.error('[TV Claude] 분석 오류:', err);
+    statusEl.className   = 'badge badge-red';
+    statusEl.textContent = '분석 실패';
+    contentEl.innerHTML  = `
+      <div style="color:var(--red);font-size:13px">
+        ⚠️ 분석 중 오류가 발생했습니다: ${err.message}<br>
+        <span style="font-size:11px;color:var(--gray-400)">
+          스펙트로그램 이미지가 업로드됐는지 확인해주세요.
+        </span>
+      </div>`;
+  }
+}
+
+// ── 마크다운 → HTML 변환 (간단) ──
+function markdownToHtml(md) {
+  return md
+    .replace(/^#### (.+)$/gm, '<h4 style="font-size:13px;font-weight:700;margin:16px 0 6px;color:var(--black)">$1</h4>')
+    .replace(/^### (.+)$/gm, '<h3 style="font-size:14px;font-weight:700;margin:18px 0 8px;color:var(--accent)">$1</h3>')
+    .replace(/^## (.+)$/gm, '<h2 style="font-size:15px;font-weight:900;margin:20px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--gray-200)">$1</h2>')
+    .replace(/^# (.+)$/gm, '<h1 style="font-size:16px;font-weight:900;margin:0 0 12px">$1</h1>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/`(.+?)`/g, '<code style="background:var(--gray-100);padding:1px 5px;border-radius:3px;font-family:JetBrains Mono,monospace;font-size:11px">$1</code>')
+    .replace(/^- (.+)$/gm, '<li style="margin:4px 0;padding-left:4px">$1</li>')
+    .replace(/(<li.*<\/li>
+?)+/g, '<ul style="list-style:disc;padding-left:18px;margin:8px 0">$&</ul>')
+    .replace(/^\d+\. (.+)$/gm, '<li style="margin:4px 0">$1</li>')
+    .replace(/
+{2,}/g, '<br><br>')
+    .replace(/
+/g, '<br>');
+}
+
+// ── Claude 교정값 → 폼 자동 적용 ──
+function tryApplyCorrectedValues(text) {
+  try {
+    // JSON 블록 추출 시도
+    const jsonMatch = text.match(/```json\n?([\s\S]+?)\n?```/);
+    if (!jsonMatch) return;
+    const data = JSON.parse(jsonMatch[1]);
+
+    // 포먼트 교정값 적용
+    const fkeys = ['F1','F2','F3','F4','F5','F6','F7','RMS','DR','HNR','JIT','SHI'];
+    let applied = 0;
+    for (const k of fkeys) {
+      if (data[k] !== undefined) {
+        const el = document.getElementById('f-' + k);
+        if (el) { el.value = data[k]; updateFormantBar(k); applied++; }
+      }
+    }
+    // 주파수 대역 교정값
+    const hzKeys = ['hz100','hz300','hz600','hz1200','hz2500','hz4000','hz5500','hz7000','hz8000'];
+    for (const k of hzKeys) {
+      if (data[k] !== undefined) {
+        const hz = k.replace('hz','');
+        const el = document.getElementById('finp-' + hz);
+        if (el) { el.value = data[k]; updateFreqBar(hz); applied++; }
+      }
+    }
+    if (applied > 0) {
+      showToast(`Claude가 ${applied}개 수치를 교정했어요 ✅`, 'success');
+      // 리포트 재생성
+      setTimeout(() => generateReport(), 500);
+    }
+  } catch(e) {
+    // JSON 없으면 무시
+  }
+}
+
+</script>
+</body>
+</html>
