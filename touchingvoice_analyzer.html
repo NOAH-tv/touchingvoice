@@ -2083,10 +2083,8 @@ function markdownToHtml(md) {
     .replace(/(<li.*<\/li>
 ?)+/g, '<ul style="list-style:disc;padding-left:18px;margin:8px 0">$&</ul>')
     .replace(/^\d+\. (.+)$/gm, '<li style="margin:4px 0">$1</li>')
-    .replace(/
-{2,}/g, '<br><br>')
-    .replace(/
-/g, '<br>');
+    .replace(new RegExp('\\n{2,}', 'g'), '<br><br>')
+    .replace(new RegExp('\\n', 'g'), '<br>');
 }
 
 // ── Claude 교정값 → 폼 자동 적용 ──
