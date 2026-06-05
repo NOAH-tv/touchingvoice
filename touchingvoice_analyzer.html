@@ -39,9 +39,15 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--blac
 .ed-row{display:grid;gap:10px;margin-bottom:14px}
 .ed-row.c2{grid-template-columns:repeat(2,1fr)} .ed-row.c3{grid-template-columns:repeat(3,1fr)} .ed-row.c6{grid-template-columns:repeat(6,1fr)}
 .ed-label{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-600);font-weight:700;margin-bottom:8px}
-.fld label{display:block;font-size:10px;color:var(--gray-600);margin-bottom:3px}
+.fld label{display:block;font-size:10px;color:var(--gray-600);margin-bottom:3px;line-height:1.35}
+.fld label .lh{color:var(--gray-400);font-weight:400;font-size:9px}
 .fld input{width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--gray-100)}
 .fld input:focus{outline:none;border-color:var(--accent);background:var(--white)}
+.fld-box{background:var(--gray-100);border:1px solid var(--border);border-radius:6px;padding:5px 8px 4px;transition:border-color .15s,background .15s}
+.fld-box:focus-within{border-color:var(--accent);background:var(--white)}
+.fld-box input{width:100%;border:none;background:transparent;padding:1px 0;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--black)}
+.fld-box input:focus{outline:none}
+.box-range{display:block;font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--accent);font-weight:600;letter-spacing:.01em;line-height:1.2;min-height:12px;margin-top:2px;white-space:nowrap}
 .gen-btn{width:100%;padding:12px;background:var(--black);color:#fff;border:none;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit}
 .gen-btn:hover{background:var(--gray-800)}
 
@@ -253,6 +259,27 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--blac
 .combo-card:last-child{margin-bottom:0}
 .combo-t{font-size:12.5px;font-weight:700;color:var(--accent);margin-bottom:5px}
 .combo-x{font-size:12.5px;line-height:1.75;color:var(--gray-800)}
+.mk-norm{font-size:9.5px;color:var(--gray-400);font-family:'JetBrains Mono',monospace;margin-top:4px;letter-spacing:.01em}
+.mk-range{font-size:10.5px;color:var(--accent);font-weight:600;font-family:'JetBrains Mono',monospace;margin:3px 0 2px;letter-spacing:.01em}
+.fb-track{position:relative}
+.fb-range{position:absolute;top:0;height:100%;background:rgba(83,74,183,.13);border-radius:inherit;z-index:0}
+.fb-fill{position:relative;z-index:1}
+.fb-rangetext{font-size:9px;color:var(--gray-400);font-family:'JetBrains Mono',monospace}
+.fld-range{font-size:10px;color:var(--accent);font-family:'JetBrains Mono',monospace;margin-top:4px;min-height:13px;letter-spacing:.02em;font-weight:600}
+.balance-box{margin-top:14px;background:var(--gray-100);border-radius:11px;padding:14px 16px}
+.bal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;gap:10px;flex-wrap:wrap}
+.bal-head>span:first-child{font-size:12px;font-weight:700;color:var(--black)}
+.bal-score{font-size:13px;font-weight:800;font-family:'JetBrains Mono',monospace;white-space:nowrap}
+.hfe-chip{font-size:10px;font-weight:700;color:#fff;padding:3px 10px;border-radius:20px;letter-spacing:.02em;white-space:nowrap}
+.bal-score small{font-size:10px;color:var(--gray-400);font-weight:400}
+.bal-score.good{color:#1D9E75}.bal-score.mid{color:#C77E1A}.bal-score.low{color:#E24B4A}
+.bal-detail{font-size:11px;color:var(--gray-600);font-family:'JetBrains Mono',monospace;margin-bottom:7px;letter-spacing:.01em;line-height:1.7}
+.bal-note{font-size:12px;line-height:1.7;color:var(--gray-800)}
+.so-caveat{font-size:11.5px;line-height:1.7;color:var(--gray-600);background:var(--gray-100);border-radius:9px;padding:11px 14px;margin-bottom:13px}
+.so-item{border-left:3px solid;padding:2px 0 2px 13px;margin-bottom:13px}
+.so-tag{font-size:11px;font-weight:700;margin-bottom:4px;font-family:'JetBrains Mono',monospace;letter-spacing:.02em}
+.so-text{font-size:12.5px;line-height:1.75;color:var(--gray-800)}
+.so-overall{font-size:12.5px;line-height:1.75;color:var(--black);background:var(--accent-light);border-radius:9px;padding:12px 15px;margin-top:4px;font-weight:500}
 .sitebar{background:var(--black);color:#E9E8F0;padding:10px 20px;margin:-32px -20px 24px;border-bottom:1px solid #2a2a28}
 .sb-inner{max-width:1000px;margin:0 auto;display:flex;align-items:center;gap:16px;flex-wrap:wrap;font-size:11.5px}
 .sb-back{color:#cfcbda;text-decoration:none;font-weight:500;padding:5px 11px;border-radius:6px;background:rgba(255,255,255,.06);transition:background .15s;white-space:nowrap}
@@ -315,6 +342,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--blac
     <button class="rec-btn" onclick="toggleRecordsPanel()" title="저장된 기록 목록 열기">📁 저장된 기록 <span class="rec-count" id="rec-count">0</span></button>
     <button class="rec-btn primary" onclick="saveCurrentRecord()" title="현재 입력 상태를 새 기록으로 저장">💾 현재 분석 저장</button>
     <button class="rec-btn ghost" onclick="exportRecords()" title="모든 기록을 JSON 파일로 내려받기">⤓ JSON 백업</button>
+    <button class="rec-btn ghost" onclick="copyAnalysisData()" title="현재 분석값(범위 포함)을 구조화 텍스트로 복사 — Claude 등에 붙여넣기">📋 Claude용 데이터 복사</button>
     <span class="rec-status" id="rec-status"></span>
   </div>
   <div class="records-panel" id="records-panel" style="display:none">
@@ -383,33 +411,33 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--blac
 
       <div class="ed-label">포먼트 & 바이오마커 <span style="font-weight:400;color:var(--gray-400);font-size:11px">— 음성 업로드 시 자동 입력 · 직접 수정 가능</span></div>
       <div class="ed-row c6">
-        <div class="fld"><label>F1 Hz</label><input type="number" id="i-F1" value="" placeholder="Hz"></div>
-        <div class="fld"><label>F2 Hz</label><input type="number" id="i-F2" value="" placeholder="Hz"></div>
-        <div class="fld"><label>F3 Hz</label><input type="number" id="i-F3" value="" placeholder="Hz"></div>
-        <div class="fld"><label>F4 Hz</label><input type="number" id="i-F4" value="" placeholder="Hz"></div>
-        <div class="fld"><label>F5 Hz</label><input type="number" id="i-F5" value="" placeholder="Hz"></div>
-        <div class="fld"><label>RMS</label><input type="number" step="0.001" id="i-RMS" value="" placeholder="0~0.05"></div>
+        <div class="fld"><label>F1 <span class="lh">흉성공명·두께</span></label><div class="fld-box"><input type="number" id="i-F1" value="" placeholder="Hz"><span class="box-range" id="rng-F1"></span></div></div>
+        <div class="fld"><label>F2 <span class="lh">모음명료·혀공간</span></label><div class="fld-box"><input type="number" id="i-F2" value="" placeholder="Hz"><span class="box-range" id="rng-F2"></span></div></div>
+        <div class="fld"><label>F3 <span class="lh">음색개성·Singer's</span></label><div class="fld-box"><input type="number" id="i-F3" value="" placeholder="Hz"><span class="box-range" id="rng-F3"></span></div></div>
+        <div class="fld"><label>F4 <span class="lh">배음·성도개인차</span></label><div class="fld-box"><input type="number" id="i-F4" value="" placeholder="Hz"><span class="box-range" id="rng-F4"></span></div></div>
+        <div class="fld"><label>F5 <span class="lh">공기감·광채</span></label><div class="fld-box"><input type="number" id="i-F5" value="" placeholder="Hz"><span class="box-range" id="rng-F5"></span></div></div>
+        <div class="fld"><label>RMS <span class="lh">평균음량</span></label><div class="fld-box"><input type="number" step="0.001" id="i-RMS" value="" placeholder="0~0.05"><span class="box-range" id="rng-RMS"></span></div></div>
       </div>
       <div class="ed-row c6">
-        <div class="fld"><label>DR dB</label><input type="number" step="0.1" id="i-DR" value="" placeholder="dB"></div>
-        <div class="fld"><label>HNR dB</label><input type="number" step="0.1" id="i-HNR" value="" placeholder="dB"></div>
-        <div class="fld"><label>JIT %</label><input type="number" step="0.01" id="i-JIT" value="" placeholder="%"></div>
-        <div class="fld"><label>SHI %</label><input type="number" step="0.01" id="i-SHI" value="" placeholder="%"></div>
+        <div class="fld"><label>DR <span class="lh">다이내믹·강약폭</span></label><div class="fld-box"><input type="number" step="0.1" id="i-DR" value="" placeholder="dB"><span class="box-range" id="rng-DR"></span></div></div>
+        <div class="fld"><label>HNR <span class="lh">청정도·톤 맑기</span></label><div class="fld-box"><input type="number" step="0.1" id="i-HNR" value="" placeholder="dB"><span class="box-range" id="rng-HNR"></span></div></div>
+        <div class="fld"><label>JIT <span class="lh">음정 떨림</span></label><div class="fld-box"><input type="number" step="0.01" id="i-JIT" value="" placeholder="%"><span class="box-range" id="rng-JIT"></span></div></div>
+        <div class="fld"><label>SHI <span class="lh">음량 떨림</span></label><div class="fld-box"><input type="number" step="0.01" id="i-SHI" value="" placeholder="%"><span class="box-range" id="rng-SHI"></span></div></div>
       </div>
 
       <div class="ed-label">주파수 대역 에너지 (%, 흉성 대비 상대값)</div>
       <div class="ed-row c6">
-        <div class="fld"><label>흉성 100</label><input type="number" id="i-b100" value="" placeholder="%"></div>
-        <div class="fld"><label>온기 300</label><input type="number" id="i-b300" value="" placeholder="%"></div>
-        <div class="fld"><label>말소리 600</label><input type="number" id="i-b600" value="" placeholder="%"></div>
-        <div class="fld"><label>명료 1.2k</label><input type="number" id="i-b1200" value="" placeholder="%"></div>
-        <div class="fld"><label>존재 2.5k</label><input type="number" id="i-b2500" value="" placeholder="%"></div>
-        <div class="fld"><label>공기 4k</label><input type="number" id="i-b4000" value="" placeholder="%"></div>
+        <div class="fld"><label>흉성 100</label><div class="fld-box"><input type="number" id="i-b100" value="" placeholder="%"><span class="box-range" id="rng-b100"></span></div></div>
+        <div class="fld"><label>온기 300</label><div class="fld-box"><input type="number" id="i-b300" value="" placeholder="%"><span class="box-range" id="rng-b300"></span></div></div>
+        <div class="fld"><label>말소리 600</label><div class="fld-box"><input type="number" id="i-b600" value="" placeholder="%"><span class="box-range" id="rng-b600"></span></div></div>
+        <div class="fld"><label>명료 1.2k</label><div class="fld-box"><input type="number" id="i-b1200" value="" placeholder="%"><span class="box-range" id="rng-b1200"></span></div></div>
+        <div class="fld"><label>존재 2.5k</label><div class="fld-box"><input type="number" id="i-b2500" value="" placeholder="%"><span class="box-range" id="rng-b2500"></span></div></div>
+        <div class="fld"><label>공기 4k</label><div class="fld-box"><input type="number" id="i-b4000" value="" placeholder="%"><span class="box-range" id="rng-b4000"></span></div></div>
       </div>
       <div class="ed-row c3">
-        <div class="fld"><label>5.5k</label><input type="number" id="i-b5500" value="" placeholder="%"></div>
-        <div class="fld"><label>7k</label><input type="number" id="i-b7000" value="" placeholder="%"></div>
-        <div class="fld"><label>8k</label><input type="number" id="i-b8000" value="" placeholder="%"></div>
+        <div class="fld"><label>5.5k</label><div class="fld-box"><input type="number" id="i-b5500" value="" placeholder="%"><span class="box-range" id="rng-b5500"></span></div></div>
+        <div class="fld"><label>7k</label><div class="fld-box"><input type="number" id="i-b7000" value="" placeholder="%"><span class="box-range" id="rng-b7000"></span></div></div>
+        <div class="fld"><label>8k</label><div class="fld-box"><input type="number" id="i-b8000" value="" placeholder="%"><span class="box-range" id="rng-b8000"></span></div></div>
       </div>
       <button class="gen-btn" onclick="render()">리포트 생성 / 갱신</button>
     </div>
@@ -444,13 +472,25 @@ const CFG = {
   // 대역 % 강도 캡 ('흉성 대비 이 정도면 강하다'의 기준)
   capWarm:70, capClarity:50, capPresence:40, capAiry:30, capHigh:22, capChest:100,
   gapTol:15,    // |격차| 이내면 정합
-  gapStrong:35  // 이상이면 '강한 격차'(최우선)
+  gapStrong:35, // 이상이면 '강한 격차'(최우선)
+  // 조화 게이트: HNR(+shimmer)로 >4kHz의 조화(광채) vs 비조화(잡음·누출) 신뢰도를 0~1로 매핑
+  hg:{ hnrLo:12, hnrHi:21, floor:0.5, shiLo:4, shiHi:9, shiPen:0.30 }
 };
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 function NM(v,r){ if(v==null||v===0||isNaN(v)) return null; return clamp(((v-r[0])/(r[1]-r[0]))*100,0,100); }
 function bandS(p,cap){ if(p==null||isNaN(p)) return null; if(p===0) return 0; return clamp((p/cap)*100,0,100); }
 const inv=s=> s==null?null:100-s;
 function wmean(a){ let sw=0,sv=0; for(const[w,v] of a){ if(v!=null){sw+=w;sv+=w*v;} } return sw===0?null:Math.round(sv/sw); }
+/* 조화 신뢰도 게이트(0~1): HNR↑(깨끗한 하모닉)이면 고역을 '조화적 광채'로 인정,
+   HNR↓·shimmer↑(잡음·누출)이면 고역을 개방성으로 덜 인정.
+   문헌(Monson 2014): 같은 >4kHz 에너지도 조화/비조화에 따라 정반대 인상. */
+function harmGate(f){
+  if(f.HNR==null) return 1;
+  let t=clamp((f.HNR-CFG.hg.hnrLo)/(CFG.hg.hnrHi-CFG.hg.hnrLo),0,1);
+  let g=CFG.hg.floor+(1-CFG.hg.floor)*t;
+  if(f.SHI!=null){ const sp=clamp((f.SHI-CFG.hg.shiLo)/(CFG.hg.shiHi-CFG.hg.shiLo),0,1); g*=(1-CFG.hg.shiPen*sp); }
+  return clamp(g,CFG.hg.floor*0.7,1);
+}
 
 /* 성격이 '예측'하는 목소리를 실제 음향에서 역으로 점수화 (0~100 음성발현도) */
 function voiceScores(f,q){
@@ -461,7 +501,9 @@ function voiceScores(f,q){
   const hiVals=[q.b5500,q.b7000,q.b8000].filter(x=>x!=null);
   const hiAvg = hiVals.length ? hiVals.reduce((a,b)=>a+b,0)/hiVals.length : 0;
   const color = f.F5 ? NM(f.F5,CFG.f5) : (f.F3 ? NM(f.F3,CFG.f3) : null);
-  const O = wmean([[.45, bandS(q.b4000,CFG.capAiry)], [.30, bandS(hiAvg,CFG.capHigh)], [.25, color]]);
+  const hg = harmGate(f);                 // 조화 신뢰도(노이즈 고역은 개방성으로 덜 셈)
+  const _a = bandS(q.b4000,CFG.capAiry), _h = bandS(hiAvg,CFG.capHigh);
+  const O = wmean([[.45, _a==null?null:_a*hg], [.30, _h==null?null:_h*hg], [.25, color]]);
   return {E,C,A,N:Nv,O};
 }
 function classify(p,v){
@@ -471,6 +513,16 @@ function classify(p,v){
   return {st:g>0?'미발현':'과발현', gap:g};
 }
 const lvl = s => s>=65?'높음': s>=45?'보통':'낮음';
+/* 천장 음성점수: 범위의 '최선' 값(밴드·포먼트·HNR·DR는 max, Jitter·Shimmer는 min)으로
+   voiceScores를 다시 계산 → "최고 순간엔 어디까지 도달하는가" */
+function bestFeatures(rd,f,q){
+  if(!rd) return null;
+  const mx=(k,cur)=>rd[k]&&rd[k].max!=null?rd[k].max:cur;
+  const mn=(k,cur)=>rd[k]&&rd[k].min!=null?rd[k].min:cur;
+  const fB={F1:mx('F1',f.F1),F2:mx('F2',f.F2),F3:mx('F3',f.F3),F4:mx('F4',f.F4),F5:mx('F5',f.F5),RMS:mx('RMS',f.RMS),DR:mx('DR',f.DR),HNR:mx('HNR',f.HNR),JIT:mn('JIT',f.JIT),SHI:mn('SHI',f.SHI)};
+  const qB={b100:mx('b100',q.b100),b300:mx('b300',q.b300),b600:mx('b600',q.b600),b1200:mx('b1200',q.b1200),b2500:mx('b2500',q.b2500),b4000:mx('b4000',q.b4000),b5500:mx('b5500',q.b5500),b7000:mx('b7000',q.b7000),b8000:mx('b8000',q.b8000)};
+  return voiceScores(fB,qB);
+}
 
 /* ── 특질별 해석 텍스트 뱅크 ───────────────────────────────────── */
 const T = {
@@ -653,6 +705,47 @@ function personaSynth(b){
   const p2=`강점과 그림자는 같은 뿌리에서 나옵니다. ${tension} 이 성격 해석을 앞의 목소리·직무역량 분석과 함께 읽으면 — '어떤 사람인가'에서 '그것이 목소리와 행동으로 어떻게 흘러나오는가'까지 하나의 선으로 이어집니다.`;
   return [p1,p2];
 }
+function selfOtherSection(big5, rows, ceil, bi, cIndex){
+  const items=[];
+  rows.forEach(r=>{
+    if(r.st==='정합'||r.st==='data') return;
+    const name=T[r.code].name; const c=ceil?Math.round(ceil[r.code]):null;
+    if(r.st==='과발현'){
+      const loud=(r.code==='E'||r.code==='O');
+      if(loud && bi.label==='편중'){
+        items.push({tag:'방어적 과표현 가능', color:'#C77E1A',
+          text:`<b>${name}</b>이(가) 자기보고보다 목소리에서 더 강하게 드러납니다(음성 ${r.vScore} vs 성격 ${r.pScore}). 다만 발성이 편중(균형 ${bi.balance} · ${bi.dominant} 집중)돼 한 공명에 의존하는 패턴이라 — 이 강함이 진짜 여유에서 나온 것인지, 불안을 덮는 <b>보상적 표현</b>인지 함께 살필 만합니다. 강함의 크기보다 <b>고름</b>이 안정의 신호입니다.`});
+      } else {
+        items.push({tag:'숨은 강점', color:'#1D9E75',
+          text:`<b>${name}</b>은(는) 스스로 인정하는 것보다 목소리에 더 또렷이 드러납니다(음성 ${r.vScore} vs 성격 ${r.pScore}). 남들은 이미 느끼는데 본인은 과소평가하고 있을 수 있어요 — <b>숨은 강점</b>입니다. 더 인정하고 활용해도 좋습니다.`});
+      }
+    } else if(r.st==='미발현'){
+      if(c!=null && c>=r.pScore-CFG.gapTol){
+        items.push({tag:'억제된 잠재', color:'var(--accent)',
+          text:`<b>${name}</b>은(는) 성향은 또렷한데(성격 ${r.pScore}) 평균 발화는 낮습니다(음성 ${r.vScore}). 그러나 최고 순간엔 <b>${c}</b>까지 올라와 — 능력은 실재합니다. 과대평가가 아니라 <b>억제된 잠재</b>이며, 그 순간을 일상화하면 자기상과 발화가 가까워집니다.`});
+      } else {
+        items.push({tag:'인식–발화 간극', color:'#7d7a90',
+          text:`<b>${name}</b>은(는) 스스로 느끼는 것(성격 ${r.pScore})과 목소리에 닿는 것(음성 ${r.vScore}${c!=null?`, 최고치 ${c}`:''}) 사이 간극이 큽니다. 이것이 곧 '틀렸다'는 뜻은 아니에요 — 녹음 맥락·컨디션·자기보고 성향도 작용합니다. 다만 <b>스스로 보는 나와 남에게 닿는 나의 거리</b>가 여기서 가장 크니, 함께 들여다볼 가치가 있는 지점입니다.`});
+      }
+    }
+  });
+  const overall = cIndex>=75
+    ? `전반적으로 <b>자기인식과 실제 발화가 잘 정렬</b>돼 있습니다(정합도 ${cIndex}%). 스스로 보는 모습과 목소리에 닿는 모습의 거리가 가깝습니다.`
+    : cIndex>=55
+    ? `자기인식과 발화가 <b>절반쯤 어긋나</b> 있습니다(정합도 ${cIndex}%). 위 항목들이 그 간극의 성질을 보여줍니다.`
+    : `자기인식과 실제 발화 사이에 <b>큰 거리</b>가 있습니다(정합도 ${cIndex}%). 어느 쪽이 '맞다'기보다, 이 거리 자체가 함께 풀어갈 탐구의 출발점입니다.`;
+  const body = items.length
+    ? items.map(it=>`<div class="so-item" style="border-left-color:${it.color}"><div class="so-tag" style="color:${it.color}">${it.tag}</div><div class="so-text">${it.text}</div></div>`).join('')
+    : `<div class="so-item" style="border-left-color:#1D9E75"><div class="so-tag" style="color:#1D9E75">대체로 정합</div><div class="so-text">자기인식과 발화가 대체로 일치합니다 — 두드러진 간극이 없습니다.</div></div>`;
+  return `
+      <div class="section" style="margin-bottom:0">
+        <div class="sec-title">⑦ 자기인식 ↔ 발화 정합 <span class="hint">내가 보는 나 vs 목소리에 닿는 나</span></div>
+        <div class="so-caveat">아래는 <b>자기보고(성격)와 실제 발화(목소리)의 불일치</b>를 읽은 것입니다. '맞고 틀림'의 판정이 아니라, 그 거리의 <b>성질</b>을 비추는 거울입니다 — 맥락·컨디션·자기보고 성향도 함께 작용하니 단정이 아닌 탐구의 출발점으로 보세요.</div>
+        ${body}
+        <div class="so-overall">${overall}</div>
+      </div>`;
+}
+
 function bigFiveSections(b, vs, cIndex){
   const overview = ['O','C','E','A','N'].map(c=>{const bd=b5band(b[c]);return `<div class="jc"><div class="jc-head"><span class="cmap-dot" style="background:var(--t-${c})"></span><span class="jc-name">${TRAITKR[c]}</span><span class="band-chip ${bd.tone}">${bd.label}</span><span class="jc-sub">${bd.pct}</span><span class="jc-score mono">${b[c]}</span></div><div class="db-track"><div class="db-fill" style="width:${b[c]}%;background:var(--t-${c})"></div></div></div>`;}).join('');
   const extremes = ['E','C','A','N','O'].filter(c=>b[c]>=70||b[c]<=30).map(c=>TRAITKR[c]);
@@ -726,6 +819,7 @@ function gatherRecord(){
     big5:{E:num('i-E'),C:num('i-C'),A:num('i-A'),N:num('i-N'),O:num('i-O'),V:num('i-V')},
     formants:{F1:num('i-F1'),F2:num('i-F2'),F3:num('i-F3'),F4:num('i-F4'),F5:num('i-F5'),RMS:num('i-RMS'),DR:num('i-DR'),HNR:num('i-HNR'),JIT:num('i-JIT'),SHI:num('i-SHI')},
     freq:{b100:num('i-b100'),b300:num('i-b300'),b600:num('i-b600'),b1200:num('i-b1200'),b2500:num('i-b2500'),b4000:num('i-b4000'),b5500:num('i-b5500'),b7000:num('i-b7000'),b8000:num('i-b8000')},
+    ranges: rangeData ? JSON.parse(JSON.stringify(rangeData)) : null,
     source:'tv_fusion'
   };
 }
@@ -748,6 +842,7 @@ function loadRecord(id){
   if(r.big5) ['E','C','A','N','O','V'].forEach(k=>setV('i-'+k,r.big5[k]));
   if(r.formants) ['F1','F2','F3','F4','F5','RMS','DR','HNR','JIT','SHI'].forEach(k=>setV('i-'+k,r.formants[k]));
   if(r.freq) ['b100','b300','b600','b1200','b2500','b4000','b5500','b7000','b8000'].forEach(k=>setV('i-'+k,r.freq[k]));
+  rangeData = r.ranges ? JSON.parse(JSON.stringify(r.ranges)) : null;  // 범위 복원
   // RX 이미지는 저장 안 함 → 클리어 (이전 화면 잔상 방지)
   rxImages={full:null,chorus:null};
   ['zone-rx-full','zone-rx-chorus'].forEach(zid=>{ const z=document.getElementById(zid); if(z){ z.classList.remove('has'); const t=z.querySelector('.uz-txt'); if(t) t.innerHTML = zid==='zone-rx-full'?'RX 전체 스펙트로그램<span>이미지 업로드</span>':'RX 후렴 스펙트로그램<span>이미지 업로드 (선택)</span>'; }});
@@ -804,6 +899,57 @@ function exportRecords(){
 // 페이지 로드 시 카운트 갱신
 if(typeof document!=='undefined' && document.addEventListener) document.addEventListener('DOMContentLoaded', updateRecCount);
 
+/* 입력 폼 각 음향 항목 아래에 측정 범위(min~max)를 표시 (범위 스팬은 동적 생성) */
+function updateFieldRanges(){
+  const keys=['F1','F2','F3','F4','F5','RMS','DR','HNR','JIT','SHI','b100','b300','b600','b1200','b2500','b4000','b5500','b7000','b8000'];
+  keys.forEach(k=>{
+    const inp=document.getElementById('i-'+k); if(!inp||!inp.parentNode) return;
+    let span=document.getElementById('rng-'+k);
+    if(!span) return;                 // .fld-box 안에 box-range span 사전 존재
+    const rd=rangeData&&rangeData[k];
+    span.textContent=(rd&&rd.min!=null&&rd.max!=null&&rd.min!==rd.max)?`${rd.min}~${rd.max}`:'';
+  });
+}
+
+/* 현재 분석값(중앙값 + 범위)을 구조화 텍스트로 복사 — Claude 등에 붙여넣기 좋게 */
+function copyAnalysisData(){
+  const v=id=>String((document.getElementById(id)||{}).value??'').trim();
+  const has=id=>v(id)!=='';
+  const rg=k=>{ const rd=rangeData&&rangeData[k]; return (rd&&rd.min!=null&&rd.max!=null&&rd.min!==rd.max)?` (사용 범위 ${rd.min}~${rd.max})`:''; };
+  if(!['i-E','i-C','i-A','i-N','i-O'].every(has)){ recStatus('⚠️ BIG5 점수를 먼저 입력하세요.','err'); return; }
+  const L=[];
+  L.push(`[TouchingVoice 음성×성격 분석 데이터${has('i-name')?' · '+v('i-name'):''}]`);
+  const meta=[v('i-meta'),v('i-song')].filter(Boolean).join(' · '); if(meta) L.push(meta);
+  L.push('');
+  L.push('■ BIG5 성격 점수 (0–100, 자기보고)');
+  L.push(`외향성 ${v('i-E')} · 성실성 ${v('i-C')} · 우호성 ${v('i-A')} · 신경성 ${v('i-N')} · 개방성 ${v('i-O')}${has('i-V')?' · 보컬특성 '+v('i-V'):''}`);
+  L.push('');
+  L.push('■ 포먼트 (중앙값 · 곡 전체 사용 범위)');
+  [['F1','흉성공명'],['F2','모음명료'],['F3',"음색개성/Singer's"],['F4',''],['F5','']].forEach(([k,d])=>{ if(has('i-'+k)) L.push(`${k}${d?'('+d+')':''}: ${v('i-'+k)} Hz${rg(k)}`); });
+  L.push('');
+  L.push('■ 음향 바이오마커');
+  if(has('i-RMS')) L.push(`RMS(평균음량): ${v('i-RMS')}${rg('RMS')}`);
+  if(has('i-DR'))  L.push(`DR(다이내믹): ${v('i-DR')} dB${rg('DR')}`);
+  if(has('i-HNR')) L.push(`HNR(청정도): ${v('i-HNR')} dB${rg('HNR')}`);
+  if(has('i-JIT')) L.push(`Jitter(주파수안정): ${v('i-JIT')} %${rg('JIT')}`);
+  if(has('i-SHI')) L.push(`Shimmer(진폭안정): ${v('i-SHI')} %${rg('SHI')}`);
+  L.push('');
+  L.push('■ 9대역 에너지 (흉성 100 기준 %, 사용 범위)');
+  [['흉성 100','b100'],['온기 300','b300'],['말소리 600','b600'],['명료 1.2k','b1200'],['존재 2.5k','b2500'],['공기 4k','b4000'],['5.5k','b5500'],['7k','b7000'],['8k','b8000']].forEach(([lab,k])=>{ if(has('i-'+k)) L.push(`${lab}: ${v('i-'+k)}%${rg(k)}`); });
+  L.push('');
+  L.push('※ 중앙값=곡 전체의 대표값, 범위=최저~최고 사용역(p10~p90). 범위 표기가 없으면 단일 측정/수동 입력값.');
+  _copyText(L.join('\n'), '✓ 분석 데이터를 복사했습니다 — Claude 등에 붙여넣기 가능');
+}
+function _copyText(text, okMsg){
+  const done=()=>recStatus(okMsg||'✓ 복사했습니다','ok');
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(done,()=>_fallbackCopy(text,done)); }
+  else _fallbackCopy(text,done);
+}
+function _fallbackCopy(text,done){
+  try{ const ta=document.createElement('textarea'); ta.value=text; ta.style.position='fixed'; ta.style.opacity='0'; ta.style.left='-9999px'; document.body.appendChild(ta); ta.focus(); ta.select(); document.execCommand('copy'); ta.remove(); done&&done(); }
+  catch(e){ recStatus('복사 실패 — 브라우저 권한을 확인하세요','err'); }
+}
+
 function val(id){ const e=document.getElementById(id); if(!e) return 0; const v=parseFloat(e.value); return isNaN(v)?0:v; }
 function txt(id){ return (document.getElementById(id)||{value:''}).value.trim(); }
 
@@ -811,6 +957,8 @@ function render(){
   const big5={E:val('i-E'),C:val('i-C'),A:val('i-A'),N:val('i-N'),O:val('i-O'),V:val('i-V')};
   const f={F1:val('i-F1'),F2:val('i-F2'),F3:val('i-F3'),F4:val('i-F4'),F5:val('i-F5'),RMS:val('i-RMS'),DR:val('i-DR'),HNR:val('i-HNR'),JIT:val('i-JIT'),SHI:val('i-SHI')};
   const q={b100:val('i-b100'),b300:val('i-b300'),b600:val('i-b600'),b1200:val('i-b1200'),b2500:val('i-b2500'),b4000:val('i-b4000'),b5500:val('i-b5500'),b7000:val('i-b7000'),b8000:val('i-b8000')};
+
+  updateFieldRanges(); // 입력 폼 각 항목 아래 측정 범위(min~max) 갱신
 
   // 데이터 입력 전: 빈 상태 안내 (양식은 그대로, 값만 비어 있을 때)
   const filledRaw=id=>String((document.getElementById(id)||{}).value??'').trim()!=='';
@@ -827,6 +975,18 @@ function render(){
   }
 
   const vs=voiceScores(f,q);
+  const ceil = bestFeatures(rangeData,f,q); // 천장(최선) 음성점수 — 범위 있을 때만
+  const bi = balanceIndex(q);               // 발성 균형 지수
+  const hp = hfeProfile(f,q);               // >4kHz 3성분 프로파일(Type A/B 추론)
+  const hfeBlockHtml = hp ? `
+          <div class="balance-box" style="border-left:3px solid ${hp.color}">
+            <div class="bal-head"><span>🔬 &gt;4kHz 고역 3성분 프로파일 <span style="font-weight:400;color:var(--gray-400);font-size:10px">— 조화(광채) vs 비조화(누출·마찰) 추론</span></span><span class="hfe-chip" style="background:${hp.color}">${hp.label}</span></div>
+            <div class="bal-detail">고역강도 ${hp.hfStr}/100 · 조화게이트 ${hp.hg}% · 신뢰도 ${hp.conf}${hp.lhDb!=null&&hp.hfLevel!=='low'?` · L/H 4kHz ${hp.lhDb}dB`:''}${hp.singer?' · 가수포먼트 단서':''}</div>
+            <div class="bal-note">${hp.read}</div>
+            <div class="bal-note" style="margin-top:6px;color:var(--gray-700)"><b>성격 연결(추론):</b> ${hp.link}</div>
+            ${hp.lhNote?`<div class="bal-detail" style="margin-top:6px;margin-bottom:0">${hp.lhNote}</div>`:''}
+            <div class="bal-detail" style="margin-top:6px;margin-bottom:0;color:var(--gray-400)">※ 단일 HNR 기반 추론. 정밀 3성분 분해는 대역별 HNR(0-2k/2-4k/4-8k)·CPP·피라미드굴 notch 실측이 필요(부스 지표).</div>
+          </div>` : '';
   const order=['E','C','A','N','O'];
   const rows=order.map(c=>{ const cl=classify(big5[c],vs[c]); return {code:c,pScore:big5[c],vScore:vs[c],...cl}; });
   const gaps=rows.map(r=>Math.abs(r.gap||0));
@@ -845,10 +1005,17 @@ function render(){
     mkF1(f.F1), mkF2(f.F2), mkF3(f.F3),
     mkRMS(f.RMS), mkDR(f.DR), mkHNR(f.HNR)
   ].filter(Boolean);
+  // 범위 + 강사용 정상범위 가이드 부착
+  const NORMREF={F1:'모음 의존 · 통상 250~900',F2:'모음 의존 · 통상 800~2900',F3:"정상 2400~3000 · 3000+ Singer's",RMS:'적정 0.015~0.06 (환경 의존)',DR:'정상 8~20dB · 14+ 우수',HNR:'건강 15~25dB · 20+ 우수'};
+  markers.forEach(m=>{
+    const rd=rangeData&&rangeData[m.code];
+    m.rangeStr=(rd&&rd.min!=null&&rd.max!=null&&rd.min!==rd.max)?`${rd.min}~${rd.max}`:null;
+    m.normRef=NORMREF[m.code]||null;
+  });
 
   const fb=[
-    ['흉성 100Hz',q.b100,'var(--t-E)'],['온기 300Hz',q.b300,'#378ADD'],['말소리 600Hz',q.b600,'var(--t-C)'],
-    ['명료도 1.2k',q.b1200,'var(--t-O)'],['존재감 2.5k',q.b2500,'var(--t-N)'],['공기감 4k',q.b4000,'var(--t-V)']
+    ['흉성 100Hz','b100',q.b100,'var(--t-E)'],['온기 300Hz','b300',q.b300,'#378ADD'],['말소리 600Hz','b600',q.b600,'var(--t-C)'],
+    ['명료도 1.2k','b1200',q.b1200,'var(--t-O)'],['존재감 2.5k','b2500',q.b2500,'var(--t-N)'],['공기감 4k','b4000',q.b4000,'var(--t-V)']
   ];
 
   // 코칭 모으기 (미발현/과발현 우선)
@@ -919,13 +1086,19 @@ function render(){
         ${markers.map(m=>`
           <div class="marker">
             <div class="mk-code" style="color:${m.color}">${m.code}</div>
-            <div><div class="mk-meaning">${m.meaning}</div><div class="mk-interp">${m.interp}</div></div>
-            <div class="mk-right"><div class="mk-val" style="color:${m.color}">${m.val}</div><br><span class="badge ${m.badge}">${m.level}</span></div>
+            <div><div class="mk-meaning">${m.meaning}</div><div class="mk-interp">${m.interp}</div>${m.normRef?`<div class="mk-norm">📐 ${m.normRef}</div>`:''}</div>
+            <div class="mk-right"><div class="mk-val" style="color:${m.color}">${m.val}</div>${m.rangeStr?`<div class="mk-range">측정 범위 ${m.rangeStr}</div>`:''}<span class="badge ${m.badge}">${m.level}</span></div>
           </div>`).join('')}
         <div style="margin-top:16px">
           <div class="ed-label" style="margin-bottom:10px">주파수 대역 에너지</div>
-          ${fb.map(([l,v,c])=>`<div class="fb-row"><span class="fb-label">${l}</span><div class="fb-track"><div class="fb-fill" style="width:${Math.min(100,v)}%;background:${c}"></div></div><span class="fb-val" style="color:${c}">${v}%</span></div>`).join('')}
+          ${fb.map(([l,key,v,c])=>{ const rd=rangeData&&rangeData[key]; const hasR=rd&&rd.min!=null&&rd.max!=null&&rd.min!==rd.max; return `<div class="fb-row"><span class="fb-label">${l}</span><div class="fb-track">${hasR?`<div class="fb-range" style="left:${Math.min(100,rd.min)}%;width:${Math.max(0,Math.min(100,rd.max)-Math.min(100,rd.min))}%"></div>`:''}<div class="fb-fill" style="width:${Math.min(100,v)}%;background:${c}"></div></div><span class="fb-val" style="color:${c}">${v}%${hasR?` <span class="fb-rangetext">${rd.min}~${rd.max}</span>`:''}</span></div>`; }).join('')}
           <div class="mk-interp" style="margin-top:8px;color:var(--gray-600)">${bandRead(q)}</div>
+          <div class="balance-box">
+            <div class="bal-head"><span>🎚️ 발성 균형 지수 <span style="font-weight:400;color:var(--gray-400);font-size:10px">— 대역이 고르게 발달했는가</span></span><span class="bal-score ${bi.cls}">${bi.balance}<small>/100</small> · ${bi.label}</span></div>
+            <div class="bal-detail">실질 사용 대역 약 ${bi.effBands}개 · 주력 ${bi.dominant} · 상위 2대역 집중도 ${bi.top2share}%${bi.dead.length?` · 미발달: ${bi.dead.join('·')}`:''}</div>
+            <div class="bal-note">${bi.note}</div>
+          </div>
+          ${hfeBlockHtml}
         </div>
       </div>
 
@@ -951,8 +1124,15 @@ function render(){
       <!-- ④ 핵심 인사이트 -->
       <div class="section">
         <div class="sec-title">④ 핵심 인사이트 — 격차가 말하는 것</div>
-        ${rows.filter(r=>r.st==='미발현').sort((a,b)=>b.gap-a.gap).slice(0,2).map(r=>`
-          <div class="insight ins-warn"><span class="ic">🎯</span><div class="bd"><b>${T[r.code].name} 미발현 (격차 +${r.gap})</b> — 성향이라는 재료는 있는데 소리로 안 나옵니다. ${T[r.code].anchor} 영역을 열면 성격이 목소리에 드러나기 시작합니다.</div></div>`).join('')}
+        ${rows.filter(r=>r.st==='미발현').sort((a,b)=>b.gap-a.gap).slice(0,2).map(r=>{
+          const c=ceil?ceil[r.code]:null; let verdict='';
+          if(c!=null){ const cc=Math.round(c);
+            verdict = cc>=r.pScore-CFG.gapTol
+              ? ` <b style="color:var(--green)">[능력 있음 · 습관 문제]</b> 최고 순간엔 음성 ${cc}까지 도달해 성격(${r.pScore})에 근접합니다 — 격차는 능력 부족이 아니라 <b>일관성</b>의 문제입니다. 그 순간을 일상화하는 것이 코칭 핵심.`
+              : ` <b style="color:var(--amber)">[능력 개발 필요]</b> 최고 순간에도 음성 ${cc}에 그쳐(성격 ${r.pScore}), 이 영역은 새 발성 능력의 <b>개발</b>이 필요합니다.`;
+          }
+          return `<div class="insight ins-warn"><span class="ic">🎯</span><div class="bd"><b>${T[r.code].name} 미발현 (격차 +${r.gap})</b> — 성향이라는 재료는 있는데 소리로 안 나옵니다. ${T[r.code].anchor} 영역을 열면 성격이 목소리에 드러나기 시작합니다.${verdict}</div></div>`;
+        }).join('')}
         ${strengths.slice(0,3).map(s=>`<div class="insight ins-good"><span class="ic">✅</span><div class="bd">${s}</div></div>`).join('')}
         ${rows.filter(r=>r.st==='과발현'&&r.code!=='N').map(r=>`<div class="insight ins-info"><span class="ic">ℹ️</span><div class="bd"><b>${T[r.code].name} 과발현</b> — 목소리가 성격보다 이 특질을 더 드러냅니다. 훈련된 기술 또는 무대용 캐릭터일 수 있어, 성격과의 균형 점검이 필요합니다.</div></div>`).join('')}
       </div>
@@ -969,10 +1149,12 @@ function render(){
       </div>
 
       <!-- ⑥ 종합 서사 -->
-      <div class="section" style="margin-bottom:0">
+      <div class="section">
         <div class="sec-title">⑥ 종합 서사 — 이 목소리의 초상</div>
         <div class="synth"><div class="lab">VOCAL PORTRAIT</div>${synth.map(p=>`<p>${p}</p>`).join('')}</div>
       </div>
+
+      ${selfOtherSection(big5,rows,ceil,bi,cIndex)}
 
       ${hrSections(big5,f,q,vs,rows,cIndex,head)}
 
@@ -1035,6 +1217,86 @@ function bandRead(q){
   if((q.b2500+q.b4000)>=40)
     return `상단 대역(존재감·공기감)이 활성화돼 밝고 앞으로 나오는 균형입니다. 투사력과 색이 살아있는 분포.`;
   return `흉성을 토대로 중역(온기·말소리)이 받치는 균형 — 상단 대역을 더 열면 입체감이 커집니다.`;
+}
+
+/* ── >4kHz 고역 3성분 프로파일 (Type A/B 추론) ──
+   문헌: Monson 2014(HFE 종설); Titze&Story(가수 포먼트=상후두관 1/4파장 군집);
+   Hu 2012(/sh/대역폭×N·E); Kim 2025(모달음질×성실/안정 인상); Van Puyvelde 2022(스트레스→고역가중).
+   측정이 아니라 HNR·shimmer·고역대역·F3로 조화/비조화를 추론하는 휴리스틱.
+   정밀 분해(대역별 HNR·CPP·피라미드굴 notch)는 부스 실측 지표가 필요. */
+function hfeProfile(f,q){
+  const hi=[q.b4000,q.b5500,q.b7000,q.b8000].filter(x=>x!=null);
+  if(hi.length<2) return null;                              // 고역 데이터 부족
+  const hfeRaw=hi.reduce((a,b)=>a+b,0)/hi.length;           // 평균 고역 밴드 %
+  const hfStr=Math.round(bandS(hfeRaw,CFG.capHigh));        // 0~100 (엔진 캡 기준 정규화)
+  // L/H 4kHz 근사: 정규화는 단일 전역 스케일 → 비율에서 상쇄되므로 상대비 유효
+  const lo=[q.b100,q.b300,q.b600,q.b1200,q.b2500].filter(x=>x!=null).reduce((a,b)=>a+b,0);
+  const b4=q.b4000||0;
+  const Lsum=lo+0.5*b4, Hsum=0.5*b4+(q.b5500||0)+(q.b7000||0)+(q.b8000||0);
+  const lhDb=Hsum>0 ? Math.round(10*Math.log10(Lsum/Hsum)*10)/10 : null;
+  const hg=harmGate(f);
+  const singer=(f.F3!=null&&f.F3>=2700&&f.F3<=3400)?1:(f.F3!=null&&f.F3>=2400&&f.F3<3700)?0.5:0;
+  const breathy=((f.HNR!=null&&f.HNR<14)?1:0)+((f.SHI!=null&&f.SHI>5.5)?1:0);
+  const hfLevel=hfStr>=55?'strong':hfStr>=25?'mid':'low';
+  const hnrTxt=f.HNR!=null?f.HNR+'dB':'?';
+  let type,label,color,badge,read,link,conf;
+  if(hfLevel==='low'){
+    type='저HFE'; label='고역 빈약'; color='var(--gray-500)'; badge='b-gray'; conf='—';
+    read=`4kHz 위 에너지가 약합니다(고역강도 ${hfStr}). 어둡고 닫힌 음색 쪽 — Type 판정 이전에 광채/숨소리 성분 자체가 적은 상태입니다.`;
+    link='상후두관 협착·고역 배음 개발 여지. 개방성 해석에 고역이 거의 반영되지 않았습니다(에너지 자체가 부족).';
+  } else if(hg>=0.78){
+    type='A'; label=`조화 우세 (Type A${singer?' · 가수 포먼트 단서':''})`; color='var(--t-O)'; badge='b-accent';
+    conf=hg>=0.9?'높음':'보통';
+    read=`고역이 ${hfLevel==='strong'?'풍부하고':'있고'} 하모닉이 또렷합니다(HNR ${hnrTxt}). 잡음이 아니라 상부 포먼트(F4~F6)·${singer?'가수 포먼트 군집':'배음'}의 <b>조화적 광채</b>로 읽힙니다.`;
+    link='문헌상 성도·발성 훈련의 결과물 성격이 강하고, <b>외향성·자신감·카리스마</b> 인상(+한국 문화권 신뢰·정서안정 P1)과 연결되는 경향. Big Five로는 <b>E×C 결합</b>(자기조절로 신체 자원을 동원)과 묶일 가능성 — 단 측정 상관이 아닌 매개 추론입니다.';
+  } else if(hg<=0.55 && breathy>=1){
+    type='B-누출'; label='비조화 우세 · 호흡 누출형'; color='var(--t-N)'; badge='b-amber';
+    conf=breathy>=2?'높음':'보통';
+    read=`고역은 있으나 하모닉 사이가 잡음으로 메워진 쪽(HNR ${hnrTxt}${f.SHI!=null?` · shimmer ${f.SHI}%`:''}). 성문 폐쇄 부전에 의한 <b>호흡 누출 잡음</b>이 우세하게 추론됩니다.`;
+    link='친밀감·부드러움 인상과 연결되지만 동시에 <b>약함·취약성</b> 인상을 받기 쉬움. Hu et al.(2012)의 /sh/ 대역폭 ↔ <b>신경증</b> 상관이, 이 영역의 변동성이 정서 불안정성과 통계적으로 묶일 수 있음을 시사. 단 breathy는 의도된 예술적 질감일 수도 있어 약점으로 단정하지 않습니다.';
+  } else if(hg<=0.62){
+    type='B-압박'; label='비조화 우세 · 압박/긴장형 가능'; color='var(--t-N)'; badge='b-amber'; conf='보통';
+    read=`고역이 잡음 성분을 동반하나 누출형(낮은 HNR+높은 shimmer) 단서는 약합니다 — 만성 압박/긴장에 의한 <b>상성문 마찰</b> 증가 쪽으로 추론됩니다.`;
+    link='문헌상 음성 피로·발성 장애, 자율신경 과각성과 연관되기 쉬움. 사회비교 스트레스에서 F0↑·HNR↑·shimmer↓로 "더 압박형·더 고역 가중"이 되는 경향과 결이 맞습니다.';
+  } else {
+    type='혼합'; label='혼합형 (조화·비조화 공존)'; color='var(--t-O)'; badge='b-gray'; conf='낮음';
+    read=`조화 신뢰도가 중간대(게이트 ${Math.round(hg*100)}%)라 Type A/B가 섞여 있습니다. 광채와 숨/마찰이 공존.`;
+    link='대역별 HNR·CPP 측정으로 분해하면 어느 쪽이 우세한지 확정됩니다(현재는 단일 HNR 기반 추론).';
+  }
+  let lhNote='';
+  if(lhDb!=null && hfLevel!=='low'){
+    const ar=lhDb<0?'고역 우세':lhDb<6?'균형':'저역 우세';
+    lhNote=`L/H 4kHz ≈ ${lhDb}dB (${ar}). `+(lhDb<0
+      ? (type==='A'?'고역 우세지만 조화적 — 각성보다 훈련된 광채 쪽.':'고역 우세 — 인지 부하·각성 가중 가능(PMC6081741: 부하↑→L/H↓).')
+      : '저역 가중 — 차분·안정 쪽 분포.');
+  }
+  return {type,label,color,badge,read,link,conf,hfStr,hfLevel,hg:Math.round(hg*100),lhDb,lhNote,singer:!!singer};
+}
+
+/* ── 발성 균형 지수: 9대역 에너지의 고름/뾰족함(엔트로피 기반) ── */
+function balanceIndex(q){
+  const order=[['흉성 100','b100'],['온기 300','b300'],['말소리 600','b600'],['명료 1.2k','b1200'],['존재 2.5k','b2500'],['공기 4k','b4000'],['광채 5.5k','b5500'],['7k','b7000'],['8k','b8000']];
+  const vals=order.map(([,k])=>Math.max(0, q[k]||0));
+  const sum=vals.reduce((a,b)=>a+b,0)||1;
+  let H=0; vals.forEach(v=>{ const pi=v/sum; if(pi>0) H-=pi*Math.log(pi); });
+  const balance=Math.round(H/Math.log(9)*100);   // 0(한 대역 집중)~100(완전 균등)
+  const effBands=Math.max(1,Math.round(Math.exp(H)));
+  let di=0; vals.forEach((v,i)=>{ if(v>vals[di]) di=i; });
+  const dominant=order[di][0];
+  const mx=Math.max(...vals,1);
+  const dead=order.filter((_,i)=>vals[i]<mx*0.05).map(o=>o[0]);
+  const sorted=[...vals].sort((a,b)=>b-a);
+  const top2share=Math.round((sorted[0]+(sorted[1]||0))/sum*100);
+  // 보상적 편중: 엔트로피가 다소 관대해도, 상위 2대역 집중이 크고 미발달 대역이 많으면 편중으로 판정
+  const concentrated = balance<50 || (top2share>=72 && dead.length>=3);
+  const label= concentrated?'편중': balance>=70?'고른 발달': '중심 위주';
+  const cls=   concentrated?'low':  balance>=70?'good':       'mid';
+  const note= concentrated
+    ? `소수 대역(${dominant} 중심, 상위 2대역에 ${top2share}%)에 에너지가 과집중되고${dead.length?` ${dead.join('·')} 등`:''} 여러 대역이 미발달입니다. 한 가지 공명 전략에 의존하는 <b>보상적 패턴</b>일 수 있어 — '크고 또렷하게' 들려도 토대·색이 비어 있을 수 있습니다. 죽은 대역을 여는 것이 균형의 핵심입니다.`
+    : balance>=70
+    ? '에너지가 여러 대역에 고르게 퍼져 있어, 토대·색·광채가 균형 있게 발달한 상태입니다. 한쪽에 의존하지 않는 안정된 악기입니다.'
+    : `중심 대역 위주로 발달했고 일부 대역이 약합니다.${dead.length?` ${dead.join('·')} 대역을 보강하면`:' 상단·하단을 더 채우면'} 입체감과 색이 커집니다.`;
+  return {balance, effBands, dominant, dead, top2share, label, cls, note};
 }
 
 /* ── 종합 서사 생성 ── */
@@ -1212,7 +1474,7 @@ function hrSections(big5,f,q,vs,rows,cIndex,head){
 
 
 /* ════ 음성 분석 (Web Audio DSP — 본체 분석기에서 이식, 검증된 코드) ════ */
-let audioAnalysisResult=null; let rxImages={full:null,chorus:null};
+let audioAnalysisResult=null; let rxImages={full:null,chorus:null}; let rangeData=null; /* 음향 지표 min/max 범위 (오디오 분석/기록 로드 시 채워짐, 수동 편집 시 해당 키 제거) */
 
 function handleAudioUpload(input) {
   const file = input.files[0];
@@ -1296,199 +1558,143 @@ async function analyzeAudioFile(file) {
 // ═══════════════════════════════════════════════════
 // 핵심 분석 함수 — F1~F7 + 9대역 + JIT/SHI + 8kHz
 // ═══════════════════════════════════════════════════
-async function performAudioAnalysis(audioBuffer) {
-  const sampleRate = audioBuffer.sampleRate;
-  const data       = audioBuffer.getChannelData(0);
-  const duration   = audioBuffer.duration;
-
-  // ── RMS ──
-  let sumSq = 0;
-  for (let i = 0; i < data.length; i++) sumSq += data[i] * data[i];
-  const rms = Math.sqrt(sumSq / data.length);
-
-  // ── 다이나믹레인지 (p10~p90) ──
-  const frameSize = Math.floor(sampleRate * 0.05);
-  const frameRMS = [];
-  for (let i = 0; i + frameSize < data.length; i += frameSize) {
-    let fSq = 0;
-    for (let j = i; j < i + frameSize; j++) fSq += data[j] * data[j];
-    const fRms = Math.sqrt(fSq / frameSize);
-    if (fRms > 0.001) frameRMS.push(20 * Math.log10(fRms));
+/* ── 경량 radix-2 FFT (in-place, n=2^k) ── */
+function fftRadix2(re, im){
+  const n=re.length;
+  for(let i=1,j=0;i<n;i++){
+    let bit=n>>1;
+    for(;j&bit;bit>>=1) j^=bit;
+    j^=bit;
+    if(i<j){ const tr=re[i];re[i]=re[j];re[j]=tr; const ti=im[i];im[i]=im[j];im[j]=ti; }
   }
-  frameRMS.sort((a, b) => a - b);
-  const p10 = frameRMS[Math.floor(frameRMS.length * 0.1)] || -60;
-  const p90 = frameRMS[Math.floor(frameRMS.length * 0.9)] || -20;
-  const dr  = Math.max(0, p90 - p10);
-
-  // ── Jitter 추정 (기본 피치 주기 변동) ──
-  // 제로크로싱 기반 간단 피치 추정
-  const pitchPeriods = [];
-  const minPitch = Math.floor(sampleRate / 400); // 400Hz 상한
-  const maxPitch = Math.floor(sampleRate / 70);  // 70Hz 하한
-  let lastZero = -1;
-  for (let i = 1; i < Math.min(data.length, sampleRate * 0.5); i++) {
-    if (data[i-1] < 0 && data[i] >= 0) { // 상향 제로크로싱
-      if (lastZero > 0) {
-        const period = i - lastZero;
-        if (period >= minPitch && period <= maxPitch) pitchPeriods.push(period);
+  for(let len=2;len<=n;len<<=1){
+    const ang=-2*Math.PI/len, wr=Math.cos(ang), wi=Math.sin(ang);
+    for(let i=0;i<n;i+=len){
+      let cr=1, ci=0;
+      for(let k=0;k<(len>>1);k++){
+        const a=i+k, b=i+k+(len>>1);
+        const br=re[b]*cr-im[b]*ci, bi=re[b]*ci+im[b]*cr;
+        re[b]=re[a]-br; im[b]=im[a]-bi;
+        re[a]=re[a]+br; im[a]=im[a]+bi;
+        const ncr=cr*wr-ci*wi; ci=cr*wi+ci*wr; cr=ncr;
       }
-      lastZero = i;
     }
   }
-  let jitter = 0;
-  if (pitchPeriods.length > 2) {
-    let diffSum = 0;
-    for (let i = 1; i < pitchPeriods.length; i++) {
-      diffSum += Math.abs(pitchPeriods[i] - pitchPeriods[i-1]);
-    }
-    const avgPeriod = pitchPeriods.reduce((a,b)=>a+b,0) / pitchPeriods.length;
-    jitter = parseFloat(((diffSum / (pitchPeriods.length-1)) / avgPeriod * 100).toFixed(2));
-    jitter = Math.min(jitter, 5);
-  }
+}
+/* 백분위 (p: 0~1) */
+function _pct(arr,p){ if(!arr.length) return 0; const s=[...arr].sort((a,b)=>a-b); const idx=(s.length-1)*p; const lo=Math.floor(idx),hi=Math.ceil(idx); return lo===hi?s[lo]:s[lo]+(s[hi]-s[lo])*(idx-lo); }
+/* 1D 가우시안 스무딩 */
+function _smooth(arr,w){ const out=new Float64Array(arr.length); for(let i=0;i<arr.length;i++){ let s=0,ws=0; for(let j=Math.max(0,i-w);j<=Math.min(arr.length-1,i+w);j++){ const g=Math.exp(-0.5*((j-i)/w)**2); s+=arr[j]*g; ws+=g; } out[i]=ws?s/ws:0; } return out; }
 
-  // ── Shimmer 추정 (진폭 변동) ──
-  const frameAmp = [];
-  const shimFrameSize = Math.floor(sampleRate * 0.02);
-  for (let i = 0; i + shimFrameSize < data.length; i += shimFrameSize) {
-    let maxAmp = 0;
-    for (let j = i; j < i + shimFrameSize; j++) {
-      if (Math.abs(data[j]) > maxAmp) maxAmp = Math.abs(data[j]);
-    }
-    if (maxAmp > 0.01) frameAmp.push(maxAmp);
-  }
-  let shimmer = 0;
-  if (frameAmp.length > 2) {
-    let diffSum = 0;
-    for (let i = 1; i < frameAmp.length; i++) {
-      diffSum += Math.abs(frameAmp[i] - frameAmp[i-1]);
-    }
-    const avgAmp = frameAmp.reduce((a,b)=>a+b,0) / frameAmp.length;
-    shimmer = parseFloat(((diffSum / (frameAmp.length-1)) / avgAmp * 100).toFixed(2));
-    shimmer = Math.min(shimmer, 10);
-  }
+/* ════ 시간 분해형 음성 분석 — 전체 오디오를 STFT로 훑어
+   각 지표의 중앙값(p50)과 범위(p10~p90)를 산출한다. ════ */
+async function performAudioAnalysis(audioBuffer){
+  const sampleRate=audioBuffer.sampleRate;
+  const data=audioBuffer.getChannelData(0);
+  const N=data.length;
+  const duration=audioBuffer.duration;
 
-  // ── FFT 고해상도 (8192, sampleRate 44100 → 최대 22kHz) ──
-  const fftSize = 8192; // 2배 해상도 → binHz = 5.4Hz
-  const startSample = Math.floor(data.length * 0.33);
-  const analyzeLen  = Math.min(fftSize * 8, data.length - startSample);
-  const segment     = data.slice(startSample, startSample + analyzeLen);
+  let sumSq=0; for(let i=0;i<N;i++) sumSq+=data[i]*data[i];
+  const rmsOverall=Math.sqrt(sumSq/N)||0;
 
-  const offlineCtx     = new OfflineAudioContext(1, analyzeLen, sampleRate);
-  const analysisBuffer = offlineCtx.createBuffer(1, analyzeLen, sampleRate);
-  analysisBuffer.copyToChannel(segment, 0);
+  // STFT 프레임 설정 (4096 → ~10.8Hz/bin @44.1k)
+  const frameSize=4096, half=frameSize>>1, binHz=sampleRate/frameSize;
+  const targetFrames=72;
+  const usable=N-frameSize;
+  const hop=usable>0?Math.max(1,Math.floor(usable/(targetFrames-1))):frameSize;
 
-  const source   = offlineCtx.createBufferSource();
-  const analyser = offlineCtx.createAnalyser();
-  analyser.fftSize          = fftSize;
-  analyser.smoothingTimeConstant = 0;
+  const win=new Float64Array(frameSize);
+  for(let i=0;i<frameSize;i++) win[i]=0.5-0.5*Math.cos(2*Math.PI*i/(frameSize-1));
 
-  source.buffer = analysisBuffer;
-  source.connect(analyser);
-  analyser.connect(offlineCtx.destination);
-  source.start();
-  await offlineCtx.startRendering();
+  const fRanges=[[250,900],[800,3000],[2500,4200],[3800,5200],[4800,6200],[5800,7200],[6800,8500]];
+  const fKeys=['F1','F2','F3','F4','F5','F6','F7'];
+  const bandDefs=[['hz100',60,200],['hz300',200,500],['hz600',500,900],['hz1200',900,1800],['hz2500',1800,3500],['hz4000',3500,5000],['hz5500',5000,6200],['hz7000',6200,7500],['hz8000',7500,8500]];
 
-  const freqData = new Float32Array(analyser.frequencyBinCount);
-  analyser.getFloatFrequencyData(freqData);
+  const col={F1:[],F2:[],F3:[],F4:[],F5:[],F6:[],F7:[],HNR:[],RMSf:[]};
+  const bcol={}; bandDefs.forEach(([k])=>bcol[k]=[]);
+  const frameRmsDb=[];
+  const idxOf=hz=>Math.round(hz/binHz);
 
-  const binHz = sampleRate / fftSize; // ~5.4Hz per bin
+  for(let fr=0; fr<targetFrames; fr++){
+    const start=usable>0? fr*hop : 0;
+    if(start+frameSize>N) break;
+    let fSq=0; for(let i=0;i<frameSize;i++){ const s=data[start+i]; fSq+=s*s; }
+    const fRms=Math.sqrt(fSq/frameSize);
+    if(fRms>0.001) frameRmsDb.push(20*Math.log10(fRms));
+    if(fRms<rmsOverall*0.15){ if(usable<=0) break; continue; } // 무음 프레임 스킵
+    col.RMSf.push(fRms);
 
-  function getBinIdx(hz) { return Math.round(hz / binHz); }
-  function getBandEnergy(loHz, hiHz) {
-    const lo = getBinIdx(loHz);
-    const hi = Math.min(getBinIdx(hiHz), freqData.length - 1);
-    if (lo > hi) return 0;
-    let sum = 0, cnt = 0;
-    for (let i = lo; i <= hi; i++) {
-      if (freqData[i] > -100) { sum += Math.pow(10, freqData[i] / 20); cnt++; }
-    }
-    return cnt > 0 ? sum / cnt : 0;
-  }
+    const re=new Float64Array(frameSize), im=new Float64Array(frameSize);
+    for(let i=0;i<frameSize;i++){ re[i]=data[start+i]*win[i]; }
+    fftRadix2(re,im);
+    const mag=new Float64Array(half);
+    for(let i=0;i<half;i++) mag[i]=Math.sqrt(re[i]*re[i]+im[i]*im[i]);
+    const sm=_smooth(mag,6);
 
-  // ── 9대역 에너지 (100Hz ~ 8kHz) ──
-  const bandEnergies = {
-    hz100:  getBandEnergy(60,   200),
-    hz300:  getBandEnergy(200,  500),
-    hz600:  getBandEnergy(500,  900),
-    hz1200: getBandEnergy(900,  1800),
-    hz2500: getBandEnergy(1800, 3500),
-    hz4000: getBandEnergy(3500, 5000),
-    hz5500: getBandEnergy(5000, 6200),
-    hz7000: getBandEnergy(6200, 7500),
-    hz8000: getBandEnergy(7500, 8500),
-  };
-
-  // 정규화 (최대 100%)
-  const maxE = Math.max(...Object.values(bandEnergies), 0.0001);
-  const freqPct = {};
-  for (const [k, v] of Object.entries(bandEnergies)) {
-    freqPct[k] = Math.round(Math.min(100, (v / maxE) * 100));
-  }
-
-  // ── 선형 스펙트럼 + 스무딩 (포먼트 추정용) ──
-  const linSpec = new Float32Array(freqData.length);
-  for (let i = 0; i < freqData.length; i++) {
-    linSpec[i] = freqData[i] > -100 ? Math.pow(10, freqData[i] / 20) : 0;
-  }
-
-  // 가우시안 스무딩 (윈도우 12)
-  function smooth(arr, w) {
-    const out = new Float32Array(arr.length);
-    for (let i = 0; i < arr.length; i++) {
-      let sum = 0, wSum = 0;
-      for (let j = Math.max(0, i-w); j <= Math.min(arr.length-1, i+w); j++) {
-        const g = Math.exp(-0.5 * ((j-i)/w)**2);
-        sum += arr[j] * g; wSum += g;
-      }
-      out[i] = sum / wSum;
-    }
-    return out;
-  }
-  const smoothed = smooth(linSpec, 12);
-
-  // 극대값(피크) 탐지 — 최소 거리 조건 포함
-  function findFormants(spec, ranges) {
-    return ranges.map(([lo, hi]) => {
-      const loB = getBinIdx(lo), hiB = Math.min(getBinIdx(hi), spec.length - 1);
-      let maxV = -Infinity, maxI = loB;
-      for (let i = loB; i <= hiB; i++) {
-        // 극대값 조건 (주변보다 높아야 함)
-        if (spec[i] > maxV && (i === loB || spec[i] >= spec[i-1]) && (i === hiB || spec[i] >= spec[i+1])) {
-          maxV = spec[i]; maxI = i;
-        }
-      }
-      return Math.round(maxI * binHz);
+    fRanges.forEach((rng,fi)=>{
+      const lo=idxOf(rng[0]), hi=Math.min(idxOf(rng[1]),half-1);
+      let mv=-Infinity,mi=lo;
+      for(let i=lo;i<=hi;i++){ if(sm[i]>mv){ mv=sm[i]; mi=i; } }
+      col[fKeys[fi]].push(Math.round(mi*binHz));
     });
+
+    const bandE=(lo,hi)=>{ const a=idxOf(lo),b=Math.min(idxOf(hi),half-1); if(a>b) return 0; let s=0,c=0; for(let i=a;i<=b;i++){ s+=mag[i]; c++; } return c?s/c:0; };
+    bandDefs.forEach(([k,lo,hi])=>bcol[k].push(bandE(lo,hi)));
+
+    const harmE=bandE(80,3000), noiseE=bandE(7000,9000);
+    col.HNR.push(noiseE>0? Math.min(35,Math.max(0,10*Math.log10(harmE/(noiseE+1e-10))+8)) : 20);
   }
 
-  // F1~F7 범위 정의 (음성 포먼트 표준 범위)
-  const [F1,F2,F3,F4,F5,F6,F7] = findFormants(smoothed, [
-    [250,  900],   // F1: 흉성 공명
-    [800,  3000],  // F2: 모음 명료도
-    [2500, 4200],  // F3: Singer's Formant
-    [3800, 5200],  // F4: 성도 개인차
-    [4800, 6200],  // F5: 공기감
-    [5800, 7200],  // F6: 고배음
-    [6800, 8500],  // F7: 초고배음
-  ]);
+  // DR (프레임 RMS dB의 p10~p90)
+  frameRmsDb.sort((a,b)=>a-b);
+  const drP10=frameRmsDb[Math.floor(frameRmsDb.length*0.1)]||-60;
+  const drP90=frameRmsDb[Math.floor(frameRmsDb.length*0.9)]||-20;
+  const dr=Math.max(0,drP90-drP10);
 
-  // HNR (배음 vs 잡음)
-  const harmE  = getBandEnergy(80,  3000);
-  const noiseE = getBandEnergy(7000, 9000);
-  const hnr = noiseE > 0
-    ? parseFloat(Math.min(35, Math.max(0, 10 * Math.log10(harmE/(noiseE+1e-10)) + 8)).toFixed(1))
-    : 20.0;
+  // Jitter / Shimmer (8구간 → 범위)
+  const chunks=8, jitArr=[], shiArr=[], chunkLen=Math.floor(N/chunks);
+  for(let c=0;c<chunks;c++){
+    const s0=c*chunkLen, s1=Math.min(N,s0+chunkLen);
+    const periods=[]; const minP=Math.floor(sampleRate/400), maxP=Math.floor(sampleRate/70); let lz=-1;
+    for(let i=s0+1;i<s1;i++){ if(data[i-1]<0&&data[i]>=0){ if(lz>0){ const pr=i-lz; if(pr>=minP&&pr<=maxP) periods.push(pr); } lz=i; } }
+    if(periods.length>3){ let ds=0; for(let i=1;i<periods.length;i++) ds+=Math.abs(periods[i]-periods[i-1]); const ap=periods.reduce((a,b)=>a+b,0)/periods.length; jitArr.push(Math.min(5, ds/(periods.length-1)/ap*100)); }
+    const amps=[]; const sf=Math.floor(sampleRate*0.02);
+    for(let i=s0;i+sf<s1;i+=sf){ let mx=0; for(let j=i;j<i+sf;j++){ const a=Math.abs(data[j]); if(a>mx) mx=a; } if(mx>0.01) amps.push(mx); }
+    if(amps.length>3){ let ds=0; for(let i=1;i<amps.length;i++) ds+=Math.abs(amps[i]-amps[i-1]); const aa=amps.reduce((a,b)=>a+b,0)/amps.length; shiArr.push(Math.min(10, ds/(amps.length-1)/aa*100)); }
+  }
+
+  const stat=arr=>({ med:_pct(arr,0.5), min:_pct(arr,0.1), max:_pct(arr,0.9) });
+  const F1s=stat(col.F1),F2s=stat(col.F2),F3s=stat(col.F3),F4s=stat(col.F4),F5s=stat(col.F5),F6s=stat(col.F6),F7s=stat(col.F7);
+  const HNRs=stat(col.HNR), RMSs=stat(col.RMSf);
+  const JITs=jitArr.length?stat(jitArr):{med:0,min:0,max:0};
+  const SHIs=shiArr.length?stat(shiArr):{med:0,min:0,max:0};
+
+  // 대역: raw median/min/max → median 최대값 기준 정규화 (흉성≈100)
+  const bMed={},bMin={},bMax={};
+  bandDefs.forEach(([k])=>{ bMed[k]=_pct(bcol[k],0.5); bMin[k]=_pct(bcol[k],0.1); bMax[k]=_pct(bcol[k],0.9); });
+  const bMaxMed=Math.max(...Object.values(bMed),1e-9);
+  const freqPct={}, bandRanges={};
+  bandDefs.forEach(([k])=>{
+    freqPct[k]=Math.round(Math.min(100,bMed[k]/bMaxMed*100));
+    bandRanges[k]={min:Math.round(Math.min(100,bMin[k]/bMaxMed*100)), max:Math.round(Math.min(130,bMax[k]/bMaxMed*100))};
+  });
+
+  const r1=x=>parseFloat(x.toFixed(1)), r2=x=>parseFloat(x.toFixed(2)), r4=x=>parseFloat(x.toFixed(4)), ri=x=>Math.round(x);
 
   return {
-    rms:  parseFloat(rms.toFixed(4)),
-    dr:   parseFloat(dr.toFixed(1)),
-    hnr,
-    jitter:  jitter,
-    shimmer: shimmer,
-    F1, F2, F3, F4, F5, F6, F7,
+    rms:r4(RMSs.med), dr:r1(dr), hnr:r1(HNRs.med),
+    jitter:r2(JITs.med), shimmer:r2(SHIs.med),
+    F1:ri(F1s.med),F2:ri(F2s.med),F3:ri(F3s.med),F4:ri(F4s.med),F5:ri(F5s.med),F6:ri(F6s.med),F7:ri(F7s.med),
     freqPct,
-    duration: parseFloat(duration.toFixed(1)),
-    sampleRate,
+    ranges:{
+      F1:{min:ri(F1s.min),max:ri(F1s.max)}, F2:{min:ri(F2s.min),max:ri(F2s.max)}, F3:{min:ri(F3s.min),max:ri(F3s.max)},
+      F4:{min:ri(F4s.min),max:ri(F4s.max)}, F5:{min:ri(F5s.min),max:ri(F5s.max)},
+      RMS:{min:r4(RMSs.min),max:r4(RMSs.max)}, DR:{min:r1(dr),max:r1(dr)}, HNR:{min:r1(HNRs.min),max:r1(HNRs.max)},
+      JIT:{min:r2(JITs.min),max:r2(JITs.max)}, SHI:{min:r2(SHIs.min),max:r2(SHIs.max)},
+      bands:bandRanges
+    },
+    framesUsed:col.F1.length,
+    duration:r1(duration), sampleRate
   };
 }
 
@@ -1508,6 +1714,12 @@ function applyAudioResult(){
   const fmap={F1:r.F1,F2:r.F2,F3:r.F3,F4:r.F4,F5:r.F5,RMS:r.rms,DR:r.dr,HNR:r.hnr,JIT:r.jitter,SHI:r.shimmer};
   for(const[k,v] of Object.entries(fmap)){ const el=document.getElementById('i-'+k); if(el&&v!==undefined&&v!==null) el.value=v; }
   for(const[k,v] of Object.entries(r.freqPct||{})){ const el=document.getElementById('i-b'+k.replace('hz','')); if(el) el.value=v; }
+  // 범위(min/max) 저장 — 리포트 표시 + 천장 해석에 사용
+  rangeData={};
+  if(r.ranges){
+    ['F1','F2','F3','F4','F5','RMS','DR','HNR','JIT','SHI'].forEach(k=>{ if(r.ranges[k]) rangeData[k]={min:r.ranges[k].min,max:r.ranges[k].max}; });
+    if(r.ranges.bands) for(const[k,v] of Object.entries(r.ranges.bands)){ rangeData['b'+k.replace('hz','')]={min:v.min,max:v.max}; }
+  }
   render();
 }
 
@@ -1618,7 +1830,11 @@ function applyImageBands(){
 }
 
 /* 입력 시 자동 갱신 (디바운스) */
-let _renderT; document.getElementById('editor').addEventListener('input',()=>{ clearTimeout(_renderT); _renderT=setTimeout(render,150); });
+let _renderT; document.getElementById('editor').addEventListener('input',(e)=>{
+  const id=e&&e.target&&e.target.id;
+  if(id && rangeData && /^i-(F[1-5]|RMS|DR|HNR|JIT|SHI|b\d+)$/.test(id)){ delete rangeData[id.slice(2)]; } // 수동 입력 → 그 지표 범위 무효
+  clearTimeout(_renderT); _renderT=setTimeout(render,150);
+});
 
 render();
 </script>
