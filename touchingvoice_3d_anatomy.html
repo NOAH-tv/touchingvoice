@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TouchingVoice — 실시간 발성 해부학 (3D)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Noto+Sans+KR:wght@300;400;700;900&display=swap');
+  :root{
+    --bg:#05060d; --panel-bg:rgba(8,11,24,0.94); --border:rgba(90,130,255,0.16);
+    --text:#c8d8ff; --text-dim:#4a5a88; --mono:'Space Mono',monospace; --sans:'Noto Sans KR',sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:100vw;height:100vh;overflow:hidden}
+  body{background:radial-gradient(ellipse at 50% 30%,#0a0e1f 0%,#05060d 70%);color:var(--text);font-family:var(--sans);display:flex;flex-direction:column}
+  header{display:flex;align-items:center;justify-content:space-between;padding:9px 18px;border-bottom:1px solid var(--border);background:rgba(5,6,13,.96);z-index:30;flex-shrink:0}
+  .logo{font-family:var(--mono);font-size:13px;letter-spacing:.15em;color:#00e5ff;text-shadow:0 0 12px #00e5ff}
+  .logo b{color:#fff} .logo .sub{color:var(--text-dim);text-shadow:none;font-size:11px}
+  .header-right{display:flex;gap:10px;align-items:center}
+  .status-dot{width:8px;height:8px;border-radius:50%;background:var(--text-dim);transition:.3s}
+  .status-dot.on{background:#00ff9d;box-shadow:0 0 10px #00ff9d;animation:blink 1s infinite}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+  #micBtn{background:none;border:1.5px solid #3a6fff;color:#3a6fff;font-family:var(--mono);font-size:11px;padding:7px 16px;cursor:pointer;letter-spacing:.08em;transition:.2s;text-shadow:0 0 8px #3a6fff}
+  #micBtn:hover{background:rgba(58,111,255,.15);box-shadow:0 0 18px rgba(58,111,255,.5)}
+  #micBtn.active{border-color:#00ff9d;color:#00ff9d;text-shadow:0 0 10px #00ff9d;box-shadow:0 0 20px rgba(0,255,157,.4);animation:pulseBtn 1.5s infinite}
+  @keyframes pulseBtn{0%,100%{box-shadow:0 0 18px rgba(0,255,157,.4)}50%{box-shadow:0 0 34px rgba(0,255,157,.7)}}
+  .badge{font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--text-dim);padding:3px 8px;border:1px solid var(--border)}
+  main{display:flex;flex:1;overflow:hidden;min-height:0}
+  .panel{width:222px;background:var(--panel-bg);padding:13px 11px;display:flex;flex-direction:column;gap:8px;overflow-y:auto;flex-shrink:0;z-index:20}
+  .panel.left{border-right:1px solid var(--border)} .panel.right{border-left:1px solid var(--border)}
+  .ptitle{font-family:var(--mono);font-size:9px;letter-spacing:.16em;color:var(--text-dim);text-transform:uppercase;padding-bottom:5px;border-bottom:1px solid var(--border)}
+  .grouphdr{font-size:10px;font-weight:700;letter-spacing:.04em;color:#8aa0d8;margin-top:8px;margin-bottom:2px;padding-bottom:3px;border-bottom:1px dotted var(--border)}
+  .arow{cursor:pointer;padding:4px 7px;margin:0 -7px;border-radius:5px;border:1px solid transparent;transition:background .15s,border-color .15s;display:flex;flex-direction:column;gap:2px}
+  .arow:hover{background:rgba(90,130,255,.08)}
+  .arow.sel{background:rgba(90,130,255,.15);border-color:var(--border)}
+  .arow.unavail{cursor:default;opacity:.4}
+  .arow.unavail:hover{background:none}
+  .arow .top{display:flex;justify-content:space-between;align-items:flex-end}
+  .aname{font-size:11px;font-weight:700;letter-spacing:.02em;line-height:1.15}
+  .aname small{display:block;font-size:8px;color:var(--text-dim);font-weight:300;font-family:var(--mono)}
+  .aval{font-family:var(--mono);font-size:10px;min-width:28px;text-align:right}
+  .seldot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;vertical-align:middle;opacity:.45;transition:.15s}
+  .arow.sel .seldot{opacity:1;box-shadow:0 0 8px currentColor}
+  .track{height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden}
+  .fill{height:100%;width:0%;border-radius:2px;transition:width .07s ease-out}
+  .warn{font-size:8px;color:#ffae5c;font-family:var(--mono)}
+  .center{flex:1;position:relative;overflow:hidden;min-width:0}
+  #gl{display:block;width:100%;height:100%}
+  .overlay{position:absolute;inset:0;pointer-events:none}
+  .tag{position:absolute;font-family:var(--mono);font-size:9px;letter-spacing:.06em;padding:2px 6px;border-radius:2px;background:rgba(5,6,13,.7);border:1px solid;white-space:nowrap;opacity:.5;transition:opacity .2s,box-shadow .2s,padding .2s,font-size .2s;transform:translateY(-50%)}
+  .tag.big{font-size:14px;font-weight:700;padding:7px 13px;border-width:2px;border-radius:6px;background:rgba(5,6,13,.92);z-index:12}
+  .tag.big small{display:block;font-size:9.5px;font-weight:400;opacity:.8;margin-top:2px}
+  .tag.big::before{content:'';position:absolute;left:-9px;top:50%;width:7px;height:7px;border-radius:50%;background:currentColor;transform:translateY(-50%);box-shadow:0 0 10px currentColor}
+  .gate{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:rgba(5,6,13,.82);backdrop-filter:blur(4px);z-index:15;text-align:center;padding:20px}
+  .gate h2{font-family:var(--mono);font-size:14px;letter-spacing:.1em;color:#00e5ff;text-shadow:0 0 14px #00e5ff;font-weight:700}
+  .gate p{font-size:12px;color:var(--text-dim);line-height:1.7;max-width:440px}
+  .dropzone{border:1.5px dashed #3a6fff;border-radius:6px;padding:26px 34px;cursor:pointer;transition:.2s;color:#3a6fff;font-family:var(--mono);font-size:12px;letter-spacing:.05em}
+  .dropzone:hover,.dropzone.drag{background:rgba(58,111,255,.12);box-shadow:0 0 24px rgba(58,111,255,.4)}
+  .progwrap{width:300px;height:5px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;display:none}
+  .progbar{height:100%;width:0%;background:linear-gradient(90deg,#00e5ff,#00ff9d);transition:width .2s;box-shadow:0 0 12px #00e5ff}
+  .gate .err{color:#ff8c00;font-size:11px}
+  .hint{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--text-dim);font-family:var(--mono);letter-spacing:.1em;pointer-events:none;white-space:nowrap;z-index:8}
+  #spec{display:block;width:100%;height:84px;border:1px solid var(--border);border-radius:2px;background:#05060d}
+  .freqrow{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+  .freqlbl{font-family:var(--mono);font-size:9px;color:var(--text-dim);min-width:46px}
+  .freqlbl.wide{min-width:70px;font-size:8.5px}
+  .freqbar{flex:1;height:5px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden}
+  .freqfill{height:100%;width:0%;border-radius:3px;transition:width .07s ease-out}
+  .drow{display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:9.5px;padding:2px 0}
+  .drow span{color:var(--text-dim)} .drow b{color:#c8d8ff;font-weight:700}
+  .ctrlbtn{background:none;border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:9px;padding:5px 8px;cursor:pointer;letter-spacing:.08em;transition:.15s;text-align:left}
+  .ctrlbtn:hover{background:rgba(90,130,255,.12);border-color:#3a6fff}
+  .ctrlbtn.on{border-color:#00ff9d;color:#00ff9d;box-shadow:0 0 10px rgba(0,255,157,.3)}
+  .slider{width:100%;-webkit-appearance:none;height:3px;background:rgba(255,255,255,.12);border-radius:2px;outline:none}
+  .slider::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:#00e5ff;cursor:pointer;box-shadow:0 0 8px #00e5ff}
+  .slider::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:#00e5ff;cursor:pointer;border:none}
+  .bottom{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:6px 18px;border-top:1px solid var(--border);background:rgba(5,6,13,.96);flex-shrink:0;z-index:20}
+  .mgroup{display:flex;align-items:center;gap:12px}
+  .mitem{display:flex;flex-direction:column;align-items:center}
+  .mvalbig{font-family:var(--mono);font-size:14px;font-weight:700;letter-spacing:.03em;min-width:58px;text-align:center;transition:color .2s}
+  .mlbl{font-family:var(--mono);font-size:7.5px;letter-spacing:.11em;color:var(--text-dim);text-transform:uppercase}
+  .note{font-family:var(--mono);font-size:21px;font-weight:700;color:#00e5ff;text-shadow:0 0 18px #00e5ff;min-width:48px;text-align:center}
+  #wave{flex:1;height:34px;max-width:240px;border:1px solid var(--border);border-radius:2px;background:#05060d}
+  .reglegend{display:flex;gap:10px;font-size:9px;font-family:var(--mono);color:var(--text-dim);margin:2px 0 4px}
+  .reglegend span{display:flex;align-items:center;gap:4px}
+  .swatch{width:9px;height:9px;border-radius:2px;display:inline-block}
+  ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">TOUCHING<b>VOICE</b> <span class="sub">/ 실시간 발성 해부학 · 3D · HFE 3성분 모델</span></div>
+  <div class="header-right">
+    <div class="status-dot" id="dot"></div>
+    <button id="micBtn">◉ 마이크 시작</button>
+    <div class="badge" id="loadBadge">모델 대기</div>
+  </div>
+</header>
+<main>
+  <div class="panel left">
+    <div class="ptitle">발성 해부 구조</div>
+    <div class="reglegend">
+      <span><i class="swatch" style="background:#2ecc71"></i>비인두</span>
+      <span><i class="swatch" style="background:#f1c40f"></i>구강인두</span>
+      <span><i class="swatch" style="background:#3a9fe0"></i>하부인두</span>
+    </div>
+    <div style="font-size:9px;color:var(--text-dim);font-family:var(--mono);margin-bottom:2px;">▸ 항목 클릭 = 부위 집중 표시</div>
+    <div id="meters"></div>
+    <div class="ptitle" style="margin-top:8px;">음향 성분 → 부위</div>
+    <div id="legend" style="font-size:9px;color:var(--text-dim);line-height:1.85;font-family:var(--mono)"></div>
+    <div style="font-size:8px;color:var(--text-dim);line-height:1.5;margin-top:6px;border-top:1px solid var(--border);padding-top:8px;">
+      ※ Monson 2014 HFE 3성분 모델 기반: <b style="color:#ffd24a">조화 고역(가수포먼트)</b>→상후두관·피열후두개, <b style="color:#b44fff">호흡누출</b>→성문폐쇄(외전), <b style="color:#d35400">마찰</b>→인두. ⚠ 구개범근(모델 미포함)·성대근(갑상피열근 통합)은 비활성.
+    </div>
+  </div>
+
+  <div class="center">
+    <canvas id="gl"></canvas>
+    <div class="overlay" id="overlay"></div>
+    <div class="hint">드래그=회전 · 휠=줌 · 우클릭=이동</div>
+    <div class="gate" id="gate">
+      <h2>3D 발성근육 모델 로드</h2>
+      <p>같은 폴더의 <b style="color:#00e5ff">touchingvoice_larynx.glb</b> 를 자동으로 불러옵니다. 로컬(file://)이면 아래에서 직접 선택하세요.</p>
+      <div class="dropzone" id="dropzone">📁 &nbsp;GLB 파일 선택 / 드래그</div>
+      <input type="file" id="fileInput" accept=".glb,.gltf" style="display:none">
+      <div class="progwrap" id="progwrap"><div class="progbar" id="progbar"></div></div>
+      <div class="err" id="errmsg"></div>
+    </div>
+  </div>
+
+  <div class="panel right">
+    <div class="ptitle">주파수 스펙트럼 (하모닉=깨끗 / 잡음=메움)</div>
+    <canvas id="spec"></canvas>
+    <div class="ptitle" style="margin-top:4px;">대역별 에너지</div>
+    <div>
+      <div class="freqrow"><span class="freqlbl">300Hz</span><div class="freqbar"><div class="freqfill" id="fb-300" style="background:#3a9fe0"></div></div></div>
+      <div class="freqrow"><span class="freqlbl">600Hz</span><div class="freqbar"><div class="freqfill" id="fb-600" style="background:#f1c40f"></div></div></div>
+      <div class="freqrow"><span class="freqlbl">1kHz</span><div class="freqbar"><div class="freqfill" id="fb-1k" style="background:#3a6fff"></div></div></div>
+      <div class="freqrow"><span class="freqlbl">2.5kHz</span><div class="freqbar"><div class="freqfill" id="fb-25k" style="background:#2ecc71"></div></div></div>
+      <div class="freqrow"><span class="freqlbl">4kHz</span><div class="freqbar"><div class="freqfill" id="fb-4k" style="background:#00e5ff"></div></div></div>
+      <div class="freqrow"><span class="freqlbl">8kHz+</span><div class="freqbar"><div class="freqfill" id="fb-8k" style="background:#ff6b6b"></div></div></div>
+    </div>
+    <div class="ptitle" style="margin-top:6px;">음향 분해 (&gt;4kHz · 측정 지표)</div>
+    <div class="drow"><span>HNR (하모닉/잡음)</span><b id="d-hnr">—</b></div>
+    <div class="drow"><span>L/H @ 4kHz</span><b id="d-lh">—</b></div>
+    <div class="drow"><span>스펙트럴 틸트</span><b id="d-tilt">—</b></div>
+    <div class="drow"><span>피리폼 골 (반공명)</span><b id="d-pir">—</b></div>
+    <div style="margin-top:6px;">
+      <div class="freqrow"><span class="freqlbl wide">RING 가수F</span><div class="freqbar"><div class="freqfill" id="dr-ring" style="background:#ffd24a"></div></div></div>
+      <div class="freqrow"><span class="freqlbl wide">ADDUCT 폐쇄</span><div class="freqbar"><div class="freqfill" id="dr-adduct" style="background:#ff5c8a"></div></div></div>
+      <div class="freqrow"><span class="freqlbl wide">BREATH 누출</span><div class="freqbar"><div class="freqfill" id="dr-breath" style="background:#b44fff"></div></div></div>
+      <div class="freqrow"><span class="freqlbl wide">FRIC 마찰</span><div class="freqbar"><div class="freqfill" id="dr-fric" style="background:#d35400"></div></div></div>
+    </div>
+    <div class="ptitle" style="margin-top:6px;">카메라</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;">
+      <button class="ctrlbtn" data-cam="side">측면</button>
+      <button class="ctrlbtn" data-cam="front">전면</button>
+      <button class="ctrlbtn" data-cam="iso">아이소</button>
+      <button class="ctrlbtn" data-cam="larynx">후두 확대</button>
+    </div>
+    <button class="ctrlbtn" id="rotBtn" style="margin-top:2px;">⟳ 자동 회전 OFF</button>
+    <div class="ptitle" style="margin-top:6px;">시상면 단면도</div>
+    <button class="ctrlbtn" id="clipBtn">✂ 단면 절단 OFF</button>
+    <input type="range" class="slider" id="clipSlider" min="-2" max="2" step="0.02" value="0" disabled>
+    <button class="ctrlbtn" id="clipFlip">↔ 절단면 뒤집기</button>
+    <div class="ptitle" style="margin-top:6px;">선택 시 나머지 투명도</div>
+    <input type="range" class="slider" id="opacSlider" min="0" max="0.5" step="0.02" value="0.07">
+    <div style="margin-top:auto;border-top:1px solid var(--border);padding-top:8px;">
+      <div class="ptitle">모델</div>
+      <div id="modelInfo" style="font-size:9px;color:var(--text-dim);line-height:1.7;font-family:var(--mono)">미로드<br>Z-Anatomy / BodyParts3D (CC BY-SA 4.0)</div>
+    </div>
+  </div>
+</main>
+<div class="bottom">
+  <div class="mgroup">
+    <div class="mitem"><div class="note" id="d-note">—</div><div class="mlbl">NOTE</div></div>
+    <div class="mitem"><div class="mvalbig" id="d-f0" style="color:#00ff9d">— Hz</div><div class="mlbl">F0 피치</div></div>
+    <div class="mitem"><div class="mvalbig" id="d-rms" style="color:#00e5ff">—</div><div class="mlbl">RMS 음량</div></div>
+  </div>
+  <canvas id="wave"></canvas>
+  <div class="mgroup">
+    <div class="mitem"><div class="mvalbig" id="d-ring" style="color:#ffd24a">—</div><div class="mlbl">RING 가수포먼트</div></div>
+    <div class="mitem"><div class="mvalbig" id="d-breath" style="color:#b44fff">—</div><div class="mlbl">BREATH 호흡누출</div></div>
+    <div class="mitem"><div class="mvalbig" id="d-fric" style="color:#d35400">—</div><div class="mlbl">FRIC 마찰</div></div>
+  </div>
+</div>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+}}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+
+const hex = c => '#'+c.toString(16).padStart(6,'0');
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const smooth=(a,b,f)=>a+(b-a)*f;
+
+/* ===== MESH GROUPS =====
+   audio: which composite DRIVE lights this structure (HFE 3성분 모델).
+     ring   = 조화 고역 (가수 포먼트 / 상후두관)
+     breath = 호흡 누출 (성문 외전·간극)
+     fric   = 상성문 마찰 (인두 협착)
+     adduct = 성대 폐쇄 (내전근)
+     f0     = 피치 변화율
+     bLow/bMid/bHi = 공명 대역(인두 구역)
+   keys: normalized node-name tokens (spaces only). region:true → 색 구역. */
+const MG = {
+  naso:{color:0x2ecc71, label:'비인두',     sci:'Nasopharynx',          audio:'bHi',  region:true,
+        keys:['nasopharynx','nasal part of pharynx']},
+  oro: {color:0xf1c40f, label:'구강인두',   sci:'Oropharynx',           audio:'bMid', region:true,
+        keys:['oropharynx','oral part of pharynx']},
+  hypo:{color:0x3a9fe0, label:'하부인두',   sci:'Hypopharynx',          audio:'bLow', region:true,
+        keys:['laryngopharynx','hypopharynx','laryngeal part of pharynx']},
+  spc: {color:0x16a085, label:'상인두수축근',sci:'Superior constrictor', audio:'fric',
+        keys:['superior pharyngeal constrictor','superior constrictor']},
+  mpc: {color:0xd35400, label:'중인두수축근',sci:'Middle constrictor',   audio:'fric',
+        keys:['middle pharyngeal constrictor','middle constrictor']},
+  ipc: {color:0x2471a3, label:'하인두수축근',sci:'Inferior constrictor', audio:'fric',
+        keys:['inferior pharyngeal constrictor','inferior constrictor','thyropharyng']},
+  velum:{color:0x00e5ff,label:'구개범근',   sci:'Tensor/Levator VP',    audio:null, naMsg:'⚠ 모델 미포함',
+        keys:['levator veli palatini','tensor veli palatini']},
+  ta_te:{color:0xffd24a,label:'갑상후두개부',sci:'Thyroepiglottic',      audio:'ring',
+        keys:['thyro epiglottic','thyroepiglottic']},
+  ta:  {color:0xff5c8a, label:'갑상피열근',  sci:'Thyroarytenoid',       audio:'adduct',
+        keys:['external part of thyro arytenoid']},
+  vocalis:{color:0xff3d6e,label:'성대근',   sci:'Vocalis',              audio:null, naMsg:'⚠ 갑상피열근에 통합',
+        keys:['vocalis']},
+  cts: {color:0x00ff9d, label:'윤상갑상근 직부',sci:'Cricothyroid straight',audio:'f0',
+        keys:['straight part of cricothyroid']},
+  cto: {color:0x1abc9c, label:'윤상갑상근 사부',sci:'Cricothyroid oblique', audio:'f0',
+        keys:['oblique part of cricothyroid']},
+  lca: {color:0xff5c8a, label:'외측윤상피열근',sci:'Lat. cricoarytenoid', audio:'adduct',
+        keys:['lateral crico arytenoid']},
+  tra: {color:0xff7aa8, label:'횡피열근',   sci:'Transverse arytenoid', audio:'adduct',
+        keys:['transverse arytenoid']},
+  oba: {color:0xffe000, label:'사피열근',   sci:'Oblique arytenoid',    audio:'ring',
+        keys:['oblique arytenoid','ary epiglottic part of oblique arytenoid']},
+  pca: {color:0xb44fff, label:'후윤상피열근',sci:'Post. cricoarytenoid', audio:'breath',
+        keys:['posterior crico arytenoid']},
+  pp:  {color:0xf6b73c, label:'구개인두근', sci:'Palatopharyngeus',     audio:'ring',
+        keys:['palatopharyngeus']},
+  sp:  {color:0xe8a020, label:'경돌인두근', sci:'Stylopharyngeus',      audio:'ring',
+        keys:['stylopharyngeus']},
+};
+Object.values(MG).forEach(g=>{ g.meshes=[]; g.available=false; });
+
+/* ===== PANEL HIERARCHY ===== */
+const GROUPS = [
+  { title:'인두 구역 (Regions)', items:[
+    {ko:'비인두', en:'Nasopharynx', g:'naso'},
+    {ko:'구강인두', en:'Oropharynx', g:'oro'},
+    {ko:'하부인두', en:'Hypopharynx', g:'hypo'},
+  ]},
+  { title:'인두·구개 근육', items:[
+    {ko:'구개범긴장근', en:'Tensor Veli Palatini', g:'velum'},
+    {ko:'구개범거근', en:'Levator Veli Palatini', g:'velum'},
+    {ko:'상인두수축근', en:'Superior Constrictor', g:'spc'},
+    {ko:'중인두수축근', en:'Middle Constrictor', g:'mpc'},
+    {ko:'하인두수축근(갑상인두부)', en:'Inferior / Thyropharyngeal', g:'ipc'},
+  ]},
+  { title:'연구개·인두 거상근 (Elevators)', items:[
+    {ko:'구개인두근', en:'Palatopharyngeus', g:'pp'},
+    {ko:'경돌인두근', en:'Stylopharyngeus', g:'sp'},
+  ]},
+  { title:'성대 상부 (Superior)', items:[
+    {ko:'갑상피열근 갑상후두개부', en:'Thyroepiglottic part', g:'ta_te'},
+    {ko:'갑상피열근', en:'Thyroarytenoid (external)', g:'ta'},
+    {ko:'성대근', en:'Vocalis', g:'vocalis'},
+  ]},
+  { title:'성대 하부 (Inferior)', items:[
+    {ko:'윤상갑상근 직부', en:'Cricothyroid · straight', g:'cts'},
+    {ko:'윤상갑상근 사부', en:'Cricothyroid · oblique', g:'cto'},
+  ]},
+  { title:'성대 뒷부분 (Posterior)', items:[
+    {ko:'외측윤상피열근', en:'Lateral Cricoarytenoid', g:'lca'},
+    {ko:'횡피열근', en:'Transverse Arytenoid', g:'tra'},
+    {ko:'사피열근 (후두개부)', en:'Oblique Arytenoid', g:'oba'},
+    {ko:'후윤상피열근', en:'Posterior Cricoarytenoid', g:'pca'},
+  ]},
+];
+
+/* ===== build left panel ===== */
+const metersEl=document.getElementById('meters');
+const allItems=[];
+let itemIdx=0;
+GROUPS.forEach(grp=>{
+  metersEl.insertAdjacentHTML('beforeend',`<div class="grouphdr">${grp.title}</div>`);
+  grp.items.forEach(it=>{
+    const c=hex(MG[it.g].color); const id=itemIdx++;
+    metersEl.insertAdjacentHTML('beforeend',`
+      <div class="arow" data-g="${it.g}" data-idx="${id}">
+        <div class="top">
+          <div class="aname" style="color:${c}"><span class="seldot" style="background:${c}"></span>${it.ko}<small>${it.en}</small></div>
+          <div class="aval" id="v-${id}" style="color:${c}">—</div>
+        </div>
+        <div class="track"><div class="fill" id="b-${id}" style="background:${c};box-shadow:0 0 6px ${c}"></div></div>
+      </div>`);
+    allItems.push({g:it.g, idx:id});
+  });
+});
+const legendEl=document.getElementById('legend');
+legendEl.innerHTML=`
+  <span style="color:#ffd24a">RING</span> 조화 고역(가수포먼트) → 피열후두개·사피열근·거상근<br>
+  <span style="color:#ff5c8a">ADDUCT</span> 성대 폐쇄 → 갑상피열근·외측/횡피열근<br>
+  <span style="color:#b44fff">BREATH</span> 호흡 누출 → 후윤상피열근(외전)<br>
+  <span style="color:#d35400">FRIC</span> 상성문 마찰 → 인두수축근<br>
+  <span style="color:#00ff9d">F0</span> 피치 변화 → 윤상갑상근<br>
+  <span style="color:#2ecc71">공명대역</span> → 인두 3구역`;
+
+/* ===== AUDIO ENGINE ===== */
+let audioCtx,analyser,source,micStream,isActive=false;
+const FFT=2048; let td,fd,prevF0=0;
+const micBtn=document.getElementById('micBtn'),dot=document.getElementById('dot');
+micBtn.addEventListener('click',toggleMic);
+async function toggleMic(){
+  if(!isActive){
+    try{
+      micStream=await navigator.mediaDevices.getUserMedia({audio:true,video:false});
+      audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+      analyser=audioCtx.createAnalyser(); analyser.fftSize=FFT; analyser.smoothingTimeConstant=0.6;
+      source=audioCtx.createMediaStreamSource(micStream); source.connect(analyser);
+      td=new Uint8Array(analyser.fftSize); fd=new Uint8Array(analyser.frequencyBinCount);
+      isActive=true; micBtn.textContent='◼ 중지'; micBtn.classList.add('active'); dot.classList.add('on');
+    }catch(e){ alert('마이크 권한이 필요합니다.'); }
+  }else{
+    if(micStream)micStream.getTracks().forEach(t=>t.stop()); if(audioCtx)audioCtx.close();
+    isActive=false; micBtn.textContent='◉ 마이크 시작'; micBtn.classList.remove('active'); dot.classList.remove('on');
+  }
+}
+function bandEnergy(f,lo,hi,sr){const bin=sr/FFT,a=Math.floor(lo/bin),b=Math.min(Math.ceil(hi/bin),f.length-1);let s=0;for(let i=a;i<=b;i++)s+=f[i]/255;return s/Math.max(1,b-a+1);}
+/* autocorrelation pitch + clarity(=harmonic/noise separator, ~HNR) */
+function detectPitch(buf,sr){
+  const n=buf.length,b=new Float32Array(n);
+  let c0=0; for(let i=0;i<n;i++){b[i]=buf[i]/128-1;c0+=b[i]*b[i];}
+  const rms=Math.sqrt(c0/n);
+  if(rms<0.008)return{f0:0,clarity:0,rms};
+  const mn=Math.floor(sr/1000),mx=Math.floor(sr/60);
+  let bl=-1,bv=-1;
+  for(let lag=mn;lag<=mx;lag++){let c=0;for(let i=0;i<n-lag;i++)c+=b[i]*b[i+lag];if(c>bv){bv=c;bl=lag;}}
+  let e1=0,e2=0; for(let i=0;i<n-bl;i++){e1+=b[i]*b[i];e2+=b[i+bl]*b[i+bl];}
+  const clarity=(e1>0&&e2>0)?clamp(bv/Math.sqrt(e1*e2),0,1):0;
+  return{f0:bl>0?sr/bl:0,clarity,rms};
+}
+const NOTES=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+function freqToNote(f){if(f<60)return'—';const m=Math.round(12*Math.log2(f/440)+69);return NOTES[m%12]+(Math.floor(m/12)-1);}
+
+/* ===== THREE SETUP ===== */
+const canvas=document.getElementById('gl');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2)); renderer.setClearColor(0x05060d,1);
+renderer.outputColorSpace=THREE.SRGBColorSpace; renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.15;
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(42,1,0.05,200); camera.position.set(6.8,0.3,0.2);
+const controls=new OrbitControls(camera,renderer.domElement);
+controls.enableDamping=true; controls.dampingFactor=0.06; controls.minDistance=1.0; controls.maxDistance=40;
+scene.add(new THREE.HemisphereLight(0xffffff,0x33343c,0.95));
+scene.add(new THREE.AmbientLight(0xffffff,0.55));
+const key=new THREE.DirectionalLight(0xffffff,1.25); key.position.set(5,8,6); scene.add(key);
+const fillL=new THREE.DirectionalLight(0xfff2e6,0.6); fillL.position.set(-5,1,7); scene.add(fillL);
+const backL=new THREE.DirectionalLight(0xe8f0ff,0.4); backL.position.set(-4,-3,-6); scene.add(backL);
+const composer=new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene,camera));
+const bloom=new UnrealBloomPass(new THREE.Vector2(1,1),0.8,0.45,0.55); composer.addPass(bloom);
+let clipEnabled=false,clipPos=0,clipSign=-1;
+const clipPlane=new THREE.Plane(new THREE.Vector3(-1,0,0),0);
+function updateClip(){ if(clipSign<0){clipPlane.normal.set(-1,0,0);clipPlane.constant=clipPos;} else {clipPlane.normal.set(1,0,0);clipPlane.constant=-clipPos;} renderer.clippingPlanes=clipEnabled?[clipPlane]:[]; }
+const PCOUNT=160; const pGeo=new THREE.BufferGeometry();
+const pPos=new Float32Array(PCOUNT*3),pCol=new Float32Array(PCOUNT*3);
+for(let i=0;i<PCOUNT;i++){pPos[i*3]=(Math.random()-0.5)*0.4;pPos[i*3+1]=Math.random()*4-2;pPos[i*3+2]=(Math.random()-0.5)*0.4+0.15;pCol[i*3]=0.2;pCol[i*3+1]=0.5;pCol[i*3+2]=1;}
+pGeo.setAttribute('position',new THREE.BufferAttribute(pPos,3)); pGeo.setAttribute('color',new THREE.BufferAttribute(pCol,3));
+const pMat=new THREE.PointsMaterial({size:0.045,vertexColors:true,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false});
+scene.add(new THREE.Points(pGeo,pMat));
+
+/* ===== MODEL LOADING ===== */
+const loader=new GLTFLoader();
+const ctxMeshes=[]; let dimOpacity=0.07;
+let selected=null, modelReady=false, modelRoot=null;
+const tagDefs=[];
+const act={}; Object.keys(MG).forEach(g=>act[g]=0);
+const gate=document.getElementById('gate'),dropzone=document.getElementById('dropzone'),fileInput=document.getElementById('fileInput');
+const progwrap=document.getElementById('progwrap'),progbar=document.getElementById('progbar'),errmsg=document.getElementById('errmsg');
+const loadBadge=document.getElementById('loadBadge'),modelInfo=document.getElementById('modelInfo'),overlay=document.getElementById('overlay');
+dropzone.addEventListener('click',()=>fileInput.click());
+fileInput.addEventListener('change',e=>{if(e.target.files[0])loadFromFile(e.target.files[0]);});
+dropzone.addEventListener('dragover',e=>{e.preventDefault();dropzone.classList.add('drag');});
+dropzone.addEventListener('dragleave',()=>dropzone.classList.remove('drag'));
+dropzone.addEventListener('drop',e=>{e.preventDefault();dropzone.classList.remove('drag');const f=e.dataTransfer.files[0];if(f)loadFromFile(f);});
+function showProg(p){progwrap.style.display='block';progbar.style.width=(p*100).toFixed(0)+'%';}
+function loadFromFile(file){errmsg.textContent='';dropzone.style.display='none';showProg(0.05);loadBadge.textContent='로딩…';const r=new FileReader();r.onprogress=e=>{if(e.lengthComputable)showProg(0.05+0.55*e.loaded/e.total);};r.onload=()=>{showProg(0.7);loader.parse(r.result,'',g=>onModel(g),err=>fail(err));};r.onerror=()=>fail(r.error);r.readAsArrayBuffer(file);}
+function loadFromURL(url){showProg(0.05);loadBadge.textContent='자동 로딩…';loader.load(url,g=>onModel(g),e=>{if(e.lengthComputable)showProg(0.05+0.85*e.loaded/e.total);},()=>{progwrap.style.display='none';dropzone.style.display='block';loadBadge.textContent='모델 대기';});}
+function fail(err){console.error(err);errmsg.textContent='로드 실패 — 다른 GLB를 선택해보세요.';progwrap.style.display='none';dropzone.style.display='block';}
+
+function norm(s){return (s||'').toLowerCase().replace(/[._\-]/g,' ').replace(/\s+/g,' ').trim();}
+function searchStr(o){let names=[norm(o.name)];let p=o.parent,d=0;while(p&&d<6){names.push(norm(p.name));p=p.parent;d++;}return names.join(' ');}
+function matchGroup(s){ for(const gid in MG){ const m=MG[gid]; if(m.keys.length && m.keys.some(k=>s.includes(k))) return gid; } return null; }
+
+function realisticMat(orig,color){
+  let m=(Array.isArray(orig)?orig[0]:orig).clone();
+  m.emissive=new THREE.Color(color); m.emissiveIntensity=0;
+  m.transparent=false; m.opacity=1; m.depthWrite=true; m.side=THREE.DoubleSide;
+  return m;
+}
+function bandMat(color){
+  const c=new THREE.Color(color);
+  return new THREE.MeshStandardMaterial({color:c.clone().multiplyScalar(0.85),emissive:c.clone(),emissiveIntensity:0.4,roughness:0.5,metalness:0.1,transparent:false,opacity:1,side:THREE.DoubleSide});
+}
+
+function splitPharynxByHeight(mesh){
+  mesh.updateWorldMatrix(true,true);
+  const wm=mesh.matrixWorld, geo=mesh.geometry, pos=geo.attributes.position;
+  const idx=geo.index?geo.index.array:null;
+  const triCount=idx?idx.length/3:pos.count/3;
+  const v=new THREE.Vector3(); let yMin=Infinity,yMax=-Infinity;
+  for(let i=0;i<pos.count;i++){ v.fromBufferAttribute(pos,i).applyMatrix4(wm); if(v.y<yMin)yMin=v.y; if(v.y>yMax)yMax=v.y; }
+  const H=yMax-yMin, b1=yMin+H/3, b2=yMin+2*H/3;
+  const bands={hypo:[],oro:[],naso:[]};
+  const a=new THREE.Vector3(),b=new THREE.Vector3(),c=new THREE.Vector3();
+  for(let t=0;t<triCount;t++){
+    const i0=idx?idx[t*3]:t*3,i1=idx?idx[t*3+1]:t*3+1,i2=idx?idx[t*3+2]:t*3+2;
+    a.fromBufferAttribute(pos,i0).applyMatrix4(wm); b.fromBufferAttribute(pos,i1).applyMatrix4(wm); c.fromBufferAttribute(pos,i2).applyMatrix4(wm);
+    const cy=(a.y+b.y+c.y)/3; const k = cy>=b2?'naso' : cy>=b1?'oro':'hypo';
+    bands[k].push(a.x,a.y,a.z,b.x,b.y,b.z,c.x,c.y,c.z);
+  }
+  ['naso','oro','hypo'].forEach(k=>{ if(!bands[k].length) return;
+    const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute(bands[k],3)); g.computeVertexNormals();
+    const m=new THREE.Mesh(g,bandMat(MG[k].color)); m.frustumCulled=false; m.renderOrder=2; scene.add(m); MG[k].meshes.push(m);
+  });
+  mesh.visible=false;
+}
+
+function onModel(gltf){
+  showProg(0.9); modelRoot=gltf.scene;
+  let total=0,pharynxMesh=null;
+  modelRoot.traverse(o=>{
+    if(!o.isMesh) return; total++;
+    const s=searchStr(o); o.frustumCulled=false;
+    if(s.includes('pharynx 8')){ pharynxMesh=o; return; }
+    const gid=matchGroup(s);
+    if(gid){
+      o.material = MG[gid].region ? bandMat(MG[gid].color) : realisticMat(o.material,MG[gid].color);
+      o.renderOrder=2; MG[gid].meshes.push(o);
+    } else { const m=Array.isArray(o.material)?o.material[0]:o.material; m.transparent=false;m.opacity=1;m.depthWrite=true; o.renderOrder=1; ctxMeshes.push(o); }
+  });
+  const box=new THREE.Box3().setFromObject(modelRoot);
+  const size=box.getSize(new THREE.Vector3()), center=box.getCenter(new THREE.Vector3());
+  modelRoot.position.sub(center);
+  const scl=4.0/Math.max(size.x,size.y,size.z); modelRoot.scale.setScalar(scl);
+  scene.add(modelRoot); modelRoot.updateMatrixWorld(true);
+  const haveRegions = MG.naso.meshes.length||MG.oro.meshes.length||MG.hypo.meshes.length;
+  if(pharynxMesh && !haveRegions) splitPharynxByHeight(pharynxMesh);
+  Object.values(MG).forEach(g=>g.available=g.meshes.length>0);
+  allItems.forEach(it=>{
+    const el=metersEl.querySelector(`.arow[data-idx="${it.idx}"]`);
+    if(!MG[it.g].available){ el.classList.add('unavail'); el.querySelector('.aval').innerHTML='<span class="warn">'+(MG[it.g].naMsg||'⚠ 미포함')+'</span>'; }
+  });
+  buildTags();
+  modelReady=true; showProg(1.0); setTimeout(()=>gate.style.display='none',300);
+  const mapped=Object.values(MG).filter(g=>g.available).length;
+  loadBadge.textContent=mapped+'개 구조 활성 / '+total+' 메시';
+  modelInfo.innerHTML=total+'개 메시 · '+mapped+'개 구조 매핑<br>Z-Anatomy / BodyParts3D (CC BY-SA 4.0)';
+  setCam('side');
+}
+
+function buildTags(){
+  overlay.innerHTML=''; tagDefs.length=0;
+  for(const gid in MG){
+    const g=MG[gid]; if(!g.meshes.length) continue;
+    const acc=new THREE.Vector3(); let n=0;
+    g.meshes.forEach(m=>{ const b=new THREE.Box3().setFromObject(m); acc.add(b.getCenter(new THREE.Vector3())); n++; });
+    acc.divideScalar(n);
+    const el=document.createElement('div'); el.className='tag'; el.textContent=g.label;
+    el.style.borderColor=hex(g.color); el.style.color=hex(g.color);
+    overlay.appendChild(el); tagDefs.push({gid,pos:acc,el});
+  }
+}
+
+/* ===== selection ===== */
+let camAnim=null;
+function focusOn(pos){ const dir=camera.position.clone().sub(controls.target).normalize(); camAnim={pos:pos.clone().add(dir.multiplyScalar(2.6)),tgt:pos.clone(),t:0}; }
+function selectGroup(gid){
+  selected=(selected===gid)?null:gid;
+  document.querySelectorAll('.arow[data-g]').forEach(el=>el.classList.toggle('sel', el.dataset.g===selected));
+  tagDefs.forEach(t=>{ if(t.gid===selected){ t.el.classList.add('big'); t.el.innerHTML=`${MG[t.gid].label}<small>${MG[t.gid].sci}</small>`; } else { t.el.classList.remove('big'); t.el.textContent=MG[t.gid].label; } });
+  if(selected){ const tg=tagDefs.find(t=>t.gid===selected); if(tg) focusOn(tg.pos); }
+}
+document.querySelectorAll('.arow[data-g]').forEach(el=>{
+  el.addEventListener('click',()=>{ const g=el.dataset.g; if(!MG[g].available) return; selectGroup(g); });
+});
+
+/* ===== camera presets ===== */
+const PRESETS={ side:{pos:new THREE.Vector3(6.8,0.3,0.2),tgt:new THREE.Vector3(0,0,0)}, front:{pos:new THREE.Vector3(0.2,0.3,6.8),tgt:new THREE.Vector3(0,0,0)}, iso:{pos:new THREE.Vector3(4.8,2.6,4.8),tgt:new THREE.Vector3(0,0,0)}, larynx:{pos:new THREE.Vector3(3.0,-0.6,1.2),tgt:new THREE.Vector3(0,-0.6,0.1)} };
+function setCam(name){ const p=PRESETS[name]; if(p) camAnim={pos:p.pos.clone(),tgt:p.tgt.clone(),t:0}; }
+document.querySelectorAll('[data-cam]').forEach(b=>b.addEventListener('click',()=>setCam(b.dataset.cam)));
+controls.addEventListener('start',()=>{camAnim=null;});
+let autoRot=false; const rotBtn=document.getElementById('rotBtn');
+rotBtn.addEventListener('click',()=>{autoRot=!autoRot;controls.autoRotate=autoRot;controls.autoRotateSpeed=0.8;rotBtn.classList.toggle('on',autoRot);rotBtn.textContent='⟳ 자동 회전 '+(autoRot?'ON':'OFF');});
+const clipBtn=document.getElementById('clipBtn'),clipSlider=document.getElementById('clipSlider'),clipFlip=document.getElementById('clipFlip');
+clipBtn.addEventListener('click',()=>{clipEnabled=!clipEnabled;clipBtn.classList.toggle('on',clipEnabled);clipBtn.textContent='✂ 단면 절단 '+(clipEnabled?'ON':'OFF');clipSlider.disabled=!clipEnabled;updateClip();});
+clipSlider.addEventListener('input',()=>{clipPos=parseFloat(clipSlider.value);updateClip();});
+clipFlip.addEventListener('click',()=>{clipSign*=-1;updateClip();});
+const opacSlider=document.getElementById('opacSlider');
+opacSlider.addEventListener('input',()=>{dimOpacity=parseFloat(opacSlider.value);});
+
+/* ===== resize ===== */
+function resize(){const c=document.querySelector('.center'),w=c.clientWidth,h=c.clientHeight;renderer.setSize(w,h);composer.setSize(w,h);bloom.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();const sp=document.getElementById('spec');sp.width=sp.offsetWidth;sp.height=sp.offsetHeight;const wv=document.getElementById('wave');wv.width=wv.offsetWidth;wv.height=wv.offsetHeight;}
+window.addEventListener('resize',resize);
+
+/* ===== loop ===== */
+const tmpV=new THREE.Vector3(); const WHITE=new THREE.Color(0xffffff);
+const F={ring:0,breath:0,fric:0,adduct:0,f0rate:0,pitch:0,lowB:0,midB:0,hiB:0};
+/* ===== 감도 튜닝 ===== */
+const SENS = 1/3;                              // 전체 감도 (1.0=기존). 낮을수록 둔감
+const GAIN = { naso:1.2, cts:1.2, cto:1.2 };   // 부위별 추가 배율 (1.2 = +20%): 비인두 · 성대 하부(윤상갑상근)
+const ATK = 0.30, REL = 0.10;                  // 게이지 엔벨로프: 빠른 어택 / 느린 릴리즈 → 서스테인 유지+변화 추적
+function audioTarget(key){
+  switch(key){
+    case 'ring':return F.ring; case 'breath':return F.breath; case 'fric':return F.fric; case 'adduct':return F.adduct;
+    case 'f0':return clamp(F.pitch*0.85 + F.f0rate*3, 0, 1);   // 피치 '높이'(유지=서스테인) + 변화율(글라이드/비브라토)
+    case 'bLow':return clamp(F.lowB*3,0,1); case 'bMid':return clamp(F.midB*3,0,1); case 'bHi':return clamp(F.hiB*3.5,0,1);
+    default:return 0;
+  }
+}
+function animate(tms=0){
+  requestAnimationFrame(animate);
+  if(camAnim){camAnim.t=Math.min(1,camAnim.t+0.04);const e=1-Math.pow(1-camAnim.t,3);camera.position.lerp(camAnim.pos,0.12*(0.3+e));controls.target.lerp(camAnim.tgt,0.12*(0.3+e));if(camAnim.t>=1&&camera.position.distanceTo(camAnim.pos)<0.05)camAnim=null;}
+  controls.update();
+
+  let rms=0,f0=0,harm=0;
+  if(isActive&&analyser){
+    analyser.getByteTimeDomainData(td); analyser.getByteFrequencyData(fd); const sr=audioCtx.sampleRate, binHz=sr/FFT;
+    const pi=detectPitch(td,sr); f0=pi.f0; harm=pi.clarity; rms=pi.rms;
+    const f0rate=Math.abs(f0-prevF0)/Math.max(1,prevF0); prevF0=f0;
+    const lowB=bandEnergy(fd,300,1500,sr), midB=bandEnergy(fd,2000,4000,sr), hiB=bandEnergy(fd,4000,8000,sr), vhiB=bandEnergy(fd,8000,13000,sr);
+    const voiced=clamp(rms*5,0,1);
+    // ---- HFE 3성분 분해 ----
+    F.ring   = clamp(hiB*harm*4.0,0,1);
+    F.adduct = clamp(harm*voiced*1.3,0,1);
+    F.breath = clamp((1-harm)*voiced*(0.4+lowB*2.0)*1.6,0,1);
+    F.fric   = clamp((hiB+vhiB)*(1-harm)*3.0,0,1);
+    F.f0rate=f0rate; F.pitch=(f0>60?clamp(Math.log2(f0/80)/Math.log2(520/80),0,1):0); F.lowB=lowB; F.midB=midB; F.hiB=hiB;
+    // ---- 측정 지표 ----
+    const bin4=Math.round(4000/binHz), top=Math.min(Math.round(13000/binHz),fd.length-1);
+    let loE=0,hiE=0; for(let i=1;i<=bin4;i++)loE+=fd[i]; for(let i=bin4+1;i<=top;i++)hiE+=fd[i];
+    const LH = loE/(hiE+1e-6);
+    const lowMean=bandEnergy(fd,500,1500,sr), highMean=bandEnergy(fd,4000,6000,sr);
+    const tiltDb=20*Math.log10((lowMean+1e-4)/(highMean+1e-4));
+    const HNRdb = harm<0.999? clamp(10*Math.log10(harm/(1-harm+1e-6)),0,35):35;
+    // piriform notch ~4.4-4.5k : 4000-5000 구간 최소 bin
+    let pir='—'; if(hiB>0.02){ const a=Math.round(4000/binHz),b=Math.round(5200/binHz); let mi=a,mv=999; for(let i=a;i<=b;i++){if(fd[i]<mv){mv=fd[i];mi=i;}} pir=Math.round(mi*binHz)+' Hz'; }
+
+    document.getElementById('d-f0').textContent=f0>60?Math.round(f0)+' Hz':'—';
+    document.getElementById('d-note').textContent=freqToNote(f0);
+    document.getElementById('d-rms').textContent=rms>0.005?rms.toFixed(3):'—';
+    document.getElementById('d-ring').textContent=(F.ring*100).toFixed(0)+'%';
+    document.getElementById('d-breath').textContent=(F.breath*100).toFixed(0)+'%';
+    document.getElementById('d-fric').textContent=(F.fric*100).toFixed(0)+'%';
+    document.getElementById('d-hnr').textContent=rms>0.01?HNRdb.toFixed(1)+' dB':'—';
+    document.getElementById('d-lh').textContent=rms>0.01?LH.toFixed(2):'—';
+    document.getElementById('d-tilt').textContent=rms>0.01?tiltDb.toFixed(1)+' dB':'—';
+    document.getElementById('d-pir').textContent=pir;
+    document.getElementById('dr-ring').style.width=(F.ring*100)+'%';
+    document.getElementById('dr-adduct').style.width=(F.adduct*100)+'%';
+    document.getElementById('dr-breath').style.width=(F.breath*100)+'%';
+    document.getElementById('dr-fric').style.width=(F.fric*100)+'%';
+    document.getElementById('fb-300').style.width=clamp(bandEnergy(fd,200,400,sr)*300,0,100)+'%';
+    document.getElementById('fb-600').style.width=clamp(bandEnergy(fd,500,700,sr)*300,0,100)+'%';
+    document.getElementById('fb-1k').style.width=clamp(bandEnergy(fd,800,1200,sr)*300,0,100)+'%';
+    document.getElementById('fb-25k').style.width=clamp(bandEnergy(fd,2000,3000,sr)*400,0,100)+'%';
+    document.getElementById('fb-4k').style.width=clamp(bandEnergy(fd,3500,5000,sr)*400,0,100)+'%';
+    document.getElementById('fb-8k').style.width=clamp(bandEnergy(fd,7000,12000,sr)*500,0,100)+'%';
+    const sp=document.getElementById('spec'),sx=sp.getContext('2d');sx.fillStyle='#05060d';sx.fillRect(0,0,sp.width,sp.height);
+    const nb=Math.floor(fd.length/4),bw=sp.width/nb;for(let i=0;i<nb;i++){const vv=fd[i]/255,hh=vv*sp.height;sx.fillStyle=`hsla(${200-vv*200},100%,60%,.85)`;sx.fillRect(i*bw,sp.height-hh,Math.max(bw-.5,.5),hh);}
+    const wv=document.getElementById('wave'),wx=wv.getContext('2d');wx.fillStyle='rgba(5,6,13,.9)';wx.fillRect(0,0,wv.width,wv.height);wx.beginPath();wx.strokeStyle=rms>0.02?'#00ff9d':'#1e3060';wx.lineWidth=1.5;const slw=wv.width/td.length;let xx=0;for(let i=0;i<td.length;i++){const y=(td[i]/256)*wv.height;i?wx.lineTo(xx,y):wx.moveTo(xx,y);xx+=slw;}wx.stroke();
+  } else {
+    F.ring=F.breath=F.fric=F.adduct=F.f0rate=F.pitch=F.lowB=F.midB=F.hiB=0;
+  }
+
+  for(const gid in MG){ let tg=MG[gid].audio?audioTarget(MG[gid].audio):0; tg=clamp(tg*SENS*(GAIN[gid]||1),0,1); const t=isActive?tg:0; act[gid]=smooth(act[gid], t, t>act[gid]?ATK:REL); }
+
+  allItems.forEach(it=>{ if(!MG[it.g].available) return; const el=document.getElementById('v-'+it.idx); const bar=document.getElementById('b-'+it.idx); const pct=Math.round(act[it.g]*100); el.textContent=pct+'%'; bar.style.width=pct+'%'; });
+
+  if(modelReady){
+    const LA=0.16;
+    const ctxTarget = selected ? dimOpacity : 1.0;
+    ctxMeshes.forEach(o=>{const m=Array.isArray(o.material)?o.material[0]:o.material;m.opacity+=(ctxTarget-m.opacity)*LA;const solid=m.opacity>=0.985;m.transparent=!solid;m.depthWrite=solid;});
+    for(const gid in MG){
+      const g=MG[gid]; if(!g.meshes.length) continue;
+      const v=act[gid], base=new THREE.Color(g.color);
+      let opT,inten,col;
+      if(selected===gid){ const pulse=0.5+0.5*Math.sin(tms*0.005); opT=1; inten=2.4+pulse*1.5+v*2.0; col=base.clone().lerp(WHITE,0.2+v*0.3); }
+      else if(selected){ opT=dimOpacity; inten=g.region?0.08:0.0; col=base; }
+      else if(g.region){ opT=1; inten=0.45+v*2.6; col=base.clone().lerp(WHITE,v*0.25); }
+      else { opT=1; inten=v*3.0; col=base.clone().lerp(WHITE,v*0.3); }
+      g.meshes.forEach(m=>{const mat=m.material;mat.opacity+=(opT-mat.opacity)*LA;const solid=mat.opacity>=0.985;mat.transparent=!solid;mat.depthWrite=solid;mat.emissive.copy(col);mat.emissiveIntensity=inten;});
+    }
+  }
+
+  for(let i=0;i<PCOUNT;i++){pPos[i*3+1]+=(act.hypo*0.05+0.006);if(pPos[i*3+1]>2)pPos[i*3+1]=-2;const t=act.naso;pCol[i*3]=0.2+t*0.6;pCol[i*3+1]=0.5+t*0.3;pCol[i*3+2]=1-t*0.4;}
+  pGeo.attributes.position.needsUpdate=true; pGeo.attributes.color.needsUpdate=true;
+  pMat.opacity=modelReady?(act.hypo*0.4):0;
+
+  const w=renderer.domElement.clientWidth,h=renderer.domElement.clientHeight;
+  tagDefs.forEach(t=>{
+    tmpV.copy(t.pos).project(camera); const inFront=tmpV.z<1;
+    t.el.style.left=((tmpV.x*0.5+0.5)*w)+'px'; t.el.style.top=((-tmpV.y*0.5+0.5)*h)+'px';
+    const isSel=selected===t.gid, v=act[t.gid]||0, col=hex(MG[t.gid].color);
+    if(selected&&!isSel){ t.el.style.opacity=0; t.el.style.boxShadow='none'; }
+    else { t.el.style.opacity=inFront?(isSel?1:0.42+v*0.5):(isSel?0.8:0); t.el.style.boxShadow=(isSel||v>0.1)?`0 0 ${8+(isSel?22:v*16)}px ${col}`:'none'; }
+  });
+
+  composer.render();
+}
+
+resize(); animate();
+loadFromURL('./touchingvoice_larynx.glb');
+</script>
+</body>
+</html>
