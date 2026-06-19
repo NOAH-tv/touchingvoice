@@ -37,7 +37,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--blac
 .editor-body{padding:0 20px 20px;display:none}
 .editor.open .editor-body{display:block}
 .ed-row{display:grid;gap:10px;margin-bottom:14px}
-.ed-row.c2{grid-template-columns:repeat(2,1fr)} .ed-row.c3{grid-template-columns:repeat(3,1fr)} .ed-row.c6{grid-template-columns:repeat(6,1fr)}
+.ed-row.c2{grid-template-columns:repeat(2,1fr)} .ed-row.c3{grid-template-columns:repeat(3,1fr)} .ed-row.c6{grid-template-columns:repeat(6,1fr)} .ed-row.c7{grid-template-columns:repeat(7,1fr)}
 .ed-label{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-600);font-weight:700;margin-bottom:8px}
 .fld label{display:block;font-size:10px;color:var(--gray-600);margin-bottom:3px;line-height:1.35}
 .fld label .lh{color:var(--gray-400);font-weight:400;font-size:9px}
@@ -209,7 +209,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--blac
   .sec-title,.part-divider{break-after:avoid;page-break-after:avoid}
   img{max-width:100%}
 }
-@media(max-width:680px){.ed-row.c6,.ed-row.c3{grid-template-columns:repeat(2,1fr)}.tcard-grid{grid-template-columns:1fr}.hero-top{flex-direction:column}.hero-idx{text-align:left}}
+@media(max-width:680px){.ed-row.c6,.ed-row.c3,.ed-row.c7{grid-template-columns:repeat(2,1fr)}.tcard-grid{grid-template-columns:1fr}.hero-top{flex-direction:column}.hero-idx{text-align:left}}
 
 /* ── 음성 업로드 / 분석 UI ── */
 .upzones{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px}
@@ -410,8 +410,9 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--blac
       <div class="ai-status" id="ai-status" style="display:none"></div>
 
       <div class="ed-label">포먼트 & 바이오마커 <span style="font-weight:400;color:var(--gray-400);font-size:11px">— 음성 업로드 시 자동 입력 · 직접 수정 가능</span></div>
-      <div class="ed-row c6">
-        <div class="fld"><label>F1 <span class="lh">흉성공명·두께</span></label><div class="fld-box"><input type="number" id="i-F1" value="" placeholder="Hz"><span class="box-range" id="rng-F1"></span></div></div>
+      <div class="ed-row c7">
+        <div class="fld"><label>F0 <span class="lh">기본음정·평균</span></label><div class="fld-box"><input type="number" id="i-F0" value="" placeholder="Hz"><span class="box-range" id="rng-F0"></span></div></div>
+        <div class="fld"><label>F1 <span class="lh">저공명·두께</span></label><div class="fld-box"><input type="number" id="i-F1" value="" placeholder="Hz"><span class="box-range" id="rng-F1"></span></div></div>
         <div class="fld"><label>F2 <span class="lh">모음명료·혀공간</span></label><div class="fld-box"><input type="number" id="i-F2" value="" placeholder="Hz"><span class="box-range" id="rng-F2"></span></div></div>
         <div class="fld"><label>F3 <span class="lh">음색개성·Singer's</span></label><div class="fld-box"><input type="number" id="i-F3" value="" placeholder="Hz"><span class="box-range" id="rng-F3"></span></div></div>
         <div class="fld"><label>F4 <span class="lh">배음·성도개인차</span></label><div class="fld-box"><input type="number" id="i-F4" value="" placeholder="Hz"><span class="box-range" id="rng-F4"></span></div></div>
@@ -439,7 +440,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--blac
         <div class="fld"><label>7k</label><div class="fld-box"><input type="number" id="i-b7000" value="" placeholder="%"><span class="box-range" id="rng-b7000"></span></div></div>
         <div class="fld"><label>8k</label><div class="fld-box"><input type="number" id="i-b8000" value="" placeholder="%"><span class="box-range" id="rng-b8000"></span></div></div>
       </div>
-      <button class="gen-btn" onclick="render()">리포트 생성 / 갱신</button>
+      <button class="gen-btn" onclick="renderTVReport5Page()">터칭보이스 리포트 생성</button>
     </div>
   </div>
 
@@ -817,10 +818,11 @@ function gatherRecord(){
     date:new Date().toISOString(),
     name:v('i-name'), meta:v('i-meta'), song:v('i-song'),
     big5:{E:num('i-E'),C:num('i-C'),A:num('i-A'),N:num('i-N'),O:num('i-O'),V:num('i-V')},
-    formants:{F1:num('i-F1'),F2:num('i-F2'),F3:num('i-F3'),F4:num('i-F4'),F5:num('i-F5'),RMS:num('i-RMS'),DR:num('i-DR'),HNR:num('i-HNR'),JIT:num('i-JIT'),SHI:num('i-SHI')},
+    formants:{F0:num('i-F0'),F1:num('i-F1'),F2:num('i-F2'),F3:num('i-F3'),F4:num('i-F4'),F5:num('i-F5'),RMS:num('i-RMS'),DR:num('i-DR'),HNR:num('i-HNR'),JIT:num('i-JIT'),SHI:num('i-SHI')},
     freq:{b100:num('i-b100'),b300:num('i-b300'),b600:num('i-b600'),b1200:num('i-b1200'),b2500:num('i-b2500'),b4000:num('i-b4000'),b5500:num('i-b5500'),b7000:num('i-b7000'),b8000:num('i-b8000')},
+    advanced: (typeof audioAnalysisResult !== 'undefined' && audioAnalysisResult && audioAnalysisResult.advanced) ? JSON.parse(JSON.stringify(audioAnalysisResult.advanced)) : null,
     ranges: rangeData ? JSON.parse(JSON.stringify(rangeData)) : null,
-    source:'tv_fusion'
+    source:'tv_fusion_v2'
   };
 }
 function saveCurrentRecord(){
@@ -901,7 +903,7 @@ if(typeof document!=='undefined' && document.addEventListener) document.addEvent
 
 /* 입력 폼 각 음향 항목 아래에 측정 범위(min~max)를 표시 (범위 스팬은 동적 생성) */
 function updateFieldRanges(){
-  const keys=['F1','F2','F3','F4','F5','RMS','DR','HNR','JIT','SHI','b100','b300','b600','b1200','b2500','b4000','b5500','b7000','b8000'];
+  const keys=['F0','F1','F2','F3','F4','F5','RMS','DR','HNR','JIT','SHI','b100','b300','b600','b1200','b2500','b4000','b5500','b7000','b8000'];
   keys.forEach(k=>{
     const inp=document.getElementById('i-'+k); if(!inp||!inp.parentNode) return;
     let span=document.getElementById('rng-'+k);
@@ -1610,7 +1612,7 @@ async function performAudioAnalysis(audioBuffer){
   const fKeys=['F1','F2','F3','F4','F5','F6','F7'];
   const bandDefs=[['hz100',60,200],['hz300',200,500],['hz600',500,900],['hz1200',900,1800],['hz2500',1800,3500],['hz4000',3500,5000],['hz5500',5000,6200],['hz7000',6200,7500],['hz8000',7500,8500]];
 
-  const col={F1:[],F2:[],F3:[],F4:[],F5:[],F6:[],F7:[],HNR:[],RMSf:[]};
+  const col={F0:[],F1:[],F2:[],F3:[],F4:[],F5:[],F6:[],F7:[],HNR:[],RMSf:[],SubBass:[],SingerCluster:[],CPP:[]};
   const bcol={}; bandDefs.forEach(([k])=>bcol[k]=[]);
   const frameRmsDb=[];
   const idxOf=hz=>Math.round(hz/binHz);
@@ -1637,12 +1639,67 @@ async function performAudioAnalysis(audioBuffer){
       for(let i=lo;i<=hi;i++){ if(sm[i]>mv){ mv=sm[i]; mi=i; } }
       col[fKeys[fi]].push(Math.round(mi*binHz));
     });
+    // F0 — Harmonic Product Spectrum (k × 2k × 3k) on 70–500Hz
+    {
+      const f0Lo=Math.max(4, idxOf(70)), f0Hi=Math.min(half-1, idxOf(500));
+      let bestHPS=0, bestK=0;
+      for(let k=f0Lo; k<=f0Hi && k*3<half; k++){
+        const h=mag[k]*mag[k*2]*mag[k*3];
+        if(h>bestHPS){ bestHPS=h; bestK=k; }
+      }
+      // 유성 프레임만 (HPS가 무성 프레임의 잡음보다 충분히 큰지)
+      if(bestK>0 && mag[bestK] > mag[Math.min(half-1,idxOf(2500))]*0.5){
+        col.F0.push(Math.round(bestK*binHz));
+      }
+    }
 
     const bandE=(lo,hi)=>{ const a=idxOf(lo),b=Math.min(idxOf(hi),half-1); if(a>b) return 0; let s=0,c=0; for(let i=a;i<=b;i++){ s+=mag[i]; c++; } return c?s/c:0; };
     bandDefs.forEach(([k,lo,hi])=>bcol[k].push(bandE(lo,hi)));
 
     const harmE=bandE(80,3000), noiseE=bandE(7000,9000);
     col.HNR.push(noiseE>0? Math.min(35,Math.max(0,10*Math.log10(harmE/(noiseE+1e-10))+8)) : 20);
+
+    // === 학습용 고급 지표 (리포트 미표시) ===
+    // 절대 에너지 비율 (총 60–7000Hz 대비)
+    const totE = bandE(60, 7000) * (idxOf(7000) - idxOf(60) + 1);  // 적분 근사
+    if(totE > 1e-9){
+      // Sub-bass <150Hz 절대 비율 (흉성 토대 정밀 측정)
+      const subE = bandE(20, 150) * (idxOf(150) - idxOf(20) + 1);
+      col.SubBass.push(100 * subE / totE);
+      // Singer's formant cluster 2.8–3.4kHz 절대 비율 (상단 광채 정밀)
+      const singE = bandE(2800, 3400) * (idxOf(3400) - idxOf(2800) + 1);
+      col.SingerCluster.push(100 * singE / totE);
+    }
+
+    // CPP — Cepstral Peak Prominence (톤 맑기·성문 폐쇄 표준 지표)
+    try {
+      const N = frameSize;
+      const cre = new Float64Array(N), cim = new Float64Array(N);
+      // log-magnitude를 대칭 배치 (cepstrum 정의)
+      for(let i=0; i<half; i++){
+        const v = Math.log(Math.max(mag[i], 1e-10));
+        cre[i] = v;
+        cre[N-1-i] = v;
+      }
+      fftRadix2(cre, cim);  // 결과 cre = cepstrum (실수부)
+      // F0 주기에 해당하는 quefrency 범위 (70~500Hz)
+      const minQ = Math.max(2, Math.floor(sampleRate / 500));
+      const maxQ = Math.min(N/2 - 1, Math.floor(sampleRate / 70));
+      let peakQ = minQ, peakV = -Infinity;
+      for(let i=minQ; i<=maxQ; i++){ if(cre[i] > peakV){ peakV = cre[i]; peakQ = i; } }
+      // 선형 회귀로 baseline 산출
+      let sx=0, sy=0, sxy=0, sxx=0, nq=0;
+      for(let i=minQ; i<=maxQ; i++){ sx+=i; sy+=cre[i]; sxy+=i*cre[i]; sxx+=i*i; nq++; }
+      const denom = nq*sxx - sx*sx;
+      if(denom !== 0 && nq > 2){
+        const slope = (nq*sxy - sx*sy) / denom;
+        const intercept = (sy - slope*sx) / nq;
+        const baseline = slope * peakQ + intercept;
+        const cppLog = (peakV - baseline) / N;  // 정규화 (forward FFT 결과를 IFFT 스케일로)
+        const cppDb = cppLog * 20 / Math.LN10;
+        if(isFinite(cppDb) && cppDb > 0 && cppDb < 60) col.CPP.push(cppDb);
+      }
+    } catch(e){ /* 안전망 */ }
   }
 
   // DR (프레임 RMS dB의 p10~p90)
@@ -1664,6 +1721,19 @@ async function performAudioAnalysis(audioBuffer){
   }
 
   const stat=arr=>({ med:_pct(arr,0.5), min:_pct(arr,0.1), max:_pct(arr,0.9) });
+  const F0s=col.F0.length?stat(col.F0):{med:0,min:0,max:0};
+  // F0 통계 확장 (mean·SD·반음폭)
+  let F0_mean=0, F0_sd=0, F0_range_st=0;
+  if(col.F0.length > 1){
+    F0_mean = col.F0.reduce((a,b)=>a+b,0) / col.F0.length;
+    F0_sd = Math.sqrt(col.F0.reduce((s,v)=>s+(v-F0_mean)**2, 0) / (col.F0.length-1));
+    const f0Min = Math.min(...col.F0), f0Max = Math.max(...col.F0);
+    if(f0Min > 0) F0_range_st = 12 * Math.log2(f0Max / f0Min);
+  }
+  // 신규 지표 통계
+  const SubBassS = col.SubBass.length ? stat(col.SubBass) : {med:0};
+  const SingerClusterS = col.SingerCluster.length ? stat(col.SingerCluster) : {med:0};
+  const CPPS = col.CPP.length ? stat(col.CPP) : {med:0};
   const F1s=stat(col.F1),F2s=stat(col.F2),F3s=stat(col.F3),F4s=stat(col.F4),F5s=stat(col.F5),F6s=stat(col.F6),F7s=stat(col.F7);
   const HNRs=stat(col.HNR), RMSs=stat(col.RMSf);
   const JITs=jitArr.length?stat(jitArr):{med:0,min:0,max:0};
@@ -1681,13 +1751,30 @@ async function performAudioAnalysis(audioBuffer){
 
   const r1=x=>parseFloat(x.toFixed(1)), r2=x=>parseFloat(x.toFixed(2)), r4=x=>parseFloat(x.toFixed(4)), ri=x=>Math.round(x);
 
+  // VTL 추정 — F3·F4·F5의 quarter-wave 공식 평균 (c=34000 cm/s)
+  const vtlEstimates = [];
+  if(F3s.med > 0) vtlEstimates.push(5*34000/(4*F3s.med));  // F3 = 5th quarter-wave
+  if(F4s.med > 0) vtlEstimates.push(7*34000/(4*F4s.med));
+  if(F5s.med > 0) vtlEstimates.push(9*34000/(4*F5s.med));
+  const VTL_cm = vtlEstimates.length ? vtlEstimates.reduce((a,b)=>a+b,0)/vtlEstimates.length : null;
+
   return {
     rms:r4(RMSs.med), dr:r1(dr), hnr:r1(HNRs.med),
     jitter:r2(JITs.med), shimmer:r2(SHIs.med),
-    F1:ri(F1s.med),F2:ri(F2s.med),F3:ri(F3s.med),F4:ri(F4s.med),F5:ri(F5s.med),F6:ri(F6s.med),F7:ri(F7s.med),
+    F0:F0s.med?ri(F0s.med):null,F1:ri(F1s.med),F2:ri(F2s.med),F3:ri(F3s.med),F4:ri(F4s.med),F5:ri(F5s.med),F6:ri(F6s.med),F7:ri(F7s.med),
     freqPct,
+    advanced: {
+      subBass: SubBassS.med ? r2(SubBassS.med) : null,
+      singerCluster: SingerClusterS.med ? r2(SingerClusterS.med) : null,
+      VTL: VTL_cm ? r1(VTL_cm) : null,
+      F0_mean: F0_mean ? r1(F0_mean) : null,
+      F0_sd: F0_sd ? r1(F0_sd) : null,
+      F0_range_st: F0_range_st ? r1(F0_range_st) : null,
+      CPP: CPPS.med ? r1(CPPS.med) : null,
+      _meta: 'CPP는 1차 구현 — Praat 검증 후 학습 사용 권장'
+    },
     ranges:{
-      F1:{min:ri(F1s.min),max:ri(F1s.max)}, F2:{min:ri(F2s.min),max:ri(F2s.max)}, F3:{min:ri(F3s.min),max:ri(F3s.max)},
+      F0:{min:F0s.med?ri(F0s.min):0,max:F0s.med?ri(F0s.max):0}, F1:{min:ri(F1s.min),max:ri(F1s.max)}, F2:{min:ri(F2s.min),max:ri(F2s.max)}, F3:{min:ri(F3s.min),max:ri(F3s.max)},
       F4:{min:ri(F4s.min),max:ri(F4s.max)}, F5:{min:ri(F5s.min),max:ri(F5s.max)},
       RMS:{min:r4(RMSs.min),max:r4(RMSs.max)}, DR:{min:r1(dr),max:r1(dr)}, HNR:{min:r1(HNRs.min),max:r1(HNRs.max)},
       JIT:{min:r2(JITs.min),max:r2(JITs.max)}, SHI:{min:r2(SHIs.min),max:r2(SHIs.max)},
@@ -1700,24 +1787,25 @@ async function performAudioAnalysis(audioBuffer){
 
 function formatAudioResult(r) {
   return [
-    `F1:${r.F1}Hz  F2:${r.F2}Hz  F3:${r.F3}Hz  F4:${r.F4}Hz`,
-    `F5:${r.F5}Hz  F6:${r.F6}Hz  F7:${r.F7}Hz`,
+    `F0:${r.F0?r.F0+'Hz':'—'}  F1:${r.F1}Hz  F2:${r.F2}Hz  F3:${r.F3}Hz`,
+    `F4:${r.F4}Hz  F5:${r.F5}Hz  F6:${r.F6}Hz  F7:${r.F7}Hz`,
     `RMS:${r.rms}  DR:${r.dr}dB  HNR:${r.hnr}dB  JIT:${r.jitter}%  SHI:${r.shimmer}%`,
     `흉성:${r.freqPct.hz100}%  온기:${r.freqPct.hz300}%  말소리:${r.freqPct.hz600}%  명료도:${r.freqPct.hz1200}%`,
     `존재감:${r.freqPct.hz2500}%  공기감:${r.freqPct.hz4000}%  고배음:${r.freqPct.hz5500}%  광채:${r.freqPct.hz7000}%  초고음:${r.freqPct.hz8000}%`,
-  ].join('<br>');
+    r.advanced ? `<span style="color:#7d6f99;font-size:11px">▸ 학습용 고급지표 — Sub-bass(절대):${r.advanced.subBass??'—'}%  Singer's cluster:${r.advanced.singerCluster??'—'}%  VTL:${r.advanced.VTL??'—'}cm  F0(mean±sd):${r.advanced.F0_mean??'—'}±${r.advanced.F0_sd??'—'}Hz  음역:${r.advanced.F0_range_st??'—'}반음  CPP:${r.advanced.CPP??'—'}dB</span>` : ''
+  ].filter(Boolean).join('<br>');
 }
 
 /* 분석 결과 → 융합 리포트 입력칸 자동 채움 → 렌더 */
 function applyAudioResult(){
   const r=audioAnalysisResult; if(!r) return;
-  const fmap={F1:r.F1,F2:r.F2,F3:r.F3,F4:r.F4,F5:r.F5,RMS:r.rms,DR:r.dr,HNR:r.hnr,JIT:r.jitter,SHI:r.shimmer};
+  const fmap={F0:r.F0,F1:r.F1,F2:r.F2,F3:r.F3,F4:r.F4,F5:r.F5,RMS:r.rms,DR:r.dr,HNR:r.hnr,JIT:r.jitter,SHI:r.shimmer};
   for(const[k,v] of Object.entries(fmap)){ const el=document.getElementById('i-'+k); if(el&&v!==undefined&&v!==null) el.value=v; }
   for(const[k,v] of Object.entries(r.freqPct||{})){ const el=document.getElementById('i-b'+k.replace('hz','')); if(el) el.value=v; }
   // 범위(min/max) 저장 — 리포트 표시 + 천장 해석에 사용
   rangeData={};
   if(r.ranges){
-    ['F1','F2','F3','F4','F5','RMS','DR','HNR','JIT','SHI'].forEach(k=>{ if(r.ranges[k]) rangeData[k]={min:r.ranges[k].min,max:r.ranges[k].max}; });
+    ['F0','F1','F2','F3','F4','F5','RMS','DR','HNR','JIT','SHI'].forEach(k=>{ if(r.ranges[k]) rangeData[k]={min:r.ranges[k].min,max:r.ranges[k].max}; });
     if(r.ranges.bands) for(const[k,v] of Object.entries(r.ranges.bands)){ rangeData['b'+k.replace('hz','')]={min:v.min,max:v.max}; }
   }
   render();
@@ -1837,6 +1925,986 @@ let _renderT; document.getElementById('editor').addEventListener('input',(e)=>{
 });
 
 render();
+
+
+/* ═══════════ TV 5장 리포트 모듈 (정식 출력) ═══════════ */
+/* ═══════════════════════════════════════════════════════════════════
+   TouchingVoice 5장 정식 리포트 + 발달도 게이지 모듈
+   - 보컬→BIG5 투사 (heuristic, 분석기 voiceScores와 별개)
+   - 6 발달도 게이지 (저음·중음·고음·호흡·톤·표현)
+   - 5장 HTML 문서 생성 → 새 창으로 열어 인쇄(PDF) 가능
+═══════════════════════════════════════════════════════════════════ */
+(function(){
+  const _v = id => { const e=document.getElementById(id); const x=e&&e.value!==''?+e.value:NaN; return isNaN(x)?null:x; };
+  const _t = id => { const e=document.getElementById(id); return e?(e.value||'').trim():''; };
+  const clamp = (lo,v,hi) => Math.max(lo, Math.min(hi, v));
+  const round = Math.round;
+
+  // ────────── 보컬→BIG5 투사 (acoustic markers → behavioral big5) ──────────
+  function projectVoice(big5, f, q){
+    const RMS=f.RMS||0, DR=f.DR||0, HNR=f.HNR||0, JIT=f.JIT||0, SHI=f.SHI||0;
+    const F2=f.F2||0, F3=f.F3||0;
+    const b100=q.b100||0, b300=q.b300||0, b600=q.b600||0,
+          b1200=q.b1200||0, b2500=q.b2500||0, b4000=q.b4000||0,
+          b5500=q.b5500||0, b7000=q.b7000||0;
+
+    // E_voice: 음량 + 다이내믹 + 전방감
+    let E = 50;
+    if(RMS) E += clamp(-30, 30, 30*(RMS-0.025)/0.04);
+    if(DR)  E += clamp(-10, 15, 1.5*(DR-15));
+    if(b2500||b4000) E += clamp(-10, 12, 0.18*((b2500+b4000)-50));
+    E = clamp(0, 100, E);
+
+    // C_voice: 안정성 (낮은 jit/shi + 깨끗한 HNR)
+    let C = 50;
+    if(JIT) C += clamp(-25, 25, 4*(2.0 - JIT));
+    if(SHI) C += clamp(-15, 15, 3*(4.0 - SHI));
+    if(HNR) C += clamp(-10, 12, 1.0*(HNR-18));
+    C = clamp(0, 100, C);
+
+    // A_voice: 따뜻함 + 톤 맑기 + 과압박 페널티
+    let A = 50;
+    if(b300||b600) A += clamp(-15, 22, 0.4*((b300+b600)-50));
+    if(HNR) A += clamp(-10, 15, 1.2*(HNR-18));
+    if(RMS>0.08) A -= clamp(0, 30, 250*(RMS-0.08));
+    A = clamp(0, 100, A);
+
+    // N_voice: 긴장·불안정
+    let N = 35;
+    if(JIT) N += clamp(-10, 30, 10*(JIT-1.0));
+    if(SHI) N += clamp(-5, 25, 5*(SHI-3.0));
+    if(RMS>0.06) N += clamp(0, 30, 300*(RMS-0.06));
+    if(HNR>22) N -= clamp(0, 12, 1.0*(HNR-22));
+    N = clamp(0, 100, N);
+
+    // O_voice: 색·변주
+    let O = 45;
+    if(b4000||b5500||b7000) O += clamp(-15, 22, 0.25*((b4000+b5500+b7000)-30));
+    if(F3>=3000) O += 12;
+    if(F2>1300) O += clamp(0, 10, 0.025*(F2-1300));
+    O = clamp(0, 100, O);
+
+    return {E:round(E), C:round(C), A:round(A), N:round(N), O:round(O)};
+  }
+
+  // ────────── 6 발달도 게이지 (절대 기준 대비) ──────────
+  function computeGauges(big5, voice, f, q, adv){
+    const F1=f.F1||0, F2=f.F2||0, F3=f.F3||0;
+    const RMS=f.RMS||0, DR=f.DR||0, HNR=f.HNR||0, JIT=f.JIT||0, SHI=f.SHI||0;
+    const b100=q.b100||0, b300=q.b300||0, b600=q.b600||0, b1200=q.b1200||0,
+          b2500=q.b2500||0, b4000=q.b4000||0;
+
+    // 흉성 토대 (저음): sub-bass 절대값 우선, 없으면 F1 + 저역 상대값
+    let bass;
+    if(adv && adv.subBass != null){
+      // 절대 sub-bass 비율 기준 (1% 이하 = 미발달, 5% = 발달중, 10%+ = 우수)
+      const sb = adv.subBass;
+      if(sb < 0.5) bass = 20 + sb*10;          // 0.5% 미만 = 미형성
+      else if(sb < 3) bass = 25 + (sb-0.5)*8;  // 0.5~3% = 시작
+      else if(sb < 7) bass = 45 + (sb-3)*5;    // 3~7% = 발달중
+      else if(sb < 12) bass = 65 + (sb-7)*4;   // 7~12% = 안정
+      else bass = 85 + Math.min(15, (sb-12)*2); // 12%+ = 우수
+      // F1로 보정 (낮은 F1 + sub-bass도 매우 낮을 때만 페널티)
+      if(F1 && F1 < 300 && adv.subBass < 0.3) bass -= 8;
+      else if(F1 && F1 < 280) bass -= 5;
+    } else {
+      // sub-bass 측정 없음 — F1과 b100 상대값으로 추정 (정밀도 ↓)
+      bass = 30;
+      if(F1){
+        if(F1 < 300) bass = 25 + (F1-200)*0.20;
+        else if(F1 <= 700) bass = 50 + (F1-400)*0.10;
+        else bass = 70;
+      }
+      if(b100) bass = bass*0.55 + (b100*0.45);
+    }
+    bass = clamp(0, 100, bass);
+
+    // 중역 공명 (중음): F2 + 말소리·명료
+    let mid = 50;
+    if(F2){
+      if(F2 < 900) mid = 30 + (F2-700)*0.10;
+      else if(F2 <= 1800) mid = 50 + (F2-900)*0.033;
+      else mid = 80;
+    }
+    if(b600||b1200) mid = mid*0.5 + ((b600+b1200)/2)*0.5;
+    mid = clamp(0, 100, mid);
+
+    // 상단 광채 (고음): Singer's cluster 절대값 우선, 없으면 F3 + 상대값
+    let top;
+    if(adv && adv.singerCluster != null){
+      const sc = adv.singerCluster;
+      // 2.8-3.4kHz 응집: 1% 미만 = 미형성, 2-4% = 발달중, 4%+ = 안정
+      if(sc < 0.5) top = 15 + sc*20;
+      else if(sc < 1.5) top = 25 + (sc-0.5)*15;
+      else if(sc < 3) top = 40 + (sc-1.5)*10;
+      else if(sc < 5) top = 55 + (sc-3)*7;
+      else top = 70 + Math.min(20, (sc-5)*3);
+      // F3가 Singer's 영역 도달시 보너스
+      if(F3 >= 3000) top += 5;
+    } else {
+      top = 30;
+      if(F3 >= 3000) top = 55;
+      else if(F3 >= 2700) top = 45;
+      else if(F3) top = 30;
+      if(b2500||b4000) top = top*0.5 + ((b2500+b4000)/2)*0.5;
+    }
+    top = clamp(0, 100, top);
+
+    // 호흡 지지·다이내믹: DR + RMS 조절
+    let breath = 50;
+    if(DR) breath = 30 + (DR-10)*4;
+    if(RMS > 0.06) breath -= Math.min(35, (RMS-0.06)*250);
+    if(RMS && RMS < 0.01) breath -= 15;
+    breath = clamp(0, 100, breath);
+
+    // 톤 맑기·성대 폐쇄: HNR 우선, JIT/SHI는 거친 추정 (캡 15점)
+    let clarity = 50;
+    if(HNR) clarity = (HNR-10)*7;  // HNR 15=35, 20=70, 23=91
+    // JIT/SHI 페널티 — 분석기 추정 거칠어 임계값 ↑, 캡 15점
+    let jsPenalty = 0;
+    if(HNR < 20){
+      if(JIT > 3) jsPenalty += (JIT-3)*3;     // JIT 3 초과만 (분석기 추정 신뢰 한도)
+      if(SHI > 6) jsPenalty += (SHI-6)*2;     // SHI 6 초과만
+    } else {
+      if(JIT > 4) jsPenalty += (JIT-4)*2;
+      if(SHI > 8) jsPenalty += (SHI-8)*1.5;
+    }
+    jsPenalty = Math.min(jsPenalty, 15);      // 최대 15점만 차감
+    clarity -= jsPenalty;
+    clarity = clamp(0, 100, clarity);
+
+    // 표현력·무대성: voice E + A (성향보다 과발현시 가산)
+    let expr = (voice.E + voice.A)/2;
+    if(voice.E - big5.E > 10) expr += 5;
+    if(voice.A - big5.A > 10) expr += 5;
+    expr = clamp(0, 100, expr);
+
+    return {
+      bass: round(bass), mid: round(mid), top: round(top),
+      breath: round(breath), clarity: round(clarity), expr: round(expr)
+    };
+  }
+
+  function stageOf(s){
+    if(s<25) return ['s1','미형성'];
+    if(s<45) return ['s2','시작'];
+    if(s<65) return ['s3','발달 중'];
+    if(s<85) return ['s4','안정'];
+    return ['s5','우수'];
+  }
+
+  // ────────── 정합도 + 게이지 큐 생성 ──────────
+  function alignScore(big5, voice){
+    const traits=['E','C','A','N','O'];
+    let sum=0, n=0;
+    traits.forEach(t=>{
+      if(big5[t]!=null && voice[t]!=null){
+        sum += Math.abs(big5[t]-voice[t]); n++;
+      }
+    });
+    if(!n) return null;
+    const avgGap = sum/n;
+    return clamp(0, 100, round(100 - avgGap*1.0));  // gap 0 → 100, gap 25 → 75
+  }
+
+  function gaugeCues(f, q, voice, big5){
+    const F1=f.F1, F2=f.F2, F3=f.F3, RMS=f.RMS, DR=f.DR, HNR=f.HNR, JIT=f.JIT, SHI=f.SHI;
+    const cue = arr => arr.filter(Boolean).join(' · ');
+    return {
+      bass:    cue([F1?`F1 ${F1}Hz${F1<350?' 낮음':F1<450?'':' 적정'}`:null,
+                    q.b100?`저역 ${q.b100}%`:null,
+                    'sub-bass 정밀 측정 권장']),
+      mid:     cue([F2?`F2 ${F2}Hz${F2<1000?' 좁음':F2<1500?'':' 적정'}`:null,
+                    q.b600?`말소리 ${q.b600}%`:null,
+                    q.b1200?`명료 ${q.b1200}%`:null]),
+      top:     cue([F3?`F3 ${F3}Hz${F3>=3000?" Singer's 도달":' 경계'}`:null,
+                    q.b2500?`존재 ${q.b2500}%`:null,
+                    q.b4000?`공기 ${q.b4000}%`:null]),
+      breath:  cue([DR?`DR ${DR}dB${DR>=20?' 우수':DR>=14?'':' 낮음'}`:null,
+                    RMS?`RMS ${RMS}${RMS>0.08?' <b style="color:#D05B57">과잉</b>':RMS<0.015?' 낮음':' 적정'}`:null]),
+      clarity: cue([HNR?`HNR ${HNR}${HNR>=20?' 우수':HNR<15?' <b style="color:#D05B57">낮음</b>':' 보통'}`:null,
+                    JIT?`Jitter ${JIT}%${JIT>2?' ↑':''}`:null,
+                    SHI?`Shimmer ${SHI}%${SHI>6?' ↑':''}`:null]),
+      expr:    cue([`외향 음성 ${voice.E}${voice.E-big5.E>10?' (과발현)':voice.E-big5.E<-15?' (미발현)':''}`,
+                    `우호 음성 ${voice.A}${voice.A-big5.A>10?' (과발현)':voice.A-big5.A<-15?' (미발현)':''}`])
+    };
+  }
+
+  // ────────── 서사 생성 (heuristic templates) ──────────
+  // ═══════════════════════════════════════════════════════════════
+  //  5 성격 차원 해석 — 각 BIG5 trait의 음향 근거 + 임상 의미 생성
+  // ═══════════════════════════════════════════════════════════════
+  function composeTraitInterpretations(big5, voice, f, q){
+    const RMS = f.RMS||0, DR = f.DR||0, HNR = f.HNR||0, JIT = f.JIT||0, SHI = f.SHI||0;
+    const F2 = f.F2||0, F3 = f.F3||0;
+    const b300 = q.b300||0, b600 = q.b600||0, b1200 = q.b1200||0,
+          b2500 = q.b2500||0, b4000 = q.b4000||0,
+          b5500 = q.b5500||0, b7000 = q.b7000||0;
+    const traits = [];
+
+    // ─── E 외향성 ───
+    if(big5.E != null && voice.E != null){
+      const gap = big5.E - voice.E;
+      const forwardE = b2500||b4000 ? Math.round((b2500+b4000)/2) : null;
+      const basis = `RMS ${RMS||'—'}${RMS?(RMS>0.08?' 과잉':RMS>0.04?' 적정':' 낮음'):''} · DR ${DR||'—'}${DR?(DR>=20?'dB 우수':DR>=14?'dB 보통':'dB 낮음'):''}${forwardE?` · 전방감(2.5k+4k) ${forwardE}%`:''}`;
+      let interp;
+      if(gap >= 20) interp = `<b>내적 활성 ↔ 표현 보수적</b>. 음량(RMS)·다이내믹·전방 에너지가 자기 평가보다 작음 — <b>안에 있고 밖으로 덜 나오는 잠재형</b>. 표현 개방 훈련이 다음 단계.`;
+      else if(gap >= 10) interp = `<b>외향 잠재 우위</b>. 자기 평가(E ${big5.E})에 비해 음성 발현은 ${voice.E} — 약간의 미발현 영역. 표현·존재감 보강 권장.`;
+      else if(gap <= -15) interp = `<b>외향 음성 과발현</b>. 음성으로 더 큰 사람으로 보임. ${RMS>0.06?'단 RMS 과잉 동반 — <b>보상적 음량</b> 가능성 (지속력 점검).':'균형 잡힌 외향 발현 — 강점.'}`;
+      else if(gap <= -8) interp = `<b>음성으로 더 외향적</b>. 자기 평가보다 표현이 크게 나옴 — 무대성·존재감 강점.`;
+      else interp = `성향과 음성이 정렬 — 표현이 자연스럽게 흐름.`;
+      traits.push({key:'E', name:'외향성', gap, p:big5.E, v:voice.E,
+                   formula:'음량 + 다이내믹 + 전방 에너지', basis, interp});
+    }
+
+    // ─── C 성실성 ───
+    if(big5.C != null && voice.C != null){
+      const gap = big5.C - voice.C;
+      const jitTag = !JIT ? '—' : (JIT<1.5?` ${JIT}% 안정`:JIT<3?` ${JIT}% 보통`:` ${JIT}% ↑`);
+      const shiTag = !SHI ? '—' : (SHI<4?` ${SHI}% 안정`:SHI<6?` ${SHI}% 보통`:` ${SHI}% ↑`);
+      const hnrTag = !HNR ? '—' : (HNR>=20?` ${HNR} 우수`:HNR>=15?` ${HNR} 보통`:` ${HNR} 낮음`);
+      const basis = `Jitter${jitTag} · Shimmer${shiTag} · HNR${hnrTag}`;
+      let interp;
+      if(gap >= 25) interp = `<b>통제 의지 ↔ 신체 통제 기술 미달</b>. 자기조절 욕구는 강한데 음성 안정성(Jitter·Shimmer)이 따라가지 못함 — <b>의지로 누르는 패턴</b>. 코칭으로 빠르게 개선 가능한 유형 (1~2개월).`;
+      else if(gap >= 12) interp = `<b>자기조절 ↔ 음성 통제 미세 갭</b>. 성향만큼의 안정성이 음성에 아직 — 발성 기술 다듬으면 정렬.`;
+      else if(gap <= -10) interp = `<b>훈련된 안정성</b>. 음성이 성향보다 안정적 — 발성 기술이 이미 다져진 상태. 강점.`;
+      else interp = `성향과 음성 통제력이 비슷한 수준으로 정렬.`;
+      traits.push({key:'C', name:'성실성', gap, p:big5.C, v:voice.C,
+                   formula:'음정 안정 + 음량 안정 + 톤 깨끗', basis, interp});
+    }
+
+    // ─── A 우호성 ───
+    if(big5.A != null && voice.A != null){
+      const gap = big5.A - voice.A;
+      const warmth = b300+b600 > 0 ? Math.round((b300+b600)/2) : null;
+      const overpressP = RMS > 0.08;
+      const basis = `따뜻한 대역(300+600Hz) ${warmth!=null?warmth+'%':'—'} · HNR ${HNR||'—'}${overpressP?' · <span style="color:#D05B57">RMS 과잉 페널티</span>':''}`;
+      let interp;
+      if(gap >= 15) interp = `<b>내적 우호 ↔ 따뜻함이 소리에 덜 실림</b>. 마음은 따뜻한데 음성으로는 덜 전달 — 톤 조절·온기 대역(300~600Hz) 보강 훈련 권장.`;
+      else if(gap <= -10) interp = `<b>따뜻함 강점</b>. 음성으로 자기 평가보다 더 큰 우호성이 드러남 — 사람을 향한 진심이 그대로 소리에 실립니다. 코칭·교육·돌봄·세일즈에서 즉시 자산.`;
+      else if(gap <= -5) interp = `<b>음성에 따뜻함이 약간 더 강하게 발현</b> — 사람을 향한 결이 자연스럽게 드러남.`;
+      else interp = `따뜻함이 자연스럽게 음성에 실림 — 정렬 상태.`;
+      traits.push({key:'A', name:'우호성', gap, p:big5.A, v:voice.A,
+                   formula:'따뜻한 대역 + 톤 맑기 − 과압박', basis, interp});
+    }
+
+    // ─── N 신경성 ───
+    if(big5.N != null && voice.N != null){
+      const gap = big5.N - voice.N;
+      const tension = RMS > 0.06 ? ` · <span style="color:#D05B57">RMS 과잉(긴장)</span>` : '';
+      const basis = `Jitter ${JIT||'—'}% · Shimmer ${SHI||'—'}%${tension} · HNR ${HNR||'—'}`;
+      let interp;
+      if(gap <= -25) interp = `<b>안정 기질 ↔ 음성 긴장 ↑↑</b>. <b>번아웃 선행 신호</b>의 강한 패턴 — 기질은 안정적인데 음성에 누적 피로가 큼. 회복과 호흡 지지가 시급. <b>기질이 아니라 발성 습관</b>입니다.`;
+      else if(gap <= -15) interp = `<b>기질보다 큰 음성 긴장</b>. 정서적 불안이 아닌 발성 기술의 보정점 — 1~2개월 안에 풀리는 <b>습관 영역</b>. 호흡 지지 훈련 권장.`;
+      else if(gap >= 20) interp = `<b>예민 기질 ↔ 음성은 안정</b>. 자기 인식상 예민하지만 음성으로는 안정적으로 드러남 — <b>자기 조절이 잘되는 케이스</b>. 내적 자원이 충분.`;
+      else if(gap >= 10) interp = `<b>예민함이 음성으로 덜 드러남</b> — 자기 조절이 일정 부분 작동.`;
+      else interp = `기질과 음성 긴장도가 정렬 — 일관된 상태.`;
+      traits.push({key:'N', name:'신경성', gap, p:big5.N, v:voice.N,
+                   formula:'음정·음량 떨림 + 긴장(RMS) − 톤 맑기', basis, interp});
+    }
+
+    // ─── O 개방성 ───
+    if(big5.O != null && voice.O != null){
+      const gap = big5.O - voice.O;
+      const topColor = (b4000+b5500+b7000) > 0 ? Math.round((b4000+b5500+b7000)/3) : null;
+      const singerOk = F3 >= 3000;
+      const vowelSpace = F2 > 1300 ? `F2 ${F2}Hz (모음 공간 ↑)` : F2 ? `F2 ${F2}Hz` : '';
+      const basis = `상단 색(4-7k) ${topColor!=null?topColor+'%':'—'} · F3 ${F3||'—'}${singerOk?'Hz Singer\'s 도달':F3?'Hz 미도달':''}${vowelSpace?' · '+vowelSpace:''}`;
+      let interp;
+      if(gap >= 20) interp = `<b>탐구 잠재 ↔ 색이 안에 잠김</b>. 풍부한 개방성·탐구심을 가졌는데 음성으론 덜 표현 — <b>없는 게 아니라 아직 안 꺼낸 색</b>. 상단 광채(2.8~3.4kHz 응집) + 음색 다양화로 잠재 발현.`;
+      else if(gap >= 10) interp = `<b>잠재 색이 일부 잠겨 있음</b>. 음색 다양화 훈련으로 발현 폭 확대 가능.`;
+      else if(gap <= -15) interp = `<b>탐구·색이 음성으로 자유롭게 표현</b>. 자기 평가보다 더 풍부한 색이 드러남 — 음색 다양성·창의 표현이 강점.`;
+      else interp = `개방성이 음성에 적절히 반영 — 정렬 상태.`;
+      traits.push({key:'O', name:'개방성', gap, p:big5.O, v:voice.O,
+                   formula:'상단 색 + F3 Singer\'s + 모음 공간', basis, interp});
+    }
+
+    return traits;
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  //  5 직무역량 해석 — HR 관점의 발현 해석 (잠재 vs 발현)
+  // ═══════════════════════════════════════════════════════════════
+  function composeCompetencyInterpretations(big5, voice, f, q){
+    const RMS = f.RMS||0, DR = f.DR||0, HNR = f.HNR||0, JIT = f.JIT||0, SHI = f.SHI||0;
+    const F2 = f.F2||0, F3 = f.F3||0;
+    const b300 = q.b300||0, b600 = q.b600||0,
+          b2500 = q.b2500||0, b4000 = q.b4000||0,
+          b5500 = q.b5500||0, b7000 = q.b7000||0;
+    const comps = [];
+
+    // ─── 소통·주도력 (E) ───
+    if(big5.E != null && voice.E != null){
+      const gap = big5.E - voice.E;
+      const forwardE = b2500||b4000 ? Math.round((b2500+b4000)/2) : null;
+      const basis = `음량 ${RMS||'—'} · 다이내믹 ${DR||'—'}dB${forwardE!=null?` · 전방감 ${forwardE}%`:''}`;
+      let interp;
+      if(gap >= 20) interp = `<b>잠재만큼 못 나옴</b>. 회의·발표·1대다 소통에서 <b>내적 활력은 있는데</b> 음성으로 전달되는 존재감이 약함. 무대성·전방감 보강 훈련으로 즉시 효과.`;
+      else if(gap >= 10) interp = `<b>표현이 보수적</b>. 발현이 ${voice.E}로 잠재 ${big5.E} 대비 약함 — 발표·1대다 상황에서 한 단계 더 열 여지.`;
+      else if(gap <= -15) interp = `<b>훈련된 표현형</b>. 음성으로 더 큰 존재감 — 무대·발표·세일즈에서 즉시 강점. ${RMS>0.06?'단 음량 과잉(보상 의심) → 지속력 점검.':'균형 잡힌 발현.'}`;
+      else if(gap <= -8) interp = `<b>발현이 약간 더 큼</b>. 무대·발표에서 자기 평가보다 강한 존재감.`;
+      else interp = `잠재와 발현이 정렬 — 자기 인식과 외부 인지가 일치.`;
+      comps.push({key:'E', name:'소통·주도력', gap, p:big5.E, v:voice.E,
+                  source:'외향성 E', basis, interp});
+    }
+
+    // ─── 실행·신뢰력 (C) ───
+    if(big5.C != null && voice.C != null){
+      const gap = big5.C - voice.C;
+      const jitTag = !JIT?'—':(JIT<1.5?` ${JIT}% 안정`:JIT<3?` ${JIT}% 보통`:` ${JIT}% ↑`);
+      const shiTag = !SHI?'—':(SHI<4?` ${SHI}% 안정`:SHI<6?` ${SHI}% 보통`:` ${SHI}% ↑`);
+      const hnrTag = !HNR?'—':(HNR>=20?` ${HNR} 우수`:HNR>=15?` ${HNR} 보통`:` ${HNR} 낮음`);
+      const basis = `음정 안정${jitTag} · 음량 안정${shiTag} · 톤 맑기${hnrTag}`;
+      let interp;
+      if(gap >= 25) interp = `<b>신뢰감 발현 미달</b>. 조직적 자기 인식은 강한데(${big5.C}), 음성 안정성이 따라가지 못함 — 발표·고객 응대·중요 미팅에서 <b>전달되는 신뢰감</b>이 약할 수 있음. 1~2개월 호흡·발성 훈련으로 발현 ↑.`;
+      else if(gap >= 12) interp = `<b>실행력에 비해 발현 약함</b>. 자기 신뢰가 음성으로 충분히 전해지지 못함 — 발성 안정성 보강 권장.`;
+      else if(gap <= -10) interp = `<b>안정적 전달력</b>. 음성이 자기 평가 이상으로 안정 — 발표·교육·중요 회의에서 신뢰감 즉시 형성. 강점.`;
+      else interp = `잠재와 발현이 정렬 — 안정적 실행력 인지.`;
+      comps.push({key:'C', name:'실행·신뢰력', gap, p:big5.C, v:voice.C,
+                  source:'성실성 C', basis, interp});
+    }
+
+    // ─── 협업·관계력 (A) ───
+    if(big5.A != null && voice.A != null){
+      const gap = big5.A - voice.A;
+      const warmth = b300+b600 > 0 ? Math.round((b300+b600)/2) : null;
+      const basis = `따뜻한 대역(300+600Hz) ${warmth!=null?warmth+'%':'—'} · 톤 맑기 HNR ${HNR||'—'}`;
+      let interp;
+      if(gap >= 15) interp = `<b>관계력 발현 미달</b>. 마음은 따뜻한데(${big5.A}) 음성으로 덜 전달 — 1대1 케어·세일즈·고객 관리에서 <b>체감 따뜻함</b>이 약할 수 있음. 톤·온기 대역 훈련 권장.`;
+      else if(gap <= -10) interp = `<b>관계력 강점</b>. 음성으로 자기 평가보다 따뜻함이 크게 발현 — 코칭·교육·돌봄·세일즈·리더십에서 즉시 자산. <b>사람을 향한 진심</b>이 그대로 전해짐.`;
+      else if(gap <= -5) interp = `<b>음성에 따뜻함이 약간 더 강함</b>. 관계 형성에서 자연스러운 매력.`;
+      else interp = `잠재와 발현이 정렬 — 안정적 관계력.`;
+      comps.push({key:'A', name:'협업·관계력', gap, p:big5.A, v:voice.A,
+                  source:'우호성 A', basis, interp});
+    }
+
+    // ─── 압박 내성·정서안정 (N 역산) ───
+    if(big5.N != null && voice.N != null){
+      const potential = 100 - big5.N;
+      const actual = 100 - voice.N;
+      const gap = potential - actual;
+      const tensionFlag = RMS > 0.06;
+      const basis = `Jitter ${JIT||'—'}% · Shimmer ${SHI||'—'}%${tensionFlag?' · <span style="color:#D05B57">RMS 과잉(긴장)</span>':''} · HNR ${HNR||'—'}`;
+      let interp;
+      if(big5.N < 50 && (voice.N - big5.N) >= 25) interp = `<b>번아웃 선행 신호 (강한 패턴)</b>. 기질은 안정적인데(N ${big5.N}) 음성에 누적 피로 큼 — <b>HR 우선 케어</b>. 로드 점검·회복 시간 필수. <b>임계점까지 가는 패턴이라 미리 잡아야 함</b>.`;
+      else if((voice.N - big5.N) >= 15) interp = `<b>기질보다 큰 음성 긴장</b>. 발성 기술의 습관 영역 — 1~2개월 안에 풀림. 정서적 문제가 아닌 보정점. 정기 체크 권장.`;
+      else if((voice.N - big5.N) >= 8) interp = `<b>일부 발성 긴장</b>. 큰 문제는 아니지만 호흡 지지로 보강하면 지속력 ↑.`;
+      else if((big5.N - voice.N) >= 15) interp = `<b>예민 기질을 음성으로 잘 통제</b>. 자기 조절이 잘되는 케이스 — 압박 상황에서도 안정적 표면 유지.`;
+      else interp = `압박 내성과 발현이 정렬 — 일관된 정서 안정성.`;
+      comps.push({key:'N', name:'압박 내성·정서안정', gap, p:potential, v:actual,
+                  source:'신경성 N ↔ 역산', basis, interp});
+    }
+
+    // ─── 창의·적응력 (O) ───
+    if(big5.O != null && voice.O != null){
+      const gap = big5.O - voice.O;
+      const topColor = (b4000+b5500+b7000) > 0 ? Math.round((b4000+b5500+b7000)/3) : null;
+      const singerOk = F3 >= 3000;
+      const basis = `상단 색(4-7k) ${topColor!=null?topColor+'%':'—'} · F3 ${F3||'—'}${singerOk?'Hz Singer\'s ✓':F3?'Hz 경계':''} · 모음 공간 F2 ${F2||'—'}Hz`;
+      let interp;
+      if(gap >= 20) interp = `<b>창의 잠재 폭발적 — 꺼내는 게 1순위 ROI</b>. 풍부한 개방성·탐구심(${big5.O})이 음성엔 ${voice.O}로 잠겨 있음. 기획·창작·전략 직무에서 <b>큰 잠재</b>. 음색 다양화·표현 개방이 핵심 작업.`;
+      else if(gap >= 10) interp = `<b>잠재 색이 일부 잠겨 있음</b>. 표현 다양화 훈련으로 발현 확대 가능.`;
+      else if(gap <= -15) interp = `<b>창의 표현 강점</b>. 자기 평가보다 풍부한 색 발현 — 기획·창작·전략에서 즉시 자산.`;
+      else interp = `잠재와 발현이 정렬 — 안정적 창의 표현.`;
+      comps.push({key:'O', name:'창의·적응력', gap, p:big5.O, v:voice.O,
+                  source:'개방성 O', basis, interp});
+    }
+
+    return comps;
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  //  STAGE 1 · 강화 휴리스틱 composeNarrative
+  //  13 임상 패턴 감지 + 패턴별 prose fragment 라이브러리
+  //  Claude API 의존도 ↓ (기본 품질 ~50% → ~75%)
+  // ═══════════════════════════════════════════════════════════════
+  function composeNarrative(big5, voice, f, q, gauges, name){
+    const RMS = f.RMS || 0, DR = f.DR || 0, HNR = f.HNR || 0;
+    const E_gap = big5.E!=null ? big5.E - voice.E : 0;
+    const C_gap = big5.C!=null ? big5.C - voice.C : 0;
+    const A_gap = big5.A!=null ? big5.A - voice.A : 0;
+    const N_gap = big5.N!=null ? big5.N - voice.N : 0;
+    const O_gap = big5.O!=null ? big5.O - voice.O : 0;
+    const align = clamp(0, 100, Math.round(100 - (Math.abs(E_gap)+Math.abs(C_gap)+Math.abs(A_gap)+Math.abs(N_gap)+Math.abs(O_gap))/5));
+
+    // ──────── 패턴 감지 (13개 임상 시그널) ────────
+    const P = {};
+    // 1. 번아웃 위험 — 안정 기질인데 음성에 긴장 ↑
+    P.burnout = (big5.N!=null && big5.N < 50 && N_gap < -20 && (RMS > 0.05 || gauges.breath < 50)) ? 1 : 0;
+    // 2. 호흡 누출 — 성문 폐쇄 부전
+    P.breathy = gauges.clarity < 35 ? 1 : 0;
+    // 3. 보상적 과각성 — 외향 과발현 + 음량 보상
+    P.compensatory = (E_gap < -15 && RMS > 0.05) ? 1 : 0;
+    // 4. 압박 긴장 — RMS 과잉 + 음성 신경성 ↑
+    P.pressure = (RMS > 0.07 && voice.N > 70 && gauges.breath < 55) ? 1 : 0;
+    // 5. 발달 비대칭 — 위(호흡·톤·표현)는 다져졌고 아래(토대)는 미발달
+    const topAvg = (gauges.clarity + gauges.expr + gauges.breath) / 3;
+    const lowAvg = (gauges.bass + gauges.top) / 2;
+    P.devAsymmetry = (topAvg > 70 && lowAvg < 45 && gauges.bass < 40) ? 1 : 0;
+    // 6. 자기 수축형 — 성향보다 음성이 모두 작게
+    P.selfContraction = (E_gap > 10 && A_gap > 8 && RMS < 0.025 && gauges.expr < 60) ? 1 : 0;
+    // 7. 따뜻함 강점 — 우호성·따뜻한 대역 동반
+    P.warmth = (big5.A!=null && big5.A > 70 && voice.A > 65 && (q.b300||0)+(q.b600||0) > 100) ? 1 : 0;
+    // 8. 잠재 무대형 — 외향 잠재 ↑ 발현 ↓
+    P.latentPerformer = (big5.E!=null && big5.E > 65 && E_gap > 15 && !P.compensatory) ? 1 : 0;
+    // 9. 탐구 잠긴형 — 개방성 ↑ 발현 ↓
+    P.latentExplorer = (big5.O!=null && big5.O > 70 && O_gap > 15) ? 1 : 0;
+    // 10. 광채 미발현 — 개방성 ↑ 상단 광채 ↓
+    P.brillianceLatent = (big5.O!=null && big5.O > 65 && gauges.top < 50) ? 1 : 0;
+    // 11. 흉성 잠긴 — 저음 게이지 ↓
+    P.chestSunk = gauges.bass < 35 ? 1 : 0;
+    // 12. 중음 빈터 — 중음 게이지 ↓ + F2 좁음
+    P.midVoid = (gauges.mid < 40 && (f.F2||999) < 1200) ? 1 : 0;
+    // 13. 균형 안정 (낮은 우선순위)
+    P.balanced = (align >= 85 && !P.breathy && !P.burnout) ? 1 : 0;
+
+    const signs = Object.keys(P).filter(k => P[k]);
+
+    // ──────── 한 줄 판정 (priority-ordered) ────────
+    let verdict;
+    if (P.burnout) verdict = '<b>번아웃 선행 신호</b> — 다져진 표면 아래 긴장이 음성에 크게 실립니다. 회복과 호흡 지지가 가장 시급.';
+    else if (P.breathy) verdict = '풍부한 잠재가 안에 잠겨 호흡으로 새고 있는 — 폐쇄부터 세우면 가장 크게 피어날 잠재형.';
+    else if (P.devAsymmetry) verdict = '다져진 위, 미완성 아래 — 흉성 토대만 열면 다음 단계로 도약하는 무대형.';
+    else if (P.compensatory && P.pressure) verdict = '강하게 내지르는 보상적 과각성 — 음량을 호흡 지지로 풀어내는 것이 다음 단계.';
+    else if (P.compensatory) verdict = '음량으로 채우는 무대 보상 — 호흡 지지로 옮겨가면 같은 표현이 덜 힘들어집니다.';
+    else if (P.selfContraction) verdict = '안쪽으로 모인 정체성 — 호흡과 존재감을 여는 것이 잠긴 표현의 출구.';
+    else if (P.warmth && P.latentExplorer) verdict = '따뜻함은 넘치는데 색과 존재감은 아직 안에 잠겨 있는 — 곧 피어날 감응형.';
+    else if (P.latentPerformer) verdict = '내적 무대성은 갖춰져 있는데 음성에서 덜 발현 — 표현을 여는 훈련이 핵심.';
+    else if (P.warmth) verdict = '따뜻함이 음성에 강하게 실리는, 사람을 향한 진심이 자산인 목소리.';
+    else if (P.balanced) verdict = '성격과 목소리가 정렬된, 방향이 분명한 목소리.';
+    else verdict = '발달의 도정에 있는 목소리 — 정합과 미발현의 경계.';
+
+    // ──────── 히어로 라인 (시적 요약) ────────
+    const heroParts = [];
+    if (P.burnout) heroParts.push('다져진 표면 아래 긴장이 음성에 실립니다');
+    if (P.breathy) heroParts.push('호흡이 새어 톤이 취약');
+    if (P.devAsymmetry && !P.burnout) heroParts.push('위는 다져졌고 아래는 발달 도중');
+    if (P.compensatory && !P.burnout) heroParts.push('음량으로 채우는 보상의 흔적');
+    if (P.warmth) heroParts.push('따뜻함이 성향보다 소리로 더 크게 전해집니다');
+    if (P.latentExplorer) heroParts.push('풍부한 색이 아직 안에 잠겨있어요');
+    if (P.latentPerformer && !P.compensatory) heroParts.push('무대성은 안에 잠재 — 음성에서 덜 나옵니다');
+    if (P.selfContraction) heroParts.push('성향보다 작게 발현 — 안쪽으로 모인 정체성');
+    if (P.balanced && heroParts.length === 0) heroParts.push('성격과 목소리가 한 방향으로 정렬');
+    const heroLine = (heroParts.slice(0, 3).join(' · ') || '성격과 목소리의 정합을 6개 영역으로 살펴봅니다') + '.';
+
+    // ──────── lead + summary (① 한눈에) ────────
+    const tName = {E:'외향', C:'성실', A:'우호', N:'신경', O:'개방'};
+    const tStr = ['E','C','A','N','O'].filter(t => big5[t]!=null).map(t => `${tName[t]} ${big5[t]}`).join(' · ');
+    const lead = `${name}의 BIG5 성향(${tStr || '입력 대기'})과 측정된 목소리를 통합한 한 장의 초상입니다. 정합도 ${align}%.`;
+
+    const summary = [];
+    if (P.burnout) summary.push(`<b>번아웃 선행 신호</b>: 기질(N ${big5.N})은 안정적이지만 음성(N ${voice.N})에는 긴장이 크게 실립니다 — <b>정서적 불안이 아닌 발성으로 누적된 피로</b>입니다.`);
+    else if (P.compensatory) summary.push(`<b>외향 음성 과발현</b>: 성향 ${big5.E}에 비해 음성은 ${voice.E} — 무대에서 더 큰 존재로 보이는 <b>훈련된 보상</b> 패턴.`);
+    else if (P.latentPerformer) summary.push(`<b>외향 잠재</b>: 성향 ${big5.E}, 음성 ${voice.E} — 무대성이 <b>안에 갖춰져 있고 밖으로 덜 나오는</b> 패턴.`);
+    if (P.warmth) summary.push(`<b>우호 음성 ${voice.A}</b>: 따뜻함이 자산. 사람을 향한 진심이 그대로 소리에 실립니다.`);
+    if (P.latentExplorer) summary.push(`<b>개방성 미발현</b>: 성향 ${big5.O}로 풍부한데 음성은 ${voice.O} — 없는 게 아니라 <b>아직 안 꺼낸 색</b>.`);
+    if (P.devAsymmetry) summary.push(`<b>발달 비대칭</b>: 위(호흡·톤·표현)는 다져졌는데 아래(흉성 토대)는 미발달 — 다음 단계의 핵심 방향.`);
+    if (P.breathy) summary.push(`<b>호흡 누출</b>: 톤 맑기 ${gauges.clarity} — 성문 폐쇄 부전이 가장 큰 토대 문제. <b>폐쇄부터 세워야 잠재가 발현</b>됩니다.`);
+    if (P.selfContraction) summary.push(`<b>전반 미발현</b>: 외향·우호 모두 성향보다 작게 발현 — 안쪽으로 모인 정체성, <b>호흡과 존재감을 여는 것</b>이 출구.`);
+    if (!summary.length) summary.push('전반적으로 성격과 목소리가 한 방향으로 정렬되어 있습니다.');
+
+    // ──────── ② AI 개별 해석 (성향·음성 차이의 심리적 의미) ────────
+    const aiDiff = [];
+    if (P.burnout) {
+      aiDiff.push(`<b>신경성 격차의 의미</b>: 기질 N ${big5.N}(안정적)인데 음성 N ${voice.N}로 ${Math.abs(N_gap)}p 더 큰 긴장이 실립니다. <b>정서적 불안이 아닌 발성 누적 피로</b>의 신호 — 임상에서 자주 보는 <b>번아웃 선행 패턴</b>.`);
+      aiDiff.push(`<b>왜 이게 위험한가</b>: 안정적 기질을 가진 사람은 <b>문제를 인지하기 어려워</b> 임계점까지 갑니다. 음성이 먼저 SOS 신호를 보내고 있는 거예요. 회복과 호흡 지지가 가장 시급한 우선순위.`);
+      aiDiff.push(`<b>좋은 소식</b>: 기질적 N이 안정적이라 <b>회복 자원이 충분</b>합니다. 1–2개월 호흡 훈련 + 회복 루틴이면 음성 N도 안정 범위로 내려갑니다.`);
+    } else if (P.compensatory) {
+      aiDiff.push(`<b>외향-신경 동반 과발현</b>: 음성(E ${voice.E})이 성향(${big5.E})보다 ${Math.abs(E_gap)}p 크게 — 무대에서 <b>더 큰 사람</b>으로 보이지만, 그건 <b>훈련된 보상</b>입니다.`);
+      aiDiff.push(`<b>음량의 의미</b>: RMS ${RMS}는 환경 의존을 넘어선 <b>접촉압 보상</b> — 호흡 지지가 아닌 성대 압박으로 음량을 만드는 습관. 무대 직후 회복이 길어집니다.`);
+      aiDiff.push(`<b>핵심 진단</b>: 기질이 아니라 <b>습관</b>입니다. 1–2개월 안에 풀립니다. 정서적 문제가 아닌 발성 기술의 보정점.`);
+    } else if (P.latentPerformer) {
+      aiDiff.push(`<b>외향 잠재</b>: 성향 E ${big5.E}로 무대성을 충분히 갖췄는데 음성에선 ${voice.E}에 그칩니다. 안에 있는 표현력을 <b>밖으로 꺼내는</b> 훈련이 다음 단계.`);
+      aiDiff.push(`<b>이게 자산인 이유</b>: 보상형(과발현)과 달리 잠재형은 토대가 단단합니다. 표현을 여는 순간 <b>지속 가능한 무대성</b>이 나옵니다.`);
+    } else if (P.selfContraction) {
+      aiDiff.push(`<b>전반 미발현</b>: 외향·우호 모두 음성으로 작게 발현. 안쪽으로 모인 정체성 — 자기 안에서 충분히 풍부하지만 <b>외부로 덜 흘러나옵니다</b>.`);
+      aiDiff.push(`<b>출구</b>: 호흡 지지와 존재감 훈련 — 자기를 부풀리는 게 아니라 <b>이미 있는 것을 자연스럽게 흘러보내는</b> 방향.`);
+    }
+    if (P.warmth && !P.burnout) {
+      aiDiff.push(`<b>우호성 강점</b>: 음성 A ${voice.A}, 성향 A ${big5.A} — 사람을 향한 진심이 목소리에 그대로 실리는 정렬입니다. 무대·코칭·리더십에서 즉시 자산.`);
+    }
+    if (P.latentExplorer && !P.burnout) {
+      aiDiff.push(`<b>개방성 미발현</b>: 풍부한 색·탐구심(${big5.O})이 음성으로는 ${voice.O}에 그칩니다 — <b>없는 게 아니라 아직 안 꺼낸 것</b>. 상단 광채와 음색 다양성을 여는 훈련이 핵심.`);
+    }
+    if (P.devAsymmetry && aiDiff.length < 4) {
+      aiDiff.push(`<b>발달의 비대칭</b>: 위(호흡 ${gauges.breath} · 톤 ${gauges.clarity} · 표현 ${gauges.expr})는 다져졌는데 아래(흉성 토대 ${gauges.bass})는 미발달. 이 사람의 다음 도약은 <b>토대 형성</b>입니다.`);
+    }
+    if (P.balanced && aiDiff.length === 0) {
+      aiDiff.push(`<b>정렬된 목소리</b>: 정합도 ${align}%로 성향과 음성이 같은 방향을 가리킵니다. 미세한 발달 영역이 개별 작업의 핵심.`);
+    }
+    while (aiDiff.length < 3) aiDiff.push(`정합도 ${align}%로 비교적 일관된 방향을 가리키고 있습니다.`);
+
+    // ──────── ③ AI 직무역량 발현 ────────
+    const aiJob = [];
+    aiJob.push(`<b>HR 관점.</b> ${name}의 직무 발현 패턴은 다음과 같습니다.`);
+    if (P.burnout) {
+      aiJob.push(`<b>압박 내성·정서안정</b>: 잠재(N ${big5.N})는 안정적인데 발현에서 긴장이 큼 — <b>로드 점검 + 회복 시간이 핵심</b>. 표면적으로는 잘 견디지만 임계점 가까이까지 가는 패턴. 번아웃 선행 신호로 해석.`);
+    } else if (P.compensatory) {
+      aiJob.push(`<b>존재감·표현력</b>: 발현 ${voice.E} — 무대·발표·리더십에서 즉시 강점. 다만 <b>매번 과각성으로 도달</b>하면 회복 시간이 길어집니다. 페이스 조절 권장.`);
+    } else if (P.latentPerformer) {
+      aiJob.push(`<b>소통·주도력</b>: 잠재 ${big5.E} → 발현 ${voice.E} (${E_gap}p 미발현). 무대성·존재감을 여는 훈련 권장 — 안에 갖춰져 있으므로 빠른 개선 가능.`);
+    } else if (E_gap !== 0) {
+      aiJob.push(`<b>소통·주도력</b>: 잠재 ${big5.E} · 발현 ${voice.E} — ${Math.abs(E_gap)<10?'정합':E_gap>0?'잠재가 더 큰 미발현':'발현이 더 큰 표현형'} 패턴.`);
+    }
+    if (P.warmth) {
+      aiJob.push(`<b>협업·관계력</b>: 발현 ${voice.A}로 강한 자산 — 따뜻한 연결이 곧바로 가치. 코칭·교육·돌봄·세일즈·리더십에서 빛납니다.`);
+    } else if (A_gap > 10) {
+      aiJob.push(`<b>협업·관계력</b>: 잠재 ${big5.A}, 발현 ${voice.A} — 따뜻함이 안에 있지만 소리로 덜 나옵니다. 음성 톤 조정으로 빠르게 보강 가능.`);
+    }
+    if (P.latentExplorer) {
+      aiJob.push(`<b>창의·적응력</b>: 잠재 ${big5.O}로 풍부하나 발현 ${voice.O} — 기획·창작·전략에서 폭발적 잠재. <b>꺼내는 게 1순위 ROI</b>.`);
+    }
+    if (gauges.clarity >= 80 && gauges.breath >= 70 && aiJob.length < 4) {
+      aiJob.push(`<b>실행·신뢰력</b>: 톤 맑기 ${gauges.clarity} + 호흡 지지 ${gauges.breath} — 안정적 전달력. 발표·교육·중요 미팅에서 신뢰감 형성.`);
+    }
+    while (aiJob.length < 4) aiJob.push(`전반적 발현이 잠재와 정렬되어 안정적 직무 수행이 예상됩니다.`);
+
+    let closing = '균형 있는 안정형 인재';
+    if (P.warmth && P.latentExplorer) closing = '따뜻함·창의가 합쳐진 감응적 탐구형';
+    else if (P.warmth) closing = '따뜻하게 연결하는 감응형 인재';
+    else if (P.burnout) closing = '안정적이나 회복 케어가 필요한 다져진 인재';
+    else if (P.compensatory) closing = '무대를 장악하는 표현형 인재 (회복 케어 필요)';
+    else if (P.devAsymmetry) closing = '잠재가 큰 무대형 (토대 발달이 다음 단계)';
+    else if (P.latentPerformer) closing = '잠재가 안에 갖춰진 무대형 (표현 개방이 다음 단계)';
+    else if (P.latentExplorer) closing = '탐구·창의가 잠긴 잠재형';
+    else if (P.selfContraction) closing = '안쪽으로 모인 정체성 (외부 흐름이 다음 단계)';
+    aiJob.push(`<b>HR 결론.</b> ${closing}입니다.`);
+
+    // ──────── ⑤ AI 종합 ────────
+    const aiVerdict = verdict;
+    const aiFinal = [];
+    const sigList = signs.slice(0, 3).map(s => ({
+      burnout:'번아웃 선행', breathy:'호흡 누출', compensatory:'보상적 과각성',
+      pressure:'음량 압박', devAsymmetry:'발달 비대칭', selfContraction:'자기 수축',
+      warmth:'따뜻함 강점', latentPerformer:'무대 잠재', latentExplorer:'탐구 잠재',
+      brillianceLatent:'광채 미발현', chestSunk:'흉성 잠긴', midVoid:'중역 빈터',
+      balanced:'안정 정렬'
+    }[s] || s));
+    const sigStr = sigList.join(' · ') || '안정적 정렬';
+
+    aiFinal.push(`측정값이 한 사람을 일관되게 가리킵니다. 정합도 ${align}%, 주요 신호: <b>${sigStr}</b>.`);
+
+    const devNarrative = P.chestSunk
+      ? '<b>흉성 하부 열기가 향후 발달의 핵심</b>'
+      : P.breathy
+        ? '<b>톤 맑기(폐쇄)가 가장 약함</b> — 호흡 지지·성문 폐쇄 훈련이 우선'
+        : P.brillianceLatent
+          ? '<b>상단 광채 형성</b>이 다음 단계'
+          : P.midVoid
+            ? '<b>중역 공명 채우기</b>가 우선'
+            : gauges.expr >= 85
+              ? '표현력 최대 발현 중, 토대 다지기가 다음 단계'
+              : '전반 균형 발달 도정';
+    aiFinal.push(`발달 영역으로 보면 <b>저음 ${gauges.bass}</b> · <b>중음 ${gauges.mid}</b> · <b>고음 ${gauges.top}</b>, 공통은 호흡 ${gauges.breath} · 톤 ${gauges.clarity} · 표현 ${gauges.expr}. ${devNarrative}.`);
+
+    if (P.burnout) {
+      aiFinal.push(`치유 경로: <b>호흡 지지 회복</b>(매일 5분 lip trill + 복식 들숨 연장) → 음량을 <b>소리내는 힘</b>이 아닌 <b>떠받치는 힘</b>으로 전환 → 1~2개월 안에 음성 N 안정 범위 진입.`);
+    } else if (P.breathy) {
+      aiFinal.push(`경로: <b>성문 폐쇄</b>를 먼저 세우고(허밍·립트릴), 그 다음 중역 공명 → 상단 광채 순. 가장 큰 잠재(${P.latentExplorer ? '개방성' : P.warmth ? '우호성' : '표현력'})가 비로소 발현됩니다.`);
+    } else if (P.devAsymmetry) {
+      aiFinal.push(`경로: 향후 6–12개월의 핵심은 <b>흉성 하부 열기</b>(후두 안정·F1·인두 개방). 위가 이미 다져져 있어 토대만 받쳐주면 도약합니다.`);
+    } else if (P.compensatory) {
+      aiFinal.push(`경로: <b>음량을 호흡 지지로 옮기기</b> — 같은 표현을 더 적은 성대 압박으로. 1–2개월 안에 회복력·지속력이 함께 올라옵니다.`);
+    } else if (P.selfContraction) {
+      aiFinal.push(`경로: 호흡 지지 → 존재감 개방 → 표현 다양화. 자기 안의 풍부함을 <b>밖으로 흘려보내는</b> 훈련이 핵심.`);
+    } else if (P.latentExplorer || P.brillianceLatent) {
+      aiFinal.push(`경로: <b>상단 광채(2.8–3.4kHz 응집)</b>를 형성하고 음색 다양화로 안에 있는 색을 꺼냅니다.`);
+    } else {
+      aiFinal.push(`경로: 현재의 정렬을 유지하면서 ${gauges.bass<50?'흉성 토대':gauges.top<50?'상단 광채':gauges.mid<50?'중역 공명':'미세한 표현'} 다듬기가 다음 단계.`);
+    }
+
+    // ──────── 발달 호(arc) + 처방(rx) ────────
+    const arc = [], rx = [];
+    const nums = ['①','②','③','④','⑤'];
+    let n = 0;
+
+    if (P.burnout || P.pressure) {
+      arc.push(`${nums[n++]} <b>호흡 지지 회복</b> 긴장 이완`);
+      rx.push(`<b>호흡 지지 회복.</b> 매일 5분 lip trill + 복식 들숨 연장 — 미는 힘이 아닌 떠받치는 호흡으로 전환.`);
+    } else if (P.compensatory) {
+      arc.push(`${nums[n++]} <b>음량 → 호흡 지지</b> 보상 해체`);
+      rx.push(`<b>음량 → 호흡 지지.</b> 같은 음량을 더 적은 성대 접촉압으로 — 복식 들숨을 길게, 미는 힘이 아니라 호흡으로.`);
+    }
+    if (P.breathy) {
+      arc.push(`${nums[n++]} <b>성문 폐쇄</b> 호흡 누출 해소`);
+      rx.push(`<b>성문 폐쇄.</b> 입술 트릴·허밍으로 호흡 지지를 세우고 성문을 모아 새는 소리를 잡습니다 — 톤 회복의 출발.`);
+    }
+    if (P.chestSunk) {
+      arc.push(`${nums[n++]} <b>흉성 하부 열기</b> 후두 안정·F1`);
+      rx.push(`<b>흉성 하부 열기.</b> 반하품 + 후두 안정 하강 → 립트릴/허밍 저음 글라이드 → F1을 더 낮춰 인두 공간을 열고 토대를 다집니다.`);
+    }
+    if (P.brillianceLatent || (gauges.top < 50 && !P.breathy)) {
+      arc.push(`${nums[n++]} <b>광채 형성</b> 2.8–3.4kHz 응집`);
+      rx.push(`<b>광채 형성.</b> "NG·마스크 배치" + 모음 위 [h]로 2.8–3.4kHz 응집을 만들어 무대 투사력을 키웁니다.`);
+    }
+    if (P.midVoid) {
+      arc.push(`${nums[n++]} <b>중역 공명</b> 모음 정렬`);
+      rx.push(`<b>중역 공명.</b> [a]–[e]–[i] 모음 패스에서 F2 정렬 — 말소리·명료 대역을 채워 또렷함 형성.`);
+    }
+    if (P.selfContraction || (gauges.expr < 50 && !P.compensatory && !P.burnout)) {
+      arc.push(`${nums[n++]} <b>표현 개방</b> 외향·우호 음향화`);
+      if (rx.length < 3) rx.push(`<b>표현 개방.</b> 자기를 부풀리는 게 아니라 <b>이미 있는 따뜻함을 자연스럽게 흘려보내는</b> 훈련 — 마음 챙김 호흡 + 즉흥 낭독.`);
+    }
+    if (arc.length < 3) arc.push(`${nums[Math.min(n,4)]} <b>지속 안정</b> 발달 보전`);
+    if (rx.length < 2) rx.push(`<b>안정 보전.</b> 현재의 정렬을 유지하면서 미세한 표현 다듬기 — 음색 3색(밝게·따뜻하게·어둡게) 변주 훈련.`);
+
+    return {verdict, heroLine, lead, summary, aiDiff, aiJob, aiVerdict, aiFinal, arc, rx, align, signs};
+  }
+
+// ────────── HTML 빌더 ──────────
+  function gaugeRow(name, cues, score){
+    const [cls,lab] = stageOf(score);
+    return `<div class="gauge"><div class="ginfo"><div class="gname">${name}</div><div class="gcue">${cues||''}</div></div><div class="gbar"><div class="gmark m25"></div><div class="gmark m45"></div><div class="gmark m65"></div><div class="gmark m85"></div><div class="gfill ${cls}" style="width:${score}%"></div></div><div class="gval"><div class="gpct">${score}</div><div class="gstage ${cls}">${lab}</div></div></div>`;
+  }
+
+  function traitRow(label, key, p, v, gap){
+    const COL = {E:['#6E5DC6','#B3A6E0'], C:['#2E9E6B','#8FCBAE'], A:['#4A7FD0','#9CBBE8'], N:['#D05B57','#E6A3A0'], O:['#D9A23F','#E6C98A']};
+    const [c,l] = COL[key];
+    const gapStr = gap>0?`+${gap}`:`${gap}`;
+    const gapCol = Math.abs(gap)<10?'#8A8195':(gap>0?'#B0883E':'#2257A8');
+    return `<div class="mrow"><div class="mtop"><span class="dot" style="background:${c}"></span><span class="mname">${label}</span><span class="mgap" style="color:${gapCol}">${gapStr}</span></div><div class="bars"><span>성향</span><div class="bk"><i style="width:${p}%;background:${c}"></i></div><span class="bv">${p}</span></div><div class="bars"><span>목소리</span><div class="bk"><i style="width:${v}%;background:${l}"></i></div><span class="bv">${v}</span></div></div>`;
+  }
+
+  function compRow(label, key, p, v, gap, chipCls, chipLab){
+    const COL = {E:['#6E5DC6','#B3A6E0'], C:['#2E9E6B','#8FCBAE'], A:['#4A7FD0','#9CBBE8'], N:['#D05B57','#E6A3A0'], O:['#D9A23F','#E6C98A']};
+    const [c,l] = COL[key];
+    const gapStr = gap>0?`+${gap}`:`${gap}`;
+    const gapCol = Math.abs(gap)<10?'#8A8195':(gap>0?'#B0883E':'#2257A8');
+    return `<div class="mrow"><div class="mtop"><span class="dot" style="background:${c}"></span><span class="mname">${label}</span><span class="mgap" style="color:${gapCol}">${gapStr}</span><span class="chip ${chipCls}">${chipLab}</span></div><div class="bars"><span>잠재</span><div class="bk"><i style="width:${p}%;background:${c}"></i></div><span class="bv">${p}</span></div><div class="bars"><span>발현</span><div class="bk"><i style="width:${v}%;background:${l}"></i></div><span class="bv">${v}</span></div></div>`;
+  }
+
+  function buildReportHTML(d){
+    const {name, meta, song, big5, voice, f, q, gauges, text} = d;
+    const FONT_CDN = 'https://cdn.jsdelivr.net/gh/moonspam/NanumSquare';
+    const CSS = `
+@font-face{font-family:'NanumSquare';src:url('${FONT_CDN}/NanumSquareL.ttf');font-weight:300;}
+@font-face{font-family:'NanumSquare';src:url('${FONT_CDN}/NanumSquareR.ttf');font-weight:400;}
+@font-face{font-family:'NanumSquare';src:url('${FONT_CDN}/NanumSquareB.ttf');font-weight:700;}
+@font-face{font-family:'NanumSquare';src:url('${FONT_CDN}/NanumSquareEB.ttf');font-weight:800;}
+@page{size:A4;margin:14mm 15mm;}
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--paper:#FAF6EF;--ink:#221A2E;--ink2:#4A4159;--muted:#8A8195;--line:#E4D9C6;--peach:#CC7F5E;--gold:#B0883E;--purple:#3D2D6E;--green:#2E9E6B;--grey:#B5AC9C;--E:#6E5DC6;--C:#2E9E6B;--A:#4A7FD0;--N:#D05B57;--O:#D9A23F;}
+body{font-family:'NanumSquare',sans-serif;color:var(--ink);background:#fff;font-size:11.5px;line-height:1.7;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+.page{page-break-before:always;}
+.kick{letter-spacing:.3em;font-size:8.5px;font-weight:700;color:var(--peach);text-transform:uppercase;}
+h1{font-weight:800;font-size:24px;letter-spacing:-.4px;margin:5px 0 3px;}
+.meta{color:var(--ink2);font-size:11px;margin-bottom:14px;}
+.hero{background:linear-gradient(135deg,#221A2E,#3D2D6E);color:#fff;border-radius:16px;padding:22px 24px;margin-bottom:18px;}
+.hero .hk{font-size:8.5px;letter-spacing:.3em;color:#E6C98A;text-transform:uppercase;font-weight:700;margin-bottom:8px;}
+.hero .row{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;}
+.hero .verdict{flex:1;font-weight:800;font-size:18px;line-height:1.4;}
+.hero .verdict b,.hero .verdict strong{color:#fff;}
+.hero .score{text-align:right;}
+.hero .score .l{font-size:9px;letter-spacing:.15em;color:#E6C98A;text-transform:uppercase;font-weight:700;}
+.hero .score .v{font-weight:800;font-size:32px;line-height:1;color:#fff;}
+.hero .score .v small{font-size:14px;font-weight:700;color:#E6C98A;}
+.hero .line{margin-top:11px;font-size:11.5px;line-height:1.65;color:#F1E5D2;}
+.hero .line b{color:#fff;}
+.sec{margin-bottom:14px;}
+.sec-h{display:flex;align-items:center;gap:9px;margin-bottom:8px;}
+.sec-n{font-size:9px;font-weight:700;color:#fff;background:var(--purple);border-radius:4px;padding:2px 7px;letter-spacing:.05em;}
+.sec-t{font-weight:800;font-size:13px;}
+.sec-line{flex:1;height:1px;background:var(--line);}
+.lead{border-left:3px solid var(--peach);padding-left:11px;font-size:12px;font-weight:700;line-height:1.6;margin-bottom:9px;}
+.sec p{font-size:11px;line-height:1.7;margin-bottom:6px;color:var(--ink2);}
+.sec p b{color:var(--ink);font-weight:700;}
+.map{display:grid;gap:8px;}
+.mrow{padding:7px 0;border-bottom:1px solid #EFE7D6;}
+.mrow:last-child{border-bottom:none;}
+.mtop{display:flex;align-items:center;gap:7px;margin-bottom:4px;}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;}
+.mname{font-weight:700;font-size:11.5px;}
+.mgap{font-weight:700;font-size:10.5px;margin-left:3px;}
+.chip{font-size:9px;font-weight:700;padding:2px 7px;border-radius:9px;color:#fff;margin-left:auto;}
+.chip.str{background:#2257A8;}
+.chip.dev{background:var(--gold);}
+.chip.ok{background:var(--green);}
+.bars{display:grid;grid-template-columns:32px 1fr 24px;gap:8px;align-items:center;font-size:9px;color:var(--muted);}
+.bk{height:7px;background:#F1E9DB;border-radius:4px;overflow:hidden;}
+.bk i{display:block;height:100%;border-radius:4px;}
+.bv{font-weight:700;color:var(--ink);text-align:right;font-size:10px;}
+.ai{background:#F3EEFB;border-radius:11px;padding:11px 14px;margin-top:8px;}
+.ti-wrap{background:#F3EEFB;border-radius:11px;padding:10px 12px;margin-top:8px;}
+.ti-wrap .tag{font-size:8.5px;letter-spacing:.15em;color:var(--purple);text-transform:uppercase;font-weight:700;margin-bottom:7px;}
+.ti-card{padding:6px 0;border-bottom:1px solid rgba(61,45,110,0.10);}
+.ti-card:last-child{border-bottom:none;}
+.ti-h{display:flex;align-items:center;gap:7px;margin-bottom:3px;}
+.ti-h .dot{width:8px;height:8px;border-radius:50%;display:inline-block;}
+.ti-name{font-weight:800;font-size:11px;}
+.ti-gap{font-weight:700;font-size:10px;}
+.ti-formula{font-size:8.5px;color:var(--muted);margin-left:auto;font-style:italic;}
+.ti-basis{font-size:9px;color:var(--muted);margin-bottom:2px;line-height:1.45;}
+.ti-basis b{color:var(--ink2);font-weight:700;}
+.ti-interp{font-size:10px;line-height:1.55;color:var(--ink2);}
+.ti-interp b{color:var(--ink);font-weight:700;}
+.ai .tag{font-size:8.5px;letter-spacing:.15em;color:var(--purple);text-transform:uppercase;font-weight:700;margin-bottom:5px;}
+.ai p{font-size:10.5px;line-height:1.65;margin-bottom:5px;color:var(--ink2);}
+.ai p:last-child{margin-bottom:0;}
+.ai p b{color:var(--ink);}
+.tech-kick{letter-spacing:.3em;font-size:8.5px;font-weight:700;color:var(--peach);text-transform:uppercase;}
+.tech-h{font-weight:800;font-size:20px;margin:3px 0;}
+.tech-sub{color:var(--muted);font-size:10.5px;margin-bottom:11px;}
+.meas{width:100%;border-collapse:collapse;font-size:10.5px;margin-bottom:10px;}
+.meas th{text-align:left;font-weight:700;color:var(--muted);font-size:9px;letter-spacing:.05em;text-transform:uppercase;padding:5px 7px;border-bottom:1px solid var(--line);}
+.meas td{padding:6px 7px;border-bottom:1px solid #EFE7D6;}
+.meas tr:last-child td{border-bottom:none;}
+.meas .code{font-weight:800;color:var(--purple);font-size:10px;}
+.meas .val{font-weight:800;font-size:11.5px;}
+.meas .ref{color:var(--muted);font-size:9.5px;}
+.jg{font-size:9px;font-weight:700;padding:2px 7px;border-radius:9px;color:#fff;}
+.jg.lo{background:var(--peach);}
+.jg.mid{background:var(--gold);}
+.jg.hi{background:#D05B57;}
+.jg.ok{background:var(--green);}
+.gauges{margin-top:2px;}
+.gauge{display:flex;align-items:center;gap:8px;padding:3.5px 0;border-bottom:1px solid #EFE7D6;}
+.gauge:last-child{border-bottom:none;}
+.ginfo{flex:0 0 175px;}
+.gname{font-weight:700;font-size:10.5px;line-height:1.2;}
+.gcue{font-size:8.5px;color:var(--muted);margin-top:1px;line-height:1.3;}
+.gbar{flex:1;position:relative;height:11px;background:#F4ECDB;border-radius:6px;}
+.gfill{position:absolute;left:0;top:0;bottom:0;border-radius:6px;}
+.gmark{position:absolute;top:-2px;bottom:-2px;width:1px;background:rgba(34,26,46,0.16);}
+.gmark.m25{left:25%;}.gmark.m45{left:45%;}.gmark.m65{left:65%;}.gmark.m85{left:85%;}
+.gval{flex:0 0 90px;display:flex;align-items:center;gap:6px;justify-content:flex-end;}
+.gpct{font-weight:800;font-size:14px;color:var(--ink);min-width:28px;text-align:right;}
+.gstage{font-size:8.5px;font-weight:700;padding:2px 7px;border-radius:9px;color:#fff;white-space:nowrap;}
+.gstage.s1,.gfill.s1{background:#B5AC9C;}
+.gstage.s2,.gfill.s2{background:#CC7F5E;}
+.gstage.s3,.gfill.s3{background:#B0883E;}
+.gstage.s4,.gfill.s4{background:#2E9E6B;}
+.gstage.s5,.gfill.s5{background:#3D2D6E;}
+.gnote{font-size:9px;color:var(--ink2);margin-top:4px;line-height:1.5;}
+.gnote-sub{font-size:8px;color:var(--muted);margin-top:3px;line-height:1.4;}
+.layers{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;}
+.layer{border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:#fff;}
+.layer .ln{font-size:8.5px;letter-spacing:.12em;color:var(--purple);text-transform:uppercase;font-weight:800;}
+.layer .lt{font-weight:800;font-size:12px;margin:3px 0 4px;}
+.layer .ld{font-size:9.5px;line-height:1.55;color:var(--ink2);}
+.layer .lm{font-size:8.5px;font-weight:700;color:var(--muted);margin-top:5px;padding-top:5px;border-top:1px dashed var(--line);}
+.mech{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.mc{background:#F6EFE2;border-radius:9px;padding:7px 10px;}
+.mc .mt{font-weight:800;font-size:11px;}
+.mc .md{font-size:9.5px;line-height:1.55;color:var(--ink2);margin-top:3px;}
+.ai-page{background:linear-gradient(135deg,#221A2E,#3D2D6E);color:#fff;border-radius:16px;padding:24px 26px;}
+.ai-page .ai-kick{font-size:8.5px;letter-spacing:.3em;color:#E6C98A;text-transform:uppercase;font-weight:700;}
+.ai-page .ai-h{font-weight:800;font-size:22px;margin:4px 0 3px;}
+.ai-page .ai-sub{color:#F1E5D2;font-size:11px;margin-bottom:13px;}
+.ai-page .ai-verdict{font-size:14.5px;font-weight:800;color:#fff;line-height:1.5;border-left:3px solid #E6C98A;padding-left:13px;margin:11px 0;}
+.ai-page p{font-size:11px;line-height:1.7;color:#E8DDF0;margin-bottom:6px;}
+.ai-page p b{color:#fff;}
+.arc{display:flex;gap:7px;margin:12px 0 11px;flex-wrap:wrap;}
+.arc .st{flex:1 1 0;min-width:100px;background:rgba(255,255,255,0.08);border-radius:8px;padding:6px 9px;font-size:9.5px;line-height:1.4;color:#F1E5D2;}
+.arc .st b{color:#fff;}
+.rxbox{background:rgba(255,255,255,0.07);border-radius:11px;padding:11px 14px;margin-top:9px;}
+.rxbox .rt{font-size:9px;letter-spacing:.2em;color:#E6C98A;text-transform:uppercase;font-weight:700;margin-bottom:6px;}
+.rxrow{display:flex;gap:9px;font-size:10.5px;line-height:1.6;color:#F1E5D2;margin-bottom:5px;}
+.rxrow b{color:#fff;}
+.rxrow .rn{font-weight:800;color:#E6C98A;flex:0 0 22px;}
+.ai-foot{font-size:9px;color:#C7B8D5;line-height:1.5;margin-top:11px;padding-top:9px;border-top:1px dashed rgba(255,255,255,0.18);}
+@media print{.page{page-break-before:always;}body{font-size:11px;}}
+`;
+
+    // BIG5 trait map (성향 vs 음성)
+    const traits = ['E','C','A','N','O'];
+    const tName = {E:'외향성',C:'성실성',A:'우호성',N:'신경성',O:'개방성'};
+    const traitsWithData = traits.filter(t => big5[t]!=null && voice[t]!=null);
+    const traitsSorted = traitsWithData.slice().sort((a,b)=>Math.abs(big5[b]-voice[b])-Math.abs(big5[a]-voice[a]));
+    const traitMap = traitsSorted.map(t => traitRow(tName[t], t, big5[t], voice[t], big5[t]-voice[t])).join('');
+
+    // 직무역량 매핑 (BIG5 → competency)
+    const cName = {E:'소통·주도력', C:'실행·신뢰력', A:'협업·관계력', N:'압박 내성·정서안정', O:'창의·적응력'};
+    const comps = traitsWithData.map(t=>{
+      const p = t==='N' ? 100-big5[t] : big5[t];
+      const v = t==='N' ? 100-voice[t] : voice[t];
+      const gap = p - v;
+      let chipCls='ok', chipLab='안정 발현';
+      if(gap >= 15){ chipCls='dev'; chipLab='개발 기회'; }
+      else if(gap <= -10){ chipCls='str'; chipLab='훈련된 강점'; }
+      if(t==='N' && big5.N>70){ chipCls='dev'; chipLab='정서 케어'; }
+      if(t==='N' && big5.N<45 && (big5.N-voice.N)<-25){ chipLab='개발 기회 · 번아웃 주의'; }
+      return {t, label: cName[t], p, v, gap, chipCls, chipLab};
+    }).sort((a,b)=>Math.abs(b.gap)-Math.abs(a.gap));
+    const compMap = comps.map(c => compRow(c.label, c.t, c.p, c.v, c.gap, c.chipCls, c.chipLab)).join('');
+
+    // 계측표 + 게이지
+    const cues = gaugeCues(f, q, voice, big5);
+    const judge = (val, ref) => val===null?['mid','—']:val<ref[0]?['lo','낮음']:val>ref[1]?['hi','높음']:['ok','적정'];
+    const tableRows = [];
+    if(f.F0) tableRows.push(['F0','기본 음정',`${f.F0} Hz`,'남 100–150 / 여 180–240 · 가창은 곡 음역 의존', f.F0>250?['mid','곡 음역대']:['ok','적정']]);
+    if(f.F1) tableRows.push(['F1','저공명·소리의 두께',`${f.F1} Hz`,'250–900 (모음 의존)', judge(f.F1,[250,900])]);
+    if(f.F2) tableRows.push(['F2','모음 공간·명료',`${f.F2} Hz`,'800–2900 (모음 의존)', judge(f.F2,[800,2900])]);
+    if(f.F3) tableRows.push(['F3','음색 개성·투사',`${f.F3} Hz`,"2400–3000 · 3000+ Singer's", f.F3>=3000?['ok','우수']:['mid','보통']]);
+    if(f.RMS) tableRows.push(['RMS','평균 음량',`${f.RMS}`,'0.015–0.06 (환경 의존)', f.RMS>0.08?['hi','과잉']:f.RMS<0.015?['lo','낮음']:['ok','적정']]);
+    if(f.DR) tableRows.push(['DR','다이내믹·강약 폭',`${f.DR} dB`,'8–20 · 14+ 우수', f.DR>=14?['ok','우수']:['mid','보통']]);
+    if(f.HNR) tableRows.push(['HNR','배음/잡음비·톤 맑기',`${f.HNR} dB`,'15–25 · 20+ 우수', f.HNR>=20?['ok','우수']:f.HNR<15?['lo','낮음']:['mid','보통']]);
+    if(f.JIT) tableRows.push(['Jitter','음정 안정',`${f.JIT} %`,'< 1.0 매우안정', f.JIT<1.5?['ok','안정']:['mid','주의']]);
+    if(f.SHI) tableRows.push(['Shimmer','음량 안정',`${f.SHI} %`,'< 3.8 안정', f.SHI<4?['ok','안정']:['hi','주의']]);
+    const tableHTML = tableRows.map(([code,lab,val,ref,j]) => `<tr><td><span class="code">${code}</span> ${lab}</td><td class="val">${val}</td><td class="ref">${ref}</td><td style="text-align:right"><span class="jg ${j[0]}">${j[1]}</span></td></tr>`).join('');
+
+    // 게이지 6개 (낮은 순)
+    const gaugeList = [
+      ['흉성 토대 (저음)', cues.bass, gauges.bass],
+      ['중역 공명 (중음)', cues.mid, gauges.mid],
+      ["상단 광채 (고음 · Singer's formant)", cues.top, gauges.top],
+      ['호흡 지지·다이내믹', cues.breath, gauges.breath],
+      ['톤 맑기·성대 폐쇄', cues.clarity, gauges.clarity],
+      ['표현력·무대성', cues.expr, gauges.expr]
+    ].sort((a,b)=>a[2]-b[2]);
+    const gaugesHTML = gaugeList.map(g => gaugeRow(g[0], g[1], g[2])).join('');
+
+    // 3-Layer 매핑
+    const reedDesc = (f.HNR && f.HNR<15)?`음원에 호흡이 새고 있습니다(HNR ${f.HNR}). 성문 폐쇄가 부족 — 톤 취약함의 직접 원인.`:f.HNR?`음원이 ${f.HNR>=20?'맑습니다':'대체로 안정적이며 약간의 여유'} (HNR ${f.HNR}).`:'음원 측정값을 입력하면 더 정확한 평가가 가능합니다.';
+    const resoDesc = `${f.F1?`F1 ${f.F1}${f.F1<350?'(낮음, 인두 미개방)':''}`:''} ${f.F2?` · F2 ${f.F2}${f.F2<1000?'(좁음)':''}`:''} — ${gauges.bass<35?'<b>흉성 토대 미발달</b>':gauges.mid>=65?'중역 공명 안정':'중역 발달 도중'}, ${gauges.top<40?'상단 광채 시작 단계':'상단 광채 형성 중'}.`;
+    const tissueDesc = `${f.DR?`DR ${f.DR}dB ${f.DR>=20?'우수':'보통'}`:''} ${f.RMS?` · RMS ${f.RMS}${f.RMS>0.08?'(과잉, 압박 의심)':f.RMS<0.015?'(낮음, 존재감 부족)':'(적정)'}`:''}`;
+
+    const layers = `<div class="layers">
+      <div class="layer"><div class="ln">LAYER 1 · REED</div><div class="lt">성대 진동원</div><div class="ld">${reedDesc}</div><div class="lm">${f.HNR?`HNR ${f.HNR}`:'—'}${f.JIT?` · Jit ${f.JIT}`:''}</div></div>
+      <div class="layer"><div class="ln">LAYER 2 · RESONANCE</div><div class="lt">성도 공명</div><div class="ld">${resoDesc}</div><div class="lm">${f.F1?`F1 ${f.F1}`:''}${f.F2?` · F2 ${f.F2}`:''}</div></div>
+      <div class="layer"><div class="ln">LAYER 3 · TISSUE BASE</div><div class="lt">호흡·지지 기반</div><div class="ld">${tissueDesc}</div><div class="lm">${f.DR?`DR ${f.DR}`:''}${f.RMS?` · RMS ${f.RMS}`:''}</div></div>
+    </div>`;
+
+    // 발성 역학 (heuristic findings)
+    const mechs = [];
+    if(text.signs.includes('과각성')||(f.RMS||0)>0.06) mechs.push(['긴장·압박','RMS가 참고치를 크게 상회 — 호흡 지지보다 성대 접촉압으로 음량 생성. 성대 피로·번아웃 점검.']);
+    if(gauges.bass<35) mechs.push(['흉성 토대 미발달','F1 낮음·저역 미발달 → 인두 개방·후두 안정 훈련으로 토대 형성 권장.']);
+    if(gauges.top<40) mechs.push(['상단 광채 시작','고배음·고역링 미형성 → "NG·마스크 배치"로 2.8–3.4kHz 응집 훈련.']);
+    if(gauges.clarity<40) mechs.push(['성문 폐쇄 부전','HNR 낮음/Shimmer 높음 → 호흡 누출. 폐쇄 훈련이 토대의 출발.']);
+    if(gauges.expr>=85) mechs.push(['표현력 우수','외향·우호 과발현 — 무대 캐릭터 이미 강점. 그 위에 토대 다지는 단계.']);
+    while(mechs.length<4) mechs.push(['추가 측정 권장','sub-bass<150Hz · VTL · 고역링 등 절대 지표 측정 시 정밀화.']);
+    const mechHTML = `<div class="mech">${mechs.slice(0,4).map(([t,d])=>`<div class="mc"><div class="mt">${t}</div><div class="md">${d}</div></div>`).join('')}</div>`;
+
+    const arcHTML = text.arc.map(a=>`<span class="st">${a}</span>`).join('');
+    const rxHTML = text.rx.map((r,i)=>`<div class="rxrow"><span class="rn">${String(i+1).padStart(2,'0')}</span><span>${r}</span></div>`).join('');
+
+    return `<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><title>${name} · TouchingVoice 발성심리 통합 리포트</title><style>${CSS}</style></head><body>
+<div class="kick">TouchingVoice · 발성심리 통합 리포트</div>
+<h1>${name} — 이 목소리의 초상</h1>
+<div class="meta">${meta}</div>
+<div class="hero">
+  <div class="hk">한 줄 판정 · 심리 역동 매트릭스</div>
+  <div class="row"><div class="verdict">${text.verdict}</div>
+    <div class="score"><div class="l">성격–음성 정합도</div><div class="v">${text.align}<small>%</small></div></div></div>
+  <div class="line">${text.heroLine}</div>
+</div>
+<div class="sec"><div class="sec-h"><span class="sec-n">01</span><span class="sec-t">한눈에</span><span class="sec-line"></span></div>
+  <p class="lead">${text.lead}</p>
+  ${text.summary.map(s=>`<p>${s}</p>`).join('')}</div>
+
+<div class="page"><div class="sec">
+  <div class="sec-h"><span class="sec-n">02</span><span class="sec-t">성격과 목소리 — 내가 보는 나 ↔ 몸이 내보내는 신호</span><span class="sec-line"></span></div>
+  <p style="font-size:10.5px;color:var(--muted);margin-bottom:4px">BIG5 성향과, 목소리가 무심코 드러내는 행동발현을 나란히 둡니다. 진한 막대=성향 / 옅은 막대=목소리.</p>
+  <div class="map">${traitMap}</div>
+  <div class="ti-wrap">
+    <div class="tag">✨ 5가지 성격 차원 해석 — 음향 근거와 임상 의미</div>
+    ${text.traitInterps.map(t => {
+      const COL = {E:'#6E5DC6', C:'#2E9E6B', A:'#4A7FD0', N:'#D05B57', O:'#D9A23F'};
+      const gapStr = t.gap>0?`+${t.gap}`:`${t.gap}`;
+      const gapCol = Math.abs(t.gap)<10?'#8A8195':(t.gap>0?'#B0883E':'#2257A8');
+      return `<div class="ti-card">
+        <div class="ti-h">
+          <span class="dot" style="background:${COL[t.key]}"></span>
+          <span class="ti-name">${t.name}</span>
+          <span class="ti-gap" style="color:${gapCol}">갭 ${gapStr}</span>
+          <span class="ti-formula">${t.formula}</span>
+        </div>
+        <div class="ti-basis"><b>음향 근거.</b> ${t.basis}</div>
+        <div class="ti-interp">${t.interp}</div>
+      </div>`;
+    }).join('')}
+  </div>
+</div></div>
+
+<div class="page"><div class="sec">
+  <div class="sec-h"><span class="sec-n">03</span><span class="sec-t">직무역량 발현 — 잠재(성향) vs 발현(행동)</span><span class="sec-line"></span></div>
+  <p style="font-size:10.5px;color:var(--muted);margin-bottom:4px">BIG5를 다섯 직무역량으로 환산해 '가진 잠재'와 '실제 발현'을 대조합니다. 진한=잠재 / 옅은=발현.</p>
+  <div class="map">${compMap}</div>
+  <div class="ti-wrap">
+    <div class="tag">✨ 5가지 직무역량 해석 — 음향 근거와 HR 의미</div>
+    ${text.compInterps.map(c => {
+      const COL = {E:'#6E5DC6', C:'#2E9E6B', A:'#4A7FD0', N:'#D05B57', O:'#D9A23F'};
+      const gapStr = c.gap>0?`+${c.gap}`:`${c.gap}`;
+      const gapCol = Math.abs(c.gap)<10?'#8A8195':(c.gap>0?'#B0883E':'#2257A8');
+      return `<div class="ti-card">
+        <div class="ti-h">
+          <span class="dot" style="background:${COL[c.key]}"></span>
+          <span class="ti-name">${c.name}</span>
+          <span class="ti-gap" style="color:${gapCol}">갭 ${gapStr}</span>
+          <span class="ti-formula">${c.source}</span>
+        </div>
+        <div class="ti-basis"><b>음향 근거.</b> ${c.basis}</div>
+        <div class="ti-interp">${c.interp}</div>
+      </div>`;
+    }).join('')}
+  </div>
+</div></div>
+
+<div class="page">
+  <div class="tech-kick">Acoustic Analysis · 음성기술 분석</div>
+  <div class="tech-h">발성 음향 정밀 계측</div>
+  <div class="tech-sub">측정 구간: ${song} · 포먼트·바이오마커 자동 산출(중앙값) · 참고 범위는 일반 성인 참고치</div>
+  <table class="meas"><thead><tr><th style="width:140px">지표</th><th style="width:74px">측정값</th><th>참고 범위</th><th style="width:84px;text-align:right">판정</th></tr></thead><tbody>${tableHTML}</tbody></table>
+  <div class="sec" style="margin-top:11px"><div class="sec-h"><span class="sec-n">A</span><span class="sec-t">발달도 평가 — 절대 기준 대비</span><span class="sec-line"></span></div>
+    <div class="gauges">${gaugesHTML}</div>
+    <p class="gnote-sub">※ 절대 기준 대비 발달도(0–100%). 음역 라벨: 저음(흉성 토대) · 중음(중역 공명) · 고음(상단 광채). sub-bass·VTL·고역링 등 추가 측정 시 정밀화.</p></div>
+  <div class="sec" style="margin-top:10px"><div class="sec-h"><span class="sec-n">B</span><span class="sec-t">3-Layer 발성 생성 모델 매핑</span><span class="sec-line"></span></div>${layers}</div>
+  <div class="sec" style="margin-top:10px"><div class="sec-h"><span class="sec-n">C</span><span class="sec-t">발성 역학 소견</span><span class="sec-line"></span></div>${mechHTML}</div>
+</div>
+
+<div class="page"><div class="ai-page">
+  <div class="ai-kick">AI Integrated Analysis · 종합 소견</div>
+  <div class="ai-h">AI 종합 분석</div>
+  <div class="ai-sub">성격(BIG5) · 직무역량 발현 · 음향 계측 · 발성 역학을 하나로 통합한 최종 해석</div>
+  <div class="ai-verdict">"${text.aiVerdict}"</div>
+  ${text.aiFinal.map(p=>`<p>${p}</p>`).join('')}
+  <div class="arc">${arcHTML}</div>
+  <div class="rxbox"><div class="rt">핵심 처방</div>${rxHTML}</div>
+  <div class="ai-foot">· 본 리포트는 BIG5 자기보고와 음향 측정값을 통합한 발성·자기인식 코칭 자료이며, 임상 진단이나 채용·인사 평가의 단독 근거가 아닙니다. 음향값은 측정 구간(${song})에 따라 달라지는 상태값입니다. · TouchingVoice 보이스매트릭스 · ${new Date().getFullYear()}</div>
+</div></div>
+
+<div style="margin-top:30px;text-align:center;padding:20px;background:#FAF6EF;border-radius:11px;font-size:11px;color:var(--muted);" class="no-print">
+  💡 <b>이 페이지에서</b> Ctrl/Cmd + P 를 눌러 PDF로 저장하세요. 저장 시 '여백: 없음' 옵션 권장.
+  <style>@media print{.no-print{display:none;}}</style>
+</div>
+
+</body></html>`;
+  }
+
+  // ────────── 메인 진입점 ──────────
+  window.renderTVReport5Page = function(){
+    const big5 = {E:_v('i-E'), C:_v('i-C'), A:_v('i-A'), N:_v('i-N'), O:_v('i-O'), V:_v('i-V')};
+    const f = {F0:_v('i-F0'), F1:_v('i-F1'), F2:_v('i-F2'), F3:_v('i-F3'),
+               F4:_v('i-F4'), F5:_v('i-F5'),
+               RMS:_v('i-RMS'), DR:_v('i-DR'), HNR:_v('i-HNR'),
+               JIT:_v('i-JIT'), SHI:_v('i-SHI')};
+    const q = {b100:_v('i-b100'), b300:_v('i-b300'), b600:_v('i-b600'),
+               b1200:_v('i-b1200'), b2500:_v('i-b2500'), b4000:_v('i-b4000'),
+               b5500:_v('i-b5500'), b7000:_v('i-b7000'), b8000:_v('i-b8000')};
+    const name = _t('i-name') || '대상자';
+    let meta = _t('i-meta');
+    const song = _t('i-song') || '응급실';
+    if(!meta) meta = `측정 구간 ${song}(1절) · ${new Date().getFullYear()}.${String(new Date().getMonth()+1).padStart(2,'0')}`;
+
+    // BIG5 기본값 채우기 (입력 없으면 50)
+    ['E','C','A','N','O'].forEach(k=>{ if(big5[k]==null) big5[k]=50; });
+
+    const voice = projectVoice(big5, f, q);
+    // audioAnalysisResult.advanced (절대 측정값) 활용 — bass·top 정밀도 ↑
+    const adv = (typeof audioAnalysisResult !== 'undefined' && audioAnalysisResult && audioAnalysisResult.advanced) ? audioAnalysisResult.advanced : null;
+    const gauges = computeGauges(big5, voice, f, q, adv);
+    const text = composeNarrative(big5, voice, f, q, gauges, name);
+    text.traitInterps = composeTraitInterpretations(big5, voice, f, q);
+    text.compInterps = composeCompetencyInterpretations(big5, voice, f, q);
+
+    const html = buildReportHTML({name, meta, song, big5, voice, f, q, gauges, text});
+
+    const w = window.open('', '_blank', 'width=920,height=1100');
+    if(!w){ alert('팝업이 차단되었습니다. 팝업 차단을 해제하고 다시 시도해주세요.'); return; }
+    w.document.write(html);
+    w.document.close();
+  };
+})();
+
 </script>
 </body>
 </html>
