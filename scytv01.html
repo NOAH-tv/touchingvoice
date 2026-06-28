@@ -217,6 +217,7 @@ function render(){
   else if(st==='info') html+=infoView();
   else if(st==='record') html+=recordView();
   else if(st==='gen') html+=genView();
+  else if(st==='qr') html+=qrView();
   else if(st==='report') html+=reportView();
   col.innerHTML=html;
   if(st==='survey') setupSurvey();
@@ -567,6 +568,22 @@ function genView(){
   '</div>';
 }
 function setGen(t){ var e=$('genStatus'); if(e) e.textContent=t; }
+function qrView(){
+  return '<div class="scr" style="align-items:center;justify-content:center;padding:30px 24px 40px;gap:20px;text-align:center">'+
+    '<div>'+
+      '<div style="font-size:44px;margin-bottom:4px">✅</div>'+
+      '<div style="font-weight:900;font-size:24px;color:#fff">검사 완료!</div>'+
+      '<div style="font-weight:400;font-size:14px;color:#bcaee0;line-height:1.7;margin-top:10px">아래 QR코드를 휴대폰 카메라로 비추면<br>나만의 목소리 분석 결과를 볼 수 있어요</div>'+
+    '</div>'+
+    '<div style="background:#fff;padding:16px;border-radius:24px;box-shadow:0 12px 44px rgba(123,59,255,.3)">'+
+      (S.qrSrc
+        ? '<img src="'+S.qrSrc+'" style="width:248px;height:248px;display:block" alt="결과 QR코드">'
+        : '<div style="width:248px;height:248px;display:flex;align-items:center;justify-content:center;color:#999;font-size:13px">QR 생성 중…</div>')+
+    '</div>'+
+    '<div style="font-weight:700;font-size:13px;color:#c8b3ff;line-height:1.7">📷 폰 카메라 앱을 열고 QR을 비추세요<br><span style="font-weight:400;font-size:12px;color:#9d8fc4">결과 페이지에서 이미지 저장 + 인스타·유튜브도 만나요</span></div>'+
+    '<button class="btn-primary" style="height:54px;width:100%;max-width:340px;margin-top:8px" onclick="restart()">다음 검사 시작하기</button>'+
+  '</div>';
+}
 function publish(){
   if(S.blob && !S.wavSaved){ try{ downloadAudio(); S.wavSaved=true; }catch(e){} }
   go('gen');
@@ -576,17 +593,18 @@ function publish(){
     tries++; setTimeout(wait,100);
   })();
   function proceed(){
-    setGen('레포트 이미지를 그리는 중...');
-    buildReport().then(function(dataUrl){
-      S.reportDataUrl=dataUrl;
-      setGen('드라이브에 업로드하는 중...');
-      return uploadReport(dataUrl).catch(function(){return '';});
-    }).then(function(url){
-      S.qrSrc=makeQR(buildResultURL()); S.qrFallback=false;
-      saveRecord().then(function(){ renderDataRow(); syncPending(); });
-      S.count=S.count+1; localStorage.setItem('tv_count',String(S.count));
-      go('report');
-    });
+    // 결과 데이터만 있으면 QR은 즉시 생성 → 바로 QR 화면(키오스크엔 결과 미표시)
+    S.qrSrc=makeQR(buildResultURL()); S.qrFallback=false;
+    S.count=S.count+1; localStorage.setItem('tv_count',String(S.count));
+    go('qr');
+    // 관리자 기록용(드라이브 백업 + 로컬 저장)은 백그라운드에서 처리
+    setTimeout(function(){
+      buildReport().then(function(dataUrl){
+        S.reportDataUrl=dataUrl;
+        uploadReport(dataUrl).catch(function(){return '';});
+        saveRecord().then(function(){ renderDataRow(); syncPending(); });
+      }).catch(function(e){ console.warn('record build',e); saveRecord().then(function(){ renderDataRow(); syncPending(); }); });
+    }, 50);
   }
 }
 // 파형(peaks)을 48포인트·1자리로 압축 (QR 길이 절약, 실제 파형 유지)
