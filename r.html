@@ -1307,14 +1307,76 @@ function setupReport(){
   _activeReportTab=0;
 }
 
-if(!getAdminToken()) S.step='login';
-render();
-try{
-  window.addEventListener('online', function(){ syncPending(); });
-  document.addEventListener('visibilitychange', function(){ if(!document.hidden) syncPending(); });
-  setInterval(function(){ syncPending(); }, 120000);
-  setTimeout(function(){ renderDataRow(); syncPending(); }, 1500);
-}catch(e){ console.warn('auto-sync init',e); }
+// ============ 결과 페이지 (폰에서 QR로 열림) ============
+function _rpStr(k){ return new URLSearchParams(location.search).get(k); }
+function _rpNum(k){ var v=_rpStr(k); return v===null?0:(parseFloat(v)||0); }
+function _rpDecodePeaks(s){ if(!s) return null; var a=[]; for(var i=0;i<s.length;i++){ a.push((parseInt(s.charAt(i),10)||0)/9); } return a; }
+function rpSaveImage(){
+  if(!S.reportDataUrl) return;
+  var a=document.createElement('a'); a.href=S.reportDataUrl; a.download=(S.name||'touchingvoice')+'_보이스레포트.png';
+  document.body.appendChild(a); a.click(); a.remove();
+}
+function rpLoading(){
+  var col=$('col'); if(!col) return;
+  col.innerHTML='<div class="scr" style="align-items:center;justify-content:center;padding:70px 30px;gap:22px">'+
+    '<div style="width:80px;height:80px;border-radius:50%;border:3px solid rgba(255,255,255,.12);border-top-color:#e05cff;animation:spin 1s linear infinite"></div>'+
+    '<div style="font-weight:800;font-size:16px;color:#fff">결과를 불러오는 중...</div>'+
+  '</div>';
+}
+function rpLanding(){
+  var col=$('col'); if(!col) return;
+  col.innerHTML='<div class="scr" style="align-items:center;justify-content:center;padding:70px 30px;gap:16px;text-align:center">'+
+    '<div style="font-size:42px">🎙</div>'+
+    '<div style="font-weight:900;font-size:20px;color:#fff">터칭보이스 보이스 레포트</div>'+
+    '<div style="font-weight:400;font-size:13px;color:#bcaee0;line-height:1.75">이 페이지는 검사 결과 QR을 스캔하면 열려요.<br>검사를 먼저 진행해 주세요.</div>'+
+    '<a href="'+IG_URL+'" target="_blank" rel="noopener" style="margin-top:12px;display:flex;align-items:center;justify-content:center;height:50px;padding:0 26px;border-radius:14px;text-decoration:none;font-weight:800;font-size:14px;color:#fff;background:linear-gradient(135deg,#feda75,#d62976,#962fbf)">📷 터칭보이스 인스타 보기</a>'+
+  '</div>';
+}
+function rpError(){
+  var col=$('col'); if(!col) return;
+  col.innerHTML='<div class="scr" style="align-items:center;justify-content:center;padding:70px 30px;gap:16px;text-align:center">'+
+    '<div style="font-size:42px">⚠️</div>'+
+    '<div style="font-weight:800;font-size:17px;color:#fff">결과를 표시할 수 없어요</div>'+
+    '<div style="font-weight:400;font-size:13px;color:#bcaee0;line-height:1.75">QR을 다시 스캔하거나<br>검사를 다시 진행해 주세요.</div>'+
+  '</div>';
+}
+function rpResult(dataUrl){
+  var col=$('col'); if(!col) return;
+  var nm = S.name ? (esc(S.name)+'님') : '나';
+  col.innerHTML=
+    '<div class="scr" style="padding:22px 16px 44px;gap:16px">'+
+      '<div style="text-align:center;padding-top:6px">'+
+        '<div style="font-weight:800;letter-spacing:3px;font-size:11px;color:#9d8fc4">TOUCHING VOICE</div>'+
+        '<div style="font-weight:900;font-size:21px;color:#fff;margin-top:7px;line-height:1.4">'+nm+'의<br>목소리 분석 결과</div>'+
+      '</div>'+
+      '<img src="'+dataUrl+'" style="width:100%;border-radius:18px;box-shadow:0 12px 44px rgba(0,0,0,.45)" alt="목소리 분석 레포트">'+
+      '<div style="font-size:11px;color:#7d6bb0;text-align:center;margin-top:-2px">이미지를 길게 눌러 저장하거나, 아래 버튼을 누르세요</div>'+
+      '<button onclick="rpSaveImage()" style="width:100%;height:54px;border:none;border-radius:16px;font-weight:800;font-size:15px;color:#1a0b2e;background:linear-gradient(135deg,#a26bff,#e05cff);display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 8px 28px rgba(160,107,255,.4)">📸 결과 이미지 저장하기</button>'+
+      '<div style="background:linear-gradient(135deg,rgba(123,59,255,.2),rgba(224,92,255,.12));border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:20px 16px;text-align:center;margin-top:4px">'+
+        '<div style="font-weight:800;font-size:14px;color:#fff;margin-bottom:7px">🎙 터칭보이스와 함께해요</div>'+
+        '<div style="font-weight:400;font-size:12px;color:#bcaee0;line-height:1.7;margin-bottom:16px">팔로우하면 매주 보이스 성장 팁과<br>새로운 콘텐츠를 받아볼 수 있어요!</div>'+
+        '<a href="'+IG_URL+'" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;gap:9px;height:52px;border-radius:14px;text-decoration:none;font-weight:800;font-size:14px;color:#fff;background:linear-gradient(135deg,#feda75,#d62976,#962fbf);box-shadow:0 6px 20px rgba(214,41,118,.4);margin-bottom:10px">📷 인스타그램 팔로우</a>'+
+        '<a href="'+YT_URL+'" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;gap:9px;height:52px;border-radius:14px;text-decoration:none;font-weight:800;font-size:14px;color:#fff;background:#ff0033;box-shadow:0 6px 20px rgba(255,0,51,.3)">▶ YouTube 구독</a>'+
+        '<div style="margin-top:14px;font-weight:400;font-size:11px;color:#7d6bb0">@touchingvoice_official</div>'+
+      '</div>'+
+    '</div>';
+  window.scrollTo(0,0);
+}
+// 부팅: URL 파라미터로 결과 재생성 → 이미지 + 팔로우 화면
+(function(){
+  S.name=_rpStr('nm')||''; S.age=_rpStr('ag')||''; S.gender=_rpStr('g')||''; S.song=_rpStr('sg')||'';
+  S.scores={E:_rpNum('E'),C:_rpNum('C'),A:_rpNum('A'),N:_rpNum('N'),O:_rpNum('O')};
+  S.metrics={
+    F0:_rpNum('f0'),F1:_rpNum('f1'),F2:_rpNum('f2'),F3:_rpNum('f3'),F4:_rpNum('f4'),F5:_rpNum('f5'),
+    rms:_rpNum('rm'),dr:_rpNum('dr'),hnr:_rpNum('hn'),jitter:_rpNum('jt'),shimmer:_rpNum('sh'),
+    freqPct:{hz100:_rpNum('b0'),hz300:_rpNum('b1'),hz600:_rpNum('b2'),hz1200:_rpNum('b3'),hz2500:_rpNum('b4'),hz4000:_rpNum('b5'),hz5500:_rpNum('b6'),hz7000:_rpNum('b7'),hz8000:_rpNum('b8')},
+    peaks:_rpDecodePeaks(_rpStr('pk'))
+  };
+  var hasData = (_rpStr('E')!==null) || (_rpStr('f0')!==null);
+  if(!hasData){ rpLanding(); return; }
+  rpLoading();
+  buildReport().then(function(dataUrl){ S.reportDataUrl=dataUrl; rpResult(dataUrl); }).catch(function(e){ console.warn('rp build',e); rpError(); });
+})();
 
 </script>
 </body>
