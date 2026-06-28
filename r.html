@@ -625,7 +625,7 @@ function buildReport(){
     Promise.race([_fontReady,_fontTimeout]).then(function(){
     // ── 캔버스 크기를 통합 레포트에 맞게 확장 ──
     var cv=$('reportCanvas');
-    cv.width=1080; cv.height=2420;
+    cv.width=1080; cv.height=2495;
     var ctx=cv.getContext('2d'), W=cv.width, H=cv.height;
 
     // ── 배경 그라디언트 ──
@@ -648,22 +648,22 @@ function buildReport(){
     var logo=$('logoSrc');
     if(logo&&logo.complete&&logo.naturalWidth){
       var lw=240,lh=lw*logo.naturalHeight/logo.naturalWidth;
-      ctx.drawImage(logo,(W-lw)/2,y,lw,lh); y+=lh+36;
-    } else { y+=88; }
+      ctx.drawImage(logo,(W-lw)/2,y,lw,lh); y+=lh+52;
+    } else { y+=104; }
 
     ctx.textAlign='center';
     ctx.fillStyle='rgba(255,255,255,.35)';
     ctx.font='600 22px NanumSquare,sans-serif';
-    ctx.fillText('VOICE REPORT × 서초유스센터',W/2,y); y+=58;
+    ctx.fillText('VOICE REPORT × 서초유스센터',W/2,y); y+=78;
 
     // ── 이름 + 타입 ──
     ctx.fillStyle='#ffffff';
     ctx.font='900 64px NanumSquare,sans-serif';
-    ctx.fillText(S.name+' 님',W/2,y); y+=80;
+    ctx.fillText(S.name+' 님',W/2,y); y+=104;
     var dom=dominant();
     ctx.fillStyle=dom.color;
     ctx.font='800 36px NanumSquare,sans-serif';
-    ctx.fillText(dom.type,W/2,y); y+=64;
+    ctx.fillText(dom.type,W/2,y); y+=76;
 
     // ── 구분선 ──
     var lg=ctx.createLinearGradient(PAD,0,W-PAD,0);
@@ -1342,13 +1342,8 @@ function rpError(){
 }
 function rpResult(dataUrl){
   var col=$('col'); if(!col) return;
-  var nm = S.name ? (esc(S.name)+'님') : '나';
   col.innerHTML=
-    '<div class="scr" style="padding:22px 16px 44px;gap:16px">'+
-      '<div style="text-align:center;padding-top:6px">'+
-        '<div style="font-weight:800;letter-spacing:3px;font-size:11px;color:#9d8fc4">TOUCHING VOICE</div>'+
-        '<div style="font-weight:900;font-size:21px;color:#fff;margin-top:7px;line-height:1.4">'+nm+'의<br>목소리 분석 결과</div>'+
-      '</div>'+
+    '<div class="scr" style="padding:24px 16px 44px;gap:16px">'+
       '<img src="'+dataUrl+'" style="width:100%;border-radius:18px;box-shadow:0 12px 44px rgba(0,0,0,.45)" alt="목소리 분석 레포트">'+
       '<div style="font-size:11px;color:#7d6bb0;text-align:center;margin-top:-2px">이미지를 길게 눌러 저장하거나, 아래 버튼을 누르세요</div>'+
       '<button onclick="rpSaveImage()" style="width:100%;height:54px;border:none;border-radius:16px;font-weight:800;font-size:15px;color:#1a0b2e;background:linear-gradient(135deg,#a26bff,#e05cff);display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 8px 28px rgba(160,107,255,.4)">📸 결과 이미지 저장하기</button>'+
