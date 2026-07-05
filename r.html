@@ -146,6 +146,7 @@ function micIcon(){ return '<svg width="22" height="22" viewBox="0 0 24 24" fill
 // 관리자 인증 (검증은 Apps Script 서버에서 수행 — 비밀번호는 클라이언트에 없음)
 // ════════════════════════════════════════
 var ADMIN_TOKEN_KEY='tv_admin_token';
+var ACCESS_TOKEN='tv-scy-72a3da7c2fd012ec05e4e9d67e3b0bf396d4ea58';  // 백엔드와 반드시 동일해야 함
 function getAdminToken(){
   try{ var raw=sessionStorage.getItem(ADMIN_TOKEN_KEY); if(!raw) return null;
     var o=JSON.parse(raw); if(!o||!o.token||!o.exp||Date.now()>o.exp){ sessionStorage.removeItem(ADMIN_TOKEN_KEY); return null; }
@@ -170,7 +171,7 @@ function adminLogin(){
   if(btn){ btn.disabled=true; btn.textContent='확인 중…'; } if(msg) msg.textContent='';
   _sha256Hex(pass).then(function(h){
     if(user===ADMIN_USER && h===ADMIN_PASS_HASH){
-      setAdminToken('ok-'+Date.now(), 8*3600*1000); S.step='splash'; render();
+      setAdminToken(ACCESS_TOKEN, 8*3600*1000); S.step='splash'; render();
     } else {
       if(msg) msg.textContent='아이디 또는 비밀번호가 올바르지 않습니다.'; if(btn){ btn.disabled=false; btn.textContent='로그인'; }
     }
