@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>발성심리지도사협회 | 터칭보이스</title>
+<meta name="description" content="특허출원 기술 위에 세운 발성심리학. 발성심리지도사 2급·1급 자격과정과 온라인 강의실.">
+<link rel="stylesheet" href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square.css">
+<style>
+/* ═══════════════════════════════════════════════════════════
+   터칭보이스 통합 디자인 v3 — 파트너십 페이지 디자인 원본 이식
+   그라데이션·타이포·각·리빌 동일 / 로고 브랜드 #43227D 기능색
+   ═══════════════════════════════════════════════════════════ */
+@font-face{font-family:'Paperlogy';font-weight:400;font-display:swap;
+  src:url('./Paperlogy-4Regular.ttf') format('truetype'),
+      url('https://noah-tv.github.io/touchingvoice/Paperlogy-4Regular.ttf') format('truetype');}
+@font-face{font-family:'Paperlogy';font-weight:800;font-display:swap;
+  src:url('./Paperlogy-7Bold.ttf') format('truetype'),
+      url('https://noah-tv.github.io/touchingvoice/Paperlogy-7Bold.ttf') format('truetype');}
+
+:root{
+  --purple-deep:#2A1538; --purple-700:#3D2154; --purple-600:#4E2E7A;
+  --purple-500:#6E4A8E; --purple-400:#8B6BAB; --purple-300:#B89FD0;
+  --purple-200:#D6C6E8; --purple-100:#EFE6F0;
+  --beige-050:#FBF7EC; --beige-100:#F5EEDD; --beige-200:#EDE1C7;
+  --beige-300:#E3D3AF; --beige-400:#D4BE8E; --sand:#C9B583;
+  --ivory:#FBF7EC; --ivory-warm:#F5EEE0; --paper:#FAF6EA; --lavender-soft:#F4ECF5;
+  --ink:#1F1428; --ink-soft:#3D2154; --muted:#6B5778; --muted-light:#8B7B98;
+  --rule:#D8CBDD; --rule-soft:#E8DEF0;
+  --accent:#C9B583; --accent-soft:#E3D3AF; --accent-deep:#A8925A;
+  --brand:#43227D;
+  --ok:#4caf7d; --warn:#e0a13c; --bad:#d4645a;
+  --font-body:"NanumSquare","Paperlogy","Apple SD Gothic Neo",-apple-system,sans-serif;
+  --font-display:"NanumSquare","Paperlogy","Apple SD Gothic Neo",-apple-system,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--font-body);background:var(--ivory);color:var(--ink);
+  line-height:1.65;font-size:16px;font-weight:400;letter-spacing:-0.01em;overflow-x:hidden;
+}
+/* 원본과 동일한 바디 텍스처 그라데이션 */
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:1;
+  background-image:
+    radial-gradient(circle at 25% 25%, rgba(139,107,171,0.03) 0%, transparent 35%),
+    radial-gradient(circle at 75% 75%, rgba(212,190,142,0.03) 0%, transparent 40%);
+}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit;font-size:1rem}
+:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+::selection{background:var(--accent-soft);color:var(--ink)}
+main,nav,footer,.modal-bg,#toast,.demo-banner{position:relative;z-index:2}
+
+.section-inner{max-width:1320px;margin:0 auto}
+.section{padding:120px 32px}
+.section-header{margin-bottom:64px;max-width:800px}
+.section-eyebrow{
+  display:inline-flex;align-items:center;gap:10px;font-size:11px;font-weight:600;
+  color:var(--purple-500);letter-spacing:0.22em;text-transform:uppercase;margin-bottom:20px;
+}
+.section-eyebrow .num{font-family:var(--font-display);font-size:18px;color:var(--purple-400);font-weight:400}
+.section-title{
+  font-family:var(--font-display);font-size:clamp(32px,4.5vw,56px);font-weight:800;
+  line-height:1.2;letter-spacing:-0.025em;color:var(--purple-deep);margin-bottom:20px;
+}
+.section-title .it{font-family:var(--font-display);font-weight:300;color:var(--purple-500)}
+.section-lede{font-size:17px;line-height:1.7;color:var(--muted);font-weight:400}
+.section-lede strong{color:var(--purple-deep);font-weight:600}
+
+/* 다크 테마 오버라이드 (원본 방식) */
+.dark-sec .section-eyebrow,.dark-sec .section-eyebrow .num{color:var(--accent-soft)}
+.dark-sec .section-title{color:#fff}
+.dark-sec .section-title .it{color:var(--accent-soft);font-weight:300}
+.dark-sec .section-lede{color:rgba(255,255,255,0.82)}
+.dark-sec .section-lede strong{color:#fff}
+
+/* Reveal — 원본 동일 */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .8s ease,transform .8s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+
+/* ── 버튼 (에디토리얼: 각·트래킹) ── */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  padding:16px 32px;font-size:14px;font-weight:700;letter-spacing:0.04em;
+  border:1px solid transparent;transition:transform .18s ease,box-shadow .18s ease,background .18s ease;
+}
+.btn:hover{transform:translateY(-2px)}
+.btn-accent{background:var(--accent);color:var(--purple-deep)}
+.btn-accent:hover{box-shadow:0 10px 28px rgba(201,181,131,.4)}
+.btn-ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.35)}
+.btn-ghost:hover{border-color:var(--accent-soft);color:var(--accent-soft)}
+.btn-purple{background:var(--purple-deep);color:#fff}
+.btn-purple:hover{box-shadow:0 10px 28px rgba(42,21,56,.3)}
+.btn-sm{padding:10px 20px;font-size:12.5px}
+.btn[disabled]{opacity:.45;pointer-events:none}
+
+/* ── 네비게이션 ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(251,247,236,.92);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--rule-soft);
+}
+.nav-inner{max-width:1320px;margin:0 auto;padding:0 32px;height:64px;display:flex;align-items:center;gap:20px}
+.brand{display:flex;align-items:center;gap:14px}
+.logo{display:block;width:auto}
+.logo-nav{height:22px}
+.logo-foot{height:20px;margin:0 auto 18px}
+.brand-sub{
+  font-size:11px;font-weight:600;color:var(--muted);letter-spacing:0.18em;
+  border-left:1px solid var(--rule);padding-left:14px;line-height:1.3;
+}
+.nav-links{display:flex;gap:2px;margin-left:auto;align-items:center}
+.nav-links a{padding:8px 14px;font-size:13.5px;color:var(--muted);font-weight:700;letter-spacing:0.02em}
+.nav-links a:hover{color:var(--purple-deep)}
+.nav-links a.active{color:var(--purple-deep);box-shadow:inset 0 -2px 0 var(--accent)}
+.nav-cta{margin-left:10px}
+.nav-toggle{display:none;margin-left:auto;background:none;border:1px solid var(--rule);color:var(--ink-soft);padding:8px 12px;font-size:1.05rem}
+
+/* ── 히어로 (원본 그라데이션·글로우 동일) ── */
+.hero{
+  min-height:100vh;padding:120px 32px 80px;display:flex;align-items:center;
+  position:relative;overflow:hidden;color:#fff;
+  background:linear-gradient(165deg,#1A0A24 0%,var(--purple-deep) 32%,var(--purple-500) 72%,var(--purple-300) 100%);
+}
+.hero::before{
+  content:"";position:absolute;top:-100px;right:-200px;width:720px;height:720px;
+  background:radial-gradient(circle, rgba(184,159,208,0.18) 0%, transparent 65%);pointer-events:none;
+}
+.hero::after{
+  content:"";position:absolute;bottom:-150px;left:-150px;width:500px;height:500px;
+  background:radial-gradient(circle, rgba(227,211,175,0.16) 0%, transparent 60%);pointer-events:none;
+}
+.hero-inner{max-width:1320px;margin:0 auto;width:100%;position:relative}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:12px;margin-bottom:32px;
+  font-size:12px;font-weight:600;color:var(--accent-soft);letter-spacing:0.22em;text-transform:uppercase;
+}
+.hero-eyebrow::before{content:"";width:36px;height:1px;background:var(--accent-soft)}
+.hero-title{
+  font-family:var(--font-display);font-size:clamp(52px,8vw,120px);font-weight:800;
+  line-height:1.08;letter-spacing:-0.04em;color:#fff;margin-bottom:36px;max-width:1100px;
+}
+.hero-title .accent{font-family:var(--font-display);font-weight:300;color:var(--accent-soft);letter-spacing:-0.02em}
+.hero-sub{
+  font-family:var(--font-body);font-size:clamp(15px,1.3vw,18px);line-height:1.75;
+  color:rgba(255,255,255,0.78);max-width:760px;margin-bottom:44px;font-weight:400;
+}
+.hero-sub strong{color:#fff;font-weight:700}
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:56px}
+.hero-meta{display:flex;gap:48px;align-items:baseline;flex-wrap:wrap;padding-top:32px;border-top:1px solid rgba(255,255,255,0.12)}
+.hero-meta-item .label{
+  font-size:11px;color:rgba(255,255,255,0.5);letter-spacing:0.18em;
+  text-transform:uppercase;margin-bottom:6px;font-weight:600;
+}
+.hero-meta-item .value{font-family:var(--font-display);font-size:18px;color:var(--accent-soft);font-weight:800}
+
+/* ── 성문 인장 (보조 모티프) ── */
+.seal-svg circle{fill:none;stroke:var(--accent)}
+.seal-svg .wave{fill:none;stroke:var(--accent);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+
+/* ── 01 이론: 라이트 카드 (각·헤어라인) ── */
+#theory{background:linear-gradient(180deg,var(--ivory) 0%,var(--beige-050) 100%)}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--rule);border:1px solid var(--rule);margin-top:8px}
+.card3{background:#fff;padding:40px 34px}
+.card3 .layer-no{font-family:var(--font-display);font-size:11px;font-weight:600;letter-spacing:0.2em;color:var(--purple-400);margin-bottom:16px;display:block}
+.card3 h3{font-family:var(--font-display);font-size:20px;font-weight:800;color:var(--purple-deep);margin-bottom:6px}
+.card3 .en{font-size:12px;color:var(--muted-light);letter-spacing:0.08em;margin-bottom:16px;font-weight:600}
+.card3 p{font-size:14.5px;line-height:1.7;color:var(--muted)}
+.card3 .muscle-tag{
+  display:inline-block;margin-top:18px;background:var(--purple-100);color:var(--brand);
+  padding:6px 12px;font-size:12px;font-weight:700;letter-spacing:0.04em;
+}
+
+/* ── 02 자격: 롱 그라데이션 밴드 + 유리질 path-cell (원본) ── */
+#cert{
+  background:linear-gradient(180deg, var(--purple-700) 0%, var(--purple-500) 30%, var(--purple-300) 62%, var(--beige-200) 100%);
+  color:#fff;position:relative;overflow:hidden;
+}
+#cert::before{
+  content:"";position:absolute;top:-200px;right:-200px;width:600px;height:600px;
+  background:radial-gradient(circle, rgba(184,159,208,0.12) 0%, transparent 60%);pointer-events:none;
+}
+.path-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:8px}
+.path-cell{
+  background:rgba(255,255,255,0.92);border:1px solid rgba(255,255,255,0.3);
+  padding:30px 22px 26px;text-align:center;backdrop-filter:blur(8px);
+}
+.path-cell.last{background:var(--purple-deep);border-color:var(--purple-deep);color:#fff}
+.path-cell .step{font-family:var(--font-display);font-size:10px;font-weight:600;color:var(--muted-light);letter-spacing:0.18em;margin-bottom:10px}
+.path-cell.last .step{color:var(--accent-soft)}
+.path-cell .label{font-family:var(--font-display);font-size:19px;font-weight:800;color:var(--purple-deep);margin-bottom:10px;line-height:1.25}
+.path-cell.last .label{color:#fff}
+.path-cell .desc{font-size:12.5px;line-height:1.6;color:var(--muted)}
+.path-cell.last .desc{color:rgba(255,255,255,0.78)}
+.path-cell .ck{font-family:var(--font-display);font-size:11px;color:var(--accent);letter-spacing:0.18em;font-weight:600;display:block;margin-top:14px}
+.cert-note{margin-top:36px;font-size:13px;color:var(--ink-soft);max-width:720px;font-weight:500}
+
+/* ── 03 커리큘럼: 원본 테이블 ── */
+#curriculum{background:linear-gradient(180deg,var(--beige-050) 0%,var(--beige-100) 100%)}
+.curri-table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--rule);font-size:14px}
+.curri-table th{
+  background:var(--purple-deep);color:#fff;padding:14px 18px;text-align:left;
+  font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;
+}
+.curri-table td{padding:18px;border-bottom:1px solid var(--rule-soft);vertical-align:top;line-height:1.65;color:var(--ink-soft)}
+.curri-table tr:last-child td{border-bottom:none}
+.curri-table .stage-cell-td{
+  background:var(--purple-deep);color:#fff;font-family:var(--font-display);
+  font-weight:700;text-align:center;width:90px;font-size:16px;
+}
+.curri-table .week-cell{background:var(--ivory-warm);color:var(--purple-deep);font-weight:600;text-align:center;width:110px;white-space:nowrap}
+.curri-table strong{color:var(--purple-deep);font-weight:600}
+
+/* ── 04 강의실: 다크 + founder 스타일 ── */
+#lecture-intro{background:linear-gradient(160deg,var(--purple-deep) 0%,var(--purple-600) 55%,var(--purple-400) 100%);color:#fff;position:relative;overflow:hidden}
+#lecture-intro::before{
+  content:"";position:absolute;top:-200px;right:-200px;width:600px;height:600px;
+  background:radial-gradient(circle, rgba(184,159,208,0.12) 0%, transparent 60%);pointer-events:none;
+}
+.lecture-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:64px;align-items:center;position:relative}
+.founder-id{border-left:2px solid var(--accent);padding-left:36px}
+.lp-list{list-style:none;padding:0}
+.lp-list li{padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.1);font-size:14.5px;line-height:1.6;color:rgba(255,255,255,0.85)}
+.lp-list li:last-child{border-bottom:none}
+.lp-list li b{color:var(--accent-soft);font-weight:800;margin-right:12px;font-family:var(--font-display)}
+.lec-side{text-align:center}
+.lp-side-note{color:rgba(255,255,255,0.6);font-size:13px;margin-top:16px;margin-bottom:24px}
+
+/* ── 05 일정 ── */
+#events{background:linear-gradient(180deg,var(--beige-100) 0%,var(--beige-050) 100%)}
+.event-list{display:grid;gap:2px;background:var(--rule);border:1px solid var(--rule)}
+.event{display:grid;grid-template-columns:150px 1fr;gap:24px;align-items:center;background:#fff;padding:26px 30px}
+.event .date{font-family:var(--font-display);font-weight:800;color:var(--purple-deep);font-size:20px;line-height:1.3}
+.event .date small{display:block;font-weight:600;color:var(--muted-light);font-size:10px;letter-spacing:0.16em;text-transform:uppercase;margin-top:4px}
+.event h4{font-size:15.5px;font-weight:800;color:var(--purple-deep);margin-bottom:4px}
+.event p{font-size:13.5px;color:var(--muted);line-height:1.6}
+
+/* ── 클로징 CTA ── */
+.cta-band{
+  padding:120px 32px;text-align:center;background:linear-gradient(180deg,var(--purple-deep) 0%,var(--purple-600) 100%);color:#fff;
+  position:relative;overflow:hidden;
+}
+.cta-band::before{
+  content:"";position:absolute;top:-200px;right:-100px;width:600px;height:600px;
+  background:radial-gradient(circle, rgba(227,211,175,0.14) 0%, transparent 60%);pointer-events:none;
+}
+.cta-band h2{font-family:var(--font-display);font-size:clamp(28px,3.6vw,44px);font-weight:800;letter-spacing:-0.02em;margin-bottom:16px;position:relative}
+.cta-band p{font-size:16.5px;line-height:1.85;color:rgba(255,255,255,0.78);max-width:720px;margin:0 auto 40px;font-weight:400;position:relative}
+.cta-band .btn{position:relative}
+
+/* ── 서브 뷰 공통 ── */
+.view{display:none}
+.view.active{display:block}
+.page-head{padding:150px 32px 56px;border-bottom:1px solid var(--rule);background:var(--paper)}
+.page-head .section-header{margin-bottom:0}
+.page-body{padding:64px 32px 120px}
+
+.form-card{max-width:460px;margin:0 auto;background:#fff;border:1px solid var(--rule);padding:44px 38px}
+.form-card h2{font-family:var(--font-display);font-size:24px;font-weight:800;color:var(--purple-deep);margin-bottom:26px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.field input,.field select,.field textarea{width:100%;padding:13px 15px;border:1px solid var(--rule);background:#fff;color:var(--ink)}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--brand);outline:none}
+.form-foot{margin-top:24px;display:flex;flex-direction:column;gap:12px}
+.form-alt{text-align:center;font-size:13.5px;color:var(--muted)}
+.form-alt a{color:var(--brand);font-weight:800}
+.demo-hint{margin-top:18px;background:var(--purple-100);padding:14px 16px;font-size:12.5px;color:var(--ink-soft);line-height:1.6}
+
+/* ── 강의실 뷰 ── */
+.lec-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:32px}
+.chip{border:1px solid var(--rule);background:#fff;color:var(--muted);padding:8px 18px;font-size:13px;font-weight:700;letter-spacing:0.03em}
+.chip.active{background:var(--purple-deep);border-color:var(--purple-deep);color:#fff}
+.my-level{
+  margin-left:auto;font-family:var(--font-display);font-size:11px;font-weight:600;letter-spacing:0.14em;
+  color:var(--purple-deep);border:1px solid var(--accent);padding:8px 16px;background:rgba(227,211,175,0.16);
+}
+.lec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--rule);border:1px solid var(--rule)}
+.lec-card{background:#fff;display:flex;flex-direction:column;cursor:pointer}
+.lec-card:hover .play{transform:scale(1.06)}
+.lec-thumb{aspect-ratio:16/9;background:linear-gradient(180deg,var(--purple-700),var(--purple-deep));display:flex;align-items:center;justify-content:center;position:relative}
+.lec-thumb img{width:100%;height:100%;object-fit:cover}
+.lec-thumb .play{
+  position:absolute;width:52px;height:52px;background:rgba(227,211,175,0.96);
+  display:flex;align-items:center;justify-content:center;color:var(--purple-deep);font-size:1.1rem;transition:transform .2s ease;
+}
+.lec-body{padding:20px 22px 22px;display:flex;flex-direction:column;gap:6px;flex:1}
+.lec-body .meta{font-family:var(--font-display);font-size:10px;letter-spacing:0.16em;color:var(--purple-400);font-weight:600;text-transform:uppercase}
+.lec-body h4{font-size:15px;font-weight:800;color:var(--purple-deep);line-height:1.5}
+.lec-body .len{margin-top:auto;font-size:12px;color:var(--muted-light);font-weight:600}
+.lec-empty{grid-column:1/-1;text-align:center;padding:80px 20px;background:#fff;color:var(--muted)}
+.lec-empty b{display:block;color:var(--purple-deep);font-weight:800;font-size:17px;margin-bottom:10px}
+
+/* ── 테이블 (마이/관리자 — 원본 테이블 언어) ── */
+.table-wrap{overflow-x:auto;background:#fff;border:1px solid var(--rule)}
+table{width:100%;border-collapse:collapse;min-width:640px;font-size:14px}
+th{background:var(--purple-deep);color:#fff;padding:14px 18px;text-align:left;font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;white-space:nowrap}
+td{padding:15px 18px;border-bottom:1px solid var(--rule-soft);color:var(--ink-soft);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+.status{display:inline-block;padding:5px 12px;font-size:11.5px;font-weight:800;letter-spacing:0.04em}
+.status.wait{background:#F6EBD2;color:#8a6d2f}
+.status.ok{background:#e2f4ea;color:#2e7d54}
+.status.no{background:#fbe7e4;color:#b34a41}
+td select{padding:6px 8px;border:1px solid var(--rule);background:#fff}
+
+.admin-tabs{display:flex;gap:8px;margin-bottom:28px;flex-wrap:wrap}
+.admin-panel{display:none}
+.admin-panel.active{display:block}
+.admin-form{
+  background:#fff;border:1px solid var(--rule);padding:28px;margin-bottom:28px;
+  display:grid;grid-template-columns:repeat(6,1fr);gap:16px;align-items:end;
+}
+.admin-form .field{margin:0}
+.admin-form .span2{grid-column:span 2}
+
+/* ── 모달 & 토스트 ── */
+.modal-bg{display:none;position:fixed;inset:0;z-index:200;background:rgba(26,10,36,.78);align-items:center;justify-content:center;padding:22px;backdrop-filter:blur(6px)}
+.modal-bg.open{display:flex}
+.modal{width:100%;max-width:860px;background:var(--purple-deep);border:1px solid rgba(232,215,170,.3);overflow:hidden}
+.modal-head{display:flex;align-items:center;padding:16px 22px;border-bottom:1px solid rgba(255,255,255,.12)}
+.modal-head h3{font-size:15px;font-weight:800;color:#fff}
+.modal-head button{margin-left:auto;background:none;border:none;color:rgba(255,255,255,.6);font-size:1.5rem;line-height:1}
+.modal .video-frame{aspect-ratio:16/9;width:100%;background:#000}
+.modal .video-frame iframe{width:100%;height:100%;border:none}
+.modal .video-placeholder{aspect-ratio:16/9;display:flex;flex-direction:column;gap:12px;align-items:center;justify-content:center;color:var(--purple-300);background:linear-gradient(180deg,var(--purple-700),var(--purple-deep));font-size:14px}
+.modal-body{padding:28px;color:#fff}
+.modal-body .bank{margin-top:16px;background:rgba(227,211,175,.14);border:1px solid rgba(201,181,131,.4);padding:20px 22px;font-size:15px;line-height:2}
+.modal-body .bank b{color:var(--accent-soft)}
+#toast{
+  position:fixed;left:50%;bottom:34px;transform:translateX(-50%) translateY(20px);
+  background:var(--purple-deep);color:var(--accent-soft);padding:14px 26px;
+  font-weight:700;font-size:14px;box-shadow:0 12px 34px rgba(26,10,36,.4);
+  opacity:0;pointer-events:none;transition:all .25s ease;z-index:300;max-width:88vw;text-align:center;letter-spacing:0.02em;
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.demo-banner{position:fixed;bottom:0;left:0;right:0;z-index:90;text-align:center;background:var(--accent);color:var(--purple-deep);font-size:12px;font-weight:800;letter-spacing:0.04em;padding:8px 14px}
+
+/* ── 푸터 (원본: 슬림 센터) ── */
+.footer{
+  background:var(--purple-deep);border-top:1px solid rgba(255,255,255,0.08);
+  padding:44px 32px;color:rgba(255,255,255,0.5);font-size:12px;text-align:center;letter-spacing:0.05em;line-height:2;
+}
+.footer .brand-line{font-family:var(--font-display);color:var(--accent-soft);letter-spacing:0.22em;font-weight:500;margin-bottom:10px}
+.footer a:hover{color:var(--accent-soft)}
+
+/* ── 반응형 ── */
+@media (max-width:960px){
+  .grid3{grid-template-columns:1fr}
+  .path-row{grid-template-columns:1fr}
+  .lecture-grid{grid-template-columns:1fr;gap:44px}
+  .lec-grid{grid-template-columns:repeat(2,1fr)}
+  .admin-form{grid-template-columns:repeat(2,1fr)}
+  .admin-form .span2{grid-column:span 2}
+  .hero-meta{gap:28px}
+}
+@media (max-width:640px){
+  .section{padding:80px 22px}
+  .page-head{padding:130px 22px 44px}
+  .page-body{padding:48px 22px 100px}
+  .nav-inner{padding:0 22px}
+  .lec-grid{grid-template-columns:1fr}
+  .nav-links{
+    display:none;position:absolute;top:64px;left:0;right:0;flex-direction:column;
+    background:rgba(251,247,236,.98);padding:14px 22px 22px;gap:6px;border-bottom:1px solid var(--rule);
+  }
+  .nav-links.open{display:flex}
+  .nav-links a{width:100%;padding:12px 14px}
+  .nav-cta{margin:8px 0 0;width:100%}
+  .nav-toggle{display:block}
+  .brand-sub{display:none}
+  .event{grid-template-columns:1fr;gap:10px}
+  .hero{padding:110px 22px 70px;min-height:auto}
+  .hero-meta{gap:22px}
+}
+
+/* 커리큘럼 탭 & 실제 주차 데이터 */
+.curri-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+.curri-tab{
+  border:1px solid var(--rule);background:#fff;color:var(--muted);
+  padding:11px 22px;font-family:var(--font-display);font-weight:800;font-size:14px;letter-spacing:0.02em;
+  display:flex;align-items:baseline;gap:9px;transition:all .18s ease;
+}
+.curri-tab .wk{font-size:11px;font-weight:600;color:var(--muted-light);letter-spacing:0.06em}
+.curri-tab.active{background:var(--purple-deep);border-color:var(--purple-deep);color:#fff}
+.curri-tab.active .wk{color:var(--accent-soft)}
+.curri-meta{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1px;
+  background:var(--rule);border:1px solid var(--rule);margin-bottom:28px;
+}
+.curri-meta .mi{background:var(--beige-050);padding:18px 20px}
+.curri-meta .mi .k{font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted-light);margin-bottom:6px}
+.curri-meta .mi .v{font-size:14px;font-weight:600;color:var(--purple-deep);line-height:1.5}
+.stage-block{margin-bottom:28px}
+.stage-block:last-child{margin-bottom:0}
+.stage-name{
+  font-family:var(--font-display);font-size:15px;font-weight:800;color:var(--purple-deep);
+  padding:12px 18px;background:linear-gradient(90deg,var(--purple-100),transparent);
+  border-left:3px solid var(--purple-400);margin-bottom:2px;
+}
+.week-table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--rule)}
+.week-table td{padding:14px 18px;border-bottom:1px solid var(--rule-soft);vertical-align:top;font-size:13.5px;line-height:1.6}
+.week-table tr:last-child td{border-bottom:none}
+.week-table .wk-no{
+  background:var(--beige-100);color:var(--purple-deep);font-family:var(--font-display);
+  font-weight:800;text-align:center;width:64px;white-space:nowrap;font-size:13px;
+}
+.week-table .wk-t{font-weight:700;color:var(--ink-soft);width:150px}
+.week-table .wk-d{color:var(--muted)}
+@media (max-width:640px){
+  .week-table,.week-table tbody,.week-table tr,.week-table td{display:block;width:auto}
+  .week-table td{border-bottom:none;padding:4px 16px}
+  .week-table .wk-no{display:inline-block;padding:6px 12px;margin:12px 16px 4px}
+  .week-table tr{border-bottom:1px solid var(--rule-soft);padding-bottom:10px}
+}
+
+</style>
+</head>
+<body>
+
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="seal" viewBox="0 0 64 64">
+    <circle cx="32" cy="32" r="29" stroke-width="2.4"/>
+    <circle cx="32" cy="32" r="24.5" stroke-width="1" opacity=".55"/>
+    <path class="wave" d="M13 32h5l3-8 4 15 4-22 4 26 4-20 3 11 3-6h8"/>
+  </symbol>
+</svg>
+
+<nav>
+  <div class="nav-inner">
+    <a class="brand" href="#home">
+      <img class="logo logo-nav" src="./tv_logo.png" alt="터칭보이스">
+      <span class="brand-sub">발성심리지도사협회</span>
+    </a>
+    <button class="nav-toggle" id="navToggle" aria-label="메뉴 열기">☰</button>
+    <div class="nav-links" id="navLinks">
+      <a href="#home" data-nav="home">협회 소개</a>
+      <a href="#course" data-nav="course">자격과정</a>
+      <a href="#lectures" data-nav="lectures">온라인 강의실</a>
+      <a href="#mypage" data-nav="mypage" id="navMypage" style="display:none">마이페이지</a>
+      <a href="#admin" data-nav="admin" id="navAdmin" style="display:none">관리자</a>
+      <a href="#login" class="btn btn-purple btn-sm nav-cta" id="navAuthBtn">로그인</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════ VIEW: HOME ═══════════════ -->
+<main id="view-home" class="view active">
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-eyebrow reveal">VOCAL PSYCHOLOGY ASSOCIATION · 2026</div>
+      <h1 class="hero-title reveal"><span class="accent">목소리를 읽는,</span><br>발성심리지도사</h1>
+      <p class="hero-sub reveal">
+        성대 하부 8개 근육과 인두 5개 근육, 그리고 그 사이에 새겨진 마음.
+        발성심리학은 목소리를 <strong>해부학과 심리학으로 함께</strong> 읽습니다.
+        <strong>특허출원된 측정 기술</strong> 위에서, 감이 아닌 근거로 코칭하는 지도자를 양성합니다.
+      </p>
+      <div class="hero-actions reveal">
+        <a class="btn btn-accent" href="#course">2급 과정 신청하기</a>
+        <a class="btn btn-ghost" href="#theory">발성심리학이란?</a>
+      </div>
+      <div class="hero-meta reveal">
+        <div class="hero-meta-item"><div class="label">Track Record</div><div class="value">9년</div></div>
+        <div class="hero-meta-item"><div class="label">Vocal Model</div><div class="value">3-Layer</div></div>
+        <div class="hero-meta-item"><div class="label">Muscles Mapped</div><div class="value">8 + 5</div></div>
+        <div class="hero-meta-item"><div class="label">Program</div><div class="value">48주</div></div>
+        <div class="hero-meta-item"><div class="label">Patent Filed</div><div class="value">제26-121000호</div></div>
+        <div class="hero-meta-item"><div class="label">Selected 2026</div><div class="value">강원 가상융합사업</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 01 이론 -->
+  <section class="section" id="theory">
+    <div class="section-inner">
+      <div class="section-header reveal">
+        <div class="section-eyebrow"><span class="num">01</span>VOCAL PSYCHOLOGY</div>
+        <h2 class="section-title">목소리는 <span class="it">세 개의 층</span>에서 만들어집니다</h2>
+        <p class="section-lede">터칭보이스가 정립한 <strong>3-Layer 발성 생성 모델</strong>은 소리의 시작과 울림, 그리고 조직의 변화를 하나의 지도로 연결합니다. 지도사는 이 지도 위에서 진단하고 처방합니다.</p>
+      </div>
+      <div class="grid3 reveal">
+        <article class="card3">
+          <span class="layer-no">LAYER 01 — REED</span>
+          <h3>리드 레이어</h3>
+          <div class="en">소리의 시작</div>
+          <p>성대 하부 근육군의 개입도가 음의 토대를 결정합니다. 흉성의 뿌리가 어디에서 오는지, 어떤 근육이 과하게 혹은 부족하게 일하는지를 읽습니다.</p>
+          <span class="muscle-tag">성대 하부 8근육</span>
+        </article>
+        <article class="card3">
+          <span class="layer-no">LAYER 02 — RESONANCE</span>
+          <h3>레조넌스 레이어</h3>
+          <div class="en">소리의 방</div>
+          <p>상인두·중인두·하인두를 이루는 근육들이 공명의 형태를 빚습니다. 같은 성대라도 방의 모양이 다르면 전혀 다른 목소리가 됩니다.</p>
+          <span class="muscle-tag">인두 5근육</span>
+        </article>
+        <article class="card3">
+          <span class="layer-no">LAYER 03 — TISSUE BASE</span>
+          <h3>티슈 베이스 레이어</h3>
+          <div class="en">소리의 재료</div>
+          <p>근섬유아세포와 성상세포, 기계변환(mechanotransduction)의 원리로 조직이 훈련에 반응해 강해지는 방향을 설명합니다. 훈련이 과학이 되는 지점입니다.</p>
+          <span class="muscle-tag">세포·조직 기반</span>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 자격 체계 -->
+  <section class="section dark-sec" id="cert">
+    <div class="section-inner">
+      <div class="section-header reveal">
+        <div class="section-eyebrow"><span class="num">02</span>CERTIFICATION</div>
+        <h2 class="section-title">2급에서 1급으로, <span class="it">그리고 그 너머</span></h2>
+        <p class="section-lede">발성심리지도사는 단계별로 깊어지는 자격 체계입니다. 각 급수는 명확한 검정 기준과 커리큘럼을 갖습니다.</p>
+      </div>
+      <div class="path-row reveal">
+        <div class="path-cell">
+          <div class="step">STEP 1 · LEVEL 2</div>
+          <div class="label">발성심리지도사 2급</div>
+          <div class="desc">48주 · 4단계 정규 과정<br>온라인 강의 + 실습 과제<br>검정: 필기 + 실기(코칭 시연)</div>
+          <span class="ck">보컬 코치 · 교사 · 스피치 강사 · 사역자</span>
+        </div>
+        <div class="path-cell">
+          <div class="step">STEP 2 · LEVEL 1</div>
+          <div class="label">발성심리지도사 1급</div>
+          <div class="desc">2급 취득자 대상 심화 과정<br>측정 데이터 해석 · 심리 프레임<br>2급 과정 지도 · 수퍼비전 역량</div>
+          <span class="ck">지도자를 가르치는 지도자</span>
+        </div>
+        <div class="path-cell last">
+          <div class="step">COMING</div>
+          <div class="label">Master</div>
+          <div class="desc">연구·교육·임상을 잇는 최상위 등급<br>1급 취득자 대상 · 추후 공개</div>
+          <span class="ck">THE NEXT LEVEL</span>
+        </div>
+      </div>
+      <p class="cert-note reveal">※ 발성심리지도사는 자격기본법에 따른 민간자격 등록 절차를 진행 중입니다. 응시료·발급비 등 세부 사항은 등록 완료 후 등록 내용과 동일하게 공지되며, 등록 완료 전에는 자격이 발급되지 않습니다.</p>
+    </div>
+  </section>
+
+  <!-- 03 커리큘럼 (실제 데이터) -->
+  <section class="section" id="curriculum">
+    <div class="section-inner">
+      <div class="section-header reveal">
+        <div class="section-eyebrow"><span class="num">03</span>CURRICULUM</div>
+        <h2 class="section-title">과정별 <span class="it">주차 커리큘럼</span></h2>
+        <p class="section-lede">2급 <strong>16주</strong>, 1급 <strong>24주</strong>, 마스터 <strong>48주</strong>. 한 단계가 끝날 때마다 지도할 수 있는 범위가 넓어집니다. 과정을 선택하면 전체 주차 계획이 펼쳐집니다.</p>
+      </div>
+      <div class="curri-tabs reveal" id="curriTabs"></div>
+      <div class="curri-meta reveal" id="curriMeta"></div>
+      <div class="curri-body reveal" id="curriBody"></div>
+    </div>
+  </section>
+
+  <!-- 04 온라인 강의실 안내 -->
+  <section class="section dark-sec" id="lecture-intro">
+    <div class="section-inner">
+      <div class="section-header reveal">
+        <div class="section-eyebrow"><span class="num">04</span>LECTURE ROOM</div>
+        <h2 class="section-title">내 등급에 맞는 강의가 <span class="it">열립니다</span></h2>
+        <p class="section-lede">로그인하면 수강 등급(2급·1급)에 따라 볼 수 있는 강의가 자동으로 구성됩니다. 진도는 어디서든 이어집니다.</p>
+      </div>
+      <div class="lecture-grid reveal">
+        <div class="founder-id">
+          <ul class="lp-list">
+            <li><b>01</b>회원가입 후 원하는 과정을 신청합니다</li>
+            <li><b>02</b>입금 확인과 함께 수강 등급이 활성화됩니다</li>
+            <li><b>03</b>등급별 강의가 강의실에 열립니다 (2급 · 1급 구분)</li>
+            <li><b>04</b>단계별 시청 후 검정에 응시합니다</li>
+          </ul>
+        </div>
+        <div class="lec-side">
+          <svg class="seal-svg" style="width:110px;height:110px;margin:0 auto" aria-hidden="true"><use href="#seal"/></svg>
+          <p class="lp-side-note">협회의 인장은 목소리의 파형입니다</p>
+          <a class="btn btn-accent" href="#lectures">강의실 입장</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 일정 -->
+  <section class="section" id="events">
+    <div class="section-inner">
+      <div class="section-header reveal">
+        <div class="section-eyebrow"><span class="num">05</span>SCHEDULE</div>
+        <h2 class="section-title">다가오는 <span class="it">일정</span></h2>
+      </div>
+      <div class="event-list reveal" id="eventList"></div>
+    </div>
+  </section>
+
+  <div class="cta-band">
+    <h2 class="reveal">확신은 측정 가능한 증거에서 나옵니다</h2>
+    <p class="reveal">목소리를 읽는 법을 배우고 싶다면, 지금이 가장 좋은 때입니다.</p>
+    <a class="btn btn-accent reveal" href="#course">자격과정 신청하기</a>
+  </div>
+</main>
+
+<!-- ═══════════════ VIEW: 자격과정 신청 ═══════════════ -->
+<main id="view-course" class="view">
+  <div class="page-head"><div class="section-inner">
+    <div class="section-header">
+      <div class="section-eyebrow"><span class="num">·</span>APPLY</div>
+      <h1 class="section-title">자격과정 <span class="it">신청</span></h1>
+      <p class="section-lede">과정을 선택해 신청하면, 입금 확인 후 수강 등급이 활성화되고 강의실이 열립니다.</p>
+    </div>
+  </div></div>
+  <div class="page-body"><div class="section-inner">
+    <div class="grid3" style="grid-template-columns:1fr 1fr">
+      <article class="card3">
+        <span class="layer-no">LEVEL 2 · 정규</span>
+        <h3>발성심리지도사 2급</h3>
+        <div class="en">48주 · 4단계 · 온라인 + 실습</div>
+        <p>발성심리학 표준 지도자 과정. 이론(1단계) → 측정·진단(2단계) → 코칭 실전(3단계) → 종합·검정(4단계)으로 진행됩니다.</p>
+        <p style="margin-top:12px"><strong style="color:var(--purple-deep)">수강료·검정료</strong> — 민간자격 등록 완료 후 등록 내용과 동일하게 안내됩니다.</p>
+        <div class="form-foot" style="margin-top:24px">
+          <button class="btn btn-purple" onclick="startEnroll('2급')">2급 과정 신청</button>
+        </div>
+      </article>
+      <article class="card3">
+        <span class="layer-no">LEVEL 1 · 심화</span>
+        <h3>발성심리지도사 1급</h3>
+        <div class="en">2급 취득자 대상 · 심화 과정</div>
+        <p>측정 데이터 해석, 심리 프레임 심화, 지도자 양성 역량을 다룹니다. 2급 자격 취득자만 신청할 수 있습니다.</p>
+        <p style="margin-top:12px"><strong style="color:var(--purple-deep)">수강료·검정료</strong> — 민간자격 등록 완료 후 등록 내용과 동일하게 안내됩니다.</p>
+        <div class="form-foot" style="margin-top:24px">
+          <button class="btn btn-purple" onclick="startEnroll('1급')">1급 과정 신청</button>
+        </div>
+      </article>
+    </div>
+    <p style="margin-top:28px;font-size:13px;color:var(--muted)">※ 신청 후 안내 계좌로 입금해 주시면 확인 후 승인됩니다. 온라인 결제(나이스페이)는 연동 준비 중입니다.</p>
+  </div></div>
+</main>
+
+<!-- ═══════════════ VIEW: 온라인 강의실 ═══════════════ -->
+<main id="view-lectures" class="view">
+  <div class="page-head"><div class="section-inner">
+    <div class="section-header">
+      <div class="section-eyebrow"><span class="num">·</span>LECTURE ROOM</div>
+      <h1 class="section-title">강의실</h1>
+      <p class="section-lede">내 수강 등급에 맞는 강의가 표시됩니다. 카드를 누르면 바로 재생됩니다.</p>
+    </div>
+  </div></div>
+  <div class="page-body"><div class="section-inner">
+    <div class="lec-toolbar" id="lecToolbar">
+      <button class="chip active" data-stage="all">전체</button>
+      <button class="chip" data-stage="1">1단계</button>
+      <button class="chip" data-stage="2">2단계</button>
+      <button class="chip" data-stage="3">3단계</button>
+      <button class="chip" data-stage="4">4단계</button>
+      <span class="my-level" id="myLevelBadge">등급 확인 중…</span>
+    </div>
+    <div class="lec-grid" id="lecGrid"></div>
+  </div></div>
+</main>
+
+<!-- ═══════════════ VIEW: 로그인 ═══════════════ -->
+<main id="view-login" class="view">
+  <div class="page-body" style="padding-top:170px"><div class="section-inner">
+    <div class="form-card">
+      <h2>로그인</h2>
+      <div class="field"><label for="loginEmail">이메일</label><input id="loginEmail" type="email" autocomplete="email" placeholder="you@example.com"></div>
+      <div class="field"><label for="loginPw">비밀번호</label><input id="loginPw" type="password" autocomplete="current-password" placeholder="••••••••"></div>
+      <div class="form-foot">
+        <button class="btn btn-purple" id="btnLogin">로그인</button>
+        <p class="form-alt">아직 회원이 아니신가요? <a href="#signup">회원가입</a></p>
+      </div>
+      <div class="demo-hint" id="demoLoginHint" style="display:none">
+        <b>데모 모드</b> — 백엔드 URL이 아직 연결되지 않아 이 브라우저 안에서만 동작합니다.<br>
+        관리자 데모 계정: <b>admin@touchingvoice.app / 0000</b>
+      </div>
+    </div>
+  </div></div>
+</main>
+
+<!-- ═══════════════ VIEW: 회원가입 ═══════════════ -->
+<main id="view-signup" class="view">
+  <div class="page-body" style="padding-top:170px"><div class="section-inner">
+    <div class="form-card">
+      <h2>회원가입</h2>
+      <div class="field"><label for="suName">이름</label><input id="suName" type="text" autocomplete="name" placeholder="홍길동"></div>
+      <div class="field"><label for="suEmail">이메일</label><input id="suEmail" type="email" autocomplete="email" placeholder="you@example.com"></div>
+      <div class="field"><label for="suPhone">연락처</label><input id="suPhone" type="tel" autocomplete="tel" placeholder="010-0000-0000"></div>
+      <div class="field"><label for="suPw">비밀번호</label><input id="suPw" type="password" autocomplete="new-password" placeholder="8자 이상"></div>
+      <div class="field"><label for="suPw2">비밀번호 확인</label><input id="suPw2" type="password" autocomplete="new-password" placeholder="한 번 더 입력"></div>
+      <div class="form-foot">
+        <button class="btn btn-purple" id="btnSignup">가입하기</button>
+        <p class="form-alt">이미 회원이신가요? <a href="#login">로그인</a></p>
+      </div>
+    </div>
+  </div></div>
+</main>
+
+<!-- ═══════════════ VIEW: 마이페이지 ═══════════════ -->
+<main id="view-mypage" class="view">
+  <div class="page-head"><div class="section-inner">
+    <div class="section-header">
+      <div class="section-eyebrow"><span class="num">·</span>MY PAGE</div>
+      <h1 class="section-title" id="myName">마이페이지</h1>
+      <p class="section-lede" id="myMeta"></p>
+    </div>
+  </div></div>
+  <div class="page-body"><div class="section-inner">
+    <h3 style="margin-bottom:18px;font-size:15px;letter-spacing:.08em;color:var(--muted);font-weight:600">수강 신청 내역</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>과정</th><th>상태</th><th>신청일</th><th>메모</th></tr></thead>
+        <tbody id="myEnrollRows"></tbody>
+      </table>
+    </div>
+    <div class="form-foot" style="max-width:220px;margin-top:36px">
+      <button class="btn btn-ghost" style="color:var(--purple-deep);border-color:var(--rule)" id="btnLogout">로그아웃</button>
+    </div>
+  </div></div>
+</main>
+
+<!-- ═══════════════ VIEW: 관리자 ═══════════════ -->
+<main id="view-admin" class="view">
+  <div class="page-head"><div class="section-inner">
+    <div class="section-header">
+      <div class="section-eyebrow"><span class="num">·</span>ADMIN</div>
+      <h1 class="section-title">관리자</h1>
+      <p class="section-lede">회원 등급, 수강 신청 승인, 강의 등록을 관리합니다.</p>
+    </div>
+  </div></div>
+  <div class="page-body"><div class="section-inner">
+    <div class="admin-tabs">
+      <button class="chip active" data-panel="members">회원 관리</button>
+      <button class="chip" data-panel="enrolls">수강 신청</button>
+      <button class="chip" data-panel="lectures">강의 관리</button>
+    </div>
+
+    <div class="admin-panel active" id="panel-members">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>이름</th><th>이메일</th><th>연락처</th><th>등급</th><th>역할</th><th>가입일</th></tr></thead>
+          <tbody id="adminMemberRows"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="admin-panel" id="panel-enrolls">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>이름</th><th>이메일</th><th>과정</th><th>상태</th><th>신청일</th><th>처리</th></tr></thead>
+          <tbody id="adminEnrollRows"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="admin-panel" id="panel-lectures">
+      <form class="admin-form" id="lecAddForm">
+        <div class="field"><label>과정</label>
+          <select id="lfCourse"><option value="공통">공통</option><option value="2급" selected>2급</option><option value="1급">1급</option></select>
+        </div>
+        <div class="field"><label>단계</label>
+          <select id="lfStage"><option>1</option><option>2</option><option>3</option><option>4</option></select>
+        </div>
+        <div class="field"><label>순서</label><input id="lfOrder" type="number" value="1" min="1"></div>
+        <div class="field span2"><label>강의 제목</label><input id="lfTitle" type="text" placeholder="예: 3-Layer 모델 개관"></div>
+        <div class="field"><label>길이(분)</label><input id="lfLen" type="number" value="20" min="1"></div>
+        <div class="field span2"><label>YouTube 영상 ID (일부공개)</label><input id="lfYt" type="text" placeholder="예: Ab1Cd2Ef3G"></div>
+        <div class="field"><label>공개</label>
+          <select id="lfOpen"><option value="TRUE" selected>공개</option><option value="FALSE">비공개</option></select>
+        </div>
+        <div class="field span2" style="align-self:end"><button class="btn btn-purple" type="submit" style="width:100%">강의 추가</button></div>
+      </form>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>과정</th><th>단계</th><th>순서</th><th>제목</th><th>영상 ID</th><th>공개</th><th>삭제</th></tr></thead>
+          <tbody id="adminLecRows"></tbody>
+        </table>
+      </div>
+    </div>
+  </div></div>
+</main>
+
+<!-- ═══ 푸터 (원본: 슬림 센터) ═══ -->
+<footer class="footer">
+  <img class="logo logo-foot" src="./tv_logo_beige.png" alt="TOUCHING VOICE">
+  <div class="brand-line">TOUCHINGVOICE · VOCAL PSYCHOLOGY ASSOCIATION</div>
+  <div>발급기관 터칭보이스 · 대표 천우경 · 문의 010-9947-3682 · 입금 기업은행 274-103965-04-014 (터칭보이스 천우경)</div>
+  <div>특허출원 제26-121000호 「발성 심리 측정 방법 및 시스템」 · 발성심리지도사는 민간자격 등록 절차 진행 중이며 등록 완료 전에는 자격이 발급되지 않습니다.</div>
+  <div>© 2026 TouchingVoice. All rights reserved.</div>
+</footer>
+
+<!-- ═══ 영상 모달 ═══ -->
+<div class="modal-bg" id="videoModal">
+  <div class="modal">
+    <div class="modal-head"><h3 id="vmTitle">강의</h3><button onclick="closeVideo()" aria-label="닫기">×</button></div>
+    <div id="vmBody"></div>
+  </div>
+</div>
+
+<!-- ═══ 입금 안내 모달 ═══ -->
+<div class="modal-bg" id="bankModal">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-head"><h3>신청 완료 · 입금 안내</h3><button onclick="closeBank()" aria-label="닫기">×</button></div>
+    <div class="modal-body">
+      <p id="bankCourse" style="font-weight:800"></p>
+      <p style="color:rgba(255,255,255,.7);font-size:14px;margin-top:6px">
+        아래 계좌로 입금해 주시면, 확인 후 수강 등급이 활성화되고 강의실이 열립니다.
+      </p>
+      <div class="bank">
+        은행 <b>기업은행</b><br>
+        계좌 <b>274-103965-04-014</b><br>
+        예금주 <b>터칭보이스(천우경)</b>
+      </div>
+      <div class="form-foot"><button class="btn btn-accent" onclick="closeBank()">확인</button></div>
+    </div>
+  </div>
+</div>
+
+<div id="toast" role="status"></div>
+<div class="demo-banner" id="demoBanner" style="display:none">데모 모드 — Apps Script URL을 연결하면 실제 서버로 전환됩니다 (파일 상단 API_URL)</div>
+
+<script>
+
+/* ═══════════════════════════════════════════════
+   설정 — 배포 시 여기만 바꾸면 됩니다
+   Apps Script 배포 URL(…/exec)을 붙여넣으면
+   데모 모드가 꺼지고 실제 서버로 전환됩니다.
+   ═══════════════════════════════════════════════ */
+const API_URL = '';   // ★ 예: 'https://script.google.com/macros/s/AKfycb.../exec'
+const DEMO = !API_URL;
+
+/* ── 유틸 ── */
+const $  = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const rid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+const today = () => new Date().toLocaleDateString('ko-KR');
+let toastTimer = null;
+function toast(msg){
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(()=>t.classList.remove('show'), 2600);
+}
+async function sha256hex(str){
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+/* ── 등급 접근 규칙 ── */
+const LEVELS = ['없음','2급수강','2급','1급수강','1급'];
+const RANK = {'없음':0,'2급수강':1,'2급':2,'1급수강':3,'1급':4};
+function canSee(level, course, role){
+  if(role === 'admin') return true;
+  if(course === '공통') return true;
+  if(course === '2급') return (RANK[level]||0) >= 1;
+  if(course === '1급') return (RANK[level]||0) >= 3;
+  return false;
+}
+
+/* ═══════════════ API 계층 ═══════════════ */
+async function api(action, data = {}){
+  if(DEMO) return demoApi(action, data);
+  try{
+    const res = await fetch(API_URL, { method:'POST', body: JSON.stringify({ action, data }) });
+    return await res.json();
+  }catch(err){
+    return { status:'error', msg:'네트워크 오류 — 잠시 후 다시 시도해 주세요' };
+  }
+}
+
+/* ═══════════════ 데모 백엔드 (localStorage) ═══════════════
+   Apps Script 연결 전, 전체 흐름을 이 브라우저 안에서 검증합니다. */
+const DKEY = 'tv_assoc_demo_v1';
+function demoLoad(){ try{ return JSON.parse(localStorage.getItem(DKEY)) || null; }catch(e){ return null; } }
+function demoSave(db){ localStorage.setItem(DKEY, JSON.stringify(db)); }
+async function ensureDemoSeed(){
+  if(!DEMO) return;
+  let db = demoLoad();
+  if(db) return;
+  const adminEmail = 'admin@touchingvoice.app';
+  const adminHash = await sha256hex('0000' + adminEmail);
+  db = {
+    members: [{ name:'관리자', email:adminEmail, phone:'-', pwHash:adminHash, level:'1급', role:'admin', joined:today() }],
+    sessions: {},
+    enrollments: [],
+    lectures: [
+      { id:rid(), course:'공통', stage:'1', order:1, title:'오리엔테이션 — 발성심리지도사 과정 안내', youtubeId:'DEMO', len:12, open:'TRUE' },
+      { id:rid(), course:'2급', stage:'1', order:1, title:'3-Layer 발성 생성 모델 개관', youtubeId:'DEMO', len:28, open:'TRUE' },
+      { id:rid(), course:'2급', stage:'1', order:2, title:'성대 하부 8근육의 해부학', youtubeId:'DEMO', len:34, open:'TRUE' },
+      { id:rid(), course:'2급', stage:'2', order:1, title:'음향 지표 읽기 — 측정의 언어', youtubeId:'DEMO', len:26, open:'TRUE' },
+      { id:rid(), course:'2급', stage:'3', order:1, title:'코칭 시연 — 진단에서 처방으로', youtubeId:'DEMO', len:31, open:'TRUE' },
+      { id:rid(), course:'1급', stage:'1', order:1, title:'[1급] 측정 데이터 심화 해석', youtubeId:'DEMO', len:38, open:'TRUE' }
+    ]
+  };
+  demoSave(db);
+}
+function demoAuth(db, token){
+  const s = db.sessions[token];
+  if(!s || s.exp < Date.now()) return null;
+  return db.members.find(m => m.email === s.email) || null;
+}
+const pub = m => ({ name:m.name, email:m.email, phone:m.phone, level:m.level, role:m.role, joined:m.joined });
+async function demoApi(action, d){
+  const db = demoLoad(); if(!db) return { status:'error', msg:'데모 초기화 필요' };
+  const me = demoAuth(db, d.token);
+  const needAdmin = () => (!me || me.role !== 'admin') ? { status:'error', msg:'관리자 권한이 필요합니다' } : null;
+
+  switch(action){
+    case 'signup': {
+      if(db.members.some(m => m.email === d.email)) return { status:'error', msg:'이미 가입된 이메일입니다' };
+      db.members.push({ name:d.name, email:d.email, phone:d.phone, pwHash:d.pwHash, level:'없음', role:'member', joined:today() });
+      demoSave(db); return { status:'ok' };
+    }
+    case 'login': {
+      const m = db.members.find(x => x.email === d.email && x.pwHash === d.pwHash);
+      if(!m) return { status:'error', msg:'이메일 또는 비밀번호가 올바르지 않습니다' };
+      const token = rid() + rid();
+      db.sessions[token] = { email:m.email, exp: Date.now() + 7*24*3600*1000 };
+      demoSave(db); return { status:'ok', token, member: pub(m) };
+    }
+    case 'logout': { delete db.sessions[d.token]; demoSave(db); return { status:'ok' }; }
+    case 'me': {
+      if(!me) return { status:'error', msg:'세션 만료' };
+      const enrollments = db.enrollments.filter(e => e.email === me.email);
+      return { status:'ok', member: pub(me), enrollments };
+    }
+    case 'enroll': {
+      if(!me) return { status:'error', msg:'로그인이 필요합니다' };
+      if(db.enrollments.some(e => e.email === me.email && e.course === d.course && e.status === '입금대기'))
+        return { status:'error', msg:'이미 입금 확인 대기 중인 신청이 있습니다' };
+      db.enrollments.push({ id:rid(), email:me.email, name:me.name, course:d.course, status:'입금대기', date:today(), memo:'' });
+      demoSave(db); return { status:'ok' };
+    }
+    case 'getLectures': {
+      if(!me) return { status:'error', msg:'로그인이 필요합니다' };
+      const data = db.lectures
+        .filter(l => l.open === 'TRUE' && canSee(me.level, l.course, me.role))
+        .sort((a,b) => a.stage - b.stage || a.order - b.order);
+      return { status:'ok', data };
+    }
+    case 'admin_listMembers': { const g = needAdmin(); if(g) return g;
+      return { status:'ok', data: db.members.map(pub) }; }
+    case 'admin_setMemberLevel': { const g = needAdmin(); if(g) return g;
+      const m = db.members.find(x => x.email === d.email); if(!m) return { status:'error', msg:'회원 없음' };
+      m.level = d.level; demoSave(db); return { status:'ok' }; }
+    case 'admin_listEnrollments': { const g = needAdmin(); if(g) return g;
+      return { status:'ok', data: db.enrollments.slice().reverse() }; }
+    case 'admin_setEnrollment': { const g = needAdmin(); if(g) return g;
+      const e = db.enrollments.find(x => x.id === d.id); if(!e) return { status:'error', msg:'신청 없음' };
+      e.status = d.status;
+      if(d.status === '승인'){
+        const m = db.members.find(x => x.email === e.email);
+        if(m){
+          const target = e.course === '1급' ? '1급수강' : '2급수강';
+          if((RANK[m.level]||0) < RANK[target]) m.level = target;
+        }
+      }
+      demoSave(db); return { status:'ok' }; }
+    case 'admin_listLectures': { const g = needAdmin(); if(g) return g;
+      const data = db.lectures.slice().sort((a,b)=> (a.course>b.course?1:-1) || a.stage-b.stage || a.order-b.order);
+      return { status:'ok', data }; }
+    case 'admin_addLecture': { const g = needAdmin(); if(g) return g;
+      db.lectures.push({ id:rid(), ...d.lecture }); demoSave(db); return { status:'ok' }; }
+    case 'admin_toggleLecture': { const g = needAdmin(); if(g) return g;
+      const l = db.lectures.find(x => x.id === d.id); if(l) l.open = d.open;
+      demoSave(db); return { status:'ok' }; }
+    case 'admin_deleteLecture': { const g = needAdmin(); if(g) return g;
+      db.lectures = db.lectures.filter(x => x.id !== d.id); demoSave(db); return { status:'ok' }; }
+    default: return { status:'error', msg:'unknown action: ' + action };
+  }
+}
+
+/* ═══════════════ 세션 ═══════════════ */
+let TOKEN = localStorage.getItem('tv_assoc_token') || '';
+let ME = null;
+async function refreshMe(){
+  if(!TOKEN){ ME = null; renderNav(); return; }
+  const r = await api('me', { token: TOKEN });
+  if(r.status === 'ok'){ ME = r.member; ME.enrollments = r.enrollments || []; }
+  else { TOKEN = ''; localStorage.removeItem('tv_assoc_token'); ME = null; }
+  renderNav();
+}
+function setSession(token, member){
+  TOKEN = token; localStorage.setItem('tv_assoc_token', token);
+  ME = member; ME.enrollments = ME.enrollments || []; renderNav();
+}
+async function doLogout(){
+  await api('logout', { token: TOKEN });
+  TOKEN = ''; localStorage.removeItem('tv_assoc_token'); ME = null;
+  renderNav(); toast('로그아웃되었습니다'); location.hash = '#home';
+}
+
+/* ═══════════════ 라우터 ═══════════════ */
+const VIEWS = ['home','course','lectures','login','signup','mypage','admin'];
+function route(){
+  let h = (location.hash || '#home').slice(1);
+  if(!VIEWS.includes(h)) h = 'home';
+  if((h === 'lectures' || h === 'mypage') && !TOKEN){ toast('로그인이 필요합니다'); h = 'login'; }
+  if(h === 'admin' && (!ME || ME.role !== 'admin')){ toast('관리자만 접근할 수 있습니다'); h = 'home'; }
+  $$('.view').forEach(v => v.classList.remove('active'));
+  $('#view-' + h).classList.add('active');
+  $$('.nav-links a[data-nav]').forEach(a => a.classList.toggle('active', a.dataset.nav === h));
+  $('#navLinks').classList.remove('open');
+  window.scrollTo(0, 0);
+  if(h === 'lectures') loadLectures();
+  if(h === 'mypage') renderMypage();
+  if(h === 'admin') loadAdmin();
+}
+
+/* ═══════════════ 네비 상태 ═══════════════ */
+function renderNav(){
+  const b = $('#navAuthBtn');
+  if(ME){
+    b.textContent = ME.name + ' 님';
+    b.setAttribute('href', '#mypage');
+    $('#navMypage').style.display = '';
+    $('#navAdmin').style.display = ME.role === 'admin' ? '' : 'none';
+  }else{
+    b.textContent = '로그인';
+    b.setAttribute('href', '#login');
+    $('#navMypage').style.display = 'none';
+    $('#navAdmin').style.display = 'none';
+  }
+}
+
+/* ═══════════════ 일정 ═══════════════ */
+const EVENTS = [
+  { d:'7.13', w:'JULY · SUN', t:'발성 세미나', p:'서울드림교회 비전센터 · 방건주·김수종 공동 진행 · 참가비 50,000원 · 문의 010-9947-3682' },
+  { d:'8.4–5', w:'AUG · TUE–WED', t:'좋은교사 여름 캠프 특강', p:'교사 대상 발성심리학 특강 · 상세 일정 추후 공지' }
+];
+function renderEvents(){
+  $('#eventList').innerHTML = EVENTS.map(e => `
+    <div class="event">
+      <div class="date">${esc(e.d)}<small>${esc(e.w)}</small></div>
+      <div><h4>${esc(e.t)}</h4><p>${esc(e.p)}</p></div>
+    </div>`).join('');
+}
+
+/* ═══════════════ 인증 ═══════════════ */
+async function handleLogin(){
+  const email = $('#loginEmail').value.trim().toLowerCase();
+  const pw = $('#loginPw').value;
+  if(!email || !pw) return toast('이메일과 비밀번호를 입력해 주세요');
+  const pwHash = await sha256hex(pw + email);
+  const r = await api('login', { email, pwHash });
+  if(r.status !== 'ok') return toast(r.msg || '로그인 실패');
+  setSession(r.token, r.member);
+  toast(r.member.name + ' 님, 환영합니다');
+  location.hash = r.member.role === 'admin' ? '#admin' : '#lectures';
+}
+async function handleSignup(){
+  const name = $('#suName').value.trim();
+  const email = $('#suEmail').value.trim().toLowerCase();
+  const phone = $('#suPhone').value.trim();
+  const pw = $('#suPw').value, pw2 = $('#suPw2').value;
+  if(!name || !email || !phone) return toast('모든 항목을 입력해 주세요');
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return toast('이메일 형식을 확인해 주세요');
+  if(pw.length < 8) return toast('비밀번호는 8자 이상이어야 합니다');
+  if(pw !== pw2) return toast('비밀번호가 서로 다릅니다');
+  const pwHash = await sha256hex(pw + email);
+  const r = await api('signup', { name, email, phone, pwHash });
+  if(r.status !== 'ok') return toast(r.msg || '가입 실패');
+  const lg = await api('login', { email, pwHash });
+  if(lg.status === 'ok'){ setSession(lg.token, lg.member); }
+  toast('가입을 환영합니다! 원하는 과정을 신청해 주세요');
+  location.hash = '#course';
+}
+
+/* ═══════════════ 수강 신청 ═══════════════ */
+async function startEnroll(course){
+  if(!TOKEN){ toast('로그인 후 신청할 수 있습니다'); location.hash = '#login'; return; }
+  if(!ME) await refreshMe();
+  if(course === '1급' && (RANK[ME.level]||0) < RANK['2급'])
+    return toast('1급 과정은 2급 자격 취득 후 신청할 수 있습니다');
+  const r = await api('enroll', { token: TOKEN, course });
+  if(r.status !== 'ok') return toast(r.msg || '신청 실패');
+  $('#bankCourse').textContent = '발성심리지도사 ' + course + ' 과정 신청이 접수되었습니다.';
+  $('#bankModal').classList.add('open');
+  refreshMe();
+}
+function closeBank(){ $('#bankModal').classList.remove('open'); }
+
+/* ═══════════════ 강의실 ═══════════════ */
+let LECTURES = [], stageFilter = 'all';
+async function loadLectures(){
+  $('#myLevelBadge').textContent = '내 등급 · ' + (ME ? ME.level : '—');
+  const r = await api('getLectures', { token: TOKEN });
+  LECTURES = r.status === 'ok' ? (r.data || []) : [];
+  renderLectures();
+}
+function renderLectures(){
+  const list = LECTURES.filter(l => stageFilter === 'all' || String(l.stage) === stageFilter);
+  const grid = $('#lecGrid');
+  if(!list.length){
+    grid.innerHTML = `<div class="lec-empty"><b>아직 열린 강의가 없습니다</b>
+      수강 신청과 입금 확인이 완료되면 등급에 맞는 강의가 이곳에 열립니다.
+      <div style="margin-top:20px"><a class="btn btn-accent btn-sm" href="#course">자격과정 신청하기</a></div></div>`;
+    return;
+  }
+  grid.innerHTML = list.map(l => {
+    const thumb = l.youtubeId && l.youtubeId !== 'DEMO'
+      ? `<img src="https://i.ytimg.com/vi/${esc(l.youtubeId)}/hqdefault.jpg" alt="" loading="lazy">`
+      : '';
+    return `<article class="lec-card" role="button" tabindex="0"
+        onclick="openVideo('${esc(l.youtubeId)}','${esc(l.title)}')"
+        onkeydown="if(event.key==='Enter')openVideo('${esc(l.youtubeId)}','${esc(l.title)}')">
+      <div class="lec-thumb">${thumb}<span class="play">▶</span></div>
+      <div class="lec-body">
+        <span class="meta">${esc(l.course)} · ${esc(l.stage)}단계 · ${esc(l.order)}강</span>
+        <h4>${esc(l.title)}</h4>
+        <span class="len">${esc(l.len)}분</span>
+      </div>
+    </article>`;
+  }).join('');
+}
+function openVideo(id, title){
+  $('#vmTitle').textContent = title;
+  $('#vmBody').innerHTML = (id && id !== 'DEMO')
+    ? `<div class="video-frame"><iframe src="https://www.youtube-nocookie.com/embed/${esc(id)}?rel=0&modestbranding=1" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen title="${esc(title)}"></iframe></div>`
+    : `<div class="video-placeholder"><svg class="seal-svg" style="width:64px;height:64px"><use href="#seal"/></svg><span>강의 영상이 이곳에 표시됩니다 (영상 ID 미등록)</span></div>`;
+  $('#videoModal').classList.add('open');
+}
+function closeVideo(){ $('#videoModal').classList.remove('open'); $('#vmBody').innerHTML = ''; }
+
+/* ═══════════════ 마이페이지 ═══════════════ */
+async function renderMypage(){
+  await refreshMe();
+  if(!ME) return;
+  $('#myName').textContent = ME.name + ' 님';
+  $('#myMeta').textContent = ME.email + ' · 현재 등급 ' + ME.level;
+  const rows = (ME.enrollments || []).map(e => {
+    const cls = e.status === '승인' ? 'ok' : e.status === '거절' ? 'no' : 'wait';
+    return `<tr><td>발성심리지도사 ${esc(e.course)}</td>
+      <td><span class="status ${cls}">${esc(e.status)}</span></td>
+      <td>${esc(e.date)}</td><td>${esc(e.memo || '—')}</td></tr>`;
+  }).join('');
+  $('#myEnrollRows').innerHTML = rows || `<tr><td colspan="4" style="color:#8a7cb0">신청 내역이 없습니다 — <a href="#course" style="color:var(--accent-deep);font-weight:600">과정 신청하기</a></td></tr>`;
+}
+
+/* ═══════════════ 관리자 ═══════════════ */
+async function loadAdmin(){
+  const [m, e, l] = await Promise.all([
+    api('admin_listMembers', { token: TOKEN }),
+    api('admin_listEnrollments', { token: TOKEN }),
+    api('admin_listLectures', { token: TOKEN })
+  ]);
+  renderAdminMembers(m.data || []);
+  renderAdminEnrolls(e.data || []);
+  renderAdminLectures(l.data || []);
+}
+function renderAdminMembers(list){
+  $('#adminMemberRows').innerHTML = list.map(m => `
+    <tr><td>${esc(m.name)}</td><td>${esc(m.email)}</td><td>${esc(m.phone)}</td>
+    <td><select onchange="adminSetLevel('${esc(m.email)}', this.value)">
+      ${LEVELS.map(lv => `<option ${lv === m.level ? 'selected' : ''}>${lv}</option>`).join('')}
+    </select></td>
+    <td>${m.role === 'admin' ? '<b style="color:var(--accent-deep)">관리자</b>' : '회원'}</td>
+    <td>${esc(m.joined)}</td></tr>`).join('') || '<tr><td colspan="6">회원이 없습니다</td></tr>';
+}
+async function adminSetLevel(email, level){
+  const r = await api('admin_setMemberLevel', { token: TOKEN, email, level });
+  toast(r.status === 'ok' ? email + ' → ' + level : (r.msg || '변경 실패'));
+}
+function renderAdminEnrolls(list){
+  $('#adminEnrollRows').innerHTML = list.map(e => {
+    const cls = e.status === '승인' ? 'ok' : e.status === '거절' ? 'no' : 'wait';
+    const act = e.status === '입금대기'
+      ? `<button class="btn btn-purple btn-sm" onclick="adminEnroll('${esc(e.id)}','승인')">승인</button>
+         <button class="btn btn-ghost btn-sm" style="color:var(--bad);border-color:var(--bad)" onclick="adminEnroll('${esc(e.id)}','거절')">거절</button>`
+      : '—';
+    return `<tr><td>${esc(e.name)}</td><td>${esc(e.email)}</td><td>${esc(e.course)}</td>
+      <td><span class="status ${cls}">${esc(e.status)}</span></td><td>${esc(e.date)}</td><td style="white-space:nowrap">${act}</td></tr>`;
+  }).join('') || '<tr><td colspan="6">신청 내역이 없습니다</td></tr>';
+}
+async function adminEnroll(id, status){
+  const r = await api('admin_setEnrollment', { token: TOKEN, id, status });
+  if(r.status === 'ok'){ toast('처리되었습니다 — ' + status); loadAdmin(); }
+  else toast(r.msg || '처리 실패');
+}
+function renderAdminLectures(list){
+  $('#adminLecRows').innerHTML = list.map(l => `
+    <tr><td>${esc(l.course)}</td><td>${esc(l.stage)}</td><td>${esc(l.order)}</td>
+    <td>${esc(l.title)}</td><td style="font-family:monospace">${esc(l.youtubeId)}</td>
+    <td><select onchange="adminToggleLec('${esc(l.id)}', this.value)">
+      <option value="TRUE" ${l.open === 'TRUE' ? 'selected' : ''}>공개</option>
+      <option value="FALSE" ${l.open !== 'TRUE' ? 'selected' : ''}>비공개</option>
+    </select></td>
+    <td><button class="btn btn-ghost btn-sm" style="color:var(--bad);border-color:var(--bad)" onclick="adminDelLec('${esc(l.id)}')">삭제</button></td></tr>`
+  ).join('') || '<tr><td colspan="7">등록된 강의가 없습니다</td></tr>';
+}
+async function adminToggleLec(id, open){
+  const r = await api('admin_toggleLecture', { token: TOKEN, id, open });
+  toast(r.status === 'ok' ? (open === 'TRUE' ? '공개로 전환' : '비공개로 전환') : (r.msg || '실패'));
+}
+async function adminDelLec(id){
+  if(!confirm('이 강의를 삭제할까요?')) return;
+  const r = await api('admin_deleteLecture', { token: TOKEN, id });
+  if(r.status === 'ok'){ toast('삭제되었습니다'); loadAdmin(); }
+}
+
+/* ═══════════════ 초기화 & 이벤트 바인딩 ═══════════════ */
+
+/* 커리큘럼 (실제 데이터: 2급16 / 1급24 / 마스터48) */
+const CURRICULUM = [{"badge": "2급", "title": "발성심리지도사 2급", "duration": "4개월 · 16주", "role": "기관·단체 보조 강사, 독립 그룹 운영", "depth": "Layer 1·2 + 발성심리 기초", "req": "", "exam": "이론 필기(객관식 40+단답 10) 70점↑, 실습 평가 60점↑, 케이스 보고서 1건, 출석률 80%↑", "stages": [{"name": "1단계 (1~4주) 이론 기초 + 자기 목소리 인식", "weeks": [{"w": "1주", "t": "오리엔테이션", "d": "터칭보이스 3층 모델 / 목소리=마음의 첫인상 (10초·60번 법칙)"}, {"w": "2주", "t": "성장과 목소리", "d": "언어환경 3요소(가족·친구·사회) / 자기 목소리 녹음·인식"}, {"w": "3주", "t": "해부 기초", "d": "성대=진동+마찰 / 하부 성대 근육 8개 개요"}, {"w": "4주", "t": "공명 기초", "d": "인두 근육 5개 개요 / 소리의 색깔"}]}, {"name": "2단계 (5~8주) 호흡·발성 원리", "weeks": [{"w": "5주", "t": "호흡 1", "d": "복식호흡 정의·원리 / 호흡 경로(코→뒷통수→등→아랫배)"}, {"w": "6주", "t": "호흡 2", "d": "복식호흡 실습 / 흉부 상승 교정"}, {"w": "7주", "t": "발성 1", "d": "성대 근력 운동 개념 / 마찰율·호흡량·압력 3대 체크포인트"}, {"w": "8주", "t": "발성 2", "d": "저음~고음 스케일 / 음역대 자가 측정"}]}, {"name": "3단계 (9~12주) 음이탈 노출 + 발성심리 기초", "weeks": [{"w": "9주", "t": "음이탈 1", "d": "삑사리=창피 인식 전환 / 음이탈=발달 약점 신호"}, {"w": "10주", "t": "음이탈 2", "d": "의도적 음이탈 반복 / 방어기제 음역대 발견(인식)"}, {"w": "11주", "t": "심리학 기초", "d": "신체화된 억압(라이히) / 제임스-랑게 / 체화된 인지"}, {"w": "12주", "t": "감정전이 소개", "d": "목소리↔감정 양방향 / 소거 학습 3단계 / 감정전이 개념"}]}, {"name": "4단계 (13~16주) 지도 실습 + 검정", "weeks": [{"w": "13주", "t": "관찰 실습", "d": "타인 음성 청음 / 마찰율·호흡·패턴 관찰"}, {"w": "14주", "t": "지도 실습", "d": "긍정 치환 대화법 / 안전한 음이탈 유도 보조 지도"}, {"w": "15주", "t": "검정 준비", "d": "이론 필기 모의 / 케이스 보고서 1건 작성"}, {"w": "16주", "t": "수료·검정", "d": "수료 발표 / 2급 검정 시행"}]}]}, {"badge": "1급", "title": "발성심리지도사 1급", "duration": "6개월 · 24주", "role": "독립 강의·프로그램 기획, 1:1 지도", "depth": "Layer 3 조직 + 데이터 측정", "req": "2급 취득 + 실무 1년", "exam": "이론 필기(심화 객관식 40+논술 1) 75점↑, 실습 70점↑, 케이스 3건+연구 1건, 심의위원회 통과", "stages": [{"name": "1단계 (1~6주) 조직 기반 심화", "weeks": [{"w": "1주", "t": "조직 1", "d": "성대 5층 구조 / 점막파 원리"}, {"w": "2주", "t": "조직 2", "d": "라이네케 공간 — 왜 '공간'인가 / 나이와 탄성"}, {"w": "3주", "t": "조직 3", "d": "히알루론산 — 생성·분해·반감기"}, {"w": "4주", "t": "조직 4", "d": "섬유아세포와 기계적 자극 반응"}, {"w": "5주", "t": "측정 1", "d": "포먼트 F1~F5 / 모음 공간 개념"}, {"w": "6주", "t": "측정 2", "d": "HNR·Jitter·Shimmer 의미와 측정"}]}, {"name": "2단계 (7~12주) 공명·텍스쳐 훈련", "weeks": [{"w": "7주", "t": "공명 1", "d": "구개근 활성화 / 소리 앞 모으기·명료도"}, {"w": "8주", "t": "공명 2", "d": "인두강 확장(중인두수축근 이완)"}, {"w": "9주", "t": "공명 3", "d": "Singer's Formant 탐색(상인두수축근)"}, {"w": "10주", "t": "고음 훈련", "d": "윤상갑상근군 활성 / E4→C5 확장 원리"}, {"w": "11주", "t": "저음 이완", "d": "갑상피열근 과수축 완화"}, {"w": "12주", "t": "통합 발성", "d": "마찰율·호흡·공명 통합 세션"}]}, {"name": "3단계 (13~18주) 심리 적용 + 케이스 + 1:1", "weeks": [{"w": "13주", "t": "심리 적용 1", "d": "애착이론(볼비) / 자기효능감(반두라) — 언어환경 해석"}, {"w": "14주", "t": "심리 적용 2", "d": "인간중심·UPR(로저스) / 라포 형성"}, {"w": "15주", "t": "방어기제 지도", "d": "방어 유형별(억압·투사·합리화·회피) 대응"}, {"w": "16주", "t": "케이스 1", "d": "우울·억압 / 성대결절(자극·손상 경계) 분석"}, {"w": "17주", "t": "케이스 2 + 1:1", "d": "고강도 음성사용자 케이스 / 1:1 지도 시연"}, {"w": "18주", "t": "그룹 설계", "d": "정서 조율 기반 그룹 세션 설계"}]}, {"name": "4단계 (19~24주) 데이터 수집 + 검정", "weeks": [{"w": "19주", "t": "데이터 1", "d": "음성 데이터 수집 윤리·동의 절차"}, {"w": "20주", "t": "데이터 2", "d": "마찰율·호흡량 측정 프로세스 실습"}, {"w": "21주", "t": "데이터 3", "d": "심리 설문 + 음성 데이터 연동"}, {"w": "22주", "t": "검정 준비 1", "d": "이론 필기 모의 / 케이스 보고서 3건"}, {"w": "23주", "t": "검정 준비 2", "d": "1:1 지도 시연 모의 / 연구 보고서 1건"}, {"w": "24주", "t": "수료·검정", "d": "수료 발표 / 1급 검정 + 심의위원회"}]}]}, {"badge": "마스터", "title": "발성심리지도사 마스터", "duration": "1년 · 48주", "role": "고강도 음성사용자 1:1 파견, 강사 양성", "depth": "분자생물학 + 텍스쳐 + 완전한 몰입 + AI", "req": "1급 취득 + 실무 2년 + 심의위원회", "exam": "통합 시연 + 완전한 몰입 세션 시연 + 임상 5건 + 파견 케이스 + 방법론 연구 보고서 + 강사 모의 지도 감독 + 심의위원회 최종 인증", "stages": [{"name": "트랙 1 (1~8주) 발성 분자생물학", "weeks": [{"w": "1주", "t": "분자 1", "d": "Mechanotransduction / 인테그린→PI3K→mTOR"}, {"w": "2주", "t": "분자 2", "d": "HAS2/HAS3 — HA 합성 공장 / mTOR 스위치"}, {"w": "3주", "t": "분자 3", "d": "BCAA(류신)→mTOR / 영양-조직 연결"}, {"w": "4주", "t": "분자 4", "d": "TGF-β1→SMAD→근섬유아세포 분화"}, {"w": "5주", "t": "분자 5", "d": "자극 vs 손상 경계 (24~48시간 회복)"}, {"w": "6주", "t": "분자 6", "d": "코르티솔→HAS 억제 / 심리-조직 분자 연결"}, {"w": "7주", "t": "영양 1", "d": "HA+BCAA+비타민C+마그네슘 시너지"}, {"w": "8주", "t": "영양 2", "d": "VOCAL 서플 설계 / 케어 타이밍"}]}, {"name": "트랙 2 (9~16주) 음향 분석 심화", "weeks": [{"w": "9주", "t": "음향 1", "d": "스펙트로그램 읽기 / 포먼트 F1~F7"}, {"w": "10주", "t": "음향 2", "d": "마찰 지수(F3~F5) / 호흡 유출 지수"}, {"w": "11주", "t": "음향 3", "d": "HNR·Jitter·Shimmer 정밀 해석"}, {"w": "12주", "t": "음향 4", "d": "Praat 실습 / 자동 분석 워크플로우"}, {"w": "13주", "t": "점막파", "d": "점막파 진폭과 F3~F5 / 라이네케 추정"}, {"w": "14주", "t": "케이스 측정", "d": "훈련 전후 스펙트로그램 비교"}, {"w": "15주", "t": "데이터셋", "d": "음향+심리 멀티모달 구조"}, {"w": "16주", "t": "AI 기초", "d": "Big5×음향 상관 / 성격 예측 모델"}]}, {"name": "트랙 3 (17~24주) 텍스쳐 설계", "weeks": [{"w": "17주", "t": "텍스쳐 1", "d": "텍스쳐 설계 패러다임 / 마찰을 도구로"}, {"w": "18주", "t": "텍스쳐 2", "d": "MJ형 — PCA 후방개방 + 전방마찰"}, {"w": "19주", "t": "텍스쳐 3", "d": "볼튼형 — TA 극대화 + 완전폐쇄"}, {"w": "20주", "t": "텍스쳐 4", "d": "브루노형 — 텍스쳐 on/off 제어"}, {"w": "21주", "t": "텍스쳐 5", "d": "벤슨형 — break 도구화 + 감정 설계"}, {"w": "22주", "t": "텍스쳐 6", "d": "텍스쳐 × Big Five 매칭"}, {"w": "23주", "t": "텍스쳐 7", "d": "E4→C5 2년 확장 / 조직 재형성"}, {"w": "24주", "t": "텍스쳐 8", "d": "수강생 텍스쳐 진단·설계 실습"}]}, {"name": "트랙 4 (25~32주) 전문 심리이론 + 임상", "weeks": [{"w": "25주", "t": "전문 심리 1", "d": "공포 기억 재공고화(르두) / 다미주신경(포지스)"}, {"w": "26주", "t": "전문 심리 2", "d": "동기강화상담(MI) / 정서중심치료(EFT)"}, {"w": "27주", "t": "전이 관리", "d": "전이·역전이 인식과 관리 / 강사 자기 분리"}, {"w": "28주", "t": "임상 1", "d": "화병·억압 / 무대공포증·고음 방어"}, {"w": "29주", "t": "임상 2", "d": "성대결절 회복(비외과적) / 관계 트라우마"}, {"w": "30주", "t": "임상 3", "d": "실존(허무·죽음) / 고강도 음성사용자 리스크"}, {"w": "31주", "t": "자기 케이스", "d": "자신의 발성·심리 전문화 발표"}, {"w": "32주", "t": "케이스 종합", "d": "케이스 보고서 5건 통합 분석"}]}, {"name": "트랙 5 (33~38주) 1:1 파견 & 컨디션 컨트롤", "weeks": [{"w": "33주", "t": "파견 1", "d": "1:1 파견 모델 / 고강도 음성사용자 진단"}, {"w": "34주", "t": "컨트롤 1", "d": "감정전이 활용 / 페이싱·리딩"}, {"w": "35주", "t": "컨트롤 2", "d": "라벨링·리프레이밍·앵커링 / 공연 전 불안 조율"}, {"w": "36주", "t": "파견 2", "d": "공연·녹음 전후 케어 / 원격 레슨+AI"}, {"w": "37주", "t": "파견 3", "d": "현장 1:1 파견 실습 (멘토 동행) / 역전이 점검"}, {"w": "38주", "t": "파견 4", "d": "아티스트 케어 + 리스크 관리 매뉴얼"}]}, {"name": "트랙 6 (39~44주) ★ 감정을 통한 완전한 몰입 설계", "weeks": [{"w": "39주", "t": "몰입 이론", "d": "몰입(Flow, 칙센트미하이) / 자의식 소거 조건"}, {"w": "40주", "t": "정서 기억", "d": "정서 기억(스타니슬랍스키) / 감정 투사의 안전한 유도"}, {"w": "41주", "t": "심상 유도", "d": "심상 유도(Guided Imagery) / 가사·경험 연결"}, {"w": "42주", "t": "정서 해소", "d": "EFT 발성 적용 / 감정 → 소리 전환"}, {"w": "43주", "t": "몰입 통합", "d": "신경계 안전(다미주)+텍스쳐+정서 투사 통합"}, {"w": "44주", "t": "몰입 실습", "d": "1:1 완전 몰입 세션 시연 / 윤리 경계 점검"}]}, {"name": "트랙 7 (45~48주) 강사 양성 & 마스터 인증", "weeks": [{"w": "45주", "t": "양성", "d": "2급·1급 운영법 / 강사 평가·감독 / 모의 지도"}, {"w": "46주", "t": "연구", "d": "종단 데이터 분석 / 방법론 연구 보고서"}, {"w": "47주", "t": "인증 준비", "d": "통합 시연 준비 / 포트폴리오 완성"}, {"w": "48주", "t": "마스터 인증", "d": "마스터 인증 심의 / 파견 자격 부여"}]}]}];
+let curriIdx = 0;
+function renderCurriTabs(){
+  const tabs = document.getElementById('curriTabs');
+  if(!tabs) return;
+  tabs.innerHTML = CURRICULUM.map((c,i)=>{
+    const total = c.stages.reduce((n,s)=>n+s.weeks.length,0);
+    return '<button class="curri-tab '+(i===curriIdx?'active':'')+'" data-ci="'+i+'">'
+      + esc(c.badge) + '<span class="wk">'+total+'주</span></button>';
+  }).join('');
+  tabs.querySelectorAll('.curri-tab').forEach(function(b){
+    b.addEventListener('click', function(){ curriIdx = Number(b.dataset.ci); renderCurri(); });
+  });
+}
+function renderCurri(){
+  renderCurriTabs();
+  const c = CURRICULUM[curriIdx];
+  const meta = document.getElementById('curriMeta');
+  const body = document.getElementById('curriBody');
+  if(!c || !meta || !body) return;
+  const mi = [['기간',c.duration],['수료 후 역할',c.role],['학습 깊이',c.depth]];
+  if(c.req) mi.push(['응시 요건',c.req]);
+  meta.innerHTML = mi.map(function(kv){
+    return '<div class="mi"><div class="k">'+esc(kv[0])+'</div><div class="v">'+esc(kv[1])+'</div></div>';
+  }).join('') + (c.exam ? '<div class="mi" style="grid-column:1/-1"><div class="k">검정 기준</div><div class="v" style="font-weight:500">'+esc(c.exam)+'</div></div>' : '');
+  body.innerHTML = c.stages.map(function(s){
+    return '<div class="stage-block"><div class="stage-name">'+esc(s.name)+'</div>'
+      + '<table class="week-table"><tbody>'
+      + s.weeks.map(function(w){
+          return '<tr><td class="wk-no">'+esc(w.w)+'</td><td class="wk-t">'+esc(w.t)+'</td><td class="wk-d">'+esc(w.d)+'</td></tr>';
+        }).join('')
+      + '</tbody></table></div>';
+  }).join('');
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  if(DEMO){ $('#demoBanner').style.display = ''; $('#demoLoginHint').style.display = ''; }
+  await ensureDemoSeed();
+  await refreshMe();
+  renderEvents();
+  renderCurri();
+  route();
+  window.addEventListener('hashchange', route);
+
+  $('#navToggle').addEventListener('click', () => $('#navLinks').classList.toggle('open'));
+  $('#btnLogin').addEventListener('click', handleLogin);
+  $('#loginPw').addEventListener('keydown', e => { if(e.key === 'Enter') handleLogin(); });
+  $('#btnSignup').addEventListener('click', handleSignup);
+  $('#btnLogout').addEventListener('click', doLogout);
+
+  $('#lecToolbar').addEventListener('click', e => {
+    const chip = e.target.closest('.chip'); if(!chip) return;
+    $$('#lecToolbar .chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    stageFilter = chip.dataset.stage;
+    renderLectures();
+  });
+
+  $$('.admin-tabs .chip').forEach(chip => chip.addEventListener('click', () => {
+    $$('.admin-tabs .chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    $$('.admin-panel').forEach(p => p.classList.remove('active'));
+    $('#panel-' + chip.dataset.panel).classList.add('active');
+  }));
+
+  $('#lecAddForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const lecture = {
+      course: $('#lfCourse').value, stage: $('#lfStage').value,
+      order: Number($('#lfOrder').value) || 1,
+      title: $('#lfTitle').value.trim(),
+      youtubeId: $('#lfYt').value.trim() || 'DEMO',
+      len: Number($('#lfLen').value) || 0,
+      open: $('#lfOpen').value
+    };
+    if(!lecture.title) return toast('강의 제목을 입력해 주세요');
+    const r = await api('admin_addLecture', { token: TOKEN, lecture });
+    if(r.status === 'ok'){ toast('강의가 추가되었습니다'); $('#lfTitle').value = ''; $('#lfYt').value = ''; loadAdmin(); }
+    else toast(r.msg || '추가 실패');
+  });
+
+  $$('.modal-bg').forEach(m => m.addEventListener('click', e => {
+    if(e.target === m){ m.classList.remove('open'); if(m.id === 'videoModal') $('#vmBody').innerHTML = ''; }
+  }));
+});
+</script>
+<script>
+/* Reveal — 파트너십 페이지 원본과 동일 */
+const _obs = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) { entry.target.classList.add('visible'); _obs.unobserve(entry.target); }
+  });
+}, { threshold: 0.05, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach(el => _obs.observe(el));
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.querySelectorAll('.reveal').forEach(el => {
+      if (el.getBoundingClientRect().top < window.innerHeight) el.classList.add('visible');
+    });
+  }, 80);
+});
+/* 해시 라우팅 시 홈 밖 뷰에서는 리빌 즉시 표시 */
+window.addEventListener('hashchange', () => {
+  setTimeout(() => document.querySelectorAll('.view.active .reveal').forEach(el => el.classList.add('visible')), 50);
+});
+</script>
+</body>
+</html>
