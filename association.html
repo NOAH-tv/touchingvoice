@@ -631,6 +631,15 @@ td select{padding:6px 8px;border:1px solid var(--rule);background:#fff}
       </article>
     </div>
     <p style="margin-top:28px;font-size:13px;color:var(--muted)">※ 신청 후 안내 계좌로 입금해 주시면 확인 후 승인됩니다. 온라인 결제(나이스페이)는 연동 준비 중입니다.</p>
+
+    <div class="reveal" style="margin-top:36px;padding:26px;border:1px solid var(--rule);border-radius:16px;background:var(--beige-050)">
+      <h3 style="margin:0 0 6px">수강 코드가 있으신가요?</h3>
+      <p style="font-size:14px;color:var(--muted);margin:0 0 16px">관리자에게 발급받은 수강 코드를 입력하면 입금 없이 해당 과정 강의실이 바로 열립니다.</p>
+      <form id="codeRedeemForm" style="display:flex;gap:10px;flex-wrap:wrap;max-width:540px">
+        <input id="crCode" type="text" autocomplete="off" placeholder="예: TV-ABCD-2345" style="flex:1;min-width:220px;padding:12px 16px;border:1px solid var(--rule);border-radius:10px;font-size:15px;font-family:monospace;letter-spacing:1px;text-transform:uppercase;background:#fff">
+        <button class="btn btn-accent" type="submit">코드 등록</button>
+      </form>
+    </div>
   </div></div>
 </main>
 
@@ -730,6 +739,7 @@ td select{padding:6px 8px;border:1px solid var(--rule);background:#fff}
       <button class="chip active" data-panel="members">회원 관리</button>
       <button class="chip" data-panel="enrolls">수강 신청</button>
       <button class="chip" data-panel="lectures">강의 관리</button>
+      <button class="chip" data-panel="codes">수강 코드</button>
     </div>
 
     <div class="admin-panel active" id="panel-members">
@@ -771,6 +781,24 @@ td select{padding:6px 8px;border:1px solid var(--rule);background:#fff}
         <table>
           <thead><tr><th>과정</th><th>단계</th><th>순서</th><th>제목</th><th>영상 ID</th><th>공개</th><th>삭제</th></tr></thead>
           <tbody id="adminLecRows"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="admin-panel" id="panel-codes">
+      <p class="section-lede" style="font-size:15px;margin-bottom:20px">수강료 입금이 면제되는 경우, 코드를 발급해 수강생에게 전달하세요. 수강생이 코드를 등록하면 입금 없이 해당 과정 강의실이 바로 열립니다.</p>
+      <form class="admin-form" id="codeGenForm">
+        <div class="field"><label>과정</label>
+          <select id="cgCourse"><option value="2급" selected>2급</option><option value="1급">1급</option></select>
+        </div>
+        <div class="field"><label>발급 수량</label><input id="cgCount" type="number" value="1" min="1" max="50"></div>
+        <div class="field span2" style="align-self:end"><button class="btn btn-purple" type="submit" style="width:100%">코드 발급</button></div>
+      </form>
+      <div id="codeGenResult" style="margin:4px 0 24px"></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>코드</th><th>과정</th><th>상태</th><th>사용자</th><th>발급일</th><th>사용일</th></tr></thead>
+          <tbody id="adminCodeRows"></tbody>
         </table>
       </div>
     </div>
@@ -886,7 +914,8 @@ async function ensureDemoSeed(){
       { id:rid(), course:'2급', stage:'2', order:1, title:'음향 지표 읽기 — 측정의 언어', youtubeId:'DEMO', len:26, open:'TRUE' },
       { id:rid(), course:'2급', stage:'3', order:1, title:'코칭 시연 — 진단에서 처방으로', youtubeId:'DEMO', len:31, open:'TRUE' },
       { id:rid(), course:'1급', stage:'1', order:1, title:'[1급] 측정 데이터 심화 해석', youtubeId:'DEMO', len:38, open:'TRUE' }
-    ]
+    ],
+    codes: []
   };
   demoSave(db);
 }
@@ -962,6 +991,26 @@ async function demoApi(action, d){
       demoSave(db); return { status:'ok' }; }
     case 'admin_deleteLecture': { const g = needAdmin(); if(g) return g;
       db.lectures = db.lectures.filter(x => x.id !== d.id); demoSave(db); return { status:'ok' }; }
+    case 'admin_createCode': { const g = needAdmin(); if(g) return g;
+      if(['2급','1급'].indexOf(d.course) < 0) return { status:'error', msg:'과정(2급/1급)을 선택하세요' };
+      const n = Math.min(Math.max(parseInt(d.count,10)||1,1),50);
+      if(!db.codes) db.codes = [];
+      const out = [];
+      for(let i=0;i<n;i++){ const c = 'TV-'+rid().slice(0,4).toUpperCase()+'-'+rid().slice(0,4).toUpperCase(); db.codes.push({ code:c, course:d.course, status:'미사용', usedBy:'', issued:today(), used:'' }); out.push(c); }
+      demoSave(db); return { status:'ok', codes: out }; }
+    case 'admin_listCodes': { const g = needAdmin(); if(g) return g;
+      return { status:'ok', data: (db.codes || []).slice().reverse() }; }
+    case 'redeemCode': {
+      if(!me) return { status:'error', msg:'로그인이 필요합니다' };
+      const code = String(d.code||'').trim().toUpperCase();
+      const row = (db.codes || []).find(x => x.code === code);
+      if(!row) return { status:'error', msg:'유효하지 않은 코드입니다' };
+      if(row.status !== '미사용') return { status:'error', msg:'이미 사용된 코드입니다' };
+      const target = row.course === '1급' ? '1급수강' : '2급수강';
+      const m = db.members.find(x => x.email === me.email);
+      if(m && (RANK[m.level]||0) < RANK[target]) m.level = target;
+      row.status = '사용됨'; row.usedBy = me.email; row.used = today();
+      demoSave(db); return { status:'ok', course: row.course, level: target }; }
     default: return { status:'error', msg:'unknown action: ' + action };
   }
 }
@@ -1076,6 +1125,18 @@ async function startEnroll(course){
 }
 function closeBank(){ $('#bankModal').classList.remove('open'); }
 
+async function redeemCode(){
+  if(!TOKEN){ toast('로그인 후 코드를 등록할 수 있습니다'); location.hash = '#login'; return; }
+  const code = $('#crCode').value.trim().toUpperCase();
+  if(!code) return toast('코드를 입력해 주세요');
+  const r = await api('redeemCode', { token: TOKEN, code });
+  if(r.status !== 'ok') return toast(r.msg || '코드 등록 실패');
+  $('#crCode').value = '';
+  await refreshMe();
+  toast('✅ ' + r.course + ' 과정 강의실이 열렸습니다!');
+  location.hash = '#lectures';
+}
+
 /* ═══════════════ 강의실 ═══════════════ */
 let LECTURES = [], stageFilter = 'all';
 async function loadLectures(){
@@ -1135,14 +1196,36 @@ async function renderMypage(){
 
 /* ═══════════════ 관리자 ═══════════════ */
 async function loadAdmin(){
-  const [m, e, l] = await Promise.all([
+  const [m, e, l, c] = await Promise.all([
     api('admin_listMembers', { token: TOKEN }),
     api('admin_listEnrollments', { token: TOKEN }),
-    api('admin_listLectures', { token: TOKEN })
+    api('admin_listLectures', { token: TOKEN }),
+    api('admin_listCodes', { token: TOKEN })
   ]);
   renderAdminMembers(m.data || []);
   renderAdminEnrolls(e.data || []);
   renderAdminLectures(l.data || []);
+  renderAdminCodes(c.data || []);
+}
+async function adminCreateCode(course, count){
+  const r = await api('admin_createCode', { token: TOKEN, course, count });
+  if(r.status !== 'ok') return toast(r.msg || '발급 실패');
+  const codes = r.codes || [];
+  $('#codeGenResult').innerHTML = `<div style="padding:16px 18px;border:1px solid var(--accent);border-radius:12px;background:#fff">
+    <b>${esc(course)} 과정 코드 ${codes.length}개 발급 완료</b> <span style="color:var(--muted);font-size:13px">— 클릭해 복사 후 수강생에게 전달하세요</span>
+    <div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:8px">
+      ${codes.map(c => `<code class="selectable" style="font-family:monospace;font-size:15px;font-weight:700;padding:7px 13px;background:var(--beige-100);border-radius:7px;letter-spacing:1.5px">${esc(c)}</code>`).join('')}
+    </div></div>`;
+  loadAdmin();
+}
+function renderAdminCodes(list){
+  $('#adminCodeRows').innerHTML = list.map(c => {
+    const used = String(c.status) === '사용됨';
+    return `<tr><td class="selectable" style="font-family:monospace;font-weight:700;letter-spacing:1px">${esc(c.code)}</td>
+      <td>${esc(c.course)}</td>
+      <td><span class="status ${used ? 'ok' : 'wait'}">${esc(c.status)}</span></td>
+      <td>${esc(c.usedBy || '—')}</td><td>${esc(c.issued)}</td><td>${esc(c.used || '—')}</td></tr>`;
+  }).join('') || '<tr><td colspan="6">발급된 코드가 없습니다</td></tr>';
 }
 function renderAdminMembers(list){
   $('#adminMemberRows').innerHTML = list.map(m => `
@@ -1178,8 +1261,8 @@ function renderAdminLectures(list){
     <tr><td>${esc(l.course)}</td><td>${esc(l.stage)}</td><td>${esc(l.order)}</td>
     <td>${esc(l.title)}</td><td style="font-family:monospace">${esc(l.youtubeId)}</td>
     <td><select onchange="adminToggleLec('${esc(l.id)}', this.value)">
-      <option value="TRUE" ${l.open === 'TRUE' ? 'selected' : ''}>공개</option>
-      <option value="FALSE" ${l.open !== 'TRUE' ? 'selected' : ''}>비공개</option>
+      <option value="TRUE" ${String(l.open).toUpperCase() === 'TRUE' ? 'selected' : ''}>공개</option>
+      <option value="FALSE" ${String(l.open).toUpperCase() !== 'TRUE' ? 'selected' : ''}>비공개</option>
     </select></td>
     <td><button class="btn btn-ghost btn-sm" style="color:var(--bad);border-color:var(--bad)" onclick="adminDelLec('${esc(l.id)}')">삭제</button></td></tr>`
   ).join('') || '<tr><td colspan="7">등록된 강의가 없습니다</td></tr>';
@@ -1277,6 +1360,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     if(r.status === 'ok'){ toast('강의가 추가되었습니다'); $('#lfTitle').value = ''; $('#lfYt').value = ''; loadAdmin(); }
     else toast(r.msg || '추가 실패');
   });
+
+  $('#codeGenForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    await adminCreateCode($('#cgCourse').value, Number($('#cgCount').value) || 1);
+  });
+  $('#codeRedeemForm').addEventListener('submit', e => { e.preventDefault(); redeemCode(); });
 
   $$('.modal-bg').forEach(m => m.addEventListener('click', e => {
     if(e.target === m){ m.classList.remove('open'); if(m.id === 'videoModal') $('#vmBody').innerHTML = ''; }
