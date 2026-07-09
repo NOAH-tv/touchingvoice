@@ -569,7 +569,6 @@ body::before{display:none !important}
       <a data-go="theory">이론 정의서</a>
       <a data-go="programs">강의실</a>
       <a data-go="exam">검정·자격</a>
-      <a data-go="corporate">기업·기관</a>
     </nav>
   </div></div>
 
@@ -1013,7 +1012,7 @@ function renderCaseReport(){
         '</div>'+
         '<div class="elem-length">권장 분량: '+e.length+'</div>'+
         '<div class="elem-guide" style="margin-top:.4rem">'+e.guide+'</div>'+
-        '<div class="elem-ex"><div class="exlabel">예시</div>'+e.ex_replaced(e.example)+'</div>'+
+        '<div class="elem-ex"><div class="exlabel">예시</div>'+e.example+'</div>'+
       '</div>';
     }).join(''),
     true);
@@ -1423,9 +1422,14 @@ function submitMock(){
   var ASSOC = 'association.html';
   var EXEC = 'https://script.google.com/macros/s/AKfycbyNuWzvVD6Vjx5-fsAWhkSR5WAJjI2gDIZu8JboZsy4bqKJ44RH23-j3HCgPqWwBC9XMg/exec';
   var RANK = {'없음':0,'2급수강':1,'2급':2,'1급수강':3,'1급':4};
+  var EMBED = /[?&]embed=1/.test(location.search) || window.self !== window.top; // 협회 온라인 강의실에 임베드된 경우
+  if(EMBED) document.documentElement.classList.add('embed');
   var ov = document.createElement('div'); ov.id='acadGate'; ov.textContent='불러오는 중…';
   document.body.appendChild(ov);
-  function toLogin(){ location.replace(ASSOC + '#login'); }
+  function toLogin(){
+    if(EMBED){ try{ window.top.location.hash = '#login'; return; }catch(e){} }
+    location.replace(ASSOC + '#login');
+  }
   var token = localStorage.getItem('tv_assoc_token');
   if(!token){ toLogin(); return; }
   fetch(EXEC, {method:'POST', body: JSON.stringify({action:'me', data:{token:token}})})
@@ -1460,12 +1464,14 @@ function submitMock(){
       var i = +r.dataset.i;
       if(!acc[i]) lock(r, '이 과정은 수강 등록(또는 수강 코드) 후 열립니다<br><a href="'+ASSOC+'#course" style="color:var(--gold);font-weight:800">→ 수강 신청 · 코드 등록</a>');
     });
-    var nav = document.querySelector('.nav');
-    if(nav && !nav.querySelector('.acad-back')){
-      var back = document.createElement('a');
-      back.href = ASSOC; back.className='acad-back'; back.textContent = '← 협회 홈';
-      back.style.opacity = '.72';
-      nav.appendChild(back);
+    if(!EMBED){
+      var nav = document.querySelector('.nav');
+      if(nav && !nav.querySelector('.acad-back')){
+        var back = document.createElement('a');
+        back.href = ASSOC; back.className='acad-back'; back.textContent = '← 협회 홈';
+        back.style.opacity = '.72';
+        nav.appendChild(back);
+      }
     }
     var first = [0,1,2].filter(function(i){ return acc[i]; })[0];
     if(first != null && typeof openRoom === 'function'){ try{ openRoom(first); }catch(e){} }
