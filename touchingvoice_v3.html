@@ -356,13 +356,13 @@ body{background:var(--bg);color:var(--text);font-family:'NanumSquare','Nanum Squ
           <div class="rec-status" id="recStatus">탭하여 녹음 시작</div>
           <div class="rec-timer" id="recTimer">00:00</div>
           <div class="rec-waveform" id="recWaveform">
-            <div class="rec-hint">최대 2분 · 30초 이상 권장</div>
+            <div class="rec-hint">최대 5분 · 30초 이상 권장 · 무손실 WAV</div>
           </div>
         </div>
         <!-- 녹음 후 컨트롤 -->
         <div id="recDoneBar" style="display:none">
           <audio id="recPlayback" controls style="width:100%;margin-bottom:12px;accent-color:var(--accent2)"></audio>
-          <div style="display:flex;gap:10px">
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
             <button class="rec-btn-redo" onclick="redoRec()">↩ 다시 녹음</button>
             <button class="rec-btn-use" onclick="useRec()">✓ 이 녹음 사용</button>
           </div>
@@ -398,7 +398,7 @@ body{background:var(--bg);color:var(--text);font-family:'NanumSquare','Nanum Squ
         </div>
         <div id="chorusDoneBar" style="display:none">
           <audio id="chorusPlayback" controls style="width:100%;margin-bottom:12px;accent-color:var(--accent2)"></audio>
-          <div style="display:flex;gap:10px">
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
             <button class="rec-btn-redo" onclick="redoChorusRec()">↩ 다시 녹음</button>
             <button class="rec-btn-use" onclick="useChorusRec()">✓ 이 녹음 사용</button>
           </div>
@@ -1118,6 +1118,96 @@ const FREQ_BANDS = [
   { label: '초고음\n16kHz', min: 12000, max: 20000, color: '#e07a2a', desc: '공기감·마찰음' },
 ];
 
+// ═══════════════════════════════════════════════════════════════
+// F0 검출 엔진 — 자기상관 기반 시간 도메인 F0 추출
+// 입력: Float32Array PCM 샘플, sampleRate(Hz)
+// 출력: { mean, median, std, min, max, p5, p95, range, voicedSec, count }
+//        (검출된 F0 프레임이 없으면 null)
+// ═══════════════════════════════════════════════════════════════
+function detectF0Stats(samples, sampleRate) {
+  // 8kHz로 다운샘플 (F0 검출엔 충분, 처리 속도 4~5배 향상)
+  const targetRate = 8000;
+  const downFactor = Math.max(1, Math.floor(sampleRate / targetRate));
+  const dsRate = sampleRate / downFactor;
+  const dsLen = Math.floor(samples.length / downFactor);
+  const ds = new Float32Array(dsLen);
+  for (let i = 0; i < dsLen; i++) {
+    let sum = 0;
+    for (let j = 0; j < downFactor; j++) sum += samples[i * downFactor + j];
+    ds[i] = sum / downFactor; // 간이 저역통과(평균화)
+  }
+
+  const frameMs = 40, hopMs = 20; // 40ms 프레임, 20ms 이동 → 50 프레임/초
+  const frameSize = Math.floor(dsRate * frameMs / 1000);
+  const hopSize  = Math.floor(dsRate * hopMs  / 1000);
+  const minF0 = 60, maxF0 = 500;
+  const minLag = Math.floor(dsRate / maxF0);
+  const maxLag = Math.floor(dsRate / minF0);
+
+  const f0List = [];
+
+  for (let start = 0; start + frameSize < dsLen; start += hopSize) {
+    // RMS 에너지로 무성/무음 구간 필터
+    let energySq = 0;
+    for (let i = 0; i < frameSize; i++) energySq += ds[start + i] * ds[start + i];
+    const rms = Math.sqrt(energySq / frameSize);
+    if (rms < 0.008) continue; // 무음 임계
+
+    // 자기상관 최대 지점 탐색
+    let bestLag = 0, bestCorr = -1;
+    const zeroLagEnergy = energySq; // r(0)
+    for (let lag = minLag; lag <= maxLag; lag++) {
+      let corr = 0;
+      const n = frameSize - lag;
+      for (let i = 0; i < n; i++) corr += ds[start + i] * ds[start + i + lag];
+      // 정규화 자기상관 (0~1)
+      const normCorr = corr / (zeroLagEnergy + 1e-10);
+      if (normCorr > bestCorr) { bestCorr = normCorr; bestLag = lag; }
+    }
+
+    // 유성음 임계 — 자기상관 계수가 0.35 이상일 때만 유효 F0
+    if (bestCorr > 0.35 && bestLag > 0) {
+      // 포물선 보간으로 서브샘플 정확도 향상
+      const l = bestLag;
+      let refinedLag = l;
+      if (l > minLag && l < maxLag) {
+        let c_m1 = 0, c_p1 = 0;
+        const n_m = frameSize - (l - 1);
+        const n_p = frameSize - (l + 1);
+        for (let i = 0; i < n_m; i++) c_m1 += ds[start + i] * ds[start + i + (l - 1)];
+        for (let i = 0; i < n_p; i++) c_p1 += ds[start + i] * ds[start + i + (l + 1)];
+        const denom = c_m1 - 2 * (bestCorr * zeroLagEnergy) + c_p1;
+        if (Math.abs(denom) > 1e-10) {
+          const shift = 0.5 * (c_m1 - c_p1) / denom;
+          if (Math.abs(shift) < 1) refinedLag = l + shift;
+        }
+      }
+      const f0 = dsRate / refinedLag;
+      if (f0 >= minF0 && f0 <= maxF0) f0List.push(f0);
+    }
+  }
+
+  if (f0List.length === 0) return null;
+
+  const sorted = [...f0List].sort((a, b) => a - b);
+  const mean = f0List.reduce((s, v) => s + v, 0) / f0List.length;
+  const variance = f0List.reduce((s, v) => s + (v - mean) ** 2, 0) / f0List.length;
+  const pick = (p) => sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * p))];
+
+  return {
+    mean:   Math.round(mean * 10) / 10,
+    median: Math.round(sorted[Math.floor(sorted.length / 2)] * 10) / 10,
+    std:    Math.round(Math.sqrt(variance) * 10) / 10,
+    min:    Math.round(sorted[0] * 10) / 10,
+    max:    Math.round(sorted[sorted.length - 1] * 10) / 10,
+    p5:     Math.round(pick(0.05) * 10) / 10,
+    p95:    Math.round(pick(0.95) * 10) / 10,
+    range:  Math.round((sorted[sorted.length - 1] - sorted[0]) * 10) / 10,
+    voicedSec: Math.round(f0List.length * hopMs / 1000 * 10) / 10, // 유성음 총 시간(초)
+    count:  f0List.length
+  };
+}
+
 async function analyzeSpectrum(file) {
   document.getElementById('spectrumPanel').style.display = 'block';
   document.getElementById('spectrumLoading').style.display = 'block';
@@ -1129,6 +1219,15 @@ async function analyzeSpectrum(file) {
     const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
     const channelData = audioBuffer.getChannelData(0);
     const sampleRate = audioBuffer.sampleRate;
+
+    // ═══════════════════════════════════════════════════════════
+    // F0(기본 주파수) 검출 — 자기상관법 (Autocorrelation)
+    // 성대 진동의 기본 주파수를 시간 도메인에서 직접 추출.
+    // 음성 F0 범위 60~500Hz(남성 저음 ~ 여성/아동 고음) 커버.
+    // ═══════════════════════════════════════════════════════════
+    const f0Stats = detectF0Stats(channelData, sampleRate);
+    window._f0Stats = f0Stats;
+
     const fftSize = 4096;
     const duration = audioBuffer.duration;
     const numSamples = Math.min(60, Math.floor(duration * 6));
@@ -1238,7 +1337,7 @@ async function analyzeSpectrum(file) {
 
     renderSpectrogram(spectroRows, binCount);
     renderFreqBars(bandEnergy);
-    renderAdvancedMetrics(harmonicRichness, articulationScore, spectralBalance);
+    renderAdvancedMetrics(harmonicRichness, articulationScore, spectralBalance, f0Stats);
     renderFreqComment(bandEnergy, harmonicRichness, articulationScore);
 
     // 전역 저장 (Sheets 업로드 시 활용)
@@ -1361,8 +1460,41 @@ const freqPersonalityMap = [
   },
 ];
 
-function renderAdvancedMetrics(harmonicRichness, articulationScore, spectralBalance) {
+function renderAdvancedMetrics(harmonicRichness, articulationScore, spectralBalance, f0Stats) {
   const container = document.getElementById('advancedMetrics');
+  const f0Block = f0Stats ? `
+    <div style="margin-top:14px;background:var(--surface2);border-radius:10px;padding:16px 14px">
+      <div style="font-family:'NanumSquare','Nanum Square',sans-serif;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:10px">F0 · 기본 주파수</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;text-align:center">
+        <div>
+          <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:4px">평균</div>
+          <div style="font-size:18px;font-weight:600;color:#4a90e2">${f0Stats.mean}<span style="font-size:11px;color:var(--muted);margin-left:2px">Hz</span></div>
+        </div>
+        <div>
+          <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:4px">중앙값</div>
+          <div style="font-size:18px;font-weight:600;color:#4a90e2">${f0Stats.median}<span style="font-size:11px;color:var(--muted);margin-left:2px">Hz</span></div>
+        </div>
+        <div>
+          <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:4px">변동</div>
+          <div style="font-size:18px;font-weight:600;color:#4a90e2">±${f0Stats.std}<span style="font-size:11px;color:var(--muted);margin-left:2px">Hz</span></div>
+        </div>
+        <div>
+          <div style="font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:4px">범위</div>
+          <div style="font-size:18px;font-weight:600;color:#4a90e2">${f0Stats.range}<span style="font-size:11px;color:var(--muted);margin-left:2px">Hz</span></div>
+        </div>
+      </div>
+      <div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.06);display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;font-size:10px;color:var(--muted)">
+        <div>최저 ${f0Stats.min} Hz</div>
+        <div>최고 ${f0Stats.max} Hz</div>
+        <div>유성 ${f0Stats.voicedSec}s</div>
+      </div>
+    </div>
+  ` : `
+    <div style="margin-top:14px;background:var(--surface2);border-radius:10px;padding:14px;text-align:center;color:var(--muted);font-size:11px">
+      F0 검출 프레임 없음 — 유성음 구간이 짧거나 신호가 약합니다
+    </div>
+  `;
+
   container.innerHTML = `
     <div style="font-family:'NanumSquare','Nanum Square',sans-serif;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:12px">고급 음성 지표</div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
@@ -1385,6 +1517,7 @@ function renderAdvancedMetrics(harmonicRichness, articulationScore, spectralBala
         </div>
       `).join('')}
     </div>
+    ${f0Block}
   `;
 }
 
@@ -1420,13 +1553,62 @@ function renderFreqComment(bandEnergy, harmonicRichness = 50, articulationScore 
 // VOICE TAB + RECORDER
 // ═══════════════════════════
 let selectedGender = null;
-let recMediaRecorder = null;
-let recChunks = [];
+// ═══════════════════════════════════════════════════════════════
+// WAV 인코더 유틸 — 원본 PCM(Float32) → 16-bit WAV (RIFF)
+// 서초유스센터 검사앱과 동일한 처리: MediaRecorder(webm/opus 손실)
+// 경로 폐기하고 Web Audio에서 PCM 직접 캡처 → 무손실 WAV 저장.
+// ═══════════════════════════════════════════════════════════════
+function _floatTo16BitPCM(output, offset, input) {
+  for (let i = 0; i < input.length; i++, offset += 2) {
+    const s = Math.max(-1, Math.min(1, input[i]));
+    output.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+  }
+}
+function _writeString(view, offset, str) {
+  for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
+}
+function encodeWAV(samples, sampleRate) {
+  // samples: Float32Array (mono), sampleRate: e.g. 44100
+  const buffer = new ArrayBuffer(44 + samples.length * 2);
+  const view = new DataView(buffer);
+  _writeString(view, 0, 'RIFF');
+  view.setUint32(4, 36 + samples.length * 2, true);
+  _writeString(view, 8, 'WAVE');
+  _writeString(view, 12, 'fmt ');
+  view.setUint32(16, 16, true);           // PCM chunk size
+  view.setUint16(20, 1, true);            // PCM format
+  view.setUint16(22, 1, true);            // mono
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, sampleRate * 2, true); // byte rate (mono * 16-bit)
+  view.setUint16(32, 2, true);            // block align
+  view.setUint16(34, 16, true);           // bits per sample
+  _writeString(view, 36, 'data');
+  view.setUint32(40, samples.length * 2, true);
+  _floatTo16BitPCM(view, 44, samples);
+  return new Blob([view], { type: 'audio/wav' });
+}
+function _mergePCMChunks(chunks) {
+  let total = 0;
+  for (const c of chunks) total += c.length;
+  const out = new Float32Array(total);
+  let off = 0;
+  for (const c of chunks) { out.set(c, off); off += c.length; }
+  return out;
+}
+
+let recAudioCtx = null, recSourceNode = null, recProcessorNode = null;
+let recPCMChunks = [];
+let recStream = null;
+let chorusAudioCtx = null, chorusSourceNode = null, chorusProcessorNode = null;
+let chorusPCMChunks = [];
+let chorusStream = null;
+
+// (구 MediaRecorder 경로 폐기 — Web Audio PCM 직접 캡처로 대체됨)
 let recTimerInterval = null;
 let recSeconds = 0;
 let recBlob = null;
 let recIsRecording = false;
-const REC_MAX = 120; // 2분
+const REC_MAX = 300; // 2분
 
 function switchVoiceTab(tab) {
   ['script','chorus'].forEach(t => {
@@ -1458,23 +1640,27 @@ async function toggleRec() {
 
 async function startRec() {
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      audio: { sampleRate: 44100, channelCount: 1, echoCancellation: true }
+    // ⚠ 오디오 전처리 완전 비활성 — 외부 마이크 원본 그대로 캡처
+    recStream = await navigator.mediaDevices.getUserMedia({
+      audio: {
+        sampleRate: 44100,
+        channelCount: 1,
+        echoCancellation: false,
+        noiseSuppression: false,
+        autoGainControl: false
+      }
     });
-    const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
-      ? 'audio/webm;codecs=opus' : 'audio/webm';
-    recMediaRecorder = new MediaRecorder(stream, { mimeType });
-    recChunks = [];
-    recMediaRecorder.ondataavailable = e => { if (e.data.size > 0) recChunks.push(e.data); };
-    recMediaRecorder.onstop = () => {
-      recBlob = new Blob(recChunks, { type: mimeType });
-      const url = URL.createObjectURL(recBlob);
-      document.getElementById('recPlayback').src = url;
-      document.getElementById('recDoneBar').style.display = 'block';
-      stream.getTracks().forEach(t => t.stop());
-      stopWaveformAnim();
+    // Web Audio 그래프로 PCM 직접 캡처 (MediaRecorder 미사용 → webm/opus 손실 제거)
+    recAudioCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 44100 });
+    recSourceNode = recAudioCtx.createMediaStreamSource(recStream);
+    recProcessorNode = recAudioCtx.createScriptProcessor(4096, 1, 1);
+    recPCMChunks = [];
+    recProcessorNode.onaudioprocess = (e) => {
+      const ch0 = e.inputBuffer.getChannelData(0);
+      recPCMChunks.push(new Float32Array(ch0)); // 복사해서 저장 (버퍼 재사용 방지)
     };
-    recMediaRecorder.start(100);
+    recSourceNode.connect(recProcessorNode);
+    recProcessorNode.connect(recAudioCtx.destination);
     recIsRecording = true;
     recSeconds = 0;
 
@@ -1507,10 +1693,25 @@ async function startRec() {
 }
 
 function stopRec() {
-  if (!recMediaRecorder || !recIsRecording) return;
-  recMediaRecorder.stop();
+  if (!recIsRecording) return;
   recIsRecording = false;
   clearInterval(recTimerInterval);
+
+  // Web Audio 그래프 정리 및 PCM → WAV 인코딩
+  try {
+    if (recProcessorNode) { recProcessorNode.disconnect(); recProcessorNode.onaudioprocess = null; }
+    if (recSourceNode) { recSourceNode.disconnect(); }
+  } catch(_){}
+  const sampleRate = recAudioCtx ? recAudioCtx.sampleRate : 44100;
+  if (recAudioCtx) { try { recAudioCtx.close(); } catch(_){} }
+  if (recStream) { recStream.getTracks().forEach(t => t.stop()); }
+
+  const pcm = _mergePCMChunks(recPCMChunks);
+  recBlob = encodeWAV(pcm, sampleRate);
+  const url = URL.createObjectURL(recBlob);
+  document.getElementById('recPlayback').src = url;
+  document.getElementById('recDoneBar').style.display = 'block';
+  stopWaveformAnim();
 
   document.getElementById('recOrbInner').classList.remove('recording');
   document.getElementById('recRingFill').classList.remove('recording');
@@ -1535,7 +1736,7 @@ function redoRec() {
 
 function useRec() {
   if (!recBlob) return;
-  voiceFileName = `대본녹음_${new Date().toLocaleDateString('ko-KR').replace(/\. /g,'-').replace('.','')}.webm`;
+  voiceFileName = `대본녹음_${new Date().toLocaleDateString('ko-KR').replace(/\. /g,'-').replace('.','')}.wav`;
   setReadyBar(true, `📖 ${voiceFileName}`);
   document.getElementById('btnStep1').disabled = false;
   // 분석은 백그라운드에서 — 버튼은 이미 활성화
@@ -1565,8 +1766,7 @@ function skipVoice() {
 // ── 애창곡 후렴 녹음 ──
 let chorusBlob = null;
 let chorusIsRecording = false;
-let chorusMediaRecorder = null;
-let chorusChunks = [];
+// (구 MediaRecorder 경로 폐기 — Web Audio PCM 직접 캡처로 대체됨)
 let chorusSeconds = 0;
 let chorusTimerInterval = null;
 let chorusFileName = null;
@@ -1591,19 +1791,27 @@ async function toggleChorusRec() {
 
 async function startChorusRec() {
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: { sampleRate: 44100, channelCount: 1 } });
-    const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : 'audio/webm';
-    chorusMediaRecorder = new MediaRecorder(stream, { mimeType });
-    chorusChunks = [];
-    chorusMediaRecorder.ondataavailable = e => { if (e.data.size > 0) chorusChunks.push(e.data); };
-    chorusMediaRecorder.onstop = () => {
-      chorusBlob = new Blob(chorusChunks, { type: mimeType });
-      const url = URL.createObjectURL(chorusBlob);
-      document.getElementById('chorusPlayback').src = url;
-      document.getElementById('chorusDoneBar').style.display = 'block';
-      stream.getTracks().forEach(t => t.stop());
+    // ⚠ 오디오 전처리 완전 비활성 — 외부 마이크 원본 그대로 캡처
+    chorusStream = await navigator.mediaDevices.getUserMedia({
+      audio: {
+        sampleRate: 44100,
+        channelCount: 1,
+        echoCancellation: false,
+        noiseSuppression: false,
+        autoGainControl: false
+      }
+    });
+    // Web Audio 그래프로 PCM 직접 캡처
+    chorusAudioCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 44100 });
+    chorusSourceNode = chorusAudioCtx.createMediaStreamSource(chorusStream);
+    chorusProcessorNode = chorusAudioCtx.createScriptProcessor(4096, 1, 1);
+    chorusPCMChunks = [];
+    chorusProcessorNode.onaudioprocess = (e) => {
+      const ch0 = e.inputBuffer.getChannelData(0);
+      chorusPCMChunks.push(new Float32Array(ch0));
     };
-    chorusMediaRecorder.start(100);
+    chorusSourceNode.connect(chorusProcessorNode);
+    chorusProcessorNode.connect(chorusAudioCtx.destination);
     chorusIsRecording = true;
     chorusSeconds = 0;
     document.getElementById('chorusOrbInner').classList.add('recording');
@@ -1616,7 +1824,7 @@ async function startChorusRec() {
       const m = String(Math.floor(chorusSeconds/60)).padStart(2,'0');
       const s = String(chorusSeconds%60).padStart(2,'0');
       document.getElementById('chorusTimer').textContent = `${m}:${s}`;
-      if (chorusSeconds >= 60) stopChorusRec();
+      if (chorusSeconds >= REC_MAX) stopChorusRec();
     }, 1000);
   } catch(e) {
     alert('마이크 접근 권한이 필요합니다.');
@@ -1627,7 +1835,22 @@ function stopChorusRec() {
   if (!chorusIsRecording) return;
   chorusIsRecording = false;
   clearInterval(chorusTimerInterval);
-  chorusMediaRecorder.stop();
+
+  // Web Audio 그래프 정리 및 PCM → WAV 인코딩
+  try {
+    if (chorusProcessorNode) { chorusProcessorNode.disconnect(); chorusProcessorNode.onaudioprocess = null; }
+    if (chorusSourceNode) { chorusSourceNode.disconnect(); }
+  } catch(_){}
+  const sampleRate = chorusAudioCtx ? chorusAudioCtx.sampleRate : 44100;
+  if (chorusAudioCtx) { try { chorusAudioCtx.close(); } catch(_){} }
+  if (chorusStream) { chorusStream.getTracks().forEach(t => t.stop()); }
+
+  const pcm = _mergePCMChunks(chorusPCMChunks);
+  chorusBlob = encodeWAV(pcm, sampleRate);
+  const url = URL.createObjectURL(chorusBlob);
+  document.getElementById('chorusPlayback').src = url;
+  document.getElementById('chorusDoneBar').style.display = 'block';
+
   document.getElementById('chorusOrbInner').classList.remove('recording');
   document.getElementById('chorusRingFill').classList.remove('recording');
   document.getElementById('chorusOrbIcon').textContent = '🎵';
@@ -1645,7 +1868,7 @@ function redoChorusRec() {
 function useChorusRec() {
   if (!chorusBlob) return;
   const songTitle = document.getElementById('chorus-song-title').value.trim() || '애창곡';
-  chorusFileName = `후렴_${songTitle}_${new Date().toLocaleDateString('ko-KR').replace(/\. /g,'-').replace('.','')}.webm`;
+  chorusFileName = `후렴_${songTitle}_${new Date().toLocaleDateString('ko-KR').replace(/\. /g,'-').replace('.','')}.wav`;
   voiceFileName = chorusFileName;
   setReadyBar(true, `🎵 ${chorusFileName}`);
   document.getElementById('btnStep1').disabled = false;
@@ -2014,14 +2237,14 @@ async function uploadAudioToDrive(blob, fileName, category) {
     const base64 = await blobToBase64(blob);
     const name   = document.getElementById('user-name').value.trim();
     const date   = new Date().toLocaleDateString('ko-KR').replace(/\. /g,'-').replace('.','');
-    const finalName = `${date}_${name}_${selectedGender || ''}_${category === 'range' ? '음역대' : '자기소개'}.webm`;
+    const finalName = `${date}_${name}_${selectedGender || ''}_${category === 'range' ? '음역대' : '자기소개'}.wav`;
 
     const res = await fetch(APPS_SCRIPT_URL, {
       method : 'POST',
       body   : JSON.stringify({
         type      : 'audio',
         base64,
-        mimeType  : blob.type || 'audio/webm',
+        mimeType  : blob.type || 'audio/wav',
         filename  : finalName,   // Apps Script 기대 필드명 (소문자)
         category,
         name, gender: selectedGender || '',
@@ -2074,6 +2297,7 @@ async function saveToSheets(scores, name) {
       harmonicRichness : window._harmonicRichness || '',
       articulationScore: window._articulationScore || '',
       spectralBalance  : window._spectralBalance || '',
+      f0Stats          : window._f0Stats || null,
       matchScore,
       consent: {
         personal : document.getElementById('consent2')?.checked || false,
