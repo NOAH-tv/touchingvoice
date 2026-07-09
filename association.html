@@ -440,7 +440,6 @@ td select{padding:6px 8px;border:1px solid var(--rule);background:#fff}
       <a href="#home" data-nav="home">협회 소개</a>
       <a href="#course" data-nav="course">자격과정</a>
       <a href="#lectures" data-nav="lectures">온라인 강의실</a>
-      <a href="./academy.html" id="navAcademy" style="display:none">아카데미</a>
       <a href="#mypage" data-nav="mypage" id="navMypage" style="display:none">마이페이지</a>
       <a href="#admin" data-nav="admin" id="navAdmin" style="display:none">관리자</a>
       <a href="#login" class="btn btn-purple btn-sm nav-cta" id="navAuthBtn">로그인</a>
@@ -645,25 +644,9 @@ td select{padding:6px 8px;border:1px solid var(--rule);background:#fff}
 </main>
 
 <!-- ═══════════════ VIEW: 온라인 강의실 ═══════════════ -->
-<main id="view-lectures" class="view">
-  <div class="page-head"><div class="section-inner">
-    <div class="section-header">
-      <div class="section-eyebrow"><span class="num">·</span>LECTURE ROOM</div>
-      <h1 class="section-title">강의실</h1>
-      <p class="section-lede">내 수강 등급에 맞는 강의가 표시됩니다. 카드를 누르면 바로 재생됩니다.</p>
-    </div>
-  </div></div>
-  <div class="page-body"><div class="section-inner">
-    <div class="lec-toolbar" id="lecToolbar">
-      <button class="chip active" data-stage="all">전체</button>
-      <button class="chip" data-stage="1">1단계</button>
-      <button class="chip" data-stage="2">2단계</button>
-      <button class="chip" data-stage="3">3단계</button>
-      <button class="chip" data-stage="4">4단계</button>
-      <span class="my-level" id="myLevelBadge">등급 확인 중…</span>
-    </div>
-    <div class="lec-grid" id="lecGrid"></div>
-  </div></div>
+<main id="view-lectures" class="view" style="padding:0">
+  <iframe id="academyFrame" title="온라인 강의실 · 아카데미" src="about:blank"
+    style="display:block;width:100%;height:calc(100vh - 64px);margin-top:64px;border:0;background:var(--paper)"></iframe>
 </main>
 
 <!-- ═══════════════ VIEW: 로그인 ═══════════════ -->
@@ -1060,13 +1043,11 @@ function renderNav(){
     b.textContent = ME.name + ' 님';
     b.setAttribute('href', '#mypage');
     $('#navMypage').style.display = '';
-    $('#navAcademy').style.display = '';
     $('#navAdmin').style.display = ME.role === 'admin' ? '' : 'none';
   }else{
     b.textContent = '로그인';
     b.setAttribute('href', '#login');
     $('#navMypage').style.display = 'none';
-    $('#navAcademy').style.display = 'none';
     $('#navAdmin').style.display = 'none';
   }
 }
@@ -1143,14 +1124,14 @@ async function redeemCode(){
 /* ═══════════════ 강의실 ═══════════════ */
 let LECTURES = [], stageFilter = 'all';
 async function loadLectures(){
-  $('#myLevelBadge').textContent = '내 등급 · ' + (ME ? ME.level : '—');
-  const r = await api('getLectures', { token: TOKEN });
-  LECTURES = r.status === 'ok' ? (r.data || []) : [];
-  renderLectures();
+  // 온라인 강의실 = 아카데미 임베드 (같은 도메인, 지연 로드)
+  const f = $('#academyFrame');
+  if(f && !f.dataset.loaded){ f.src = './academy.html?embed=1'; f.dataset.loaded = '1'; }
 }
 function renderLectures(){
-  const list = LECTURES.filter(l => stageFilter === 'all' || String(l.stage) === stageFilter);
   const grid = $('#lecGrid');
+  if(!grid) return; // 강의실이 아카데미 임베드로 대체됨
+  const list = LECTURES.filter(l => stageFilter === 'all' || String(l.stage) === stageFilter);
   if(!list.length){
     grid.innerHTML = `<div class="lec-empty"><b>아직 열린 강의가 없습니다</b>
       수강 신청과 입금 확인이 완료되면 등급에 맞는 강의가 이곳에 열립니다.
@@ -1332,14 +1313,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   $('#loginPw').addEventListener('keydown', e => { if(e.key === 'Enter') handleLogin(); });
   $('#btnSignup').addEventListener('click', handleSignup);
   $('#btnLogout').addEventListener('click', doLogout);
-
-  $('#lecToolbar').addEventListener('click', e => {
-    const chip = e.target.closest('.chip'); if(!chip) return;
-    $$('#lecToolbar .chip').forEach(c => c.classList.remove('active'));
-    chip.classList.add('active');
-    stageFilter = chip.dataset.stage;
-    renderLectures();
-  });
 
   $$('.admin-tabs .chip').forEach(chip => chip.addEventListener('click', () => {
     $$('.admin-tabs .chip').forEach(c => c.classList.remove('active'));
