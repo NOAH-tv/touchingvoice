@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>터칭보이스 아카데미 · 발성심리지도사</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gothic+A1:wght@300;400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#F4ECD8; --cream-2:#EDE3CC; --paper:#FBF6EA;
+  --plum:#3B1E6E; --plum-2:#5B3A8E; --plum-soft:#7E5BB0;
+  --ink:#241A3A; --ink-soft:#5A5170;
+  --navy:#1F3A6E; --green:#1E5631; --gold:#B8862A;
+  --line:rgba(59,30,110,.14); --line-2:rgba(59,30,110,.08);
+  --shadow:0 8px 40px rgba(59,30,110,.10); --shadow-sm:0 2px 14px rgba(59,30,110,.08);
+  --c-navy:#1F3A6E; --c-green:#1E5631; --c-plum:#5B3A8E;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Gothic A1',sans-serif; background:var(--cream); color:var(--ink); line-height:1.7; -webkit-font-smoothing:antialiased; overflow-x:hidden}
+body::before{content:""; position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.5;
+  background:radial-gradient(circle at 15% 10%, rgba(126,91,176,.10), transparent 40%), radial-gradient(circle at 85% 90%, rgba(184,134,42,.08), transparent 45%)}
+.wrap{position:relative; z-index:1}
+
+.topbar{position:sticky; top:0; z-index:50; backdrop-filter:blur(14px); background:rgba(244,236,216,.85); border-bottom:1px solid var(--line)}
+.topbar-in{max-width:1180px; margin:0 auto; padding:.9rem 1.4rem; display:flex; align-items:center; gap:1rem; flex-wrap:wrap}
+.logo{font-family:'Fraunces',serif; font-style:italic; font-weight:600; font-size:1.45rem; color:var(--plum)}
+.logo .ko{font-family:'Gothic A1'; font-style:normal; font-weight:800; font-size:.74rem; color:var(--ink-soft); letter-spacing:.16em; margin-left:.5rem}
+.nav{margin-left:auto; display:flex; gap:.3rem; flex-wrap:wrap}
+.nav a{font-size:.82rem; font-weight:600; color:var(--ink-soft); text-decoration:none; padding:.45rem .8rem; border-radius:999px; transition:.2s; cursor:pointer}
+.nav a:hover,.nav a.on{background:rgba(59,30,110,.10); color:var(--plum)}
+
+.hero{max-width:1180px; margin:0 auto; padding:3.5rem 1.4rem 2rem; text-align:center}
+.hero .eyebrow{font-size:.78rem; font-weight:700; letter-spacing:.3em; color:var(--gold); text-transform:uppercase; margin-bottom:1.2rem}
+.hero h1{font-family:'Gowun Batang',serif; font-weight:700; font-size:clamp(2rem,5.5vw,3.4rem); line-height:1.25; color:var(--plum)}
+.hero .sub{font-family:'Fraunces',serif; font-style:italic; font-size:clamp(1rem,2.2vw,1.4rem); color:var(--plum-soft); margin-top:.8rem}
+.hero .tagline{max-width:560px; margin:1.5rem auto 0; font-size:1rem; color:var(--ink-soft)}
+
+.view{display:none}
+.view.active{display:block; animation:fade .4s ease}
+@keyframes fade{from{opacity:0; transform:translateY(8px)}to{opacity:1; transform:none}}
+
+.sec{max-width:1180px; margin:0 auto; padding:2.5rem 1.4rem 1rem}
+.sec-head{display:flex; align-items:baseline; gap:1rem; margin-bottom:1.6rem; border-bottom:2px solid var(--plum); padding-bottom:.7rem}
+.sec-head .no{font-family:'Fraunces',serif; font-style:italic; font-size:1.05rem; color:var(--gold)}
+.sec-head h2{font-family:'Gowun Batang',serif; font-size:1.55rem; color:var(--plum)}
+
+.philo-card{background:linear-gradient(160deg,var(--paper),var(--cream-2)); border:1px solid var(--line); border-radius:24px; padding:2.6rem 2.4rem; box-shadow:var(--shadow); position:relative; overflow:hidden; max-width:920px; margin:0 auto}
+.philo-card::before{content:"\201C"; position:absolute; top:-1.5rem; left:1.2rem; font-family:'Fraunces',serif; font-size:8rem; color:rgba(126,91,176,.12)}
+.philo-card h2{font-family:'Gowun Batang',serif; font-size:1.5rem; color:var(--plum); margin-bottom:1.2rem; position:relative}
+.philo-card p{color:var(--ink-soft); margin-bottom:.9rem; font-size:.98rem}
+.values{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:.9rem; margin-top:1.8rem}
+.value{background:rgba(255,255,255,.5); border:1px solid var(--line-2); border-radius:14px; padding:1rem 1.1rem}
+.value .k{font-family:'Gowun Batang',serif; font-weight:700; color:var(--plum); font-size:1rem}
+.value .v{font-size:.84rem; color:var(--ink-soft); margin-top:.25rem}
+
+.theory-grid{display:flex; flex-direction:column; gap:.8rem; max-width:1180px; margin:0 auto}
+.tcard{background:var(--paper); border:1px solid var(--line); border-radius:16px; overflow:hidden; box-shadow:var(--shadow-sm)}
+.tcard-head{display:flex; align-items:center; gap:1rem; padding:1.2rem 1.4rem; cursor:pointer}
+.tcard-no{font-family:'Fraunces',serif; font-style:italic; font-weight:600; font-size:1.3rem; color:var(--plum-soft); min-width:2rem}
+.tcard-tt{flex:1}
+.tcard-tt h3{font-size:1.05rem; color:var(--ink); font-weight:700}
+.tcard-tt p{font-size:.83rem; color:var(--ink-soft); margin-top:.2rem}
+.tcard-arrow{color:var(--plum-soft); transition:transform .3s}
+.tcard.open .tcard-arrow{transform:rotate(180deg)}
+.tcard-body{max-height:0; overflow:hidden; transition:max-height .4s ease}
+.tcard.open .tcard-body{max-height:4000px}
+.tcard-inner{padding:0 1.4rem 1.5rem; border-top:1px solid var(--line-2)}
+.tsec{margin-top:1.3rem}
+.tsec h4{font-size:.92rem; color:var(--plum); font-weight:700; margin-bottom:.6rem; display:flex; align-items:center; gap:.5rem}
+.tsec h4::before{content:""; width:6px; height:6px; border-radius:50%; background:var(--gold)}
+.tlist{display:flex; flex-direction:column; gap:.45rem}
+.titem{display:grid; grid-template-columns:minmax(170px,1fr) 1.4fr; gap:1rem; padding:.65rem .85rem; background:rgba(255,255,255,.45); border-radius:9px; border:1px solid var(--line-2)}
+.titem .a{font-weight:600; color:var(--ink); font-size:.88rem}
+.titem .b{color:var(--ink-soft); font-size:.84rem}
+.ttab{width:100%; border-collapse:collapse; margin-top:.4rem; font-size:.83rem; border-radius:9px; overflow:hidden}
+.ttab th{background:var(--plum); color:#fff; padding:.55rem .75rem; text-align:left; font-weight:600}
+.ttab td{padding:.5rem .75rem; border-bottom:1px solid var(--line-2); color:var(--ink-soft)}
+.ttab tr:nth-child(even) td{background:rgba(255,255,255,.4)}
+.flows{display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:.5rem}
+@media(max-width:680px){.flows{grid-template-columns:1fr}}
+.flow{border-radius:13px; padding:1rem 1.1rem}
+.flow.green{background:rgba(30,86,49,.07); border:1px solid rgba(30,86,49,.2)}
+.flow.red{background:rgba(160,40,40,.06); border:1px solid rgba(160,40,40,.2)}
+.flow .fl{font-weight:700; font-size:.84rem; margin-bottom:.5rem}
+.flow.green .fl{color:var(--green)} .flow.red .fl{color:#9a2a2a}
+.flow .step{font-size:.81rem; color:var(--ink-soft); padding:.22rem 0 .22rem 1.1rem; position:relative}
+.flow .step::before{content:"\2192"; position:absolute; left:0; color:var(--plum-soft)}
+.flow .step:first-child::before{content:"\25CF"; font-size:.55rem; top:.3rem}
+.tnote{margin-top:.9rem; padding:.85rem 1rem; background:rgba(184,134,42,.09); border-left:3px solid var(--gold); border-radius:0 9px 9px 0; font-size:.84rem; color:#6b5012; font-style:italic}
+
+.prog-cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:1.2rem; max-width:1180px; margin:0 auto}
+.pcard{background:var(--paper); border:1px solid var(--line); border-radius:20px; padding:1.8rem; box-shadow:var(--shadow-sm); cursor:pointer; transition:.25s; position:relative; overflow:hidden}
+.pcard:hover{box-shadow:var(--shadow); transform:translateY(-3px)}
+.pcard .pbadge{display:inline-block; font-size:.78rem; font-weight:800; padding:.3rem .8rem; border-radius:999px; color:#fff; margin-bottom:1rem}
+.pcard.navy .pbadge{background:var(--c-navy)} .pcard.green .pbadge{background:var(--c-green)} .pcard.plum .pbadge{background:var(--c-plum)}
+.pcard h3{font-family:'Gowun Batang',serif; font-size:1.3rem; color:var(--plum); margin-bottom:.3rem}
+.pcard .pdur{font-family:'Fraunces',serif; font-style:italic; color:var(--gold); font-size:1rem; margin-bottom:.9rem}
+.pcard .prole{font-size:.86rem; color:var(--ink-soft); margin-bottom:1rem}
+.pcard .pcta{font-size:.82rem; font-weight:700; color:var(--plum-2)}
+.pcard .pcta::after{content:" \2192"}
+
+.room-top{max-width:1180px; margin:0 auto; padding:1.5rem 1.4rem .5rem}
+.back-btn{font-size:.85rem; font-weight:600; color:var(--plum-2); cursor:pointer; display:inline-flex; align-items:center; gap:.4rem; padding:.4rem 0}
+.room-tabs{display:flex; gap:.5rem; max-width:1180px; margin:0 auto; padding:.5rem 1.4rem; flex-wrap:wrap}
+.rtab{padding:.6rem 1.2rem; border-radius:999px; font-weight:700; font-size:.9rem; cursor:pointer; background:var(--paper); border:1.5px solid var(--line); color:var(--ink-soft); transition:.2s}
+.rtab .d{font-size:.72rem; font-weight:500; opacity:.7; margin-left:.35rem}
+.rtab.active.navy{background:var(--c-navy); color:#fff; border-color:transparent}
+.rtab.active.green{background:var(--c-green); color:#fff; border-color:transparent}
+.rtab.active.plum{background:var(--c-plum); color:#fff; border-color:transparent}
+
+.room-body{max-width:1180px; margin:0 auto; padding:1rem 1.4rem 2rem}
+.room{display:none} .room.active{display:block; animation:fade .4s ease}
+.prog-meta{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:.9rem; margin-bottom:1.4rem}
+.meta{background:var(--paper); border:1px solid var(--line); border-radius:13px; padding:1rem 1.1rem}
+.meta .ml{font-size:.7rem; font-weight:700; letter-spacing:.1em; color:var(--gold); text-transform:uppercase}
+.meta .mv{font-size:.9rem; color:var(--ink); margin-top:.25rem; font-weight:600}
+.exam-box{background:linear-gradient(150deg,var(--paper),var(--cream-2)); border:1px solid var(--line); border-radius:14px; padding:1.1rem 1.3rem; margin-bottom:1.6rem}
+.exam-box .el{font-size:.74rem; font-weight:700; letter-spacing:.1em; color:var(--plum); text-transform:uppercase; margin-bottom:.4rem}
+.exam-box .ev{font-size:.88rem; color:var(--ink-soft)}
+
+.stage{margin-bottom:1.4rem}
+.stage-name{font-family:'Gowun Batang',serif; font-size:1.08rem; color:var(--plum); font-weight:700; padding:.6rem 0; display:flex; align-items:center; gap:.5rem}
+.stage-name .dot{width:9px; height:9px; border-radius:50%; background:var(--plum-soft)}
+.stage.hl .stage-name{color:var(--gold)} .stage.hl .stage-name .dot{background:var(--gold)}
+.weeks{display:flex; flex-direction:column; gap:.55rem}
+.week{background:var(--paper); border:1px solid var(--line); border-radius:13px; overflow:hidden}
+.week-head{display:flex; align-items:center; gap:.85rem; padding:.85rem 1.1rem; cursor:pointer}
+.week-w{font-family:'Fraunces',serif; font-style:italic; font-weight:600; color:var(--plum-soft); min-width:2.5rem; font-size:.92rem}
+.week-t{font-weight:700; font-size:.9rem; color:var(--ink); min-width:84px}
+.week-d{flex:1; font-size:.83rem; color:var(--ink-soft)}
+.week-script-badge{font-size:.68rem; font-weight:700; background:var(--green); color:#fff; padding:.18rem .5rem; border-radius:6px}
+.week-arrow{color:var(--plum-soft); transition:transform .3s}
+.week.open .week-arrow{transform:rotate(180deg)}
+.week-body{max-height:0; overflow:hidden; transition:max-height .5s ease}
+.week.open .week-body{max-height:9000px}
+.week-inner{padding:0 1.1rem 1.3rem; border-top:1px solid var(--line-2)}
+.week-tags{display:flex; gap:.45rem; flex-wrap:wrap; margin:.85rem 0}
+.wtag{font-size:.72rem; font-weight:600; padding:.28rem .65rem; border-radius:999px; background:rgba(59,30,110,.07); color:var(--plum-2)}
+.wtag.data{background:rgba(184,134,42,.12); color:var(--gold)}
+
+.lesson{margin-top:.6rem; background:rgba(255,255,255,.4); border:1px solid var(--line-2); border-radius:14px; padding:1.2rem}
+.lesson-meta{font-size:.84rem; color:var(--ink-soft); margin-bottom:1rem; padding-bottom:.8rem; border-bottom:1px dashed var(--line)}
+.lesson-meta b{color:var(--plum)}
+.timeline{display:flex; gap:.3rem; margin-bottom:1.2rem; border-radius:8px; overflow:hidden}
+.tl{flex:1; text-align:center; padding:.4rem .2rem; font-size:.72rem; font-weight:700; color:#fff}
+.tl.t-도입{background:var(--plum-soft)} .tl.t-이론{background:var(--navy)} .tl.t-실습{background:var(--green)} .tl.t-정리{background:var(--gold)}
+.block{margin-bottom:1rem; border-radius:12px; overflow:hidden; border:1px solid var(--line-2)}
+.block-head{display:flex; align-items:center; gap:.7rem; padding:.7rem 1rem; font-weight:700; font-size:.9rem; color:#fff}
+.block-head .bmin{font-family:'Fraunces',serif; font-style:italic; font-size:.82rem; opacity:.85; margin-left:auto}
+.block.b-도입 .block-head{background:var(--plum-soft)} .block.b-이론 .block-head{background:var(--navy)}
+.block.b-실습 .block-head{background:var(--green)} .block.b-정리 .block-head{background:var(--gold)}
+.block-body{padding:1rem; background:rgba(255,255,255,.5)}
+.say{margin-bottom:.8rem}
+.say-label,.guide-label{font-size:.72rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; margin-bottom:.4rem; display:inline-block}
+.say-label{color:var(--plum)} .guide-label{color:var(--gold)}
+.say .line{position:relative; padding:.4rem .8rem .4rem 1.1rem; margin-bottom:.35rem; background:rgba(91,58,142,.06); border-left:3px solid var(--plum-soft); border-radius:0 8px 8px 0; font-size:.9rem; color:var(--ink)}
+.say .line::before{content:"\201C"; color:var(--plum-soft); font-family:'Fraunces',serif; margin-right:.1rem}
+.say .line::after{content:"\201D"; color:var(--plum-soft); font-family:'Fraunces',serif}
+.guide{margin-top:.7rem}
+.guide ul{list-style:none; display:flex; flex-direction:column; gap:.3rem}
+.guide li{font-size:.84rem; color:var(--ink-soft); padding-left:1.1rem; position:relative}
+.guide li::before{content:"\25B8"; position:absolute; left:0; color:var(--gold)}
+.video-slot{margin-top:1rem; border:2px dashed var(--line); border-radius:10px; padding:1.1rem; text-align:center; background:rgba(255,255,255,.35)}
+.video-slot .vi{font-size:1.4rem; opacity:.5} .video-slot .vt{font-size:.8rem; color:var(--ink-soft); margin-top:.3rem}
+.video-slot .vhint{font-size:.7rem; color:var(--plum-soft); margin-top:.15rem}
+.video-slot iframe{width:100%; aspect-ratio:16/9; border:0; border-radius:8px}
+.no-script{margin-top:.6rem; padding:1rem; background:rgba(255,255,255,.4); border:1px dashed var(--line); border-radius:10px; font-size:.84rem; color:var(--ink-soft); text-align:center}
+
+.imm{background:linear-gradient(155deg,rgba(184,134,42,.10),rgba(126,91,176,.08)); border:1px solid rgba(184,134,42,.3); border-radius:18px; padding:1.8rem; margin:1.2rem 0}
+.imm h3{font-family:'Gowun Batang',serif; font-size:1.2rem; color:var(--gold); margin-bottom:.6rem}
+.imm .intro{font-size:.9rem; color:var(--ink-soft); margin-bottom:1.1rem}
+.imm-els{display:flex; flex-direction:column; gap:.5rem}
+.imm-el{display:flex; gap:.8rem; background:rgba(255,255,255,.5); border-radius:11px; padding:.7rem .9rem}
+.imm-el .n{font-family:'Fraunces',serif; font-style:italic; color:var(--gold); font-weight:600; min-width:1.4rem}
+.imm-el .ek{font-weight:700; color:var(--ink); font-size:.88rem}
+.imm-el .ev{font-size:.83rem; color:var(--ink-soft)}
+.imm-ethics{margin-top:1rem; padding:.9rem 1.1rem; background:rgba(160,40,40,.06); border-left:3px solid #9a2a2a; border-radius:0 9px 9px 0; font-size:.84rem; color:#7a2020}
+
+/* 전문 자료실 (1급 reference) */
+.ref-wrap{margin:1.4rem 0; border:1px solid var(--c-green); border-radius:18px; overflow:hidden; background:rgba(30,86,49,.03)}
+.ref-head{display:flex; align-items:center; gap:.7rem; padding:1.1rem 1.3rem; background:rgba(30,86,49,.10); cursor:pointer}
+.ref-head h3{font-family:'Gowun Batang',serif; font-size:1.12rem; color:var(--c-green); flex:1}
+.ref-head .rtag{font-size:.68rem; font-weight:700; background:var(--c-green); color:#fff; padding:.2rem .6rem; border-radius:6px}
+.ref-head .ra{color:var(--c-green); transition:transform .3s}
+.ref-wrap.open .ref-head .ra{transform:rotate(180deg)}
+.ref-body{max-height:0; overflow:hidden; transition:max-height .5s ease}
+.ref-wrap.open .ref-body{max-height:20000px}
+.ref-inner{padding:1.3rem}
+.ref-note{font-size:.8rem; color:var(--ink-soft); font-style:italic; padding:.7rem .9rem; background:rgba(184,134,42,.08); border-left:3px solid var(--gold); border-radius:0 8px 8px 0; margin-bottom:1.2rem}
+.ref-block{margin-bottom:1.6rem}
+.ref-block > h4{font-size:1rem; color:var(--c-green); font-weight:700; margin-bottom:.3rem; display:flex; align-items:center; gap:.5rem}
+.ref-block > h4::before{content:""; width:7px; height:7px; border-radius:2px; background:var(--c-green)}
+.ref-block .sub-note{font-size:.78rem; color:var(--ink-soft); margin-bottom:.7rem}
+.ref-sublabel{font-size:.84rem; font-weight:700; color:var(--plum-2); margin:.9rem 0 .5rem}
+.reftab{width:100%; border-collapse:collapse; font-size:.8rem; border-radius:9px; overflow:hidden; margin-bottom:.6rem}
+.reftab th{background:var(--c-green); color:#fff; padding:.5rem .65rem; text-align:left; font-weight:600; font-size:.78rem}
+.reftab td{padding:.45rem .65rem; border-bottom:1px solid var(--line-2); color:var(--ink-soft); vertical-align:top}
+.reftab td:first-child{font-weight:600; color:var(--ink); white-space:nowrap}
+.reftab tr:nth-child(even) td{background:rgba(255,255,255,.45)}
+@media(max-width:680px){.reftab td:first-child{white-space:normal}}
+/* training cards */
+.train-card{background:var(--paper); border:1px solid var(--line); border-radius:12px; padding:1rem 1.1rem; margin-bottom:.7rem}
+.train-card .tm{font-weight:700; color:var(--c-green); font-size:.92rem; margin-bottom:.4rem}
+.train-card .tr{display:grid; grid-template-columns:auto 1fr; gap:.3rem .7rem; font-size:.83rem}
+.train-card .tk{font-weight:600; color:var(--plum-2); white-space:nowrap}
+.train-card .tv{color:var(--ink-soft)}
+.train-card .tcase{margin-top:.5rem; padding:.5rem .7rem; background:rgba(30,86,49,.06); border-radius:8px; font-size:.8rem; color:#2a5a3a; font-style:italic}
+/* psych technique cards */
+.psy-card{background:var(--paper); border:1px solid var(--line); border-radius:12px; padding:1rem 1.1rem; margin-bottom:.7rem}
+.psy-card .pn{font-weight:700; color:var(--plum); font-size:.92rem; margin-bottom:.3rem}
+.psy-card .ph{font-size:.82rem; color:var(--ink-soft); margin-bottom:.5rem}
+.psy-card ol{margin:.3rem 0 .5rem 1.1rem; font-size:.82rem; color:var(--ink-soft)}
+.psy-card ol li{margin-bottom:.2rem}
+.psy-card .psay{padding:.45rem .8rem; background:rgba(91,58,142,.06); border-left:3px solid var(--plum-soft); border-radius:0 8px 8px 0; font-size:.83rem; color:var(--ink)}
+.psy-card .psay::before{content:"\201C"; color:var(--plum-soft)} .psy-card .psay::after{content:"\201D"; color:var(--plum-soft)}
+
+/* 프로 트레이너 자료 */
+.pro-wrap{margin:1.4rem 0; border:1px solid var(--plum-2); border-radius:18px; overflow:hidden; background:rgba(91,58,142,.03)}
+.pro-head{display:flex; align-items:center; gap:.7rem; padding:1.1rem 1.3rem; background:rgba(91,58,142,.10); cursor:pointer}
+.pro-head h3{font-family:'Gowun Batang',serif; font-size:1.12rem; color:var(--plum-2); flex:1}
+.pro-head .rtag{font-size:.68rem; font-weight:700; background:var(--plum-2); color:#fff; padding:.2rem .6rem; border-radius:6px}
+.pro-head .ra{color:var(--plum-2); transition:transform .3s}
+.pro-wrap.open .pro-head .ra{transform:rotate(180deg)}
+.pro-body{max-height:0; overflow:hidden; transition:max-height .6s ease}
+.pro-wrap.open .pro-body{max-height:30000px}
+.pro-inner{padding:1.3rem}
+.pro-block{margin-bottom:1.8rem; padding-bottom:1.4rem; border-bottom:1px dashed var(--line)}
+.pro-block:last-child{border-bottom:none; margin-bottom:0}
+.pro-block > h4{font-size:1.05rem; color:var(--plum); font-weight:700; margin-bottom:.3rem}
+.pro-block .pintro{font-size:.86rem; color:var(--ink-soft); margin-bottom:.5rem}
+.pro-block .pnote{font-size:.78rem; color:#6b5012; font-style:italic; padding:.55rem .8rem; background:rgba(184,134,42,.08); border-left:3px solid var(--gold); border-radius:0 8px 8px 0; margin-bottom:.9rem}
+.flowbox{background:rgba(91,58,142,.05); border-radius:10px; padding:.8rem 1rem; margin-top:.7rem}
+.flowbox .fbl{font-size:.8rem; font-weight:700; color:var(--plum-2); margin-bottom:.4rem}
+.flowbox ol{margin-left:1.1rem; font-size:.82rem; color:var(--ink-soft)}
+.flowbox ol li{margin-bottom:.25rem}
+/* genre cards */
+.genre{border-radius:14px; overflow:hidden; margin-bottom:.8rem; border:1px solid var(--line)}
+.genre-head{padding:.8rem 1.1rem; font-weight:700; font-size:1rem; color:#fff; display:flex; align-items:center; gap:.6rem}
+.genre.navy .genre-head{background:var(--c-navy)} .genre.plum .genre-head{background:var(--c-plum)}
+.genre.red .genre-head{background:#9a2a2a} .genre.gold .genre-head{background:var(--gold)} .genre.green .genre-head{background:var(--c-green)}
+.genre-head .gsound{font-size:.78rem; font-weight:400; opacity:.9; margin-left:auto; text-align:right; max-width:55%}
+.genre-body{padding:1rem 1.1rem; background:rgba(255,255,255,.5)}
+.genre-row{display:grid; grid-template-columns:auto 1fr; gap:.35rem .8rem; font-size:.83rem; margin-bottom:.3rem}
+.genre-row .gk{font-weight:700; color:var(--plum-2); white-space:nowrap}
+.genre-row .gv{color:var(--ink-soft)}
+.genre .gtrain{margin-top:.6rem; padding:.6rem .8rem; background:rgba(59,30,110,.05); border-radius:8px; font-size:.83rem; color:var(--ink)}
+.genre .gtrain b{color:var(--plum)}
+.genre .gref{margin-top:.4rem; font-size:.75rem; color:var(--ink-soft); font-style:italic}
+@media(max-width:680px){.genre-head .gsound{display:none} .genre-row{grid-template-columns:1fr; gap:.1rem .8rem} .flowbox ol,.psy-card ol{margin-left:1rem}}
+
+/* 참고문헌 칩 (주차 내) */
+.ref-chips{margin-top:.6rem; padding-top:.5rem; border-top:1px dashed var(--line); display:flex; align-items:center; gap:.35rem; flex-wrap:wrap}
+.rc-label{font-size:.72rem; font-weight:700; color:var(--gold); margin-right:.2rem}
+.rc{font-size:.74rem; font-weight:700; color:var(--plum-2); background:rgba(91,58,142,.10); padding:.1rem .4rem; border-radius:5px; cursor:help}
+/* 참고문헌 목록 (강의실 하단) */
+.reflist-wrap{margin:1.6rem 0 0; border:1px solid var(--gold); border-radius:18px; overflow:hidden; background:rgba(184,134,42,.04)}
+.reflist-head{display:flex; align-items:center; gap:.7rem; padding:1.1rem 1.3rem; background:rgba(184,134,42,.10); cursor:pointer}
+.reflist-head h3{font-family:'Gowun Batang',serif; font-size:1.08rem; color:#6b5012; flex:1}
+.reflist-wrap.open .reflist-head .ra{transform:rotate(180deg)}
+.reflist-head .ra{transition:transform .3s}
+.reflist-body{max-height:0; overflow:hidden; transition:max-height .6s ease}
+.reflist-wrap.open .reflist-body{max-height:8000px}
+.reflist-inner{padding:1.3rem}
+.reflist-note{font-size:.8rem; color:var(--ink-soft); font-style:italic; margin-bottom:1.2rem; padding-bottom:.8rem; border-bottom:1px dashed var(--line)}
+.reflist-group{margin-bottom:1.2rem}
+.reflist-type{font-size:.78rem; font-weight:800; letter-spacing:.06em; color:var(--gold); text-transform:uppercase; margin-bottom:.5rem}
+.reflist-item{display:flex; gap:.7rem; padding:.5rem 0; align-items:flex-start}
+.rli-n{font-family:'Fraunces',serif; font-style:italic; font-weight:600; color:var(--plum-2); min-width:2rem}
+.rli-cite{font-size:.84rem; color:var(--ink)}
+.rli-note{font-size:.78rem; color:var(--ink-soft); margin-top:.15rem}
+
+/* ── 검정·자격 페이지 ── */
+.exam-hero{padding:1.6rem 1.4rem; border-radius:18px; background:linear-gradient(135deg, rgba(31,58,110,.06), rgba(184,134,42,.06)); border:1px solid var(--line); margin-bottom:1.4rem}
+.exam-hero h3{font-family:'Gowun Batang',serif; color:var(--navy); margin-bottom:.4rem}
+.exam-hero .sub{font-size:.85rem; color:var(--ink-soft); margin-bottom:1rem}
+.exam-hero p{font-size:.92rem; line-height:1.6; color:var(--ink)}
+.exam-elig{background:rgba(30,86,49,.05); border-left:3px solid var(--green); border-radius:0 10px 10px 0; padding:.8rem 1rem; margin-top:1rem}
+.exam-elig h4{font-size:.85rem; color:var(--green); font-weight:700; margin-bottom:.4rem}
+.exam-elig ul{margin-left:1.1rem; font-size:.83rem; color:var(--ink-soft)}
+.exam-elig ul li{margin-bottom:.2rem}
+.exam-elig .note{font-size:.76rem; color:var(--ink-soft); font-style:italic; margin-top:.5rem}
+
+.exam-section-title{font-family:'Gowun Batang',serif; font-size:1.05rem; color:var(--plum); margin:1.6rem 0 .7rem; display:flex; align-items:center; gap:.5rem}
+.exam-section-title::before{content:""; width:8px; height:8px; border-radius:2px; background:var(--plum)}
+
+.dom-cards{display:grid; grid-template-columns:repeat(2, 1fr); gap:.8rem}
+@media(max-width:680px){.dom-cards{grid-template-columns:1fr}}
+.dom-card{background:#fff; border:1px solid var(--line); border-radius:14px; padding:1rem 1.1rem; position:relative}
+.dom-card .dweight{position:absolute; top:1rem; right:1rem; font-family:'Fraunces',serif; font-size:1.4rem; font-weight:700; color:var(--gold); font-style:italic}
+.dom-card .dname{font-weight:700; color:var(--navy); font-size:.95rem; margin-bottom:.4rem; padding-right:3rem}
+.dom-card .drow{display:grid; grid-template-columns:auto 1fr; gap:.2rem .7rem; font-size:.82rem; margin-bottom:.2rem}
+.dom-card .dk{color:var(--plum-2); font-weight:600; white-space:nowrap}
+.dom-card .dv{color:var(--ink-soft)}
+.dom-card .ddetail{font-size:.78rem; color:var(--ink-soft); font-style:italic; margin-top:.4rem; padding-top:.4rem; border-top:1px dashed var(--line)}
+
+.pass-card{background:rgba(91,58,142,.06); border:1px solid var(--plum-soft); border-radius:14px; padding:1rem 1.1rem; margin-top:1rem}
+.pass-card h4{color:var(--plum); font-size:.95rem; margin-bottom:.4rem; font-weight:700}
+.pass-card p{font-size:.85rem; color:var(--ink); margin-bottom:.3rem}
+.pass-card .note{font-size:.78rem; color:var(--ink-soft); font-style:italic}
+
+.rule-card{background:rgba(160,40,40,.04); border:1px solid rgba(160,40,40,.15); border-radius:14px; padding:1rem 1.1rem; margin-top:1rem}
+.rule-card h4{color:#8a2020; font-size:.95rem; margin-bottom:.5rem; font-weight:700}
+.rule-card ul{margin-left:1.1rem; font-size:.83rem; color:var(--ink)}
+.rule-card ul li{margin-bottom:.25rem}
+
+.mock-launcher{background:linear-gradient(135deg, var(--navy), var(--plum)); color:#fff; padding:1.8rem 1.6rem; border-radius:18px; margin:1.6rem 0; text-align:center}
+.mock-launcher h3{color:#fff; font-family:'Gowun Batang',serif; margin-bottom:.5rem}
+.mock-launcher p{color:rgba(255,255,255,.85); font-size:.88rem; margin-bottom:1.1rem}
+.mock-btn{display:inline-block; padding:.7rem 1.8rem; background:var(--gold); color:#fff; border:none; border-radius:999px; font-weight:700; font-size:.95rem; cursor:pointer; transition:.2s}
+.mock-btn:hover{background:#a07520; transform:translateY(-1px)}
+.mock-btn:disabled{opacity:.5; cursor:not-allowed; transform:none}
+
+/* 모의시험 */
+.mock-area{background:#fff; border:2px solid var(--navy); border-radius:18px; padding:1.4rem; margin-top:1rem}
+.mock-header{display:flex; align-items:center; justify-content:space-between; padding-bottom:.8rem; border-bottom:1px solid var(--line); margin-bottom:1.2rem; flex-wrap:wrap; gap:.5rem}
+.mock-title{font-family:'Gowun Batang',serif; color:var(--navy); font-size:1.05rem}
+.mock-meta{display:flex; gap:.8rem; font-size:.82rem; color:var(--ink-soft)}
+.mock-meta b{color:var(--plum); font-weight:700}
+.mock-progress{height:6px; background:var(--line-2); border-radius:3px; overflow:hidden; margin-bottom:1rem}
+.mock-progress-bar{height:100%; background:linear-gradient(90deg, var(--navy), var(--plum)); transition:width .3s}
+
+.q-card{background:#fafaf7; border:1px solid var(--line); border-radius:12px; padding:1rem 1.1rem; margin-bottom:.7rem}
+.q-card.answered{background:rgba(30,86,49,.04); border-color:var(--green)}
+.q-num{display:inline-block; background:var(--plum); color:#fff; padding:.15rem .55rem; border-radius:6px; font-size:.74rem; font-weight:700; margin-right:.5rem; font-family:'Fraunces',serif}
+.q-stage{display:inline-block; background:var(--ink-soft); color:#fff; padding:.1rem .45rem; border-radius:5px; font-size:.7rem; font-weight:600; margin-right:.3rem}
+.q-type{display:inline-block; padding:.1rem .45rem; border-radius:5px; font-size:.7rem; font-weight:600; color:#fff}
+.q-type.mc{background:var(--navy)} .q-type.sa{background:var(--gold)}
+.q-text{font-size:.93rem; line-height:1.55; color:var(--ink); margin:.5rem 0 .8rem}
+.choices{display:flex; flex-direction:column; gap:.35rem}
+.choice{display:flex; align-items:flex-start; gap:.5rem; padding:.55rem .7rem; background:#fff; border:1px solid var(--line); border-radius:8px; cursor:pointer; transition:.15s; font-size:.86rem}
+.choice:hover{background:rgba(91,58,142,.04); border-color:var(--plum-soft)}
+.choice.selected{background:rgba(31,58,110,.08); border-color:var(--navy); color:var(--navy); font-weight:600}
+.choice .cnum{font-family:'Fraunces',serif; font-weight:700; color:var(--gold); min-width:1.3rem}
+.choice .ctext{flex:1}
+.sa-input{width:100%; padding:.55rem .7rem; border:1px solid var(--line); border-radius:8px; font-size:.9rem; font-family:inherit}
+.sa-input:focus{outline:none; border-color:var(--plum); background:rgba(91,58,142,.03)}
+
+.mock-actions{display:flex; gap:.6rem; justify-content:center; margin-top:1.2rem; flex-wrap:wrap}
+.mock-action-btn{padding:.65rem 1.5rem; border-radius:999px; border:none; font-weight:700; cursor:pointer; font-size:.88rem; transition:.2s}
+.mock-action-btn.primary{background:var(--green); color:#fff}
+.mock-action-btn.primary:hover{background:#16451f}
+.mock-action-btn.secondary{background:#fff; border:1px solid var(--ink-soft); color:var(--ink)}
+.mock-action-btn.secondary:hover{background:var(--line-2)}
+
+/* 결과 화면 */
+.result-hero{padding:1.8rem; border-radius:18px; text-align:center; margin-bottom:1.2rem}
+.result-hero.pass{background:linear-gradient(135deg, rgba(30,86,49,.12), rgba(184,134,42,.08)); border:2px solid var(--green)}
+.result-hero.fail{background:linear-gradient(135deg, rgba(160,40,40,.08), rgba(91,58,142,.06)); border:2px solid #9a2a2a}
+.result-score{font-family:'Fraunces',serif; font-size:3.5rem; font-weight:700; line-height:1}
+.result-hero.pass .result-score{color:var(--green)}
+.result-hero.fail .result-score{color:#9a2a2a}
+.result-label{font-size:.95rem; color:var(--ink-soft); margin-top:.4rem}
+.result-status{display:inline-block; padding:.4rem 1rem; border-radius:999px; font-weight:700; font-size:.88rem; margin-top:.8rem}
+.result-status.pass{background:var(--green); color:#fff}
+.result-status.fail{background:#9a2a2a; color:#fff}
+
+.stage-breakdown{display:grid; grid-template-columns:repeat(4, 1fr); gap:.6rem; margin-bottom:1.2rem}
+@media(max-width:680px){.stage-breakdown{grid-template-columns:repeat(2, 1fr)}}
+.stage-box{background:#fff; border:1px solid var(--line); border-radius:12px; padding:.8rem; text-align:center}
+.stage-box .sname{font-size:.78rem; color:var(--ink-soft); font-weight:600}
+.stage-box .sscore{font-family:'Fraunces',serif; font-size:1.6rem; font-weight:700; color:var(--plum); margin-top:.2rem}
+.stage-box .sdetail{font-size:.72rem; color:var(--ink-soft); margin-top:.1rem}
+
+.review-list{margin-top:1rem}
+.review-item{background:#fafaf7; border:1px solid var(--line); border-radius:10px; padding:.8rem 1rem; margin-bottom:.5rem; border-left:4px solid var(--green)}
+.review-item.wrong{border-left-color:#9a2a2a; background:rgba(160,40,40,.03)}
+.review-num{font-family:'Fraunces',serif; font-weight:700; color:var(--plum-2); font-size:.85rem}
+.review-q{font-size:.85rem; color:var(--ink); margin:.3rem 0}
+.review-row{font-size:.8rem; margin-top:.2rem}
+.review-row b{color:var(--plum-2)}
+.review-row .ok{color:var(--green); font-weight:700}
+.review-row .ng{color:#9a2a2a; font-weight:700}
+.review-explain{font-size:.78rem; color:var(--ink-soft); font-style:italic; margin-top:.4rem; padding-top:.4rem; border-top:1px dashed var(--line)}
+
+/* 케이스 보고서 섹션 */
+.case-wrap{margin:1.6rem 0; background:rgba(184,134,42,.05); border:1px solid var(--gold); border-radius:18px; padding:1.4rem}
+.case-overview{margin-bottom:1.4rem}
+.case-overview h3{font-family:'Gowun Batang',serif; color:#6b5012; margin-bottom:.4rem}
+.case-overview .purpose{font-size:.9rem; color:var(--ink); line-height:1.6; margin-bottom:.7rem}
+.case-meta{display:grid; grid-template-columns:repeat(2, 1fr); gap:.4rem .8rem; font-size:.82rem; padding:.7rem 1rem; background:#fff; border-radius:10px; border:1px solid var(--line)}
+@media(max-width:680px){.case-meta{grid-template-columns:1fr}}
+.case-meta .ck{color:#6b5012; font-weight:700}
+.case-meta .cv{color:var(--ink-soft)}
+
+.case-panel{background:#fff; border:1px solid var(--line); border-radius:12px; margin-bottom:.6rem; overflow:hidden}
+.case-panel-head{padding:.85rem 1.1rem; background:rgba(184,134,42,.08); cursor:pointer; display:flex; align-items:center; gap:.6rem; font-weight:700; color:#6b5012; font-size:.92rem}
+.case-panel-head::after{content:"\2304"; margin-left:auto; transition:transform .3s}
+.case-panel.open .case-panel-head::after{transform:rotate(180deg)}
+.case-panel-body{max-height:0; overflow:hidden; transition:max-height .5s ease}
+.case-panel.open .case-panel-body{max-height:5000px}
+.case-panel-inner{padding:1rem 1.1rem}
+
+.scope-list{margin-left:1.1rem; font-size:.85rem; color:var(--ink); line-height:1.7}
+.scope-list.excl{color:#8a2020}
+.scope-why{background:rgba(91,58,142,.05); border-left:3px solid var(--plum); border-radius:0 8px 8px 0; padding:.7rem 1rem; margin-top:.8rem; font-size:.85rem; color:var(--ink); font-style:italic}
+
+.elem-card{background:#fafaf7; border:1px solid var(--line); border-radius:10px; padding:.9rem 1.1rem; margin-bottom:.6rem}
+.elem-head{display:flex; align-items:baseline; gap:.5rem; margin-bottom:.4rem}
+.elem-no{font-family:'Fraunces',serif; font-style:italic; font-weight:700; color:var(--gold); font-size:1.1rem}
+.elem-name{font-weight:700; color:var(--navy); font-size:.95rem; flex:1}
+.elem-weight{font-size:.78rem; color:#6b5012; background:rgba(184,134,42,.12); padding:.15rem .5rem; border-radius:5px; font-weight:700}
+.elem-length{font-size:.75rem; color:var(--ink-soft)}
+.elem-guide{font-size:.83rem; color:var(--ink); margin-bottom:.5rem; line-height:1.55}
+.elem-ex{background:rgba(30,86,49,.05); border-left:3px solid var(--green); border-radius:0 8px 8px 0; padding:.55rem .8rem; font-size:.8rem; color:#1E5631}
+.elem-ex .exlabel{font-weight:700; font-size:.72rem; color:var(--green); margin-bottom:.2rem; letter-spacing:.05em}
+
+.rubric-row{display:grid; grid-template-columns:auto 1fr; gap:.3rem .8rem; padding:.55rem 0; border-bottom:1px dashed var(--line)}
+.rubric-row:last-child{border-bottom:none}
+.rubric-tier{font-weight:700; white-space:nowrap; font-size:.83rem}
+.rubric-tier.high{color:var(--green)} .rubric-tier.mid{color:var(--gold)} .rubric-tier.low{color:#9a2a2a}
+.rubric-desc{font-size:.82rem; color:var(--ink-soft); line-height:1.5}
+.rubric-elem-name{font-weight:700; color:var(--plum-2); font-size:.92rem; margin-bottom:.4rem}
+
+.caution-card{background:rgba(160,40,40,.04); border:1px solid rgba(160,40,40,.2); border-radius:10px; padding:.9rem 1.1rem}
+.caution-card ul{margin-left:1.1rem; font-size:.83rem; color:#7a2020; line-height:1.7}
+
+.example-body{background:#fafaf7; border:1px solid var(--line); border-radius:10px; padding:1rem 1.1rem}
+.example-body .ex-item{margin-bottom:.7rem}
+.example-body .ex-item:last-child{margin-bottom:0}
+.example-body .ex-label{font-weight:700; color:var(--navy); font-size:.85rem; margin-bottom:.2rem}
+.example-body .ex-text{font-size:.82rem; color:var(--ink); line-height:1.6}
+.example-score{text-align:right; margin-top:.8rem; font-size:.82rem; color:#6b5012; font-style:italic}
+.example-warn{background:rgba(160,40,40,.06); border-left:3px solid #9a2a2a; padding:.5rem .8rem; border-radius:0 8px 8px 0; font-size:.78rem; color:#7a2020; font-style:italic; margin-bottom:.7rem}
+
+.consent-form{background:#fff; border:1px dashed var(--ink-soft); border-radius:10px; padding:1rem 1.2rem; font-family:'Noto Serif KR',serif; font-size:.85rem; line-height:1.7; color:var(--ink); white-space:pre-line}
+.consent-actions{display:flex; gap:.5rem; margin-top:.8rem; justify-content:flex-end}
+.consent-btn{padding:.5rem 1.2rem; border-radius:999px; border:none; font-weight:700; cursor:pointer; font-size:.83rem}
+.consent-btn.primary{background:var(--gold); color:#fff}
+.consent-btn.primary:hover{background:#a07520}
+
+/* ── 기업·기관 솔루션 페이지 ── */
+.corp-hero{padding:3rem 2rem; margin-bottom:2rem; background:linear-gradient(135deg, var(--navy) 0%, var(--plum) 50%, var(--gold) 150%); border-radius:24px; color:#fff; position:relative; overflow:hidden}
+.corp-hero::before{content:""; position:absolute; top:-50%; right:-20%; width:80%; height:200%; background:radial-gradient(circle, rgba(255,255,255,.08) 0%, transparent 60%); pointer-events:none}
+.corp-hero .ctag{font-family:'Fraunces',serif; font-style:italic; font-size:.85rem; color:rgba(255,255,255,.7); margin-bottom:.8rem; letter-spacing:.1em}
+.corp-hero h1{font-family:'Gowun Batang',serif; font-size:2rem; line-height:1.35; color:#fff; margin-bottom:.6rem; position:relative; z-index:1}
+@media(max-width:680px){.corp-hero h1{font-size:1.5rem}}
+.corp-hero .csub{font-size:.95rem; color:rgba(255,255,255,.85); margin-bottom:1.2rem; font-weight:600}
+.corp-hero p{font-size:.92rem; line-height:1.7; color:rgba(255,255,255,.92); max-width:780px; position:relative; z-index:1}
+
+.corp-sec-title{font-family:'Gowun Batang',serif; font-size:1.25rem; color:var(--navy); margin:2.4rem 0 1rem; display:flex; align-items:center; gap:.6rem}
+.corp-sec-title::before{content:""; width:6px; height:24px; background:linear-gradient(180deg, var(--navy), var(--plum)); border-radius:3px}
+
+.problem-grid{display:grid; grid-template-columns:1fr 1fr; gap:.9rem}
+@media(max-width:680px){.problem-grid{grid-template-columns:1fr}}
+.problem-card{background:#fafaf7; border:1px solid var(--line); border-radius:14px; padding:1.1rem 1.2rem; position:relative}
+.problem-q{font-size:.85rem; color:#8a2020; font-weight:600; margin-bottom:.5rem; padding-left:1.4rem; position:relative}
+.problem-q::before{content:'"'; position:absolute; left:0; top:-.3rem; font-family:'Fraunces',serif; font-size:1.6rem; color:#9a2a2a; font-style:italic}
+.problem-a{font-size:.83rem; color:var(--ink); line-height:1.6; padding-top:.6rem; border-top:1px dashed var(--line); margin-top:.5rem}
+.problem-a::before{content:"→ "; color:var(--green); font-weight:700}
+
+.effects-grid{display:grid; grid-template-columns:repeat(3, 1fr); gap:1rem; margin:1rem 0 1.5rem}
+@media(max-width:680px){.effects-grid{grid-template-columns:1fr}}
+.effect-card{background:#fff; border:1px solid var(--gold); border-radius:18px; padding:1.6rem 1.3rem; text-align:center; box-shadow:0 4px 16px rgba(184,134,42,.08)}
+.effect-icon{font-size:2.4rem; color:var(--gold); line-height:1; margin-bottom:.7rem}
+.effect-title{font-family:'Gowun Batang',serif; color:var(--navy); font-size:1.1rem; margin-bottom:.2rem}
+.effect-en{font-family:'Fraunces',serif; font-style:italic; font-size:.85rem; color:var(--gold); margin-bottom:.6rem}
+.effect-body{font-size:.84rem; color:var(--ink-soft); line-height:1.6}
+
+.evidence-list{display:grid; grid-template-columns:1fr 1fr; gap:.8rem}
+@media(max-width:680px){.evidence-list{grid-template-columns:1fr}}
+.evidence-item{background:rgba(91,58,142,.05); border-left:3px solid var(--plum); border-radius:0 12px 12px 0; padding:1rem 1.1rem}
+.evidence-item h4{color:var(--plum); font-size:.92rem; margin-bottom:.4rem}
+.evidence-item p{font-size:.82rem; line-height:1.6; color:var(--ink)}
+
+.prog-card{background:#fff; border:1px solid var(--line); border-radius:18px; padding:1.4rem 1.5rem; margin-bottom:1rem; position:relative; overflow:hidden}
+.prog-card::before{content:""; position:absolute; left:0; top:0; bottom:0; width:5px; background:linear-gradient(180deg, var(--navy), var(--plum))}
+.prog-header{display:flex; align-items:flex-start; gap:.7rem; margin-bottom:.8rem; flex-wrap:wrap}
+.prog-no{font-family:'Fraunces',serif; font-size:1.8rem; font-weight:700; color:var(--gold); font-style:italic; line-height:1}
+.prog-titles{flex:1; min-width:200px}
+.prog-tag{display:inline-block; background:var(--navy); color:#fff; padding:.15rem .55rem; border-radius:6px; font-size:.72rem; font-weight:700; margin-right:.4rem; vertical-align:middle}
+.prog-name{display:inline-block; font-family:'Gowun Batang',serif; color:var(--navy); font-size:1.1rem; font-weight:700; vertical-align:middle}
+.prog-hash{font-size:.78rem; color:var(--gold); font-weight:600; margin-top:.25rem}
+.prog-meta{display:grid; grid-template-columns:auto 1fr; gap:.3rem .8rem; font-size:.83rem; background:rgba(91,58,142,.04); padding:.7rem 1rem; border-radius:10px; margin-bottom:.7rem}
+.prog-meta .pk{color:var(--plum-2); font-weight:700; white-space:nowrap}
+.prog-meta .pv{color:var(--ink)}
+.prog-mods-title{font-size:.82rem; font-weight:700; color:var(--navy); margin-bottom:.4rem; margin-top:.4rem}
+.prog-mods{margin-left:1.1rem; font-size:.83rem; line-height:1.7; color:var(--ink); margin-bottom:.7rem}
+.prog-expected{display:flex; gap:.4rem; flex-wrap:wrap; padding-top:.5rem; border-top:1px dashed var(--line)}
+.exp-chip{font-size:.75rem; padding:.25rem .6rem; background:rgba(30,86,49,.1); color:var(--green); border-radius:999px; font-weight:600}
+
+.diff-grid{display:grid; grid-template-columns:1fr 1fr; gap:.8rem}
+@media(max-width:680px){.diff-grid{grid-template-columns:1fr}}
+.diff-card{background:#fff; border:1px solid var(--line); border-radius:14px; padding:1.1rem 1.2rem}
+.diff-row{display:flex; align-items:center; gap:.5rem; margin-bottom:.5rem}
+.diff-from{color:#8a2020; font-size:.85rem; font-weight:600; text-decoration:line-through; text-decoration-color:#9a2a2a}
+.diff-arrow{color:var(--gold); font-weight:700}
+.diff-to{color:var(--green); font-size:.9rem; font-weight:700}
+.diff-body{font-size:.8rem; color:var(--ink-soft); line-height:1.55}
+
+.process-list{display:grid; grid-template-columns:repeat(3, 1fr); gap:.6rem}
+@media(max-width:680px){.process-list{grid-template-columns:1fr}}
+.process-step{background:#fafaf7; border:1px solid var(--line); border-radius:12px; padding:.9rem 1rem; position:relative}
+.process-step .pno{position:absolute; top:.7rem; right:.9rem; font-family:'Fraunces',serif; font-style:italic; font-size:1.3rem; color:var(--gold); font-weight:700}
+.process-step h4{color:var(--navy); font-size:.92rem; margin-bottom:.3rem; padding-right:1.5rem}
+.process-step p{font-size:.78rem; color:var(--ink-soft); line-height:1.55}
+
+.corp-cta{margin:2.5rem 0 1rem; padding:2.4rem 2rem; background:linear-gradient(135deg, var(--navy), var(--plum)); color:#fff; border-radius:24px; text-align:center}
+.corp-cta h3{color:#fff; font-family:'Gowun Batang',serif; font-size:1.4rem; margin-bottom:.5rem}
+.corp-cta p{color:rgba(255,255,255,.85); margin-bottom:1.2rem}
+.corp-cta-btns{display:flex; gap:.6rem; justify-content:center; flex-wrap:wrap}
+.corp-cta-btn{display:inline-block; padding:.75rem 1.6rem; border-radius:999px; font-weight:700; cursor:pointer; transition:.2s; font-size:.92rem; text-decoration:none; border:none}
+.corp-cta-btn.primary{background:var(--gold); color:#fff}
+.corp-cta-btn.primary:hover{background:#a07520; transform:translateY(-1px)}
+.corp-cta-btn.secondary{background:transparent; color:#fff; border:1.5px solid rgba(255,255,255,.4)}
+.corp-cta-btn.secondary:hover{background:rgba(255,255,255,.1); border-color:#fff}
+
+.foot{max-width:1180px; margin:2rem auto 0; padding:2.2rem 1.4rem; text-align:center; border-top:1px solid var(--line); color:var(--ink-soft); font-size:.82rem}
+.foot .fl{font-family:'Fraunces',serif; font-style:italic; color:var(--plum); font-size:1rem}
+
+@media(max-width:680px){
+  .titem{grid-template-columns:1fr; gap:.25rem}
+  .week-head{flex-wrap:wrap} .week-d{flex-basis:100%; order:3; margin-top:.3rem}
+  .nav{display:none}
+}
+</style>
+<!-- ═══ 협회(association) 컨셉 스킨 오버라이드 ═══ -->
+<link rel="stylesheet" href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square.css">
+<style id="assoc-skin">
+@font-face{font-family:'Paperlogy';font-weight:300;font-display:swap;src:url('https://noah-tv.github.io/touchingvoice/Paperlogy-3Light.ttf') format('truetype')}
+@font-face{font-family:'Paperlogy';font-weight:400;font-display:swap;src:url('https://noah-tv.github.io/touchingvoice/Paperlogy-4Regular.ttf') format('truetype')}
+@font-face{font-family:'Paperlogy';font-weight:500;font-display:swap;src:url('https://noah-tv.github.io/touchingvoice/Paperlogy-5Medium.ttf') format('truetype')}
+@font-face{font-family:'Paperlogy';font-weight:600;font-display:swap;src:url('https://noah-tv.github.io/touchingvoice/Paperlogy-6SemiBold.ttf') format('truetype')}
+@font-face{font-family:'Paperlogy';font-weight:800;font-display:swap;src:url('https://noah-tv.github.io/touchingvoice/Paperlogy-7Bold.ttf') format('truetype')}
+:root{
+  --cream:#F5EEE0; --cream-2:#EFE6D6; --paper:#FBF7EC;
+  --plum:#43227D; --plum-2:#5B3A8E; --plum-soft:#8B6BB8;
+  --ink:#1F1428; --ink-soft:#6B5778;
+  --navy:#43227D; --green:#4CAF7D; --gold:#A8925A;
+  --line:rgba(67,34,125,.14); --line-2:rgba(67,34,125,.07);
+  --shadow:0 8px 40px rgba(42,21,56,.10); --shadow-sm:0 2px 14px rgba(42,21,56,.07);
+  --c-navy:#43227D; --c-green:#4CAF7D; --c-plum:#5B3A8E;
+  --accent-soft:#E3D3AF; --rule:rgba(67,34,125,.12);
+}
+body,button,input,select,textarea,.logo,h1,h2,h3,h4,h5,p,div,span,a,td,th,li{font-family:'Paperlogy','NanumSquare','Apple SD Gothic Neo',sans-serif !important}
+h1,h2,h3,h4,.logo,.sec-head h2,.hero h1{font-style:normal !important; letter-spacing:-.02em}
+body{background:var(--paper) !important; color:var(--ink)}
+body::before{display:none !important}
+.topbar{background:rgba(251,247,236,.9) !important; border-bottom:1px solid var(--rule)}
+.logo{color:var(--plum) !important; font-weight:800 !important; letter-spacing:.05em}
+.logo .ko{color:var(--ink-soft) !important; font-weight:600 !important}
+.nav a{color:var(--ink-soft)} .nav a:hover,.nav a.on{background:rgba(67,34,125,.09); color:var(--plum)}
+.hero{background:linear-gradient(150deg,#2A1538 0%,#43227D 55%,#6E4B9E 100%); border-radius:26px; color:#fff; padding:3.4rem 2rem 3rem !important; margin:1.4rem auto; max-width:1120px; box-shadow:0 20px 60px rgba(42,21,56,.28)}
+.hero .eyebrow,.eyebrow{color:var(--accent-soft) !important}
+.hero h1{color:#fff !important}
+.hero .sub{color:rgba(255,255,255,.82) !important; font-style:normal !important}
+.hero .tagline{color:rgba(255,255,255,.9) !important}
+.sec-head{border-bottom:2px solid var(--gold) !important}
+.sec-head .no{color:var(--gold) !important; font-style:normal !important}
+.sec-head h2{color:var(--plum) !important}
+.pcta,.back-btn{color:var(--plum-2) !important}
+.corp-cta-btn.prim,.corp-cta-btn.primary,.consent-btn.primary{background:var(--plum) !important; color:#fff !important}
+.rtab.active{background:var(--plum) !important; border-color:var(--plum) !important; color:#fff !important}
+.rtab.locked{opacity:.5}
+#acadGate{position:fixed;inset:0;z-index:9999;background:var(--paper);display:flex;align-items:center;justify-content:center;color:var(--plum);font-weight:800;font-size:1.05rem}
+.acad-lock{position:absolute;inset:0;z-index:5;background:rgba(251,247,236,.66);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;border-radius:inherit;text-align:center;color:var(--plum);font-weight:800;padding:20px;line-height:1.55}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar"><div class="topbar-in">
+    <div class="logo">TouchingVoice<span class="ko">발성심리지도사 아카데미</span></div>
+    <nav class="nav">
+      <a data-go="home" class="on">홈</a>
+      <a data-go="philosophy">철학</a>
+      <a data-go="theory">이론 정의서</a>
+      <a data-go="programs">강의실</a>
+      <a data-go="exam">검정·자격</a>
+      <a data-go="corporate">기업·기관</a>
+    </nav>
+  </div></div>
+
+  <div class="view active" id="view-home">
+    <header class="hero">
+      <div class="eyebrow">Vocal Psychology Academy</div>
+      <h1>발성심리지도사<br>통합 아카데미</h1>
+      <div class="sub">Vocal Psychology Integrated Curriculum</div>
+      <p class="tagline" id="tagline"></p>
+    </header>
+    <section class="sec">
+      <div class="sec-head"><span class="no">강의실</span><h2>과정을 선택하세요</h2></div>
+      <div class="prog-cards" id="home-cards"></div>
+    </section>
+    <section class="sec">
+      <div class="philo-card">
+        <h2 id="philo-title"></h2><div id="philo-body"></div><div class="values" id="philo-values"></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="view" id="view-philosophy">
+    <section class="sec">
+      <div class="sec-head"><span class="no">Foundation</span><h2>우리가 목소리를 대하는 태도</h2></div>
+      <div class="philo-card">
+        <h2 id="philo-title2"></h2><div id="philo-body2"></div><div class="values" id="philo-values2"></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="view" id="view-theory">
+    <section class="sec">
+      <div class="sec-head"><span class="no">Part 1</span><h2>발성심리 통합 이론 정의서</h2></div>
+      <div class="theory-grid" id="theory-grid"></div>
+    </section>
+  </div>
+
+  <div class="view" id="view-programs">
+    <div class="room-top"><span class="back-btn" data-go="home">\u2190 과정 선택으로</span></div>
+    <div class="room-tabs" id="room-tabs"></div>
+    <div class="room-body" id="room-body"></div>
+  </div>
+
+  <div class="view" id="view-exam">
+    <section class="sec">
+      <div class="sec-head"><span class="no">Certification</span><h2>발성심리지도사 2급 검정</h2></div>
+      <div id="exam-intro"></div>
+      <div id="exam-domains"></div>
+      <div id="exam-rules"></div>
+      <div id="exam-case"></div>
+      <div id="exam-mock-launcher"></div>
+      <div id="exam-mock-area"></div>
+    </section>
+  </div>
+
+  <div class="view" id="view-corporate">
+    <section class="sec">
+      <div id="corp-hero"></div>
+      <div id="corp-problem"></div>
+      <div id="corp-effects"></div>
+      <div id="corp-evidence"></div>
+      <div id="corp-programs"></div>
+      <div id="corp-difference"></div>
+      <div id="corp-process"></div>
+      <div id="corp-cta"></div>
+    </section>
+  </div>
+
+  <footer class="foot">
+    <div class="fl">TouchingVoice \u00B7 터칭보이스</div>
+    <p style="margin-top:.5rem">발성심리지도사 2급 \u00B7 1급 \u00B7 마스터 — 강사용 수업 진행 플랫폼</p>
+    <p style="margin-top:.3rem; opacity:.7">주차를 펼치면 60분 수업 스크립트와 영상 슬롯이 열립니다. 강사 멘트는 그대로 읽고, 가이드는 살을 붙이세요.</p>
+  </footer>
+</div>
+
+<script>
+const DATA = {"brand":{"name":"TouchingVoice","ko":"터칭보이스","cert":"발성심리지도사","tagline":"목소리를 회복하는 일은, 한 사람을 회복하는 일입니다"},"philosophy":{"title":"우리가 목소리를 대하는 태도","paragraphs":["모든 사람의 목소리는 그 자체로 존엄하며, 고쳐야 할 결함이 아니라 살아온 시간이 새겨진 흔적입니다.","사람은 태어날 때 누구나 자유롭고 온전한 소리를 가지고 있었습니다. 자라면서 어떤 표현은 허락받고 어떤 표현은 억눌렸으며, 그 억눌림이 목소리에 새겨졌습니다. 목소리를 회복한다는 것은 기술을 더하는 일이 아니라, 본래 가지고 있던 것을 되찾도록 곁에서 돕는 일입니다.","이 회복은 정죄가 아니라 받아들임에서 시작됩니다. 발성심리지도사가 하는 일은 단순한 기술 전수가 아니라, 한 사람이 자기 자신과 화해하도록 돕는 일입니다.","좋은 소리를 만드는 것보다 그 사람이 자기 목소리를 사랑하게 되는 것이 먼저이며, 무대 위의 완성보다 한 사람의 회복이 더 귀합니다."],"values":[{"k":"존엄","v":"모든 목소리는 그 자체로 존엄하다"},{"k":"받아들임","v":"회복은 정죄가 아닌 받아들임에서 시작된다"},{"k":"회복","v":"좋은 소리보다 한 사람의 회복이 먼저다"},{"k":"소명","v":"지도는 기술 전수가 아니라 사람을 살리는 일이다"}]},"theory":[{"id":"ch1","no":"01","title":"터칭보이스 발성 모델 개요","summary":"목소리를 신체·심리·생애 경험이 반영된 표현 시스템으로 본다. 3층 구조와 3대 체크포인트.","sections":[{"h":"3층 발성 구조 모델","items":[["Layer 1 · 리드 (하부 성대 근육군)","섹소폰의 리드 — 음압·마찰율·음역대의 토대"],["Layer 2 · 공명관 (인두 근육군)","섹소폰의 관체 — 배음·2차 압력으로 음색 조형"],["Layer 3 · 조직 기반 (점막·라이네케·세포)","발달 가능성과 회복력의 생물학적 토대"]]},{"h":"3대 체크포인트","items":[["성대 마찰율","성대 접촉 면적의 비율 — 음압과 텍스쳐를 결정"],["호흡량","성문하압을 만드는 동력 — 마찰의 균일성을 결정"],["근육 압력","하부·상부·인두 근육의 압력 균형 — 음색과 안정성을 결정"]]}]},{"id":"ch2","no":"02","title":"Layer 1 — 하부 성대 근육군 (8개)","summary":"성대의 기본 진동 면적·마찰율·음역대를 결정. 근육 발달과 성격 특성의 상관.","sections":[{"h":"하부 마찰 근육","items":[["① 윤상갑상근 수직부 (Straight CT)","성대 늘려 긴장도↑, 음고 상승 1차 동력원"],["② 윤상갑상근 사부 (Oblique CT)","성대 길이 미세 조정, 중·고음 전환 안정"],["③ 외측윤상피열근 (LCA)","성대 내전(닫음). 약하면 음이탈·결절. 표현 억제형에서 저활성"],["④ 후윤상피열근 (PCA)","성대 외전(엶). 이완 능력이 호흡 지지와 직결"]]},{"h":"상부 마찰 근육","items":[["⑤ 횡피열근 (TA, transverse)","성대 후부 폐쇄. 과활성 시 목 조임"],["⑥ 갑상피열근 (Thyroarytenoid)","저음·흉성 핵심. 텍스쳐(볼튼형)의 핵심"],["⑦ 갑상후두개근","음색의 어두움·밝음 관여"],["⑧ 성대근 (Vocalis)","두께·경직도 미세 조절"]]},{"h":"하부 활성도와 성격 상관 (임상 모델)","table":{"head":["활성도","성격","음성","대인"],"rows":[["높음","표현 자유·활동적","풍부한 배음·넓은 음역","대인·감정표현↑"],["낮음","억압·과묵·소극","단조·저음 고착","우울 경향"],["LCA 약화","자기 검열","기식성·음이탈","만성 거부감"]]}}]},{"id":"ch3","no":"03","title":"Layer 2 — 인두 근육군 (5개)","summary":"기본 진동에 배음·2차 압력을 더해 음색을 조형. 근육별 증폭 주파수.","sections":[{"h":"인두 5근육","items":[["① 구개범거근 (Levator Veli Palatini)","비인두 폐쇄, 명료도↑ (1~3kHz)"],["② 구개긴장근 (Tensor Veli Palatini)","고음역 안정성 (3kHz+)"],["③ 상인두수축근 (Superior PC)","두성 공명, Singer's Formant (2~4kHz)"],["④ 중인두수축근 (Middle PC)","따뜻함·둥근 음색 (1~2kHz)"],["⑤ 하인두 갑상인두부 (IPC)","Layer 1→2 인터페이스. 결절 환자서 과긴장 빈번"]]}]},{"id":"ch4","no":"04","title":"Layer 3 — 라이네케 공간과 세포","summary":"성대 5층 구조와 점막파, 히알루론산, 그리고 강화/섬유화를 가르는 분자 경로.","sections":[{"h":"성대 5층 구조","items":[["상피 → 라이네케 공간 → SLP → DLP → 근육층","바깥 두 층만 진동 = 점막파(Mucosal Wave)"]]},{"h":"라이네케 공간 & 히알루론산","items":[["라이네케 공간","상피와 성대인대 사이 '잠재적 공간'. 어린아이일수록 HA 많아 탄성↑"],["히알루론산(HA)","자기 무게 1,000배 물 보유, 반감기 1~3일. 섬유아세포가 기계적 자극에 반응해 생성"]]},{"h":"Mechanotransduction — 두 갈래","flow":[{"label":"강화 경로","color":"green","steps":["적정 자극","mTOR 활성화","HAS2/HAS3 가동","HA 생산↑","점막파↑ → F3~F6 강화"]},{"label":"섬유화 경로","color":"red","steps":["과손상","TGF-β1 분비","근섬유아세포 분화","콜라겐 과다 → 흉터","점막파 소실 → 목소리 잃음"]}],"note":"경계: 훈련 후 24~48시간 내 회복되면 자극(강화), 그 이상이면 손상(섬유화)"}]},{"id":"ch5","no":"05","title":"영양 프로토콜 — VOCAL 서플","summary":"HA·BCAA·비타민C·마그네슘의 시너지와 코르티솔(스트레스)의 조직 억제.","sections":[{"h":"4대 성분 시너지","items":[["HA + 비타민C","내인성 HA 생성 극대화"],["BCAA(류신 2:1:1) + 마그네슘","mTOR 완전 작동, 근육 수화"],["코르티솔 주의","스트레스 호르몬이 HAS 억제 — 심리가 조직에 직접 영향"]]},{"h":"케어 타이밍","items":[["훈련 30분 전","BCAA + 비타민C + 따뜻한 물 500ml"],["훈련 직후","BCAA + 저분자 HA + 수분"],["취침 전","비타민C + 마그네슘"]]}]},{"id":"ch6","no":"06","title":"텍스쳐 설계 & 음향 바이오마커","summary":"마찰·break를 도구로 쓰는 텍스쳐 4유형과 Big Five 매칭, 음향 측정 지표.","sections":[{"h":"텍스쳐 4유형 × Big Five","table":{"head":["유형","메커니즘","Big Five"],"rows":[["MJ형","PCA 후방개방 + 전방마찰","O↑ E↑ 감성·표현"],["볼튼형","TA 극대화 + 완전폐쇄","C↑ E↑ N↓ 의지·통제"],["브루노형","텍스쳐 on/off 제어","C↑ O↑ 유연·완벽"],["벤슨형","break 도구화","N↑ O↑ 진정성·노출"]]}},{"h":"음향 바이오마커","items":[["포먼트 F1~F5","공명 주파수 분포 (F1=혀 높이, F2=전후, F3↑=음색 고유성)"],["HNR","목소리의 맑기 — 스트레스·우울 시 저하"],["Jitter / Shimmer","주파수·진폭 변동 — 결절 시 상승"],["Singer's Formant","2.2~3.5kHz 투사력·광채"]]}]},{"id":"ch7","no":"07","title":"발성심리 통합 — 단계별 깊이","summary":"심리는 별도 과목이 아니라 모든 지도에 흐르는 태도. 알아차림→도움→조율로 깊어진다.","sections":[{"h":"몸과 마음의 연결","items":[["근육 갑옷 (라이히)","억압된 감정이 만성 근육 긴장으로 — 잘못이 아니라 살아온 증거"],["말초 정서 (제임스-랑게)","'우니까 슬프다' — 목소리를 바꾸면 감정이 바뀐다 (PNAS 변조 음성)"],["체화된 인지","발성을 바꾸는 것이 곧 마음을 돌보는 개입"]]},{"h":"방어를 다루는 법 — 받아들임","items":[["2급 · 알아차림","음역대별 방어 패턴 인식 (고치지 않고 관찰)"],["1급 · 받아들임","UPR(로저스)·자기효능감(반두라)·체계적 둔감화(월피)"],["마스터 · 조율","동기강화상담(MI)·전이/역전이 관리"]]},{"h":"감정전이 & 컨디션 조율 (마스터)","items":[["5기술","페이싱 → 리딩 → 라벨링 → 리프레이밍 → 앵커링"],["다미주 톤 (포지스)","느리고 낮은 운율로 신경계 안전 신호"],["정서적 닻","강사가 먼저 안정되어야 감정전이가 안정 방향으로"]]}]}],"programs":[{"id":"level2","badge":"2급","color":"navy","title":"발성심리지도사 2급","duration":"4개월 · 16주","role":"기관·단체 보조 강사, 독립 그룹 운영","depth":"Layer 1·2 + 발성심리 기초","exam":"이론 필기(객관식 40+단답 10) 70점↑, 실습 평가 60점↑, 케이스 보고서 1건, 출석률 80%↑","stages":[{"name":"1단계 (1~4주) 이론 기초 + 자기 목소리 인식","weeks":[{"w":"1주","t":"오리엔테이션","d":"터칭보이스 3층 모델 / 목소리=마음의 첫인상 (10초·60번 법칙)","cap":"전체 체계 이해","data":"동의서 작성"},{"w":"2주","t":"성장과 목소리","d":"언어환경 3요소(가족·친구·사회) / 자기 목소리 녹음·인식","cap":"자기 관찰","data":"음성 녹음 1차"},{"w":"3주","t":"해부 기초","d":"성대=진동+마찰 / 하부 성대 근육 8개 개요","cap":"근육 기능 이해","data":"—"},{"w":"4주","t":"공명 기초","d":"인두 근육 5개 개요 / 소리의 색깔","cap":"공명 이해","data":"—"}]},{"name":"2단계 (5~8주) 호흡·발성 원리","weeks":[{"w":"5주","t":"호흡 1","d":"복식호흡 정의·원리 / 호흡 경로(코→뒷통수→등→아랫배)","cap":"호흡 원리","data":"—"},{"w":"6주","t":"호흡 2","d":"복식호흡 실습 / 흉부 상승 교정","cap":"호흡 코칭 기초","data":"—"},{"w":"7주","t":"발성 1","d":"성대 근력 운동 개념 / 마찰율·호흡량·압력 3대 체크포인트","cap":"측정 기준","data":"음성 측정 1"},{"w":"8주","t":"발성 2","d":"저음~고음 스케일 / 음역대 자가 측정","cap":"음역대 인식","data":"—"}]},{"name":"3단계 (9~12주) 음이탈 노출 + 발성심리 기초","weeks":[{"w":"9주","t":"음이탈 1","d":"삑사리=창피 인식 전환 / 음이탈=발달 약점 신호","cap":"인식 전환","data":"음이탈 녹음"},{"w":"10주","t":"음이탈 2","d":"의도적 음이탈 반복 / 방어기제 음역대 발견(인식)","cap":"방어 패턴 인식","data":"심리 설문 1"},{"w":"11주","t":"심리학 기초","d":"신체화된 억압(라이히) / 제임스-랑게 / 체화된 인지","cap":"근거 이론 이해","data":"—"},{"w":"12주","t":"감정전이 소개","d":"목소리↔감정 양방향 / 소거 학습 3단계 / 감정전이 개념","cap":"프로토콜·전이 개념","data":"—"}]},{"name":"4단계 (13~16주) 지도 실습 + 검정","weeks":[{"w":"13주","t":"관찰 실습","d":"타인 음성 청음 / 마찰율·호흡·패턴 관찰","cap":"청음 분석","data":"동료 음성 녹음"},{"w":"14주","t":"지도 실습","d":"긍정 치환 대화법 / 안전한 음이탈 유도 보조 지도","cap":"지도 기술","data":"—"},{"w":"15주","t":"검정 준비","d":"이론 필기 모의 / 케이스 보고서 1건 작성","cap":"이론·서류 점검","data":"케이스 보고 1"},{"w":"16주","t":"수료·검정","d":"수료 발표 / 2급 검정 시행","cap":"역량 통합","data":"최종 음성 녹음"}]}]},{"id":"level1","badge":"1급","color":"green","title":"발성심리지도사 1급","duration":"6개월 · 24주","role":"독립 강의·프로그램 기획, 1:1 지도","depth":"Layer 3 조직 + 데이터 측정","req":"2급 취득 + 실무 1년","exam":"이론 필기(심화 객관식 40+논술 1) 75점↑, 실습 70점↑, 케이스 3건+연구 1건, 심의위원회 통과","stages":[{"name":"1단계 (1~6주) 조직 기반 심화","weeks":[{"w":"1주","t":"조직 1","d":"성대 5층 구조 / 점막파 원리","cap":"조직 구조 이해","data":"음성 측정 1"},{"w":"2주","t":"조직 2","d":"라이네케 공간 — 왜 '공간'인가 / 나이와 탄성","cap":"공간 개념","data":"—"},{"w":"3주","t":"조직 3","d":"히알루론산 — 생성·분해·반감기","cap":"HA 원리","data":"—"},{"w":"4주","t":"조직 4","d":"섬유아세포와 기계적 자극 반응","cap":"세포 이해","data":"—"},{"w":"5주","t":"측정 1","d":"포먼트 F1~F5 / 모음 공간 개념","cap":"스펙트럼 기초","data":"—"},{"w":"6주","t":"측정 2","d":"HNR·Jitter·Shimmer 의미와 측정","cap":"지표 해석","data":"음성 측정 2"}]},{"name":"2단계 (7~12주) 공명·텍스쳐 훈련","weeks":[{"w":"7주","t":"공명 1","d":"구개근 활성화 / 소리 앞 모으기·명료도","cap":"공명 조절","data":"—"},{"w":"8주","t":"공명 2","d":"인두강 확장(중인두수축근 이완)","cap":"음색 확장","data":"—"},{"w":"9주","t":"공명 3","d":"Singer's Formant 탐색(상인두수축근)","cap":"배음 인식","data":"음성 측정 3"},{"w":"10주","t":"고음 훈련","d":"윤상갑상근군 활성 / E4→C5 확장 원리","cap":"고음역 확장","data":"—"},{"w":"11주","t":"저음 이완","d":"갑상피열근 과수축 완화","cap":"저음 이완","data":"—"},{"w":"12주","t":"통합 발성","d":"마찰율·호흡·공명 통합 세션","cap":"발성 통합","data":"음성 측정 4"}]},{"name":"3단계 (13~18주) 심리 적용 + 케이스 + 1:1","weeks":[{"w":"13주","t":"심리 적용 1","d":"애착이론(볼비) / 자기효능감(반두라) — 언어환경 해석","cap":"이론 적용","data":"심리 설문"},{"w":"14주","t":"심리 적용 2","d":"인간중심·UPR(로저스) / 라포 형성","cap":"라포·정서 조율","data":"—"},{"w":"15주","t":"방어기제 지도","d":"방어 유형별(억압·투사·합리화·회피) 대응","cap":"방어 지도","data":"—"},{"w":"16주","t":"케이스 1","d":"우울·억압 / 성대결절(자극·손상 경계) 분석","cap":"임상 추론","data":"—"},{"w":"17주","t":"케이스 2 + 1:1","d":"고강도 음성사용자 케이스 / 1:1 지도 시연","cap":"지도 시연","data":"시연 녹화"},{"w":"18주","t":"그룹 설계","d":"정서 조율 기반 그룹 세션 설계","cap":"그룹 설계","data":"—"}]},{"name":"4단계 (19~24주) 데이터 수집 + 검정","weeks":[{"w":"19주","t":"데이터 1","d":"음성 데이터 수집 윤리·동의 절차","cap":"데이터 윤리","data":"수집 실습 1"},{"w":"20주","t":"데이터 2","d":"마찰율·호흡량 측정 프로세스 실습","cap":"측정 기술","data":"수집 실습 2"},{"w":"21주","t":"데이터 3","d":"심리 설문 + 음성 데이터 연동","cap":"통합 수집","data":"수집 실습 3"},{"w":"22주","t":"검정 준비 1","d":"이론 필기 모의 / 케이스 보고서 3건","cap":"이론·서류","data":"케이스 보고"},{"w":"23주","t":"검정 준비 2","d":"1:1 지도 시연 모의 / 연구 보고서 1건","cap":"실습·연구","data":"—"},{"w":"24주","t":"수료·검정","d":"수료 발표 / 1급 검정 + 심의위원회","cap":"역량 통합","data":"최종 측정"}]}]},{"id":"master","badge":"마스터","color":"plum","title":"발성심리지도사 마스터","duration":"1년 · 48주","role":"고강도 음성사용자 1:1 파견, 강사 양성","depth":"분자생물학 + 텍스쳐 + 완전한 몰입 + AI","req":"1급 취득 + 실무 2년 + 심의위원회","exam":"통합 시연 + 완전한 몰입 세션 시연 + 임상 5건 + 파견 케이스 + 방법론 연구 보고서 + 강사 모의 지도 감독 + 심의위원회 최종 인증","stages":[{"name":"트랙 1 (1~8주) 발성 분자생물학","weeks":[{"w":"1주","t":"분자 1","d":"Mechanotransduction / 인테그린→PI3K→mTOR","cap":"신호 경로","data":"—"},{"w":"2주","t":"분자 2","d":"HAS2/HAS3 — HA 합성 공장 / mTOR 스위치","cap":"효소 경로","data":"—"},{"w":"3주","t":"분자 3","d":"BCAA(류신)→mTOR / 영양-조직 연결","cap":"영양 분자","data":"—"},{"w":"4주","t":"분자 4","d":"TGF-β1→SMAD→근섬유아세포 분화","cap":"손상 경로","data":"—"},{"w":"5주","t":"분자 5","d":"자극 vs 손상 경계 (24~48시간 회복)","cap":"경계 판단","data":"—"},{"w":"6주","t":"분자 6","d":"코르티솔→HAS 억제 / 심리-조직 분자 연결","cap":"심리-분자","data":"심리 설문"},{"w":"7주","t":"영양 1","d":"HA+BCAA+비타민C+마그네슘 시너지","cap":"영양 프로토콜","data":"—"},{"w":"8주","t":"영양 2","d":"VOCAL 서플 설계 / 케어 타이밍","cap":"케어 설계","data":"—"}]},{"name":"트랙 2 (9~16주) 음향 분석 심화","weeks":[{"w":"9주","t":"음향 1","d":"스펙트로그램 읽기 / 포먼트 F1~F7","cap":"스펙트럼 독해","data":"—"},{"w":"10주","t":"음향 2","d":"마찰 지수(F3~F5) / 호흡 유출 지수","cap":"텍스쳐 측정","data":"음성 분석 1"},{"w":"11주","t":"음향 3","d":"HNR·Jitter·Shimmer 정밀 해석","cap":"병리 지표","data":"—"},{"w":"12주","t":"음향 4","d":"Praat 실습 / 자동 분석 워크플로우","cap":"도구 활용","data":"음성 분석 2"},{"w":"13주","t":"점막파","d":"점막파 진폭과 F3~F5 / 라이네케 추정","cap":"간접 측정","data":"—"},{"w":"14주","t":"케이스 측정","d":"훈련 전후 스펙트로그램 비교","cap":"변화 측정","data":"전후 데이터"},{"w":"15주","t":"데이터셋","d":"음향+심리 멀티모달 구조","cap":"데이터 설계","data":"—"},{"w":"16주","t":"AI 기초","d":"Big5×음향 상관 / 성격 예측 모델","cap":"AI 이해","data":"—"}]},{"name":"트랙 3 (17~24주) 텍스쳐 설계","weeks":[{"w":"17주","t":"텍스쳐 1","d":"텍스쳐 설계 패러다임 / 마찰을 도구로","cap":"패러다임 전환","data":"—"},{"w":"18주","t":"텍스쳐 2","d":"MJ형 — PCA 후방개방 + 전방마찰","cap":"MJ 메커니즘","data":"—"},{"w":"19주","t":"텍스쳐 3","d":"볼튼형 — TA 극대화 + 완전폐쇄","cap":"볼튼 메커니즘","data":"—"},{"w":"20주","t":"텍스쳐 4","d":"브루노형 — 텍스쳐 on/off 제어","cap":"정밀 제어","data":"—"},{"w":"21주","t":"텍스쳐 5","d":"벤슨형 — break 도구화 + 감정 설계","cap":"break 설계","data":"—"},{"w":"22주","t":"텍스쳐 6","d":"텍스쳐 × Big Five 매칭","cap":"성격 매칭","data":"심리 설문"},{"w":"23주","t":"텍스쳐 7","d":"E4→C5 2년 확장 / 조직 재형성","cap":"장기 설계","data":"음성 분석"},{"w":"24주","t":"텍스쳐 8","d":"수강생 텍스쳐 진단·설계 실습","cap":"텍스쳐 코칭","data":"전후 데이터"}]},{"name":"트랙 4 (25~32주) 전문 심리이론 + 임상","weeks":[{"w":"25주","t":"전문 심리 1","d":"공포 기억 재공고화(르두) / 다미주신경(포지스)","cap":"신경과학 통합","data":"—"},{"w":"26주","t":"전문 심리 2","d":"동기강화상담(MI) / 정서중심치료(EFT)","cap":"정서 조율 기법","data":"—"},{"w":"27주","t":"전이 관리","d":"전이·역전이 인식과 관리 / 강사 자기 분리","cap":"역동 관리","data":"—"},{"w":"28주","t":"임상 1","d":"화병·억압 / 무대공포증·고음 방어","cap":"공포 소거","data":"—"},{"w":"29주","t":"임상 2","d":"성대결절 회복(비외과적) / 관계 트라우마","cap":"회복 설계","data":"—"},{"w":"30주","t":"임상 3","d":"실존(허무·죽음) / 고강도 음성사용자 리스크","cap":"실존·리스크","data":"—"},{"w":"31주","t":"자기 케이스","d":"자신의 발성·심리 전문화 발표","cap":"자기 전문화","data":"전후 데이터"},{"w":"32주","t":"케이스 종합","d":"케이스 보고서 5건 통합 분석","cap":"임상 종합","data":"케이스 보고"}]},{"name":"트랙 5 (33~38주) 1:1 파견 & 컨디션 컨트롤","weeks":[{"w":"33주","t":"파견 1","d":"1:1 파견 모델 / 고강도 음성사용자 진단","cap":"파견·진단","data":"현장 데이터"},{"w":"34주","t":"컨트롤 1","d":"감정전이 활용 / 페이싱·리딩","cap":"정서 조율","data":"—"},{"w":"35주","t":"컨트롤 2","d":"라벨링·리프레이밍·앵커링 / 공연 전 불안 조율","cap":"컨디션 컨트롤","data":"—"},{"w":"36주","t":"파견 2","d":"공연·녹음 전후 케어 / 원격 레슨+AI","cap":"현장·원격 케어","data":"원격 데이터"},{"w":"37주","t":"파견 3","d":"현장 1:1 파견 실습 (멘토 동행) / 역전이 점검","cap":"파견 실습","data":"시연 녹화"},{"w":"38주","t":"파견 4","d":"아티스트 케어 + 리스크 관리 매뉴얼","cap":"매뉴얼화","data":"—"}]},{"name":"트랙 6 (39~44주) ★ 감정을 통한 완전한 몰입 설계","highlight":true,"weeks":[{"w":"39주","t":"몰입 이론","d":"몰입(Flow, 칙센트미하이) / 자의식 소거 조건","cap":"몰입 원리","data":"—"},{"w":"40주","t":"정서 기억","d":"정서 기억(스타니슬랍스키) / 감정 투사의 안전한 유도","cap":"정서 투사 설계","data":"—"},{"w":"41주","t":"심상 유도","d":"심상 유도(Guided Imagery) / 가사·경험 연결","cap":"심상 기술","data":"—"},{"w":"42주","t":"정서 해소","d":"EFT 발성 적용 / 감정 → 소리 전환","cap":"정서 해소 설계","data":"전후 데이터"},{"w":"43주","t":"몰입 통합","d":"신경계 안전(다미주)+텍스쳐+정서 투사 통합","cap":"몰입 통합 설계","data":"—"},{"w":"44주","t":"몰입 실습","d":"1:1 완전 몰입 세션 시연 / 윤리 경계 점검","cap":"몰입 코칭","data":"시연 녹화"}]},{"name":"트랙 7 (45~48주) 강사 양성 & 마스터 인증","weeks":[{"w":"45주","t":"양성","d":"2급·1급 운영법 / 강사 평가·감독 / 모의 지도","cap":"교육·감독","data":"시연 녹화"},{"w":"46주","t":"연구","d":"종단 데이터 분석 / 방법론 연구 보고서","cap":"연구 작성","data":"—"},{"w":"47주","t":"인증 준비","d":"통합 시연 준비 / 포트폴리오 완성","cap":"포트폴리오","data":"최종 데이터"},{"w":"48주","t":"마스터 인증","d":"마스터 인증 심의 / 파견 자격 부여","cap":"최종 인증","data":"최종 측정"}]}],"immersion":{"title":"완전한 몰입 설계의 5요소","intro":"아티스트가 자신의 경험과 감정에 온전히 투사되어 발성 행위에 완전히 잠기는 상태. 기교가 아니라 한 사람의 진심이 소리로 터져 나오는 순간을 함께 여는 일.","elements":[["안전 (Safety)","다미주 톤·무조건적 수용으로 신경계가 안전하다고 느낄 것"],["연결 (Connection)","가사·멜로디를 자신의 실제 경험·감정과 연결할 것"],["투사 (Projection)","정서 기억으로 몰입하되 압도되지 않도록 강사가 닻이 될 것"],["기술 자동화 (Automaticity)","발성 기술이 의식하지 않아도 작동할 만큼 체화될 것"],["해소 (Release)","몰입 후 감정이 소리로 빠져나가 정화(catharsis)에 이를 것"]],"ethics":"윤리 경계: 완전한 몰입은 강력한 만큼 위험하다. 트라우마가 통제 없이 재현되지 않도록 늘 안전을 우선하고, 감당하기 어려운 정서가 올라오면 멈추고 전문기관 연계를 안내한다. 몰입은 사람을 살리기 위한 것이지, 소리를 위해 사람을 쓰는 것이 아니다."}}]};
+const L2 = {"1주":{"title":"오리엔테이션 — 목소리는 마음의 첫인상","goal":"터칭보이스의 관점(목소리=마음의 흔적)을 체감하고, 16주의 여정을 안내한다.","materials":"녹음 가능한 스마트폰, 동의서, 이름표","blocks":[{"phase":"도입","min":"0~5","title":"환영과 안전한 자리 만들기","say":["오늘부터 우리는 목소리를 다루지만, 사실은 마음을 다룰 거예요.","이 자리에서는 '틀린 소리'가 없습니다. 어떤 소리를 내도 괜찮아요."],"guide":["수강생 긴장도를 살핀다. 강사가 먼저 편안한 톤·속도로 말해 분위기를 연다.","동의서 배부 — 음성 녹음/데이터 수집 목적을 1분 내로 설명."]},{"phase":"이론","min":"5~25","title":"첫인상 10초·60번, 그리고 듀크대 연구","say":["첫인상은 10초 안에 각인되고, 그걸 바꾸려면 최소 60번의 노출이 필요해요.","듀크대 연구에서 중저음 CEO가 더 높은 보수와 큰 기업 자산과 연관됐어요. 목소리는 능력의 신호로 읽힙니다.","그러니 목소리는 '마음의 첫인상'입니다."],"guide":["TouchingVoice 3층 모델을 칠판/슬라이드로 큰 그림만 보여준다 (리드·공명관·조직).","아직 해부 용어를 깊게 들어가지 않는다. '이런 구조로 배울 거예요' 수준.","16주 로드맵 안내: 1~4주 기초, 5~8주 호흡·발성, 9~12주 음이탈·심리, 13~16주 실습·검정."]},{"phase":"실습","min":"25~50","title":"실습 1 — 내 목소리 녹음하고 듣기","say":["핸드폰을 꺼내서 '안녕하세요, OOO입니다' 한 문장을 녹음해보세요.","이제 들어볼게요. 어색해도 괜찮아요. 그게 바로 남들이 늘 듣던 내 목소리예요."],"guide":["녹음 → 재생 → 반응 관찰. 거부감·놀람·웃음이 나오는 사람을 기억해둔다(방어 신호의 첫 단서).","'내 목소리가 이래요?'라는 반응을 정상화한다 — 골전도 때문에 누구나 다르게 들린다고 설명.","한 명씩 짧게 소감 나눔(강요하지 않음)."]},{"phase":"정리","min":"50~60","title":"핵심 정리 + 다음 주 예고","say":["오늘 핵심: 목소리는 마음의 첫인상이고, 우리는 그걸 회복하러 왔어요.","다음 주엔 내 목소리가 '왜' 이렇게 만들어졌는지 — 언어환경을 돌아봅니다."],"guide":["과제: 일주일간 자기 말투를 1회 더 녹음해오기.","동의서 미제출자 회수."]}]},"2주":{"title":"성장과 목소리 — 언어환경 3요소","goal":"목소리가 가족·친구·사회의 언어환경에서 형성됨을 이해하고 자기 배경을 돌아본다.","materials":"녹음본(과제), 워크시트(언어환경 3칸)","blocks":[{"phase":"도입","min":"0~5","title":"지난 주 연결","say":["지난 주 내 목소리를 처음 객관적으로 들어봤죠. 오늘은 그 목소리가 어디서 왔는지 봅니다."],"guide":["과제 녹음 가져온 사람 손들기. 한두 명 짧게 소감."]},{"phase":"이론","min":"5~25","title":"갓난아기의 소리 · Seth Riggs · 언어환경","say":["갓난아기는 누구나 자유롭고 온전한 소리를 냅니다. 우리도 그랬어요.","세계적 보컬코치 Seth Riggs는 '가장 좋은 소리는 어린아이의 소리로 돌아가는 것'이라 했어요.","자라면서 우리는 언어환경 — 가족·친구·사회의 목소리를 따라 소리를 고착시킵니다."],"guide":["PNAS 연구 짧게: 변조된 자기 목소리를 들으면 실제 감정이 그 방향으로 바뀐다 → 목소리와 감정은 양방향.","까칠한 목소리 듣고 자라면 까칠해지고, 느린 말투 환경이면 성격도 그렇게 형성된다는 예시."]},{"phase":"실습","min":"25~50","title":"실습 2 — 내 언어환경 돌아보기","say":["워크시트에 세 칸이 있어요. 가족 안에서 / 친구들 사이에서 / 사회에서 내 목소리는 어땠나요?","판단하지 말고, 그냥 떠오르는 대로 적어보세요."],"guide":["3~4명 소그룹으로 나눠 나눔(안전감 ↑).","강사는 돌며 경청만 — 분석·조언 금지. '그랬구나'로 받아낸다.","억압적 환경 키워드(눈치, 조용히, 참아)가 나오면 메모(나중 방어기제 연결)."]},{"phase":"정리","min":"50~60","title":"정리 + 예고","say":["목소리는 나의 마음을 닮아있고, 내 언어환경을 반영해요.","다음 주엔 그 소리가 '몸에서 어떻게 만들어지는지' — 성대 구조로 들어갑니다."],"guide":["과제: 가족 중 한 명의 말투를 관찰해 오기."]}]},"3주":{"title":"해부 기초 — 성대는 진동과 마찰","goal":"소리=진동+마찰 원리와 하부 성대 근육의 개념을 직관적으로 이해한다.","materials":"성대 구조 슬라이드/영상, 고무줄, 풍선","blocks":[{"phase":"도입","min":"0~5","title":"지난 주 연결","say":["지난 주 목소리가 마음을 닮았다고 했죠. 오늘은 그 소리가 몸에서 '어떻게' 나는지 봅니다."],"guide":["관찰 과제 한두 명 공유."]},{"phase":"이론","min":"5~25","title":"소리의 원리 + 하부 성대 근육","say":["소리는 세 글자예요 — 진동, 그리고 마찰. 두 점막이 호흡으로 마찰하며 소리가 납니다.","성대는 근육이에요. 팔굽혀펴기처럼 운동시키면 근력이 늘고 음역·성량 문제가 풀려요.","하부 성대 근육이 활발한 사람일수록 표현이 자유롭고 음역이 넓어요."],"guide":["고무줄 비유: 늘려서 튕기면 고음 — 성대도 같은 원리(윤상갑상근).","풍선 입구 비유로 마찰·진동 시연.","하부 8근육은 이름만 가볍게 — 암기 강요 안 함. '리드 역할'이라는 개념만."]},{"phase":"실습","min":"25~50","title":"실습 3 — 성대 마찰 느껴보기","say":["손을 목에 살짝 대고 '악!' 하고 외쳐보세요. 진동이 느껴지죠?","이제 낮은 음과 높은 음을 번갈아 내봅니다. 높이 갈수록 뭔가 당겨지는 느낌, 그게 근육이에요."],"guide":["고음으로 갈 때 멈칫·회피하는 사람 관찰(고음역 방어 단서).","목이 아닌 '조이는' 느낌이면 멈추게 하고, 편한 범위에서만.","즐겁게 — 소리 내는 게 부끄럽지 않은 분위기 유지."]},{"phase":"정리","min":"50~60","title":"정리 + 예고","say":["성대는 근육이고, 소리는 진동과 마찰이에요. 운동하면 발달합니다.","다음 주엔 소리에 '색깔'을 입히는 공명 — 인두 근육을 봅니다."],"guide":["과제: 하루 한 번 낮은음↔높은음 스케일 10회."]}]},"4주":{"title":"공명 기초 — 소리의 색깔, 인두 근육","goal":"인두 공명이 음색을 만든다는 것을 이해하고 공명 위치를 체감한다.","materials":"공명 위치 슬라이드, 거울","blocks":[{"phase":"도입","min":"0~5","title":"지난 주 연결","say":["지난 주 성대가 소리를 '만든다'면, 오늘은 그 소리에 '색'을 입히는 공명이에요."],"guide":["스케일 과제 함께 1회 가볍게."]},{"phase":"이론","min":"5~25","title":"인두 5근육과 음색","say":["같은 음이라도 어디서 울리느냐에 따라 색이 달라져요. 그 울림통이 인두예요.","구개를 들면 소리가 앞으로 모여 또렷해지고, 인두를 넓히면 따뜻하고 둥글어집니다.","상인두를 좁히면 광채 나는 고음(Singer's Formant)이 나와요."],"guide":["인두 5근육은 '리드(성대)에서 만든 소리를 풍성하게 하는 공명관'이라는 개념 중심.","하품 직전 목 안이 넓어지는 느낌 = 인두강 확장 시연."]},{"phase":"실습","min":"25~50","title":"공명 위치 탐색","say":["'음~' 하고 콧등이 울리게 해보세요. 다음엔 '아~'를 입 뒤쪽 넓은 공간에서 울려보세요.","두 소리의 색이 다르죠? 그게 공명 위치의 차이예요."],"guide":["거울로 연구개 들림 확인.","비음 과한 사람은 구개 들기, 목 조이는 사람은 인두 넓히기 유도.","정답 강조 금지 — '다양한 색을 탐색'하는 시간."]},{"phase":"정리","min":"50~60","title":"1단계 마무리 + 예고","say":["1단계를 마쳤어요. 목소리=마음, 성대=진동·마찰, 인두=색깔.","다음 주부터 2단계 — 모든 소리의 연료인 '호흡'으로 들어갑니다."],"guide":["과제: 따뜻한 색/밝은 색 소리 각 1회 녹음."]}]},"5주":{"title":"호흡 1 — 복식호흡의 원리","goal":"복식호흡을 횡격막 관점에서 정확히 이해하고 호흡 경로를 익힌다.","materials":"복식호흡 다이어그램, 풍선","blocks":[{"phase":"도입","min":"0~5","title":"왜 호흡이 먼저인가","say":["노래에서 가장 중요한 하나를 꼽으라면 주저 없이 '호흡'이에요. 소리의 연료니까요."],"guide":["평소 폐의 2~30%만 쓴다는 사실로 흥미 유발."]},{"phase":"이론","min":"5~25","title":"복식호흡 = 횡격막이 내려가는 호흡","say":["복식호흡은 '배로 숨 쉬는 게' 아니에요. 폐 아래부터 부풀어 횡격막이 내려가는 거예요.","풍선이 아래서부터 차오르듯, 폐도 아래부터 채웁니다. 그래서 배가 나오는 거예요.","호흡 경로를 상상하세요 — 코 → 뒷통수 → 등 → 아랫배."],"guide":["풍선으로 팽창 방향 시연.","뒷통수(연구개) 지나는 느낌이 고음의 열쇠라고 예고만."]},{"phase":"실습","min":"25~50","title":"실습 4 — 복식호흡 체험","say":["눈을 크게 뜨고, 아주 높은 곳으로 적은 양의 공기를 천천히 들이마셔요.","뒷통수로 공기가 지나간다 상상하고… 최대한 채운 뒤 잠깐 참고… '스' 소리로 가늘고 길게 내뱉어요."],"guide":["흉부가 먼저 올라오는 사람 교정 — 아랫배·등·옆구리 순서로.","거울 보며 어깨 들리지 않게.","'스' 길이 측정해 동기부여(다음에 늘려보기)."]},{"phase":"정리","min":"50~60","title":"정리 + 예고","say":["복식호흡은 폐 아래부터, 횡격막을 내리는 호흡이에요.","다음 주엔 이걸 몸에 붙이는 교정 실습을 합니다."],"guide":["과제: 하루 2회 '스' 호흡 10세트."]}]},"6주":{"title":"호흡 2 — 복식호흡 교정 실습","goal":"흉식 습관을 교정하고 안정적인 호흡 지지를 만든다.","materials":"매트(누워서 실습), 거울","blocks":[{"phase":"도입","min":"0~5","title":"지난 주 연결","say":["지난 주 원리를 배웠으니, 오늘은 몸에 붙입니다."],"guide":["'스' 호흡 과제 함께 1세트."]},{"phase":"이론","min":"5~25","title":"흉식 습관이 생기는 이유","say":["우리는 평소 짧고 얕게, 가슴으로 숨 쉬어요. 긴장하면 더 그래요.","호흡이 얕으면 성대 마찰이 불균일해지고 소리가 흔들립니다."],"guide":["긴장-얕은 호흡-목소리 흔들림의 연결을 설명(다미주 예고 없이 쉽게)."]},{"phase":"실습","min":"25~50","title":"누워서 → 앉아서 → 서서 단계 교정","say":["먼저 누워서 배에 손을 얹고 호흡해요. 누우면 자연스럽게 복식이 됩니다.","그 느낌 그대로 앉아서, 다음엔 서서 — 흉부가 먼저 안 올라오게."],"guide":["누운 자세에서 복부 상승 확인 → 앉기 → 서기 3단계.","과긴장자는 한숨 내쉬기로 이완 먼저.","짝 점검: 서로 어깨 들리는지 봐주기."]},{"phase":"정리","min":"50~60","title":"정리 + 예고","say":["호흡이 안정되면 소리의 바닥이 단단해져요.","다음 주부터 그 호흡 위에 '발성'을 올립니다."],"guide":["과제: 자기 전 누워서 복식호흡 3분."]}]},"7주":{"title":"발성 1 — 성대 근력과 3대 체크포인트","goal":"성대를 근육으로 훈련하는 개념과 마찰율·호흡량·압력의 의미를 안다.","materials":"스케일 반주(피아노/앱), 측정 기록지","blocks":[{"phase":"도입","min":"0~5","title":"지난 주 연결","say":["호흡이라는 연료가 준비됐으니, 오늘은 엔진 — 성대를 훈련해요."],"guide":["복식호흡 과제 점검."]},{"phase":"이론","min":"5~25","title":"3대 체크포인트","say":["우리는 세 가지를 봅니다 — 성대 마찰율, 호흡량, 근육 압력.","마찰율은 성대가 닿는 정도, 호흡량은 연료, 압력은 힘의 균형이에요.","이 셋의 균형이 좋은 소리를 만듭니다."],"guide":["세 지표를 일상 비유로(마찰=악수 세기, 호흡=연료통, 압력=물 호스).","오늘은 '내 현재 상태'를 기록하는 첫 측정일."]},{"phase":"실습","min":"25~50","title":"음성 측정 1 — 스케일과 자가 기록","say":["편한 저음부터 스케일을 올려봅니다. 어디서 힘들어지는지 느껴보세요.","기록지에 가장 편한 음, 힘들어지는 음, 호흡이 부족해지는 지점을 적어요."],"guide":["데이터 수집 1: 음역·마찰감·호흡 지속을 기록(추후 비교용).","무리한 고음 강요 금지 — '편한 한계'까지만.","개인별 베이스라인을 남긴다."]},{"phase":"정리","min":"50~60","title":"정리 + 예고","say":["오늘 내 목소리의 출발점을 기록했어요. 16주 뒤 비교할 겁니다.","다음 주엔 음역대를 넓히는 스케일 훈련이에요."],"guide":["과제: 기록지 기준으로 편한 음역 스케일 매일 5분."]}]},"8주":{"title":"발성 2 — 음역대 확장 스케일","goal":"저음~고음 스케일로 성대 운동 범위를 넓히고 음역을 인식한다.","materials":"스케일 반주, 기록지","blocks":[{"phase":"도입","min":"0~5","title":"지난 주 연결","say":["지난 주 출발점을 찍었으니, 오늘은 범위를 넓혀봅니다."],"guide":["측정 기록지 지참 확인."]},{"phase":"이론","min":"5~25","title":"음역은 어떻게 넓어지는가","say":["저음과 고음을 자주 오가면 성대 근육의 수축·이완 범위가 넓어져요.","고음은 성대를 '늘리는' 거예요. 늘리는 근육을 쓰는 연습이 필요해요."],"guide":["가성 활용 설명: 가성은 성대를 이완시켜 고음 통로를 연다.","무리한 힘 대신 점진적 확장 원칙."]},{"phase":"실습","min":"25~50","title":"스케일 확장 훈련","say":["편한 음에서 시작해 반음씩 올리고 내려요. 한 번도 안 가본 고음까지 살짝 건드려봅니다.","고음은 가성으로 가볍게 — 힘주지 말고 풀어서."],"guide":["고음에서 삑사리 나와도 OK — 다음 단계(음이탈) 예고.","조이는 사람은 가성으로 전환.","즐겁게, 경쟁 아님."]},{"phase":"정리","min":"50~60","title":"2단계 마무리 + 예고","say":["2단계(호흡·발성)를 마쳤어요. 이제 가장 중요한 3단계 — 음이탈과 마음으로 갑니다.","다음 주, '삑사리'에 대한 생각이 완전히 바뀔 거예요."],"guide":["과제: 고음 가성 스케일 매일."]}]},"9주":{"title":"음이탈 1 — 삑사리는 창피가 아니다","goal":"음이탈에 대한 인식을 '실수'에서 '발달 신호'로 전환한다.","materials":"스케일 반주","blocks":[{"phase":"도입","min":"0~5","title":"삑사리의 기억","say":["노래방에서 삑사리 나서 창피했던 기억, 다들 있죠? 오늘 그 생각을 뒤집을 거예요."],"guide":["가벼운 경험 나눔으로 긴장 풀기."]},{"phase":"이론","min":"5~25","title":"음이탈 = 발달이 약한 지점의 신호","say":["삑사리는 호흡 압력과 성대 힘의 균형이 안 맞을 때 나요. 그 지점이 바로 성대가 약한 곳이에요.","의도적으로 그 소리를 내면, 평소 안 쓰던 근육이 깨어나 발달합니다.","그러니 삑사리는 창피한 소리가 아니라, 성장하는 소리예요."],"guide":["'고쳐야 할 실수'가 아니라 '훈련 지점'이라는 프레임 전환이 핵심.","무거운 물건을 손가락 하나 vs 손 전체로 드는 비유."]},{"phase":"실습","min":"25~50","title":"음이탈 의도적으로 내보기","say":["일부러 삑사리를 내볼게요. 사오정처럼 '아~' 하고 음을 위아래로 흔들어요.","창피해도 괜찮아요. 오히려 크게, 더 자주 나게 해보세요."],"guide":["강사가 먼저 시연(자기 삑사리를 웃으며 내기) — 안전감 결정적.","음이탈 나오면 박수·칭찬: '잘 됐어요, 그게 발달할 지점이에요.'","데이터: 각자 음이탈이 나는 음역대 기록."]},{"phase":"정리","min":"50~60","title":"정리 + 예고","say":["삑사리는 내 성장의 지도예요. 어디를 단련할지 알려주니까요.","다음 주엔 이걸 반복하면서, 그 소리에 붙은 '두려움'을 다룹니다."],"guide":["과제: 매일 의도적 음이탈 10회(즐겁게)."]}]},"10주":{"title":"음이탈 2 — 반복 노출과 방어기제 발견","goal":"반복 노출로 음이탈 두려움을 둔감화하고, 음역대별 방어 패턴을 인식한다.","materials":"스케일 반주, 심리 설문지","blocks":[{"phase":"도입","min":"0~5","title":"지난 주 연결","say":["지난 주 삑사리를 친구로 만들었죠. 오늘은 그걸 반복하면서 마음을 봅니다."],"guide":["음이탈 과제 분위기 점검."]},{"phase":"이론","min":"5~25","title":"두려움은 반복으로 사라진다","say":["무서운 걸 조금씩 자주 마주하면 두려움이 줄어들어요. 이걸 둔감화라고 해요.","사람마다 무서워하는 음역대가 달라요. 고음에서 목 조이는 사람, 큰 소리를 못 내는 사람…","그 막히는 지점에 그 사람의 마음이 숨어 있어요."],"guide":["음역대별 방어: 고음=시선 두려움, 중음=감정 차단, 저음=억눌린 분노/우울 — 개념만 소개.","'고치려' 말고 '알아차리는' 단계임을 강조."]},{"phase":"실습","min":"25~50","title":"반복 노출 + 자기 패턴 관찰","say":["내가 가장 피하고 싶은 음역대로 가볼게요. 거기서 음이탈을 반복해요.","어떤 느낌이 올라오나요? 부끄러움? 답답함? 그냥 알아차리기만 하세요."],"guide":["반복 3회 이상 — 회피하면 부드럽게 다시 권유.","올라오는 감정을 말로 표현하게(라벨링 기초).","심리 설문 1 작성(현재 감정·자기 목소리 인식).","감정이 격해지면 멈추고 호흡으로 안정."]},{"phase":"정리","min":"50~60","title":"정리 + 예고","say":["막히는 음역대에 마음이 숨어 있다는 걸 봤어요. 이게 발성심리의 시작이에요.","다음 주엔 이걸 설명해주는 심리학 이론을 만납니다."],"guide":["과제: 회피 음역대 음이탈을 감정 메모와 함께."]}]},"11주":{"title":"심리학 기초 — 몸에 새겨진 마음","goal":"근육 갑옷·말초 정서·체화된 인지로 발성과 심리의 연결을 이해한다.","materials":"슬라이드","blocks":[{"phase":"도입","min":"0~5","title":"지난 주 연결","say":["지난 주 막히는 음역대에 마음이 있다고 했죠. 오늘은 '왜 그런지' 이론으로 봅니다."],"guide":["감정 메모 과제 한두 명 공유(자발)."]},{"phase":"이론","min":"5~25","title":"세 가지 이론","say":["라이히는 억눌린 감정이 근육 긴장으로 몸에 새겨진다고 했어요 — '근육 갑옷'.","제임스-랑게는 '우니까 슬프다'고 했어요. 몸이 먼저, 감정이 따라와요.","그래서 밝은 소리를 내면 마음이 밝아져요. 체화된 인지 — 마음은 몸 전체에 있어요."],"guide":["발성 근육의 긴장 = 표현 못한 마음의 흔적, '잘못이 아니라 살아온 증거'.","PNAS 변조 음성 연구로 양방향성 재확인."]},{"phase":"실습","min":"25~50","title":"감정-소리 연결 체험","say":["슬픈 톤으로 '안녕하세요'를 해보고, 기쁜 톤으로 다시 해보세요.","톤만 바꿨는데 마음이 살짝 따라오지 않나요? 그게 핵심이에요."],"guide":["감정별 발화 → 신체·기분 변화 관찰.","억압 키워드 가진 수강생의 변화 주목.","'소리를 바꾸면 마음이 바뀐다'를 체감시킨다."]},{"phase":"정리","min":"50~60","title":"정리 + 예고","say":["몸과 마음은 하나예요. 목소리를 다루는 건 마음을 돌보는 일이에요.","다음 주엔 이 변화의 원리 — 감정전이와 소거 학습을 정리합니다."],"guide":["과제: 하루 한 번 '밝은 톤' 인사 실험."]}]},"12주":{"title":"감정전이 소개 + 소거 학습 3단계","goal":"목소리↔감정 양방향과 소거 학습 프로토콜, 감정전이 개념을 정리한다.","materials":"슬라이드","blocks":[{"phase":"도입","min":"0~5","title":"지난 주 연결","say":["몸이 마음을 바꾼다는 걸 체험했죠. 오늘은 그 변화를 '설계'하는 법의 입문이에요."],"guide":["밝은 톤 실험 소감 공유."]},{"phase":"이론","min":"5~25","title":"소거 학습 3단계 + 감정전이","say":["부끄러운 소리를 ① 일부러 반복하고(노출) ② 저항이 줄고(둔감화) ③ 그 소리를 성취·재미와 연결해요(긍정 치환).","이게 우리가 9~10주에 한 일이에요. 음이탈 훈련의 원리죠.","그리고 감정전이 — 내 목소리의 감정이 상대에게 옮아가요. 강사의 안정된 톤이 수강생을 안정시켜요."],"guide":["3단계를 9~11주 경험과 연결해 회고.","감정전이는 개념 소개 수준(마스터에서 심화) — '강사의 첫 도구는 자기 안정'."]},{"phase":"실습","min":"25~50","title":"긍정 치환 체험","say":["예전에 부끄러웠던 음이탈을 다시 내볼게요. 이번엔 '잘했다!' 하고 스스로 칭찬하며.","같은 소리인데 느낌이 다르죠? 소리에 새 감정을 입힌 거예요."],"guide":["음이탈 후 즉시 긍정 멘트·박수(재공고화 기초).","짝과 서로 칭찬 — 감정전이 체험.","3단계가 한 사이클로 도는 걸 보여준다."]},{"phase":"정리","min":"50~60","title":"3단계 마무리 + 예고","say":["3단계(음이탈·심리)를 마쳤어요. 여러분은 이제 소리와 마음의 연결을 알아요.","다음 주부터 4단계 — 이걸 '남에게' 적용하는 지도 실습입니다."],"guide":["과제: 긍정 치환 사이클 자기 적용 기록."]}]},"13주":{"title":"관찰 실습 — 타인의 목소리 읽기","goal":"타인의 음성에서 마찰·호흡·패턴을 관찰하고 기술하는 청음 역량을 기른다.","materials":"동료 음성 녹음, 관찰 기록지","blocks":[{"phase":"도입","min":"0~5","title":"지난 주 연결","say":["지금까지 '내 목소리'를 다뤘다면, 오늘부터는 '남의 목소리'를 봅니다. 강사의 첫걸음이에요."],"guide":["관찰은 판단이 아님을 먼저 못박는다."]},{"phase":"이론","min":"5~25","title":"무엇을 듣는가","say":["세 가지를 들어요 — 마찰(거친지 맑은지), 호흡(충분한지), 패턴(어디서 막히는지).","그리고 어떤 음역대를 피하는지. 거기에 그 사람의 이야기가 있어요."],"guide":["3대 체크포인트를 '듣기' 관점으로 재정리.","판단('나쁘다')이 아니라 기술('고음에서 조인다')로 표현하는 훈련."]},{"phase":"실습","min":"25~50","title":"짝 음성 관찰 + 기록","say":["짝의 '안녕하세요'와 스케일을 듣고, 기록지에 들은 그대로 적어보세요. 평가 말고 묘사로요.","'고음에서 호흡이 부족해 보임' 같은 식으로요."],"guide":["데이터: 동료 음성 녹음·관찰 기록.","좋은 점 먼저 찾기 규칙.","강사는 묘사 언어를 교정해준다."]},{"phase":"정리","min":"50~60","title":"정리 + 예고","say":["듣는 귀가 강사의 핵심 도구예요. 판단 대신 묘사하는 법을 익혔어요.","다음 주엔 들은 걸 바탕으로 '돕는' 지도 기술을 배웁니다."],"guide":["과제: 가족·친구 목소리 1명 관찰 기록."]}]},"14주":{"title":"지도 실습 — 긍정 치환 대화법","goal":"음이탈을 안전하게 유도하고 긍정 치환 언어로 보조 지도하는 법을 익힌다.","materials":"스케일 반주, 대화법 카드","blocks":[{"phase":"도입","min":"0~5","title":"지난 주 연결","say":["듣는 법을 배웠으니, 오늘은 '말하는 법' — 어떻게 도울지를 배워요."],"guide":["관찰 과제 공유."]},{"phase":"이론","min":"5~25","title":"돕는 언어의 원칙","say":["첫째, 받아들임이 먼저예요 — '틀린 소리도 괜찮아요'.","둘째, 음이탈이 나면 칭찬해요 — '잘 됐어요, 그게 발달 지점이에요'.","셋째, 작은 성공을 짚어줘요 — 그게 자신감을 키워요."],"guide":["로저스 UPR·반두라 자기효능감을 쉬운 말로(이론명 가볍게).","금지 언어: '틀렸어요', '안 돼요' → 대체 표현 카드."]},{"phase":"실습","min":"25~50","title":"짝 보조 지도 롤플레이","say":["짝에게 음이탈을 안전하게 유도해보세요. 강사가 되는 거예요.","상대가 부끄러워하면 어떻게 말해줄까요? 카드를 참고하세요."],"guide":["역할 교대 — 지도자/수강생 둘 다 경험.","강사는 돌며 언어를 코칭(부정 표현 즉시 교정).","잘한 멘트는 전체에 공유."]},{"phase":"정리","min":"50~60","title":"정리 + 예고","say":["받아들이고, 칭찬하고, 작은 성공을 짚는다 — 이게 터칭보이스 지도의 핵심이에요.","다음 주엔 검정을 준비하고 첫 케이스 보고서를 씁니다."],"guide":["과제: 긍정 치환 멘트 5개 직접 작성."]}]},"15주":{"title":"검정 준비 — 필기 모의 + 케이스 보고서","goal":"이론 필기를 점검하고 케이스 보고서 1건을 작성한다.","materials":"모의 문제지, 케이스 보고서 양식","blocks":[{"phase":"도입","min":"0~5","title":"검정 안내","say":["다음 주가 검정이에요. 오늘은 점검하고, 케이스 보고서를 완성합니다."],"guide":["검정 구성 안내: 필기 70점↑, 실습, 케이스 보고서, 출석 80%↑."]},{"phase":"이론","min":"5~25","title":"필기 모의 + 오답 점검","say":["핵심만 짚을게요 — 3층 모델, 하부 근육 개념, 소거 학습 3단계, 음역대별 방어.","모의 문제를 풀고 바로 맞춰봅니다."],"guide":["객관식 위주 모의 20문항.","자주 틀리는 개념 즉시 보충.","단답: 성대=진동+마찰, 소거 3단계 등."]},{"phase":"실습","min":"25~50","title":"케이스 보고서 작성","say":["지금까지 만난 사람(짝/가족) 중 한 명을 골라, 관찰-지도-변화를 보고서로 써보세요.","들은 것, 도운 것, 달라진 것 — 묘사 언어로요."],"guide":["양식: 대상 / 음성 특성 / 언어환경 / 지도 접근 / 변화·소감.","SOAP 형식 가볍게 안내.","강사는 1:1로 피드백."]},{"phase":"정리","min":"50~60","title":"정리 + 예고","say":["보고서 초안이 나왔어요. 다음 주 검정에서 마무리합니다.","마지막 주, 그동안의 성장을 나누고 검정을 봐요."],"guide":["과제: 케이스 보고서 완성, 필기 복습."]}]},"16주":{"title":"수료·검정 — 성장의 확인","goal":"2급 검정을 시행하고 16주의 성장을 함께 확인하며 마무리한다.","materials":"검정지, 최종 녹음 장비, 수료증","blocks":[{"phase":"도입","min":"0~5","title":"여정의 마지막","say":["16주 전 처음 목소리를 녹음하던 날 기억나죠? 오늘 그때와 비교해봅니다."],"guide":["1주차 녹음본 준비.","따뜻한 분위기 — 평가가 아니라 축하의 자리."]},{"phase":"이론","min":"5~25","title":"이론 필기 검정","say":["배운 걸 차분히 확인하는 시간이에요. 아는 만큼 편하게 적어요."],"guide":["필기 검정 시행(객관식 40+단답 10, 70점↑).","시간 관리 안내."]},{"phase":"실습","min":"25~50","title":"최종 음성 녹음 + 전후 비교","say":["'안녕하세요, OOO입니다'를 다시 녹음하고, 1주차와 나란히 들어봐요.","무엇이 달라졌나요? 소리도, 마음도요."],"guide":["데이터: 최종 음성 녹음(베이스라인 대비).","전후 비교로 성장 시각화 — 자기효능감 마무리.","한 명씩 소감·서로 축하."]},{"phase":"정리","min":"50~60","title":"수료 + 다음 단계","say":["여러분은 이제 자기 목소리를 사랑하는 법을 알아요. 그리고 남을 도울 첫 도구를 가졌어요.","2급은 시작이에요. 더 깊이 가고 싶다면 1급에서 만나요."],"guide":["수료증 수여.","1급 과정(조직 심화·1:1 지도) 안내.","케이스 보고서 최종 회수."]}]}};
+const L1 = {"1주":{"title":"조직 1 — 성대는 5층, 진동하는 건 바깥 두 층","goal":"성대 5층 구조와 점막파(Mucosal Wave) 원리를 이해하고, 1급의 깊이를 안내한다.","materials":"성대 단면 슬라이드/영상, 연꽃·수면 이미지, 측정 기록지","blocks":[{"phase":"도입","min":"0~5","title":"2급에서 1급으로 — 깊이의 전환","say":["2급에서 우리는 성대를 '근육'으로 봤어요. 운동시키면 발달한다고요.","1급에서는 한 걸음 더 들어갑니다. 그 근육을 덮고 있는 '점막', 그리고 그 안의 세포까지요.","왜 어떤 사람은 회복되고 어떤 사람은 안 되는지 — 그 답이 여기 있어요."],"guide":["1급 수강생은 이미 2급 수료자임을 전제. 복습보다 '깊이의 전환'을 강조.","24주 로드맵 안내: 1~6주 조직, 7~12주 공명·텍스쳐, 13~18주 심리·케이스, 19~24주 데이터·검정."]},{"phase":"이론","min":"5~25","title":"5층 구조와 점막파","say":["성대를 단면으로 자르면 5층이에요 — 상피, 라이네케 공간, 천층, 심층, 그리고 근육.","놀라운 건, 소리 낼 때 진동하는 건 성대 '전체'가 아니라 바깥 두 층뿐이에요.","연못을 떠올려보세요. 바닥(근육)은 고정돼 있고, 수면(점막)만 물결치죠. 그게 점막파예요.","이 물결이 클수록 풍부한 배음이 나고, 규칙적일수록 목소리가 맑아요."],"guide":["5층을 슬라이드로 하나씩. 이름 암기보다 '바깥 두 층만 진동'이 핵심.","연꽃잎/수면 이미지로 점막파 시각화.","점막파 진폭↑ = F3~F5 배음↑, 규칙성↑ = HNR↑(맑기) 연결. 다음 주들의 예고."]},{"phase":"실습","min":"25~50","title":"점막파 체감 + 2급 대비 자기 진단","say":["가볍게 '음~' 허밍을 길게 내면서, 입술과 얼굴 앞쪽의 미세한 진동을 느껴보세요. 그게 점막파의 신호예요.","이제 거칠게도 내보고, 맑게도 내봅니다. 거칠 땐 물결이 불규칙한 거예요.","2급 때 기록한 내 음역과 비교해볼게요. 무엇이 달라졌나요?"],"guide":["허밍으로 점막파를 '느끼게' — 정밀 측정 아님, 감각 깨우기.","거친 소리/맑은 소리 대비로 점막파 규칙성 체감.","측정 1: 2급 베이스라인과 비교해 음역·맑기 자가 기록(1급 시작점)."]},{"phase":"정리","min":"50~60","title":"정리 + 예고","say":["성대는 5층이고, 진동하는 건 바깥 두 층 — 라이네케 공간이 핵심이에요.","다음 주엔 그 라이네케 공간이 '왜 공간인지', 나이 들수록 왜 목소리가 변하는지 봅니다."],"guide":["과제: 맑은 허밍 매일 3분, 점막파 감각 익히기.","측정 기록지 보관."]}]},"2주":{"title":"조직 2 — 라이네케 공간, 어린아이 목소리의 비밀","goal":"라이네케 공간이 '잠재적 공간'임을 이해하고, 나이·탄성과 목소리 변화를 연결한다.","materials":"라이네케 공간 다이어그램, 연령별 목소리 비교 음원","blocks":[{"phase":"도입","min":"0~5","title":"지난 주 연결","say":["지난 주 진동하는 건 바깥 두 층이라고 했죠. 그 두 층 사이 '라이네케 공간'이 오늘 주인공이에요."],"guide":["허밍 과제 함께 1회로 점막파 감각 복기."]},{"phase":"이론","min":"5~25","title":"왜 '공간'인가 + Seth Riggs 재해석","say":["라이네케 공간은 평소엔 거의 비어 있어요. 그래서 '잠재적 공간'이라고 불러요.","여기에 히알루론산과 체액이 차면, 젤리처럼 탱탱해지면서 점막파가 크고 부드러워져요.","어린아이는 이 공간이 탄성으로 가득해요. 그래서 생동감 있는 소리가 나죠.","2급에서 배운 Seth Riggs의 '어린아이 소리로 돌아가기' — 그게 바로 이 공간의 탄성을 회복하는 거예요."],"guide":["'잠재적 공간' 개념을 풍선/스펀지 비유로.","연령별 목소리 음원 비교(아이·성인·노인) → 탄성 변화 체감.","모든 주요 성대 병변(결절·폴립·부종)이 이 공간에서 생긴다는 점도 짚기."]},{"phase":"실습","min":"25~50","title":"탄성 있는 소리 vs 마른 소리 탐색","say":["물을 한 모금 마시고, 충분히 수분이 도는 상태에서 '아~'를 내보세요. 부드럽게 울리죠.","이번엔 일부러 힘을 줘 마르고 눌린 소리를 내봅니다. 차이가 느껴지나요?","우리가 목표하는 건 첫 번째 — 라이네케가 탄성 있게 작동하는 소리예요."],"guide":["수분 전후 비교로 라이네케 수화 상태를 간접 체감.","마른/눌린 소리를 '나쁜 게 아니라 신호'로 설명(2급 받아들임 태도 유지).","고강도 음성사용자(교사·강연자)의 건조 문제 미리 언급."]},{"phase":"정리","min":"50~60","title":"정리 + 예고","say":["라이네케 공간의 탄성이 좋은 목소리의 바탕이에요. 어린아이 소리는 그 탄성의 다른 이름이고요.","다음 주엔 그 탄성을 만드는 물질 — 히알루론산을 직접 다룹니다."],"guide":["과제: 하루 물 섭취 기록 + 발성 컨디션 메모(수분-목소리 연결 관찰)."]}]},"3주":{"title":"조직 3 — 히알루론산, 생성·분해·반감기","goal":"HA의 작동 원리(1000배 수분 보유·반감기 1~3일)와 일상 관리의 직접 연결을 이해한다.","materials":"HA 모형/그래픽, 수분·수면 관리 체크리스트","blocks":[{"phase":"도입","min":"0~5","title":"지난 주 연결","say":["지난 주 라이네케 공간의 탄성을 봤죠. 그 탄성을 만드는 물질이 오늘의 주인공, 히알루론산이에요."],"guide":["물 섭취 과제 한두 명 공유 — 수분과 컨디션의 상관 끌어내기."]},{"phase":"이론","min":"5~25","title":"HA — 1000배의 물, 그리고 1~3일","say":["히알루론산은 자기 무게의 1000배 물을 끌어당겨요. 1g이 6L의 물을 머금어요.","이게 풍부하면 공간이 탱탱하고, 부족하면 딱딱해지면서 소리가 거칠어져요.","중요한 건 반감기 — 1~3일이에요. 그래서 어제 못 잤거나 물을 안 마시면 오늘 목소리가 바로 티가 나요.","HA는 라이네케 공간의 섬유아세포가 만들어요. 이 세포는 적절한 진동 자극에 반응해서 더 만들어내요."],"guide":["HA의 수분 보유를 시각 그래픽으로.","반감기 1~3일 = '목소리는 매일 새로 관리해야 하는 생물'이라는 메시지.","섬유아세포-진동 자극-HA 생산의 연결(다음 주 세포 예고)."]},{"phase":"실습","min":"25~50","title":"컨디션 로그 설계 + 발성 비교","say":["오늘부터 쓸 '목소리 컨디션 로그'를 함께 만들어요 — 수면, 수분, 스트레스, 그날 목소리.","지금 각자의 컨디션을 적고, '아~'를 내서 오늘 상태를 기록해봅니다.","일주일 뒤 패턴이 보일 거예요. 잘 잔 날과 못 잔 날의 목소리가 다르다는 걸요."],"guide":["컨디션 로그 양식 배부(수면·수분·스트레스·발성감 4항목).","오늘 발성 샘플 기록 — HA 관리 효과를 추적하는 출발점.","고강도 음성사용자 지도 시 이 로그가 핵심 도구임을 강조."]},{"phase":"정리","min":"50~60","title":"정리 + 예고","say":["히알루론산은 매일 새로 채워지는 물주머니예요. 수분·수면·자극이 그걸 결정해요.","다음 주엔 그 HA를 만드는 세포 — 섬유아세포와 기계적 자극의 비밀을 봅니다."],"guide":["과제: 컨디션 로그 매일 작성."]}]},"4주":{"title":"조직 4 — 섬유아세포와 기계적 자극","goal":"기계적 자극이 세포의 HA 생산을 바꾼다는 mechanotransduction의 기초를 이해한다.","materials":"자극→세포→HA 흐름 슬라이드, 컨디션 로그(과제)","blocks":[{"phase":"도입","min":"0~5","title":"지난 주 연결","say":["지난 주 HA를 섬유아세포가 만든다고 했죠. 오늘은 '어떻게 더 만들게 하는지'예요. 훈련의 분자적 근거예요."],"guide":["컨디션 로그 패턴 한두 명 공유 — 수면/수분과 목소리 연결 확인."]},{"phase":"이론","min":"5~25","title":"세포는 '흔들림'을 듣는다","say":["섬유아세포는 신기하게도 기계적 자극 — 즉 진동을 느껴요. 적절히 흔들어주면 HA를 더 만들어요.","발성을 안 하고 오래 두면 이 세포 활동이 줄고 점막이 위축돼요. 안 쓰면 퇴화하는 거죠.","그래서 '적절한 발성 훈련'은 단순 근육 운동이 아니라, 조직을 살리는 자극이에요.","단, 너무 세게 너무 자주면 반대로 손상돼요. 그 경계는 마스터 과정에서 깊이 다룹니다."],"guide":["mechanotransduction을 '세포가 흔들림을 듣는다'로 쉽게.","적정 자극=강화, 과자극=손상. 경계의 존재만 인지(상세는 마스터).","2급 음이탈 훈련이 사실은 이 세포 자극이었음을 회고적으로 연결."]},{"phase":"실습","min":"25~50","title":"적정 자극 발성 + 회복 감각","say":["가벼운 립트릴(입술 떨기)과 허밍으로 성대를 부드럽게 '흔들어'줄게요. 이게 적정 자극이에요.","무리한 고음이 아니라, 편안한 범위에서 규칙적으로. 세포가 좋아하는 자극이에요.","끝나고 목이 따뜻하고 편안하면 좋은 자극, 칼칼하고 아프면 과자극이에요. 그 감각을 익혀요."],"guide":["립트릴·허밍으로 '적정 자극' 감각 훈련.","끝난 뒤 자기 목 상태를 체크하게(따뜻함=강화 / 통증=과자극).","회복 감각을 아는 것이 1급 지도자의 핵심 안전 역량."]},{"phase":"정리","min":"50~60","title":"정리 + 예고","say":["세포는 흔들림을 듣고, 적절한 자극에 HA로 답해요. 훈련이 조직을 살린다는 뜻이에요.","다음 주부터는 측정으로 들어갑니다 — 포먼트, 내 목소리를 숫자로 보는 법이에요."],"guide":["과제: 립트릴·허밍 적정 자극 매일 + 컨디션 로그 계속."]}]},"5주":{"title":"측정 1 — 포먼트 F1~F5, 목소리를 숫자로","goal":"포먼트의 개념과 모음 공간을 이해하고, 자기 목소리의 공명 특성을 인식한다.","materials":"스펙트로그램 앱(또는 데모 영상), 모음 차트","blocks":[{"phase":"도입","min":"0~5","title":"왜 측정하는가","say":["지금까지 '느낌'으로 다뤘다면, 1급부터는 '숫자'로도 봅니다. 데이터가 지도를 객관적으로 만들어요."],"guide":["측정은 평가가 아니라 '관찰의 도구'임을 강조(2급 무판단 태도 유지)."]},{"phase":"이론","min":"5~25","title":"포먼트란 무엇인가","say":["목소리에는 여러 주파수가 겹쳐 있어요. 그중 특별히 강한 봉우리들을 포먼트라고 해요.","F1은 혀의 높이, F2는 혀의 앞뒤 위치와 관련돼요. 이 둘로 모음이 결정돼요.","F3 이상은 음색의 고유성 — 그 사람만의 색깔이에요.","같은 '아'라도 사람마다 포먼트가 달라요. 목소리의 지문 같은 거예요."],"guide":["스펙트로그램에서 포먼트 봉우리를 시각적으로 보여주기.","F1=턱 벌림, F2=혀 전후로 모음 차트 설명.","F3↑ = 개성·텍스쳐의 영역(6주차 텍스쳐 예고)."]},{"phase":"실습","min":"25~50","title":"모음 발성 + 포먼트 관찰","say":["'이-에-아-오-우'를 천천히 내면서, 입 모양과 혀 위치가 어떻게 바뀌는지 느껴보세요.","앱으로 보면 봉우리가 움직여요. '이'에서 '아'로 갈 때 F1이 올라가죠.","내 목소리의 포먼트를 처음으로 '봤어요'. 이게 데이터 지도의 시작이에요."],"guide":["스펙트로그램 앱 시연(없으면 데모 영상).","모음별 포먼트 이동 관찰 — 정확한 수치보다 '변화'를 보는 눈.","측정 데이터 기록(추후 케이스 분석 자료)."]},{"phase":"정리","min":"50~60","title":"정리 + 예고","say":["포먼트는 목소리의 지문이에요. F1·F2는 모음, F3 이상은 개성이고요.","다음 주엔 맑기와 거칠기를 숫자로 보는 HNR·Jitter·Shimmer를 배웁니다."],"guide":["과제: 앱으로 자기 모음 5개 포먼트 캡처해오기."]}]},"6주":{"title":"측정 2 — HNR·Jitter·Shimmer, 맑기와 떨림","goal":"HNR·Jitter·Shimmer의 의미를 이해하고 음성 변화를 지표로 해석한다.","materials":"스펙트로그램 앱, 측정 기록지(전후 비교)","blocks":[{"phase":"도입","min":"0~5","title":"지난 주 연결","say":["지난 주 포먼트로 '음색'을 봤다면, 오늘은 '맑기와 안정성'을 숫자로 봅니다."],"guide":["포먼트 캡처 과제 한두 명 공유."]},{"phase":"이론","min":"5~25","title":"세 가지 안정성 지표","say":["HNR은 배음 대 잡음 비율 — 목소리의 맑기예요. 높을수록 맑고, 스트레스나 우울하면 떨어져요.","Jitter는 주파수 떨림, Shimmer는 진폭 떨림이에요. 둘 다 클수록 불안정해요.","라이네케 공간이 불규칙하거나 결절이 있으면 이 수치가 올라가요.","즉, 우리가 2~4주에 배운 조직 상태가 이 숫자에 그대로 나타나요."],"guide":["HNR=맑기, Jitter/Shimmer=떨림으로 단순화.","조직(라이네케·HA) 상태 → 음향 지표로 연결(1단계 종합).","심리 상태(스트레스)도 HNR에 반영됨 → 심리-조직-음향의 삼각 연결 예고."]},{"phase":"실습","min":"25~50","title":"전후 측정 + 1단계 종합 분석","say":["1주차에 기록한 내 목소리와 오늘을 나란히 측정해볼게요. HNR이 올라갔나요?","허밍·립트릴로 5분 워밍업한 전후도 비교해봅니다. 워밍업이 숫자를 바꾸는 걸 직접 봐요.","6주 동안 배운 조직 이론이 이 숫자들로 다 연결돼요 — 5층, 라이네케, HA, 세포, 포먼트, 안정성."],"guide":["측정 2: 1주차 대비 + 워밍업 전후 HNR/Jitter 비교.","수치 변화를 조직 이론으로 해석하게(예: '워밍업으로 라이네케 수화 → HNR↑').","1단계 전체를 하나의 그림으로 정리."]},{"phase":"정리","min":"50~60","title":"1단계 마무리 + 예고","say":["조직을 이해하고, 그걸 숫자로 읽는 눈을 얻었어요. 이게 1급 지도자의 토대예요.","다음 주부터 2단계 — 공명과 텍스쳐로, 음색을 '설계'하는 훈련에 들어갑니다."],"guide":["과제: 컨디션 로그 + 주 3회 워밍업 전후 HNR 기록."]}]},"7주":{"title":"공명 1 — 구개근 활성화와 전방 명료","goal":"구개범거근으로 비강을 조절해 소리를 앞으로 모으고 명료도를 높인다.","materials":"거울, 스펙트로그램 앱, 빨대(공명 감각용)","ref":[1,5],"blocks":[{"phase":"도입","min":"0~5","title":"1단계에서 2단계로","say":["1단계에서 조직을 이해하고 숫자로 읽는 눈을 얻었죠. 이제 그 위에 '음색을 설계'하는 단계예요.","공명은 같은 음원을 완전히 다른 색으로 바꿔요. 오늘은 그 첫 번째 — 앞으로 모으는 소리예요."],"guide":["1단계 측정 데이터 지참 확인.","2단계 로드맵: 공명→텍스쳐→장르 순으로 음색 설계."]},{"phase":"이론","min":"5~25","title":"구개범거근과 명료도","say":["구개범거근은 연구개를 들어 비강을 닫아요. 그러면 소리가 코로 새지 않고 입 앞쪽에 모여요.","앞으로 모인 소리는 또렷하고 멀리 가요. 1~3kHz 배음이 선명해지죠 [R1].","비음이 많아 답답한 소리, 반대로 너무 닫혀 먹먹한 소리 — 둘 다 이 근육 조절로 풀어요."],"guide":["연구개 거상을 거울로 시연(하품 시작점).","비강 공명 vs 구강 공명 소리 비교 들려주기.","스펙트럼에서 1~3kHz 변화 관찰(데이터 연결)."]},{"phase":"실습","min":"25~50","title":"전방 명료 공명 찾기","say":["'미-니-미-니'를 입술 앞에서 울리게 해보세요. 앞니 뒤가 울리는 느낌이요.","이번엔 '응~'에서 '아~'로 전환하면서 그 울림을 앞에 유지해봅니다.","빨대를 물고 '우~' 해보세요. 소리가 한 점으로 모이는 게 공명의 핵심이에요 [R5]."],"guide":["'미니' 비음 활용으로 전방 공명 유도.","ng→모음 전환으로 ring 유지 훈련.","SOVT(빨대 발성)로 공명 집중 감각 — 성대 부담 적고 효율적 [R5].","비음 과한 사람은 구개 더 들기, 먹먹한 사람은 앞으로."]},{"phase":"정리","min":"50~60","title":"정리 + 예고","say":["소리를 앞으로 모으면 또렷해지고 멀리 가요. 명료도는 구개근에서 시작돼요.","다음 주엔 반대로 — 인두강을 넓혀 따뜻하고 둥근 소리를 만듭니다."],"guide":["과제: 빨대 발성 5분 + '미니' 전방 공명 매일."]}]},"8주":{"title":"공명 2 — 인두강 확장과 따뜻한 돔","goal":"중인두수축근 이완으로 인두강을 넓혀 따뜻하고 둥근 음색을 만든다.","materials":"거울, 스펙트로그램 앱","ref":[1,6],"blocks":[{"phase":"도입","min":"0~5","title":"지난 주 연결","say":["지난 주 소리를 앞으로 모았다면, 오늘은 공간을 넓혀 깊이를 더해요. 둘 다 가져야 완성돼요."],"guide":["전방 공명 과제 함께 1회."]},{"phase":"이론","min":"5~25","title":"중인두수축근과 음색 온도","say":["중인두수축근이 이완되면 인두강이 넓어져요. 그러면 800~1200Hz 중음이 풍부해지고 소리가 따뜻해져요.","성악에서 말하는 '인두강 확장'이 이거예요. 둥글고 감싸는 소리죠.","과하게 수축하면 목 조이는 소리, 충분히 이완하면 돔처럼 둥근 소리 — 이 슬라이더를 다루는 거예요."],"guide":["하품 직전 목 안 넓어지는 느낌 = 인두강 확장.","따뜻한 소리(이완) vs 조인 소리(수축) 대비 시연.","R&B·발라드 안정 구간의 따뜻함이 여기서 나옴(장르 예고)."]},{"phase":"실습","min":"25~50","title":"돔형 공명 만들기","say":["하품을 시작하듯 목 안을 넓히고 '어~'를 내보세요. 둥글고 깊은 공간을 느껴요.","'오~'로 바꿔도 그 공간을 유지해봅니다. 소리가 감싸는 느낌이 들죠.","앞서 배운 전방 명료와 섞어봅니다 — 앞으로 모으되 공간은 넓게. 그게 프로의 소리예요."],"guide":["하품-한숨으로 인두강 확장 유도.","전방 명료(7주)+돔(8주) 결합 → 밝으면서 따뜻한 균형.","조이는 사람은 'ha' 한숨으로 이완 먼저."]},{"phase":"정리","min":"50~60","title":"정리 + 예고","say":["인두강을 넓히면 따뜻하고 둥근 깊이가 생겨요. 명료함과 따뜻함의 균형이 핵심이에요.","다음 주엔 투사력 — 멀리 뻗는 광채, Singer's Formant를 만듭니다."],"guide":["과제: 하품-한숨 돔 공명 + 전방·돔 결합 매일."]}]},"9주":{"title":"공명 3 — Singer's Formant와 트왱 투사","goal":"상인두수축근·아리에피글로틱 협착으로 2~4kHz 광채(투사력)를 만든다.","materials":"스펙트로그램 앱, 측정 기록지","ref":[1,2,3,7],"blocks":[{"phase":"도입","min":"0~5","title":"지난 주 연결","say":["명료함, 따뜻함을 얻었으니 오늘은 '멀리 뻗는 힘'이에요. 마이크 없이도 꽂히는 소리요."],"guide":["전방·돔 결합 과제 점검."]},{"phase":"이론","min":"5~25","title":"광채는 어디서 오는가","say":["멀리 뻗는 소리에는 2~4kHz에 에너지가 모여 있어요. 이걸 Singer's Formant라고 해요 [R1].","상인두를 좁히고 아리에피글로틱 괄약근(트왱 장치)을 조이면 이 광채가 생겨요 [R2,R3].","적은 힘으로 큰 소리 — 트왱은 효율의 비밀이에요. 벨팅·뮤지컬·록의 투사가 다 여기서 나와요 [R7]."],"guide":["트왱=megaphone 모양 성도(인두 협착+넓은 입) [R2].","'쨍한' 소리 샘플로 2~4kHz 군집 들려주기.","트왱이 성대를 보호하면서 큰 소리를 낸다는 점 강조(고함과 다름)."]},{"phase":"실습","min":"25~50","title":"트왱 분리 훈련","say":["오리 소리처럼 '꽥꽥', 아기 칭얼대듯 '냥냥' 내보세요. 그 쨍한 느낌이 트왱이에요.","그 상태를 유지하며 '냥~아~'로 모음을 열어봅니다. 광채를 모음에 싣는 거예요.","멀리 있는 사람을 부르듯 '야!' 해보세요. 힘이 아니라 트왱으로요."],"guide":["트왱 단독 분리('냥/꽥')가 핵심 — 처음엔 과장되게.","트왱→모음 전환으로 ring 유지.","스펙트럼에서 2~4kHz 증가 확인(측정).","목 조임과 구분: 트왱은 좁히되 누르지 않음 [R7]."]},{"phase":"정리","min":"50~60","title":"정리 + 예고","say":["2~4kHz 광채가 투사력을 만들어요. 트왱은 적은 힘으로 큰 소리를 내는 효율의 기술이에요.","다음 주부터 이 공명들을 음역 확장과 텍스쳐로 연결합니다."],"guide":["과제: 트왱 분리 + 트왱→모음 전환 매일(과하지 않게)."]}]},"10주":{"title":"고음 훈련 — 파사지오 통합과 마찰 강화 (터칭보이스 방식)","goal":"‘가볍게 넘기는 믹스’가 아니라, 주변 근육을 발달시켜 파사지오가 압력·마찰을 견디고 통합되게 한다.","materials":"스케일 반주, 스펙트로그램 앱","ref":[1,4,8],"blocks":[{"phase":"도입","min":"0~5","title":"지난 주 연결","say":["공명을 설계했으니 그걸 더 높은 음역으로 가져갑니다. 그런데 터칭보이스의 고음은 흔히 말하는 ‘믹스보이스’와 달라요.","우리는 힘을 빼서 넘기는 게 아니라, 근육을 키워서 그 구간을 ‘견디게’ 만들어요."],"guide":["트왱 과제 점검 — 트왱이 고음 효율을 돕는다고 연결.","‘믹스=경량화’ 통념을 오늘 뒤집는다고 예고."]},{"phase":"이론","min":"5~25","title":"터칭보이스의 고음 철학 — 회피가 아니라 발달","say":["흔한 믹스보이스는 파사지오에서 두께를 덜고 가볍게 넘겨요. 부담을 ‘피하는’ 방식이죠.","터칭보이스는 반대예요. 핵심은 각 성대근·인두근의 발달과, 모든 근육이 균일하게 힘을 컨트롤하는 거예요 [R1].","그래서 파사지오에서 근육을 바꿔 회피하는 게 아니라, 주변 근육의 발달 강도를 올려서 내가 원하는 움직임이 그대로 나오게 만들어요.","가벼워지는 건 초입 단계일 뿐이에요. 훈련이 쌓이면 그 구간이 더 큰 압력과 마찰을 견디고 ‘통합’돼요 [R4].","최종 단계에선 성대 하부가 직접 마찰하면서, 하이노트에서 강력한 마찰음 — 마이클 잭슨, 마이클 볼튼 같은 소리까지 나와요 [R8]."],"guide":["‘믹스(경량화·회피)’ vs ‘터칭보이스(발달·통합·강화)’ 대비를 명확히.","3단계 로드맵 제시: ①초입=가볍게 통과 ②중급=압력·마찰 점증 ③상급=하부 직접 마찰로 통합.","근육 균일 컨트롤이 본질 — 특정 근육에 의존하거나 회피하지 않음 [R1].","상급(MJ·볼튼 마찰 하이노트)은 강도가 올라가며 도달하는 목표이자 마스터 텍스쳐 트랙으로 이어짐 [R8]."]},{"phase":"실습","min":"25~50","title":"파사지오 통합 — 초입에서 강화로","say":["먼저 초입 단계예요. ‘이’ 가성 사이렌으로 파사지오를 가볍게 여러 번 통과해요. 길을 내는 거예요.","길이 났으면 강도를 올려요. 같은 구간을 조금 더 단단한 폐쇄로, 조금 더 압력을 실어 통과해봅니다.","트왱을 더해 마찰을 살려요. 파사지오에서 끊지 말고, 그 구간이 압력을 ‘견디게’ 두세요 [R8].","오늘은 견디는 감각까지가 목표예요. 강력한 마찰 하이노트는 앞으로 매주 기본 훈련으로 쌓아갑니다."],"guide":["①가성 사이렌으로 파사지오 경로 확보(초입).","②폐쇄·압력 점증하며 같은 구간 반복(중급 진입).","③트왱으로 마찰 유지, 파사지오에서 끊지 않기.","무리한 벨팅 강요 금지 — ‘견디는 감각’까지. 강도는 매주 점진적으로.","측정: 파사지오 구간 HNR·음압 변화 기록(통합 진행도).","★강사 안내: 강력 마찰 하이노트(MJ·볼튼)는 이후 주차에서 기본 발성훈련으로 지속 — 근육 발달이 누적돼야 도달."]},{"phase":"정리","min":"50~60","title":"정리 + 예고","say":["터칭보이스 고음은 회피가 아니라 발달이에요. 파사지오를 강하게 만들어 압력과 마찰을 통합해요.","이 통합 훈련은 한 번에 끝나지 않아요. 앞으로 매주 기본 발성으로 강도를 올려갈 거예요.","다음 주엔 반대 끝 — 저음을 누르지 않고 울리게 푸는 훈련이에요."],"guide":["과제: 가성 사이렌(초입)+압력 점증 통과 매일. 강도는 무리 없이 단계적으로.","이후 주차 기본 발성훈련에 ‘파사지오 마찰 통합’ 포함."]}]},"11주":{"title":"저음 이완 — TA 과수축 완화와 흉성 안정","goal":"갑상피열근 과수축을 풀어 저음을 누르지 않고 울리게 한다.","materials":"거울, 스펙트로그램 앱","ref":[1,9],"blocks":[{"phase":"도입","min":"0~5","title":"지난 주 연결","say":["고음이 신장이라면 저음은 이완이에요. 많은 사람이 저음을 '눌러서' 망쳐요. 오늘 그걸 풉니다."],"guide":["믹스 과제 점검."]},{"phase":"이론","min":"5~25","title":"저음은 누르는 게 아니라 두는 것","say":["저음은 갑상피열근이 성대를 두껍게 해서 나요. 그런데 과하게 힘주면 후두가 눌려 답답해져요.","좋은 저음은 후두를 편안히 두고, 두께는 자연스럽게, 공명으로 키워요.","눌린 저음은 음색이 탁하고 피로해요. 이완된 저음은 깊고 울려요."],"guide":["후두 눌림 vs 편안한 저음 시연.","저음 고착(2급 갑상피열근 과수축)과 연결.","우호성↑/우울 경향 수강생의 저음 눌림 패턴 주목."]},{"phase":"실습","min":"25~50","title":"이완된 저음 만들기","say":["하품하듯 후두를 편안히 내리고 '음~' 낮게 내보세요. 누르지 말고 그냥 두세요.","'부엉부엉' 부드럽게 — 저음을 공명으로 키우는 거예요.","가슴에 손을 얹고 진동을 느껴봐요. 힘이 아니라 울림이에요 [R9]."],"guide":["하품-한숨으로 후두 이완.","흉성 진동 체감(가슴 손).","누르는 사람은 음량 줄이고 이완 먼저 — 점진적.","SOVT로 저음 안정화 [R9]."]},{"phase":"정리","min":"50~60","title":"정리 + 예고","say":["저음은 누르는 게 아니라 편히 두고 울리는 거예요. 후두 이완이 깊은 저음을 만들어요.","다음 주엔 지금까지의 공명·음역을 하나로 묶는 통합 세션이에요."],"guide":["과제: 이완 저음 '부엉' + 흉성 진동 감각 매일."]}]},"12주":{"title":"통합 발성 + 장르 입문 — 음원·공명·음역을 하나로","goal":"마찰·호흡·공명·음역을 통합하고, 장르별 사운드 설계의 입구를 연다.","materials":"스케일 반주, 스펙트로그램 앱, 장르 샘플 음원","ref":[1,10,11,12],"blocks":[{"phase":"도입","min":"0~5","title":"2단계 통합","say":["7주부터 명료·따뜻함·광채·고음·저음을 따로 익혔어요. 오늘은 그걸 하나로 묶고, 장르의 문을 엽니다."],"guide":["2단계 측정 데이터 모아오기."]},{"phase":"이론","min":"5~25","title":"장르는 '설계의 조합'이다","say":["장르마다 음원·공명·발음·리듬·비브라토의 조합이 달라요. 같은 사람이 설계만 바꾸면 장르가 바뀌어요 [R10].","발라드는 비인두+성대하부로 넓게, R&B는 모음 후방화와 압축, 록은 마찰, 뮤지컬은 공명+딕션이에요 [R11,R12].","오늘은 맛보기 — 같은 한 소절을 세 장르로 바꿔봅니다."],"guide":["장르별 샘플 음원 비교 청취.","터칭보이스 장르 설계표(전문 자료실) 함께 보기.","'설계 변경=장르 변경' 개념 — 다음 케이스 단계의 기초."]},{"phase":"실습","min":"25~50","title":"한 소절 3장르 변환","say":["익숙한 한 소절을 골라요. 먼저 발라드로 — 넓고 호흡 많게, 큰 비브라토로.","이번엔 R&B로 — 모음을 'ㅡ/ㅔ'쪽으로, 작은 비브라토, 2·4에 악센트 [R11].","마지막 뮤지컬로 — 자음 또렷하게, 트왱 투사로. 같은 소절인데 다르죠?"],"guide":["한 소절을 발라드→R&B→뮤지컬로 변환 실습.","각 장르의 발음·리듬·비브라토 차이 체감.","녹음해서 비교(데이터).","아직 완성도보다 '설계 차이 인식'이 목표."]},{"phase":"정리","min":"50~60","title":"2단계 마무리 + 예고","say":["음색을 설계하고 장르로 변환하는 입구에 섰어요. 이게 프로 트레이너의 핵심 도구예요.","다음 3단계부터는 사람을 봅니다 — Big5로 진단하고, 사람마다 다르게 설계하는 케이스 작업이에요."],"guide":["과제: 한 소절 3장르 녹음 제출.","3단계 예고: Big5 데이터 분석 + 맞춤 설계."]}]},"13주":{"title":"심리 적용 1 — 애착·자기효능감으로 배경 읽기","goal":"언어환경을 애착이론으로 해석하고, 자기효능감 설계로 변화 동기를 만든다.","materials":"심리 설문지, 케이스 기록 양식","ref":[13,14],"blocks":[{"phase":"도입","min":"0~5","title":"2단계에서 3단계로","say":["지금까지 '소리'를 설계했다면, 이제 '사람'을 봅니다. 같은 발성 문제도 사람마다 뿌리가 달라요."],"guide":["3단계 로드맵: 심리 적용→Big5 설계→케이스→1:1.","2급에서 배운 신체화·방어기제를 1급에서 '적용'으로 심화."]},{"phase":"이론","min":"5~25","title":"목소리의 뿌리, 애착","say":["목소리는 언어환경에서 만들어져요. 억압적 가정에서 자란 사람은 표현을 누르는 게 몸에 배어 있죠 [R13].","이건 '잘못'이 아니라 살아남기 위한 적응이에요. 그렇게 보면 지도가 부드러워져요.","변화의 열쇠는 자기효능감 — '나도 할 수 있다'는 믿음이에요. 작은 성공을 쌓아 만들어요 [R14]."],"guide":["애착(안정/불안/회피)과 발성 패턴 연결 [R13].","회피형=저활성 발성, 불안형=과긴장 경향(경향성, 단정 금지).","자기효능감을 작은 성취 설계로 키우는 원리 [R14]."]},{"phase":"실습","min":"25~50","title":"언어환경 인터뷰 + 효능감 설계","say":["짝의 언어환경을 인터뷰해보세요. 판단 없이, '어떤 목소리를 듣고 자랐나요?'로요.","그 배경이 지금 발성과 어떻게 연결되는지 가설을 세워봅니다.","그리고 그 사람에게 줄 '첫 작은 성공'을 하나 설계해요. 무엇이면 '됐다'를 느낄까요?"],"guide":["언어환경 인터뷰(2급 심화) — 경청·반영.","배경→발성 가설 작성(케이스 기록).","달성 가능한 첫 성공 과제 설계 연습.","사례개념화의 출발 — 다음 주들로 확장."]},{"phase":"정리","min":"50~60","title":"정리 + 예고","say":["목소리의 뿌리를 읽고, 작은 성공으로 변화를 시작해요. 사람을 보는 눈이 열렸어요.","다음 주엔 무판단 수용의 기술 — 로저스의 태도를 발성 지도에 적용합니다."],"guide":["과제: 짝 언어환경 인터뷰 기록 + 효능감 과제 설계."]}]},"14주":{"title":"심리 적용 2 — 무조건적 수용과 라포·정서 조율","goal":"무조건적 긍정적 존중과 정서 조율로 변화의 안전한 그릇(라포)을 만든다.","materials":"대화법 카드, 녹음 장비","ref":[15,16],"blocks":[{"phase":"도입","min":"0~5","title":"지난 주 연결","say":["배경을 읽었으니, 오늘은 그 사람이 마음을 열게 하는 법이에요. 라포 없이는 어떤 기술도 안 통해요."],"guide":["언어환경 인터뷰 과제 공유."]},{"phase":"이론","min":"5~25","title":"받아들임이 변화를 만든다","say":["로저스는 판단 없이 있는 그대로 받아들일 때 사람이 변한다고 했어요 [R15]. '틀린 소리'라는 말부터 버려요.","음이탈도, 거친 소리도 '시도'로 환영해요. 평가가 아니라 수용이 먼저예요.","그리고 정서 조율 — 상대의 상태에 내 톤과 속도를 맞춰요. 지친 사람에겐 천천히, 낮게 [R16]."],"guide":["UPR 개념과 발성 수용 [R15].","페이싱(맞추기)→리딩(이끌기) 원리 [R16].","금지 언어 카드: '틀렸어요/안 돼요' → 대체 표현."]},{"phase":"실습","min":"25~50","title":"수용 언어 + 정서 조율 롤플레이","say":["짝이 자기 목소리를 비판하면, 그걸 부드럽게 받아내 보세요. '그 소리, 그렇게 들렸군요. 그런데 여기 좋은 게 있어요.'","상대가 긴장하면 내 목소리를 먼저 낮추고 늦춰요. 그다음 천천히 끌어올려요.","강점을 먼저 말하고 방향을 제시하는 순서를 연습해요."],"guide":["자기비판 차단 + 강점 우선 언어 롤플레이.","페이싱→리딩 실습(상대 톤에 맞췄다가 이끌기).","역할 교대.","잘한 멘트 전체 공유."]},{"phase":"정리","min":"50~60","title":"정리 + 예고","say":["받아들이고 조율할 때 사람이 열려요. 이게 1:1 지도의 바탕이에요.","다음 주엔 데이터로 사람을 읽어요 — Big5 음향 분석과 맞춤 설계입니다."],"guide":["과제: 수용 멘트 5개 작성 + 정서 조율 1회 시도 기록."]}]},"15주":{"title":"Big5 진단 — 음성 데이터로 성격 읽기","goal":"음향 지표와 설문으로 Big5 프로파일을 추정하는 사례개념화를 실습한다.","materials":"스펙트로그램 앱, Big5 간이 설문, 분석 워크시트","ref":[17,18,19],"blocks":[{"phase":"도입","min":"0~5","title":"숫자로 사람을 읽다","say":["1급의 핵심 역량이 오늘 나와요 — 데이터로 사람을 진단하고 처방하는 사례개념화예요 [R17]."],"guide":["전문 자료실 'Big5×음향' 표 함께 펼치기."]},{"phase":"이론","min":"5~25","title":"음향에 비친 성격","say":["성격은 목소리에 흔적을 남겨요. 신경성이 높으면 Jitter·Shimmer가 크고 HNR이 낮아요. 고음에서 음이탈도 잦죠 [R18].","외향성이 높으면 음압이 크고 발화가 빨라요. 개방성이 높으면 피치 변동과 배음이 풍부해요 [R19].","이건 경향이지 단정이 아니에요. 데이터로 가설을 세우고, 사람으로 확인해요."],"guide":["Big5별 음향 경향 표 설명 [R18,R19].","'경향성·확률'임을 반복 강조(낙인 금지).","음향+설문 교차로 신뢰도 높이기."]},{"phase":"실습","min":"25~50","title":"프로파일 추정 실습","say":["짝의 목소리를 측정하고(F0·HNR·Jitter·포먼트) 간이 설문도 받아요.","두 자료를 합쳐 Big5 5요인을 점수로 추정해봅니다. 워크시트에 근거와 함께요.","'왜 그렇게 봤는지'를 데이터로 설명할 수 있어야 해요 — 그게 사례개념화예요."],"guide":["음향 측정+설문 동시 수집.","5요인 점수화(근거 명시).","추정→설문 대조로 검증.","데이터: 프로파일 시트 보관(다음 주 설계 재료)."]},{"phase":"정리","min":"50~60","title":"정리 + 예고","say":["데이터로 성격을 읽는 첫 진단을 해봤어요. 다음은 이 진단으로 '처방'을 설계하는 거예요.","다음 주, Big5 유형별 맞춤 훈련 설계 실습입니다."],"guide":["과제: 프로파일 추정 시트 완성."]}]},"16주":{"title":"Big5 맞춤 설계 — 유형별 처방 작성 실습","goal":"추정한 Big5 프로파일에 따라 5요인별 맞춤 훈련을 직접 설계·발표한다.","materials":"프로파일 시트(과제), 설계 양식","ref":[17,20],"blocks":[{"phase":"도입","min":"0~5","title":"진단에서 처방으로","say":["진단했으니 이제 처방이에요. 같은 발성 문제도 성격에 따라 완전히 다르게 접근해요."],"guide":["프로파일 시트 지참 확인. 전문 자료실 'Big5 유형별 설계' 표 펼치기."]},{"phase":"이론","min":"5~25","title":"성격에 맞춘 훈련 설계 원리","say":["성실성이 높으면 체계적 루틴과 기록 과제가 잘 먹혀요. 낮으면 짧고 재미있게, 즉각 보상으로요.","개방성이 높으면 실험·즉흥을 환영하고, 낮으면 명확한 모델과 단계를 줘요.","신경성이 높으면 무엇보다 안정화가 먼저예요 — 다음 주 전용 프로토콜로 깊이 다뤄요 [R20]."],"guide":["5요인별 설계 원리 설명 [R17].","'강점 활용 + 약점 보완' 두 축.","신경성↑은 17주 프로토콜 예고."]},{"phase":"실습","min":"25~50","title":"맞춤 설계 작성 + 발표","say":["여러분이 진단한 그 사람을 위해, 5요인별 8주 훈련 계획을 써보세요.","어떤 발성 과제를, 어떤 톤으로, 어떤 순서로 줄지 — 성격에 맞춰서요.","두 명씩 발표하고 서로 피드백해요. 같은 데이터, 다른 설계가 나올 거예요."],"guide":["5요인별 처방+8주 계획 작성.","발표→상호 피드백→수퍼비전.","'정답'이 아니라 '근거 있는 설계'를 평가.","케이스 보고서 1건으로 발전."]},{"phase":"정리","min":"50~60","title":"정리 + 예고","say":["진단하고 사람마다 다르게 설계하는 — 프로 트레이너의 핵심을 해냈어요.","다음 주는 가장 중요한 하나, 신경성 40 이하로 다스리는 무대 안정 훈련이에요."],"guide":["과제: 맞춤 설계 8주 계획 완성(케이스 1건)."]}]},"17주":{"title":"신경성 관리 — N 40↓ 무대 안정 프로토콜","goal":"호흡·노출·인지 3축으로 신경성을 낮추고 40 이하로 유지하는 법을 훈련·지도한다.","materials":"타이머(호흡), 소그룹 무대 세팅, 자기대화 카드","ref":[21,22,23],"blocks":[{"phase":"도입","min":"0~5","title":"노래를 잘하려면 신경성을 다스려야 한다","say":["아무리 잘 훈련해도 무대에서 신경성이 터지면 무너져요. 오늘은 그걸 40 이하로 낮추고 유지하는 법이에요."],"guide":["전문 자료실 '신경성 40↓ 프로토콜' 펼치기.","3축(생리·노출·인지) 미리 안내."]},{"phase":"이론","min":"5~25","title":"세 개의 축","say":["첫째 생리 — 분당 6회 느린 호흡이 미주신경을 켜서 각성을 낮춰요. 특히 불안 높은 사람에게 효과가 커요 [R21].","둘째 노출 — 같은 곡을 반복해서 무대에 서면 심박도 불안도 실수도 줄어요 [R22].","셋째 인지 — '긴장=망함'을 '긴장=준비 중'으로 바꾸고 긍정 자기대화를 해요 [R23]."],"guide":["6회/분 호흡의 HRV 효과 [R21].","반복 노출 둔감화 곡선 [R22].","리프레이밍+자기대화 [R23].","세 축이 함께 작동해야 지속."]},{"phase":"실습","min":"25~50","title":"3축 통합 훈련","say":["먼저 5분, 들숨 4초 날숨 6초로 호흡해요. 심장이 차분해지는 걸 느껴봐요 [R21].","이제 소그룹 앞에서 한 곡을 불러요. 끝나면 바로 또 한 번. 회차마다 긴장이 줄죠 [R22].","부르기 전 '나는 준비됐다' 같은 문장을 정해 외워요. 그게 닻이 돼요 [R23]."],"guide":["6회/분 호흡 5분 → HRV 안정.","소그룹 반복 무대(2~3회) — 회차별 긴장 자가 기록.","긍정 자기대화 문장 만들기+앵커링.","고불안 수강생 우선 적용·관찰."]},{"phase":"정리","min":"50~60","title":"정리 + 예고","say":["호흡으로 가라앉히고, 반복으로 익숙해지고, 생각을 바꿔요. 신경성은 관리하는 특성이에요.","다음 주엔 지금까지를 묶어 1:1 지도를 시연하고 케이스를 완성합니다."],"guide":["과제: 매일 6회/분 호흡 + 자기대화 루틴, 주간 무대 노출 1회."]}]},"18주":{"title":"케이스 종합 + 1:1 시연 — 진단부터 처방까지","goal":"진단·설계·심리·신경성 관리를 묶어 1:1 지도를 시연하고 케이스를 완성한다.","materials":"케이스 보고서 양식, 녹화 장비","ref":[17,20,22],"blocks":[{"phase":"도입","min":"0~5","title":"3단계 통합","say":["배경 읽기, 데이터 진단, 맞춤 설계, 신경성 관리 — 이걸 하나의 1:1 지도로 묶는 날이에요."],"guide":["그동안의 프로파일·설계·케이스 자료 모으기."]},{"phase":"이론","min":"5~25","title":"한 사람을 위한 통합 설계","say":["사례개념화는 흐름이에요 — 본다 → 가설 → 진단 → 처방 → 점검 [R17].","발성·심리·신경성을 따로가 아니라 한 사람 안에서 엮어요. 우선순위를 정하는 게 핵심이에요 [R20].","신경성이 높으면 안정화부터, 그다음 발성 설계 — 순서가 중요해요."],"guide":["사례개념화 5단계 정리.","우선순위 설정(안전→기능→스타일).","반복 노출을 케이스에 통합 [R22]."]},{"phase":"실습","min":"25~50","title":"1:1 지도 시연 (녹화)","say":["한 명을 내담자로, 10분 1:1 지도를 시연해요. 라포→진단 확인→한 가지 처방→작은 성공까지요.","녹화하고, 끝나면 함께 봐요. 무엇이 좋았고 무엇을 놓쳤는지요.","완벽하지 않아도 괜찮아요. 흐름을 잡는 게 목표예요."],"guide":["10분 1:1 시연(라포→진단→처방→성공 확인).","녹화 후 피드백·수퍼비전.","케이스 보고서 작성(SOAP).","역할 교대로 모두 경험."]},{"phase":"정리","min":"50~60","title":"3단계 마무리 + 예고","say":["진단부터 처방까지 한 사람을 끝까지 봤어요. 이제 진짜 트레이너의 일을 할 수 있어요.","다음 4단계는 데이터를 제대로 수집하고, 검정을 준비하는 마무리예요."],"guide":["과제: 1:1 케이스 보고서 완성(3건 중 1건).","4단계 예고: 데이터 수집 윤리·측정·검정."]}]},"19주":{"title":"데이터 1 — 음성 데이터 수집 윤리와 동의","goal":"음성·심리 데이터 수집의 윤리와 동의 절차를 이해하고 실습한다.","materials":"동의서 양식, 녹음 장비","ref":[17,24],"blocks":[{"phase":"도입","min":"0~5","title":"3단계에서 4단계로","say":["사람을 진단하고 설계하는 법을 익혔으니, 이제 그 데이터를 '제대로' 모으는 법이에요. 윤리가 먼저예요."],"guide":["4단계 로드맵: 윤리→측정→연동→검정.","데이터는 신뢰 위에서만 의미 있음을 강조."]},{"phase":"이론","min":"5~25","title":"데이터를 다루는 책임","say":["음성도 심리 설문도 민감한 개인정보예요. 목적·보관·활용을 분명히 하고 동의를 받아요 [R24].","우리는 진단이 아니라 발성 지도가 목적이에요. 의료적 판단은 하지 않아요 — 이 경계를 지켜요 [R17].","수집한 데이터는 그 사람의 성장을 돕는 데만 써요. 그게 신뢰예요."],"guide":["동의서 필수 항목: 목적·범위·보관기간·파기·활용.","발성 지도 vs 의료 진단 경계 명시 [R17].","민감정보 취급 주의."]},{"phase":"실습","min":"25~50","title":"동의 절차 + 수집 롤플레이","say":["동의서를 함께 읽고, 짝에게 설명하는 연습을 해요. '이 녹음은 이렇게 쓰입니다'를 분명히요.","동의를 받고 음성 샘플과 간이 설문을 수집해봅니다. 절차를 몸에 익혀요.","불편해하면 언제든 멈출 수 있다는 것도 안내해요."],"guide":["동의서 설명 롤플레이.","수집 실습 1(절차 준수).","'중단 권리' 안내 포함.","데이터: 수집 기록 양식 작성."]},{"phase":"정리","min":"50~60","title":"정리 + 예고","say":["데이터는 동의와 책임 위에서 모아요. 신뢰가 모든 것의 바탕이에요.","다음 주엔 마찰율·호흡량을 실제로 측정하는 프로세스를 익힙니다."],"guide":["과제: 동의 절차로 음성 1건 수집."]}]},"20주":{"title":"데이터 2 — RX 주파수 × Big5 매칭 (남 ‘응급실’ / 여 ‘밤편지’)","goal":"표준곡으로 방어기제를 유발하고, RX 주파수 분석과 Big5 성격검사를 매칭해 설득력 있는 진단 레포트를 만든다.","materials":"RX(주파수 분석 도구)·스펙트로그램, 표준곡 음원(남 ‘응급실’·여 ‘밤편지’), Big5 성격검사지, 레포트 양식","ref":[1,17,18],"blocks":[{"phase":"도입","min":"0~5","title":"지난 주 연결","say":["왜 하필 녹음을 할까요? 단순히 소리를 듣기 위해서가 아니에요.","RX 주파수 분석과 Big5 성격검사를 ‘매칭’하기 위해서예요. 둘이 만나면 그 사람을 설득할 강력한 레포트가 나와요."],"guide":["수집 과제 점검.","녹음 목적 = 주파수 데이터 + 성격 데이터의 매칭 자료.","표준곡은 ‘방어기제를 끌어내는 진단 도구’임을 예고."]},{"phase":"이론","min":"5~25","title":"두 표준곡은 ‘방어기제 유발 장치’다","say":["곡 선정에는 이유가 있어요. 두 곡 다 ‘일부러 압력을 거는’ 곡이에요.","남자 ‘응급실’은 G4 정도예요. 남자가 충분히 부를 만한 음역인데, 못 부르는 사람이 많아요. 그러면 방어기제와 억제가 강해서 평균보다 음역대가 낮은 거예요 — 그 자체가 진단 데이터죠 [R18].","여자 ‘밤편지’는 보통 약한 가성으로 성대 마찰 없이 불러요. 그런데 이 곡은 성대와 인두 전체의 압력을 요구해요. ‘진성’으로 부르게 시키면, 회피하던 방어기제가 그대로 드러나요 [R18].","즉 두 곡은 노래 실력을 보는 게 아니라, 압력을 걸어 그 사람의 억제·방어 패턴을 ‘끌어내는’ 장치예요.","그 반응의 주파수(RX)가 성격검사와 만나면, 음성 데이터 ↔ 성격 ↔ 방어기제가 한 레포트로 엮여요 [R17]. 이게 상대를 설득하는 자료가 돼요."],"guide":["‘응급실’=G4, 부를 만한데 못 부름 → 억제·방어로 음역대 저하(평균 대비)를 진단 지표로.","‘밤편지’=약한 가성 회피 곡, 진성·전체 압력 요구 → 방어기제 노출 유발.","핵심: 두 곡은 ‘평가용’이 아니라 ‘방어기제 유발·관찰용’.","RX 주파수 + Big5 매칭 → 설득력 있는 레포트 [R17].","주파수 저하·마찰 회피·압력 부족이 성격(신경증·억제)과 어떻게 연결되는지 [R18]."]},{"phase":"실습","min":"25~50","title":"표준곡 녹음 → RX 분석 → Big5 매칭 → 레포트","say":["성별 표준곡을 부르게 해요. 남자는 ‘응급실’ G4 구간을, 여자는 ‘밤편지’를 진성·전체 압력으로요.","RX로 주파수를 분석해요 — 음역대가 어디서 막히는지, 마찰을 회피하는지, 압력이 부족한지.","그리고 Big5 성격검사를 받아서, 주파수 패턴과 성격을 매칭해요. 예를 들어 음역 저하·마찰 회피가 신경증·억제 점수와 맞물리는지요.","마지막으로 레포트를 작성해요 — ‘주파수 분석상 ○○, 성격검사상 △△, 둘을 종합하면 □□ 방어기제와 ◇◇ 발달 과제’. 이게 학생을 설득하는 자료예요."],"guide":["남=‘응급실’ G4 / 여=‘밤편지’ 진성·전체 압력으로 부르게(방어기제 유발).","RX 주파수 분석: 음역 한계·마찰 회피·압력 부족 지점 추출.","Big5 성격검사 시행 → 주파수 패턴과 매칭.","레포트 작성: 주파수 데이터 + 성격 데이터 + 종합 진단(방어기제·발달 과제).","수집 실습 2: RX×Big5 레포트 보관.","★레포트는 ‘설득 자료’ — 학생이 자기 패턴을 데이터로 납득하게."]},{"phase":"정리","min":"50~60","title":"정리 + 예고","say":["두 곡으로 방어기제를 끌어내고, 주파수와 성격을 매칭해 레포트를 만들었어요. 이게 터칭보이스의 진단 무기예요.","숫자와 성격이 만난 레포트는 어떤 말보다 설득력이 있어요.","다음 주엔 이 매칭을 더 정밀하게 다듬어 통합 프로파일을 완성합니다."],"guide":["과제: RX×Big5 매칭 레포트 1건 완성(남 응급실/여 밤편지).","레포트를 케이스 핵심 자료로 축적."]}]},"21주":{"title":"데이터 3 — 음성·심리 데이터 연동","goal":"음향 지표와 심리 설문을 연동해 통합 프로파일을 구성한다.","materials":"측정 데이터(과제), Big5 설문, 통합 시트","ref":[17,18,19],"blocks":[{"phase":"도입","min":"0~5","title":"지난 주 연결","say":["음성도 재고 마음도 쟀으니, 이제 둘을 잇습니다. 합치면 한 사람이 입체로 보여요."],"guide":["측정 과제 지참."]},{"phase":"이론","min":"5~25","title":"두 데이터를 잇는 법","say":["음향 지표와 Big5를 나란히 놓으면 패턴이 보여요. 신경성↑과 Jitter↑가 같이 가는 식이죠 [R18].","하나만으론 부족해요. 음성이 가리키는 가설을 설문으로 확인하고, 설문을 음성으로 뒷받침해요 [R19].","이 통합 프로파일이 케이스 보고서의 핵심 자료가 돼요 [R17]."],"guide":["음향-설문 교차 해석 [R18,R19].","단일 지표 과신 금지 — 교차 검증.","통합 프로파일=케이스 근거."]},{"phase":"실습","min":"25~50","title":"통합 프로파일 작성","say":["측정한 음향과 설문을 한 시트에 모아요. 어떤 음향이 어떤 성격과 연결되는지 적어봅니다.","일치하는 부분, 어긋나는 부분을 찾아요. 어긋남이 오히려 중요한 단서예요.","이 프로파일로 그 사람의 발성·심리 그림을 한 문단으로 요약해봐요."],"guide":["음향+설문 통합 시트 작성.","일치/불일치 분석(불일치=탐구 지점).","한 문단 요약(사례개념화 압축).","수집 실습 3."]},{"phase":"정리","min":"50~60","title":"정리 + 예고","say":["음성과 마음을 연동해 한 사람을 입체로 봤어요. 데이터 수집의 완성이에요.","다음 주부터 검정 준비 — 필기 모의와 케이스 보고서 마무리예요."],"guide":["과제: 통합 프로파일 시트 + 한 문단 요약."]}]},"22주":{"title":"검정 준비 1 — 필기 모의 + 케이스 3건 점검","goal":"이론 필기를 점검하고 케이스 보고서 3건을 정리한다.","materials":"모의 문제지, 케이스 보고서 3건","ref":[17],"blocks":[{"phase":"도입","min":"0~5","title":"검정 안내","say":["이제 마무리예요. 오늘은 이론을 점검하고, 그동안 쌓은 케이스 3건을 정리합니다."],"guide":["1급 검정 구성 안내: 심화 필기(객관식 40+논술 1) 75점↑, 실습 70점↑, 케이스 3건+연구 1건, 심의위원회."]},{"phase":"이론","min":"5~25","title":"핵심 이론 점검 + 논술 대비","say":["핵심을 짚어요 — 5층 구조와 라이네케·HA, 근육별 주파수, Big5×음향, 장르 설계, 신경성 관리.","논술은 케이스 분석이에요. 사례를 보고 진단하고 처방을 서술하는 거죠 [R17].","모의 문제를 풀고 바로 맞춰봅니다."],"guide":["심화 객관식 모의 + 오답 점검.","논술=사례개념화 서술 연습 [R17].","장르·신경성·Big5 등 1급 고유 영역 강조."]},{"phase":"실습","min":"25~50","title":"케이스 3건 정리","say":["13~18주에 작성한 케이스들을 꺼내요. 진단-처방-변화가 분명한지 점검합니다.","SOAP 형식으로 다듬고, 데이터(음향·설문)를 근거로 붙여요.","3건이 서로 다른 유형이면 좋아요 — 다양한 사례를 다뤘다는 증거니까요."],"guide":["케이스 3건 SOAP 정리.","데이터 근거 첨부.","유형 다양성 점검.","1:1 피드백."]},{"phase":"정리","min":"50~60","title":"정리 + 예고","say":["이론과 케이스를 점검했어요. 다음 주엔 1:1 시연 모의와 연구 보고서예요."],"guide":["과제: 케이스 3건 완성, 필기 복습."]}]},"23주":{"title":"검정 준비 2 — 1:1 시연 모의 + 연구 보고서","goal":"1:1 지도 시연을 모의 평가하고 연구 보고서 1건을 정리한다.","materials":"녹화 장비, 연구 보고서 양식","ref":[17,22],"blocks":[{"phase":"도입","min":"0~5","title":"지난 주 연결","say":["케이스를 정리했으니, 오늘은 그걸 '실연'하는 모의 평가와 연구 보고서예요."],"guide":["케이스 3건 지참."]},{"phase":"이론","min":"5~25","title":"시연 평가 기준 + 연구 구조","say":["1:1 시연은 라포·진단 정확도·처방 적절성·정서 조율·안전을 봐요.","연구 보고서는 한 케이스를 깊이 추적한 기록이에요 — 전후 데이터로 변화를 보여줘요 [R22].","숫자로 변화를 증명하는 게 핵심이에요. HNR이 올랐다, 음역이 넓어졌다처럼요."],"guide":["시연 평가 항목 공유.","연구 보고서=종단 추적+전후 데이터 [R22].","변화의 정량적 증거 강조."]},{"phase":"실습","min":"25~50","title":"모의 시연 + 보고서 정리","say":["10분 1:1 시연을 모의 평가해요. 평가표로 서로 점수와 피드백을 줍니다.","연구 보고서는 가장 잘 추적한 케이스 하나를 골라 전후 데이터로 정리해요.","변화 그래프나 표를 넣으면 설득력이 커져요."],"guide":["모의 시연+평가표 채점.","연구 보고서 1건 정리(전후 데이터·그래프).","피드백 반영.","수퍼비전."]},{"phase":"정리","min":"50~60","title":"정리 + 예고","say":["시연과 연구를 점검했어요. 다음 주, 드디어 1급 검정과 수료예요.","여러분은 이제 진단하고 처방하는 트레이너예요."],"guide":["과제: 연구 보고서 완성, 시연 최종 준비."]}]},"24주":{"title":"수료·검정 — 진단하고 처방하는 트레이너","goal":"1급 검정을 시행하고 6개월의 성장을 확인하며 마스터 과정을 안내한다.","materials":"검정지, 녹화 장비, 수료증","ref":[17],"blocks":[{"phase":"도입","min":"0~5","title":"6개월의 마지막","say":["1주차에 성대 5층을 처음 배웠죠. 이제 여러분은 데이터로 진단하고 사람마다 다르게 처방해요.","오늘 그 역량을 확인하고, 다음 길을 안내합니다."],"guide":["1단계 측정 데이터와 현재 비교 준비.","축하의 자리 분위기."]},{"phase":"이론","min":"5~25","title":"이론 필기 + 논술 검정","say":["배운 걸 차분히 확인해요. 객관식과 사례 논술이에요.","논술은 사례를 보고 진단-처방을 서술하는 거예요. 여러분이 늘 하던 일이죠 [R17]."],"guide":["심화 필기(객관식 40+논술 1) 75점↑.","논술=사례개념화 서술.","시간 관리 안내."]},{"phase":"실습","min":"25~50","title":"1:1 시연 검정 + 성장 확인","say":["내담자를 맞아 10분 1:1 지도를 시연해요. 라포부터 작은 성공까지요.","끝나면 1주차 데이터와 지금을 비교해봐요. 여러분 자신의 목소리도 달라졌을 거예요.","케이스 3건과 연구 1건을 제출하고, 심의를 받습니다."],"guide":["1:1 시연 검정(평가표).","전후 데이터 비교(자기 성장).","케이스 3건+연구 1건 제출.","심의위원회 안내."]},{"phase":"정리","min":"50~60","title":"수료 + 마스터 안내","say":["여러분은 이제 연습생과 프로 지망생을 맡을 수 있는 트레이너예요. 진단하고, 설계하고, 사람을 살려요.","더 깊이 — 분자생물학, 텍스쳐 설계, 완전한 몰입까지 가고 싶다면 마스터에서 만나요.","기술보다 사람이 먼저예요. 그걸 잊지 않는 트레이너가 되길 바라요."],"guide":["수료증 수여.","마스터 과정 안내(분자생물학·텍스쳐·완전한 몰입·파견).","케이스·연구 최종 회수.","축하·소감 나눔."]}]}};
+const L1REF = {"muscleFreqMap":{"title":"근육별 주파수·소리 생성 매핑","note":"각 근육이 기여하는 주파수 대역과 소리 특성. 터칭보이스 임상 관찰 기반 모델로, 개인차가 있으며 진단이 아닌 훈련 방향 설정에 사용한다.","layer1":{"label":"Layer 1 · 하부 성대 근육군 — 음원(Source) 생성","rows":[["윤상갑상근 수직부 (Straight CT)","기본주파수(F0) 상승 · 200~1000Hz+ 음고 결정","고음역 진입, 성대 신장","고음이 열리고 음역 상단 확장"],["윤상갑상근 사부 (Oblique CT)","F0 미세조정 · 중고음 전환 안정","음정 정확도, 전환 매끄러움","passaggio(전환구간) 부드러움"],["외측윤상피열근 (LCA)","성대 폐쇄 → 기본주파수 배음 강화 · 성문 폐쇄압","맑고 단단한 음원, 배음 풍부","기식음 감소, 또렷함"],["후윤상피열근 (PCA)","성대 외전(호흡) · 발성 시 이완으로 안정적 F0 토대","호흡-발성 균형","지속음 안정, 떨림 감소"],["갑상피열근 (TA/Vocalis)","성대 두께 → 저음역 F0 · 80~250Hz 흉성 음원","두껍고 강한 저음, 흉성","저음 파워, 마찰 텍스쳐 생성"],["횡피열근 (IA)","성대 후방 폐쇄 → 음원 완결성","새는 소리 차단, 밀도","약하면 후방 기식음"]]},"layer2":{"label":"Layer 2 · 인두 근육군 — 공명(Filter) · 포먼트 형성","rows":[["구개범거근 (Levator Veli Palatini)","비강 차단 → F1·F2 명료화 · 1~3kHz","또렷하고 앞으로 나오는 소리","비음 감소, 명료도↑"],["구개긴장근 (Tensor Veli Palatini)","연구개 긴장 → 고주파 안정 · 3kHz+","고음 공명 안정","고음 흔들림 감소"],["상인두수축근 (Superior PC)","인두 상부 협착 → Singer's Formant · 2~4kHz","광채, 투사력(ring)","멀리 뻗는 소리"],["중인두수축근 (Middle PC)","인두강 크기 → F1 중심 · 800~1200Hz 따뜻함","둥글고 따뜻한 음색","이완 시 풍성, 수축 시 조임"],["하인두수축근 갑상인두부 (IPC)","음원→공명 전달 효율 · 전대역 커플링","에너지 전달","과긴장 시 배음 차단"]]},"formantGuide":{"label":"포먼트 해석 가이드","rows":[["F1 (250~900Hz)","혀 높이 · 턱 벌림","낮을수록 폐모음(이/우), 높을수록 개모음(아)"],["F2 (700~2500Hz)","혀 전후 위치","높을수록 전설(이/에), 낮을수록 후설(오/우)"],["F3 (2000~3000Hz)","음색 개성","혀끝·인두 형태, 개인 식별 영역"],["F4~F5 (3000~5000Hz)","음색 풍부함·텍스쳐","Singer's Formant 군집, 광채와 질감"]]}},"bigFiveAcoustic":{"title":"Big Five × 음향 지표 상관 모델","note":"터칭보이스가 누적한 음성-성격 상관 패턴. 통계적 경향이며 개인을 단정하지 않는다. 상담·진단이 아닌 발성 지도와 자기이해 보조 도구.","rows":[["개방성 (Openness) ↑","넓은 피치 변동, 풍부한 배음(F3~F5↑), 다양한 텍스쳐","피치 SD↑, F3~F5 에너지↑","텍스쳐 실험 환영, 새 소리 시도에 개방적"],["성실성 (Conscientiousness) ↑","안정된 F0, 낮은 Jitter/Shimmer, 일정한 템포","Jitter↓ Shimmer↓, 템포 규칙성","체계적 훈련에 강함, 반복 과제 효과적"],["외향성 (Extraversion) ↑","높은 음압(dB↑), 빠른 발화, 밝은 음색","강도↑, 발화속도↑, F0 변동↑","큰 소리·표현 자연스러움, 에너지 발산형"],["우호성 (Agreeableness) ↑","부드러운 음색, 완만한 어택, 따뜻한 중음(F1)","HNR↑, 어택 완만, 중음 풍부","공명 따뜻함 강점, 강한 마찰엔 저항 가능"],["신경증 (Neuroticism) ↑","긴장된 고음, 불안정 F0, 잦은 음이탈, 낮은 HNR","Jitter↑ Shimmer↑ HNR↓, 긴장","방어기제 강함, 안전·둔감화 우선 필요"]],"interpretation":{"label":"음성→성격 추론 예시 (사례개념화 연습용)","cases":[["낮은 F0 고착 + 좁은 피치 변동 + 낮은 음압","내향·표현 억제 경향 가능 → 하부 성대 활성·음역 확장 + 안전한 표현 유도"],["높은 Jitter/Shimmer + 낮은 HNR + 고음 음이탈 빈발","신경증·불안 경향 가능 → 둔감화·이완 우선, 라이네케 수화 관리"],["넓은 피치 + 강한 F3~F5 + 빠른 발화","개방·외향 경향 가능 → 텍스쳐 설계로 강점 극대화"],["부드러운 어택 + 따뜻한 중음 + 강한 마찰 회피","우호·예민 경향 가능 → 점진적 마찰 도입, 강요 금지"]]}},"muscleTraining":{"title":"근육별 처방 훈련법 — 발음·음역대·사례","note":"약화/과활성 근육별 맞춤 훈련. 발음(자모음)은 특정 근육을 선택적으로 자극한다.","rows":[{"muscle":"윤상갑상근 (CT) 약화","problem":"고음 진입 불가, 음역 상단 막힘","sound":"'이(i)' 모음 · 가성 활강 · E4→A4 글라이드","drill":"가성으로 높은 음에서 낮은 음으로 사이렌처럼 미끄러뜨리기. '이~' 유지하며 점진적 음고 상승. 립트릴 옥타브 점프.","case":"중저음 고착 남성 — 가성 사이렌 6주로 C5 진입. 처음엔 삑사리 빈발하나 CT 활성 신호."},{"muscle":"외측윤상피열근 (LCA) 약화","problem":"기식성(새는) 음질, 성대 폐쇄 부족","sound":"'가(g)·바(b)·다(d)' 강한 자음 · 스타카토","drill":"강한 파열음으로 성대 폐쇄 유도. '가가가' 스타카토. 'ㅋ' 대신 'ㄲ' 된소리로 폐쇄압 증가. 짧고 또렷하게.","case":"기식음 강한 여성 — 된소리 스타카토 4주로 HNR 상승, 또렷함 회복."},{"muscle":"갑상피열근 (TA) 과수축","problem":"저음 고착, 목 누름, 고음 시 과긴장","sound":"'우(u)·후(hu)' · 약한 가성 · 하품-한숨","drill":"하품하듯 후두 낮추고 '후~' 약하게. TA 이완 유도. 가벼운 가성으로 두께 줄이기. 절대 힘주지 않기.","case":"목 누르는 중년 남성 — 하품-한숨 발성으로 과수축 완화, 고음 전환 부드러워짐."},{"muscle":"상인두수축근 약화 (공명 부족)","problem":"소리가 안 뻗음, 투사력 부족","sound":"'잉(ng)·미(mi)' 비음 활용 · 2~4kHz 탐색","drill":"'잉~' 비음으로 인두 상부 공명 찾기. 'ng→a' 전환으로 ring 유지. 멀리 있는 사람 부르듯.","case":"성량 작은 교사 — 비음 공명 훈련으로 Singer's Formant 형성, 교실 전달력↑."},{"muscle":"중인두수축근 과수축","problem":"목 조임, 음색 어둡고 답답","sound":"'아(a)·하(ha)' 개방 · 인두강 확장","drill":"하품 직전 목 안 넓힌 채 '아~'. 따뜻하고 둥근 공간 유지. 'ha' 한숨으로 이완.","case":"조이는 소리 가수 — 인두강 확장으로 음색 따뜻해지고 마찰 텍스쳐 제어 가능."},{"muscle":"호흡 지지 부족 (PCA·횡격막)","problem":"소리 흔들림, 지속 불가, 후반 음정 저하","sound":"'스(s)·프(f)' 마찰음 · 지속 호기","drill":"'스~' 최대한 길고 일정하게(호기 균일성). 'fff' 압력 유지. 복식호흡 위에 발성 얹기.","case":"문장 끝 흔들리는 강연자 — 's 지속' 훈련으로 호기 안정, 후반 음정 유지."}]},"psychTechniques":{"title":"발성심리 치료 기법 — 1급 적용 세부","note":"발성 지도에 통합하는 심리 기법. 치료가 아닌 지도 맥락에서 활용하며, 윤리 경계를 지킨다.","techniques":[{"name":"체계적 둔감화 (월피) — 음역대 위계 적용","how":"두려운 음역대를 위계로 나눠 가장 약한 자극부터 노출. 이완 상태 유지하며 단계적 상승.","steps":["불안 음역 위계표 작성(가장 편한 음→가장 두려운 음)","이완(복식호흡)으로 안정 상태 확보","가장 낮은 단계 음 반복 → 불안 0 되면 다음 단계","각 단계 긍정 경험과 연결(재공고화)"],"say":"이 음까지는 편하죠? 딱 반음만 더 가볼게요. 무서우면 언제든 멈춰요."},{"name":"무조건적 긍정적 존중 (로저스) — 발성 수용","how":"어떤 소리가 나와도 평가하지 않고 수용. 안전감이 방어를 내려놓게 함.","steps":["'틀린 소리'라는 표현 제거","음이탈·거친 소리도 '시도'로 환영","수강생의 자기비판을 부드럽게 차단","강점 먼저 언급 후 방향 제시"],"say":"방금 그 소리, 좋았어요. 그게 우리가 찾던 지점이에요."},{"name":"자기효능감 (반두라) — 성공 경험 설계","how":"작은 성공을 의도적으로 만들어 '할 수 있다'는 믿음 축적.","steps":["달성 가능한 작은 목표 설정","성공 즉시 구체적으로 짚어주기","전후 비교로 변화 가시화(녹음·수치)","점진적 난이도 상승"],"say":"2주 전엔 이 음에서 막혔는데 지금 넘었어요. 들어볼래요?"},{"name":"라포 형성 + 정서 조율 — 1:1 핵심","how":"신뢰 관계 위에서만 깊은 작업 가능. 강사 톤을 수강생 상태에 맞춤.","steps":["목소리 뒤의 이야기 경청(판단 보류)","반영적 경청('~가 힘드셨군요')","수강생 정서에 톤·속도 맞추기(페이싱)","안정된 후 원하는 방향으로 리딩"],"say":"소리 내는 게 무섭다고 하셨죠. 그 마음부터 천천히 봐요."},{"name":"방어 유형별 접근","how":"방어기제 유형에 따라 다른 전략.","steps":["억압형 → 안전 환경, 점진적 표현 유도","투사형('곡이 이상해요') → 판단 없이 받고 자기 경험으로 환기","합리화형('원래 이래요') → 음향 데이터로 부드럽게 직면","회피형(특정 음역 회피) → 가장 약한 강도부터 둔감화"],"say":"데이터를 같이 볼까요? 숫자는 판단이 아니라 지도예요."}]}};
+const L1PRO = {"lowerTuning":{"title":"하부 성대 세부 튜닝 — 음원(Source) 다듬기","intro":"8개 하부 근육을 미세 조절해 음원의 질(두께·폐쇄·신장)을 설계한다. 프로는 '소리를 낸다'가 아니라 '원하는 음원을 만든다'.","note":"성대 두께(TA)·폐쇄(LCA/IA)·신장(CT)의 3축을 독립적으로 조절하는 감각이 핵심. EGG·스펙트럼으로 폐쇄율(CQ) 변화를 확인하며 훈련.","params":[["두께 (Mass)","갑상피열근 TA","두껍게=흉성 파워 / 얇게=고음·믹스","'어' 두껍게 ↔ '이' 얇게 교차, 같은 음에서 두께만 변화","저배음 에너지 ↑↓, CQ 변화"],["폐쇄 (Adduction)","외측윤상피열근 LCA·횡피열근 IA","강하게=단단/약하게=기식","된소리 'ㄲ' 강폐쇄 ↔ 'ㅎ' 약폐쇄, 5단계 그라데이션","HNR·CQ, 기식 잡음량"],["신장 (Stretch)","윤상갑상근 CT","늘림=고음 진입","'이' 가성 활강, 사이렌으로 신장 감각","F0 상승, 음역 상단"],["전환 (Mix)","TA↔CT 균형","두 힘의 비율 조절","passaggio에서 두께 점감+신장 점증","배음 분포 연속성, break 소거"]],"drillFlow":{"label":"세부 튜닝 실습 흐름 (60분 세션 예시)","steps":["폐쇄 5단계 그라데이션 (기식→단단) 각 음역에서","두께 독립 조절 (같은 음 두껍게/얇게)","신장 활강 (가성 사이렌)으로 CT 분리","passaggio에서 두께-신장 비율 교차 → mix 탐색","EGG/스펙트럼으로 전후 CQ·배음 비교 기록"]}},"pharyngealCombo":{"title":"인두근 복합 협업 — 공명(Filter) 설계","intro":"5개 인두근을 조합해 포먼트와 음색을 '설계'한다. 단일 근육이 아니라 조합 패턴이 장르 사운드를 만든다.","note":"트왱(아리에피글로틱 협착)·인두강 확장·연구개 조절을 독립적으로 다루고, 이들을 조합해 megaphone형/돔형 공명을 만든다. 문헌상 트왱은 2~4kHz 증폭+2kHz 이하 압축 포먼트(Estill, CVT).","combos":[["밝은 투사 (Twang/Ring)","상인두수축근↑ + 아리에피글로틱 협착","2~4kHz 광채, 멀리 뻗음, 적은 노력으로 큰 소리","'냥냥/jeng' 비음 트왱, 오리소리에서 모음 전환","뮤지컬·ROCK·벨팅"],["따뜻한 돔 (Dome)","중인두수축근 이완 + 연구개 거상","둥글고 깊은 중음, F1 풍부","하품 직전 '어/오', 인두강 확장 유지","발라드·CCM 안정 구간"],["전방 명료 (Forward)","구개범거근↑(비강 차단) + 혀 전방","또렷한 자음·모음, 딕션 선명","'미/니' 앞으로, 입술 앞 진동","뮤지컬 딕션·가사 전달"],["압축 소울 (Pressed-warm)","성대·인두 살짝 눌러 압축 + 상부 인두 약협착","모음에 힘 실린 R&B 음색, 작은 비브라토","쌍ㅇ/쌍ㄴ 감각, 'ㅡ/ㅔ'로 모음 후방화","R&B·소울"],["마찰 강화 (Grit)","성대 마찰↑ + 인두 협착 + 점막 강도↑","거친 질감, 에너지, distortion 직전","edge 발성 짧게, 점진적 마찰 노출","ROCK"]],"drillFlow":{"label":"인두 협업 실습 흐름","steps":["트왱 단독 분리 ('냥' 오리소리)","인두강 확장 단독 (하품 '어')","두 가지 교차 → 밝음↔따뜻함 슬라이더 감각","연구개 거상으로 비강↔구강 전환","목표 장르 음색으로 조합 고정 후 가사 적용"]}},"big5Design":{"title":"Big5 유형별 맞춤 연습 설계 — 사례개념화 실습","intro":"음향+설문으로 추정한 Big5 프로파일에 따라, 항목마다 다른 훈련을 '설계'하는 실습. 같은 발성 문제도 성격에 따라 접근이 달라진다.","note":"이 설계 실습이 1급의 핵심 역량. 수강생 한 명의 데이터를 받아 5요인별 처방을 직접 작성하고 발표한다.","factors":[["개방성 (O)","새 텍스쳐·즉흥·장르 크로스 환영. 실험적 과제로 동기↑","구조화된 단계·명확한 모델 제시. 안전한 범위에서 점진 확장"],["성실성 (C)","체계적 루틴·기록 과제 효과적. 측정 데이터로 동기부여","짧고 재미있는 세션·즉각 보상. 과제 부담 최소화"],["외향성 (E)","큰 소리·무대·그룹 발산 활용. 에너지 방향 잡아주기","1:1 안전 환경·작은 성공부터. 노출 점진적"],["우호성 (A)","협력적 피드백·부드러운 유도. 강한 마찰은 천천히","직접적 목표 제시 가능. 도전 과제에 반응"],["신경성 (N)","★ 안정화 최우선 (아래 전용 프로토콜). 둔감화·이완·안전","도전·강도 높은 과제 소화 가능. 빠른 진도 가능"]],"designExercise":{"label":"설계 실습 절차 (수강생이 직접 수행)","steps":["대상 1명의 음향 데이터(F0/HNR/Jitter/포먼트)+설문 수집","Big5 프로파일 추정 (5요인 점수화)","발성 문제 진단 (근육·공명·심리 축)","5요인별 맞춤 처방 작성 (위 표 기준)","8주 훈련 계획 수립 → 발표 → 수퍼비전 피드백"]}},"neuroticismProtocol":{"title":"신경성(N) 40↓ 유지 프로토콜 — 무대 안정성 훈련","intro":"노래를 잘하려면 신경성을 다스려야 한다. 목표는 N 점수를 40 이하로 낮추고 유지하는 것. 생리(호흡)·노출(무대)·인지(자기대화) 3축으로 접근한다.","note":"근거: 분당 6회 느린 호흡이 HRV를 높여 생리적 각성을 낮춤(특히 고불안군 효과 큼). 반복 무대 노출로 1→3회차 심박·불안·오류 감소. 깊은 호흡+긍정 자기대화가 무대공포 75→60 감소.","pillars":[{"name":"생리 — 느린 호흡 (HRV 조절)","how":"분당 6회(들숨 4초·날숨 6초) 느린 호흡으로 미주신경 활성, 각성 하강.","steps":["공연·녹음 전 5분 6회/분 호흡","날숨을 들숨보다 길게(부교감 우위)","발성 워밍업에 호흡 패턴 결합","고불안 수강생일수록 효과 큼 — 우선 적용"],"metric":"HRV(HF)↑, 심박 안정, 주관적 긴장 STAI 하강"},{"name":"노출 — 반복 무대 (둔감화)","how":"같은 곡을 같은 날 여러 번, 새로운 청중 앞에서 수행해 둔감화.","steps":["소그룹 앞 1차 → 피드백 없이 바로 2차 → 3차","회차마다 심박·긴장 자가 기록(감소 확인)","점진적으로 청중 규모·중요도 상승","무대 = 위협이 아니라 익숙한 환경으로 재학습"],"metric":"회차별 심박·불안·실수 감소 곡선"},{"name":"인지 — 긍정 자기대화 + 재해석","how":"위협 해석을 도전·준비 신호로 재구성(리프레이밍)+긍정 자기대화.","steps":["'긴장=망함' → '긴장=몸이 준비 중' 재해석","공연 전 짧은 긍정 문장 루틴화(앵커링)","실패 귀인을 '노력·전략'으로(고정능력 아님)","심상 리허설 6주(불안↓ 자신감↑)"],"metric":"부정 자기진술 빈도↓, 자기효능감↑"}],"maintenance":"유지: 위 3축을 일상 루틴으로. 주간 HRV 호흡 + 정기 무대 노출 + 자기대화 점검. N은 한 번 낮추고 끝이 아니라 '관리하는' 특성."},"genres":{"title":"장르별 사운드 — 음색 · 리듬 · 발음 테크닉","intro":"기획사 연습생/프로 지망생 지도를 위한 장르별 발성 설계. 터칭보이스 기준 + 보컬 과학 문헌 교차.","note":"각 장르의 '주 훈련 근육 / 공명 설계 / 발음(자모음) / 리듬 / 비브라토'를 한 묶음으로 익힌다.","list":[{"key":"발라드","color":"navy","sound":"넓은 음역, 호흡 중심, 벌스(저중량)↔코러스(고중량) 큰 대비","muscle":"성대 하부 + 비인두 강화 (호흡으로 성대 미는 힘↑). 작은소리↔큰소리 반복 = 저중량·고중량 운동, 성대·인두의 예민한 감각 필요","resonance":"비인두 + 성대 하부 함께. 코러스에서 돔형 공명 확장","diction":"턱이 살짝 아래·앞으로 → 성대 하부 움직임 보강, 자음에 몰린 힘을 분산해 모음으로 호흡·압력·비브라토 전달","rhythm":"루바토 허용, 프레이즈 끝 호흡 컨트롤, 다이내믹 대비 중심","vibrato":"폭이 크고 느린 비브라토 (근육 보호 장치이자 표현). 코러스에서 개방","train":"성대하부·비인두 강화 주훈련 + 호흡 압력 지속('스') + 다이내믹 대비 드릴(p↔f)","ref":"발라드 벨팅 구간은 비브라토가 후두 보호 역할(SingWise/Estill)"},{"key":"R&B · 소울","color":"plum","sound":"모음에 힘 실린 압축 음색, 작고 잦은 비브라토, 멜리스마","muscle":"인두근 윗쪽 힘↑ + 성대·인두 살짝 눌러 압축. 자음 악센트가 뒤로 밀려 모음에 붙음","resonance":"상부 인두 약협착 + 압축. 모음 자체가 힘이 들어간 소리","diction":"'ㅡ/ㅔ'에 가까운 모음 후방화. 쌍ㅇ·쌍ㄴ 감각으로 자음을 모음에 녹임","rhythm":"★ 2·4 백비트(jazz 리듬) 채용 — 모음에서 악센트, 당김음·고스트노트. 리듬 위에 멜리스마","vibrato":"폭 작고 빠르고 잦은 비브라토","train":"모음 후방화('ㅡ/ㅔ') + 압축 발성 + 2·4 백비트 모음 악센트 리듬훈련 + 멜리스마 런","ref":"R&B/소울 벨팅 핵심=정밀 호흡관리·성대 얇게·전략적 공명(Bartlett/Popeil/Chandler)"},{"key":"ROCK","color":"red","sound":"강한 마찰음·distortion, 에너지, 거친 질감","muscle":"발라드 기법 + 성대·인두 마찰 대폭↑ + 점막조직 강도 강화 (안전한 마찰 노출로 점진적)","resonance":"트왱 강화(2~4kHz) + 마찰 + 인두 협착. edge 발성","diction":"자음 강하게 내지르되 성대 보호 위해 호흡 받침. 모음 개방","rhythm":"강한 비트 위 직선적 강세, 그루브보다 드라이브","vibrato":"빠르고 강한 비브라토 또는 스트레이트 후 비브라토","train":"점막 강도 강화(점진적 마찰 노출·회복 관리 필수) + edge 짧게 + 트왱 + 호흡 받침. 손상 경계 24~48h 엄수","ref":"트왱=아리에피글로틱 협착으로 2~4kHz 증폭(Estill). 거친 질감은 점막 강도+마찰 제어"},{"key":"뮤지컬","color":"gold","sound":"성악 연결, 공명 강조, 딕션 명확, 밝은 투사","muscle":"성대 하부 직접 개입보다 인두 공명 기능 강조 → 반드시 성대하부 보강훈련 추가해야 안정·퀄리티 유지","resonance":"인두 공명 + 트왱(2~4kHz) 투사. TA 우세 발성을 하부 안정으로 받침","diction":"딕션 명확성 위해 자음 강세 강함. 가사 전달 최우선","rhythm":"악보 충실, 박자 정확, 대사-노래 전환","vibrato":"클래식형 비브라토(성대 조정만) ~ 잼지 비브라토 선택적","train":"인두 공명·딕션 주훈련 + ★성대하부 보강(필수) + 트왱 투사. 8쇼/주 견디는 speech-level onset","ref":"뮤지컬=TA우세+트왱 2~4kHz 아리에피글로틱 협착, speech-level onset이 성대 보호(Notion4Teachers/Estill)"},{"key":"CCM (워십)","color":"green","sound":"여러 장르 혼합, 기도인도·멘트 많음, 발라드 기반 + R&B·ROCK 요소","muscle":"발라드 기반(성대하부·비인두) + R&B 압축·ROCK 마찰을 어느 정도 익힘 (심화 아니어도 기본기)","resonance":"발라드 돔형 기본 + 상황별 트왱·압축 전환. 멘트→노래 자연 전환","diction":"멘트는 말하듯 명료, 노래는 발라드 딕션. 호흡 많은 긴 프레이즈","rhythm":"발라드 루바토 + R&B 그루브 혼용. 회중 인도 위한 명확한 큐","vibrato":"발라드형 큰 비브라토 + R&B 작은 비브라토 선택적","train":"발라드 주훈련 + R&B·ROCK 기법 기초 + 말↔노래 전환 + 긴 호흡 지속. 다장르 적응력","ref":"CCM은 CCM(현대상업음악) 범주로 pop/rock/R&B 혼합, 장르 간 전환 능력 요구"}],"dictionPrinciple":{"label":"발음 테크닉 일반 원리 (장르 스펙트럼)","note":"자음 강세와 소리 집중 위치가 장르에 따라 이동한다.","axis":[["트로트·국악 쪽","자음 강세 강함, 소리가 중인두로 집중","자음 악센트·중인두 집중"],["발라드","턱 아래·앞, 자음 힘 분산→모음으로 호흡·압력 전달","비인두+성대하부, 모음 중심"],["R&B","모음 후방화('ㅡ/ㅔ'), 자음이 모음에 녹음(쌍ㅇ/쌍ㄴ)","상부인두 압축, 모음 악센트"],["뮤지컬","자음 강세 강함(딕션 명료), 인두 공명","자음 명료+공명 투사"],["ROCK","자음 내지르되 호흡 받침, 모음 개방+마찰","마찰+트왱, 자음 강세"]]},"rhythmPrinciple":{"label":"리듬 테크닉 핵심","note":"장르별 리듬 강세와 그루브 방식.","items":[["발라드","루바토·다이내믹 대비, 프레이즈 호흡 컨트롤"],["R&B·소울","★2·4 백비트(재즈), 당김음·고스트노트, 모음 악센트, 멜리스마 런"],["ROCK","직선적 드라이브, 강비트 강세"],["뮤지컬","악보 충실·박자 정확, 대사-노래 전환"],["CCM","발라드 루바토+R&B 그루브 혼용, 회중 인도 큐"]]}}};
+const L1REFS = [{"n":1,"type":"발성과학","cite":"Titze, I. R. (2000). Principles of Voice Production. National Center for Voice and Speech.","note":"성대 진동·포먼트·음원-필터 이론의 기본 문헌"},{"n":2,"type":"발성과학","cite":"Yanagisawa, E., Estill, J. et al. (1989). The contribution of aryepiglottic constriction to 'ringing' voice quality. Journal of Voice.","note":"트왱(아리에피글로틱 협착)과 2~4kHz 광채"},{"n":3,"type":"발성과학","cite":"'What is Twang?' (2010). Journal of Voice. MRI 기반 트왱 성도 형태 연구.","note":"트왱=인두 협착+넓은 입, 저주파 압축 포먼트"},{"n":4,"type":"발성과학","cite":"Bourne, T. & Garnier, M. (2015). Physiological and acoustic characteristics of belt vs legit. Journal of Voice.","note":"벨팅의 R1=2f0 튜닝, 믹스 전략"},{"n":5,"type":"발성훈련","cite":"Titze, I. R. (2006). Voice training and therapy with semi-occluded vocal tract (SOVT). Journal of Speech, Language, and Hearing Research.","note":"빨대 발성 등 SOVT의 효율·보호 효과"},{"n":6,"type":"발성과학","cite":"Sundberg, J. (1987). The Science of the Singing Voice. Northern Illinois University Press.","note":"인두강·공명·음색의 음향학"},{"n":7,"type":"보컬교육","cite":"Estill Voice International — Voice Qualities (Twang, Belt 등) 교육체계.","note":"트왱·벨팅 등 음질의 구조적 훈련"},{"n":8,"type":"보컬교육","cite":"Complete Vocal Technique (CVT), Sadolin, C. — Neutral/Curbing/Overdrive/Edge 모드 (MRI 검증 연구 포함).","note":"장르별 발성 모드 분류"},{"n":9,"type":"발성훈련","cite":"SOVT 및 흉성 안정화 훈련 문헌 (Journal of Voice 다수).","note":"저음 이완·흉성 진동 훈련"},{"n":10,"type":"보컬교육","cite":"Voice Study Centre — Comparative Vocal Styles (Classical/MT/Pop/R&B/Country/Rock/Jazz) 워크숍 자료.","note":"장르별 공명·비브라토·발음·리듬 비교"},{"n":11,"type":"보컬교육","cite":"Bartlett, I., Popeil, L., Chandler, K. et al. (2025). Sustaining the Sound: R&B/Soul Belting. (실무자 인터뷰 연구)","note":"R&B/소울 벨팅의 호흡·성대 얇기·공명 전략"},{"n":12,"type":"보컬교육","cite":"Vocal Pedagogy for CCM — Musical Theatre는 TA우세+트왱 2~4kHz, speech-level onset (교육 문헌).","note":"뮤지컬·CCM 발성 특성"},{"n":13,"type":"심리학","cite":"Bowlby, J. (1969). Attachment and Loss. / 애착이론.","note":"양육자 관계와 정서·표현 패턴 형성"},{"n":14,"type":"심리학","cite":"Bandura, A. (1997). Self-Efficacy: The Exercise of Control. Freeman.","note":"자기효능감과 수행, 작은 성공 설계"},{"n":15,"type":"심리학","cite":"Rogers, C. (1957). The necessary and sufficient conditions of therapeutic personality change. / 무조건적 긍정적 존중.","note":"수용적 태도와 변화"},{"n":16,"type":"심리학","cite":"정서 조율·페이싱/리딩 — 동기강화상담(Miller & Rollnick) 및 상담 라포 문헌.","note":"상대 상태에 맞추고 이끄는 대화"},{"n":17,"type":"심리학/평가","cite":"Sperry, L. & Sperry, J. (2012). Case Conceptualization. Routledge. / 한국상담심리학회 1급 사례개념화 기준.","note":"진단→처방 흐름의 사례개념화(1급 핵심 역량)"},{"n":18,"type":"음성-성격","cite":"음성 음향 지표와 성격(특히 신경증)의 상관 연구 (Journal of Voice / 심리음향 문헌).","note":"신경증↑=Jitter/Shimmer↑·HNR↓ 경향"},{"n":19,"type":"음성-성격","cite":"Big Five와 발화 음향(음압·속도·피치 변동) 상관 연구.","note":"외향성·개방성의 음향 경향"},{"n":20,"type":"심리학","cite":"성격 맞춤 개입(personality-tailored intervention) 원리 — 강점기반 접근 문헌.","note":"5요인별 차별적 훈련 설계"},{"n":21,"type":"무대불안","cite":"Wells, R. et al. (2012). Matter Over Mind: HRV biofeedback & slow breathing on music performance anxiety. PLOS ONE.","note":"분당 6회 느린 호흡이 HRV↑·각성↓(고불안군 효과 큼)"},{"n":22,"type":"무대불안","cite":"Repeated stage exposure reduces music performance anxiety (PMC10067860).","note":"반복 무대 노출 1→3회차 심박·불안·오류 감소"},{"n":23,"type":"무대불안","cite":"Self-management of stage fright by vocal performers (Current Psychology, 2024).","note":"깊은 호흡·긍정 자기대화가 무대공포 75→60 감소"},{"n":24,"type":"윤리/법","cite":"개인정보보호법(민감정보) 및 음성·심리 데이터 수집 동의 일반 원칙.","note":"목적·보관·파기·활용 동의 절차"}];
+const EXAM = {"overview":{"title":"터칭보이스 발성심리지도사 2급 검정","subtitle":"민간자격 — Touching Voice Vocal Psychology Instructor Level 2","purpose":"16주 과정을 이수한 자가 발성심리지도사로서 보조 강사 역할을 수행할 수 있는 기본 역량을 갖추었는지 검정한다.","role":"그룹 강의 보조 강사 · 1:1 발성 코칭 입문 단계"},"eligibility":{"requirements":["터칭보이스 발성심리 2급 정규 과정 수강 등록자","16주 강의 중 13주 이상 수강(출석률 80% 이상)","주차별 과제 12개 이상 제출","케이스 관찰 보고서 1건 사전 제출"],"note":"응시 자격 미달 시 다음 회차 응시 가능. 출석률은 강의 영상 70% 이상 시청으로 인정."},"domains":[{"key":"이론필기","name":"이론 필기 시험","weight":40,"format":"온라인 CBT(객관식 40문항 + 단답형 10문항)","duration":"75분","pass":"70점 이상(100점 만점)","detail":"16주 강의 전체 핵심 개념을 평가. 단계별 비중은 1단계 20%, 2단계 25%, 3단계 30%, 4단계 25%."},{"key":"실습평가","name":"실습 평가","weight":30,"format":"응시자 본인 발성 시연 영상(3분) + 가상 수강생 지도 시연 영상(5분) 제출","duration":"총 8분 이내","pass":"60점 이상(100점 만점)","detail":"발성 능력보다 강사로서의 자세를 우선 평가. 긍정 치환 대화법 적용 여부 확인."},{"key":"케이스보고서","name":"케이스 보고서","weight":20,"format":"1명 대상 관찰 보고서(A4 1~2장)","duration":"사전 제출","pass":"60점 이상(100점 만점)","detail":"대상자 정보·음성 특성·언어환경·지도 접근·변화와 소감 5요소 포함."},{"key":"수강이력","name":"수강 이력","weight":10,"format":"출석률 + 과제 제출률","duration":"16주 누적 산정","pass":"출석률 80% 이상 + 과제 75% 이상 제출","detail":"온라인 강의 시청 기록 + 과제 업로드 기록 자동 산정."}],"passing":{"total":"100점 만점 70점 이상","domain":"4개 영역 각각 통과 기준 충족","note":"총점이 70점 이상이어도 어느 한 영역이라도 통과 기준 미달 시 불합격. 영역별 재응시 가능."},"operation":{"platform":"터칭보이스 아카데미 웹 플랫폼(CBT)","schedule":"분기별 1회(연 4회) 정기 시행","enrollment":"검정일 4주 전까지 응시 신청","fee":"응시료 별도 안내","rules":["온라인 CBT는 본인 인증(휴대전화·신분증) 후 응시","시험 시작 후 75분 이내 모든 문항 응시 완료","시험 중 화면 이탈·다른 창 전환 3회 시 자동 종료","부정행위 적발 시 해당 회차 무효 및 1년간 응시 제한","실습 평가 영상은 본인 얼굴과 음성이 명확히 식별되어야 함"]},"certification":{"issuance":"전 영역 통과 시 30일 이내 자격증 발급","validity":"자격증 평생 유효(단, 3년 주기 보수교육 권장)","nextStep":"발성심리지도사 1급 과정 응시 자격 부여(6개월, 24주 과정)","privilege":["터칭보이스 인증 보조 강사 활동","그룹 강의 보조 진행 자격","1:1 발성 코칭 입문 단계 수행 가능","1급 과정 우선 등록"]},"retry":{"policy":"영역별 부분 재응시 가능","interval":"불합격 후 3개월 경과 시 재응시 가능","cost":"재응시료는 정기 응시료의 50%","pass_carry":"통과한 영역의 점수는 1년간 유효(해당 기간 내 미통과 영역만 재응시)"}};
+const EXAMQ = {"multipleChoice":[{"no":1,"stage":1,"week":1,"type":"mc","q":"사람의 첫인상이 만들어지는 데 걸리는 시간으로 가장 적절한 것은?","choices":["10초","1분","1시간","하루"],"answer":1,"explanation":"첫인상은 평균 10초 안에 형성되며, 한 번 만들어지면 바꾸는 데 약 60번의 노출이 필요하다."},{"no":2,"stage":1,"week":1,"type":"mc","q":"미국 듀크대학교 CEO 800명 대상 연구에서 밝힌 목소리와 성과의 관계로 옳은 것은?","choices":["발음이 정확한 CEO일수록 보수가 높다","중저음의 안정된 목소리를 가진 CEO일수록 더 높은 보수와 더 큰 기업을 경영한다","외향적이고 큰 목소리를 가진 CEO가 가장 큰 성과를 낸다","목소리는 경영 성과와 무관한 것으로 나타났다"],"answer":2,"explanation":"중저음의 안정된 목소리가 신뢰감과 능력의 신호로 무의식적으로 읽힌다."},{"no":3,"stage":1,"week":4,"type":"mc","q":"같은 진동(성대)이 어떤 공간을 지나느냐에 따라 다른 음색이 만들어진다. 우리 몸에서 그 공간 역할을 하며 5개의 근육이 모양을 바꾸는 영역의 이름은?","choices":["성대 자체","인두","입술","비강만"],"answer":2,"explanation":"인두는 성대 위쪽의 공명 공간으로 5개 근육이 모양을 바꾸며 음색을 만든다. 비강도 일부 관여하지만 전체 공명관은 인두를 중심으로 한다."},{"no":4,"stage":1,"week":2,"type":"mc","q":"세스 릭스(Seth Riggs)가 말한 '가장 좋은 소리'에 대한 정의는?","choices":["가장 큰 소리","가장 정확한 음정의 소리","어린아이의 소리로 돌아가는 것","성악가의 발성에 가까운 소리"],"answer":3,"explanation":"발성 훈련의 본질은 새로운 소리를 만드는 게 아니라 살면서 잃어버린 어린아이의 자유로운 발성을 회복하는 것이다."},{"no":5,"stage":1,"week":2,"type":"mc","q":"터칭보이스에서 정의한 '언어환경 3요소'에 해당하지 않는 것은?","choices":["가족","친구","사회","교육"],"answer":4,"explanation":"언어환경 3요소는 가족·친구·사회이며, 우리 발성의 패턴이 이 세 영역에서 형성된다."},{"no":6,"stage":1,"week":3,"type":"mc","q":"성대에 대한 다음 설명 중 옳지 않은 것은?","choices":["성대는 단순한 막이 아니라 근육 다발이다","성대는 다섯 층의 정교한 점막 조직으로 이루어져 있다","다섯 층 전체가 동일하게 진동하여 소리를 만든다","운동하면 발달하고 안 쓰면 약해진다"],"answer":3,"explanation":"실제로 떨리는 것은 다섯 층 전체가 아니라 바깥 두 층의 점막파(mucosal wave)이며, 안쪽 근육층은 기둥처럼 자리를 잡고 있다."},{"no":7,"stage":1,"week":3,"type":"mc","q":"고무줄을 팽팽하게 당겨 튕기면 높은 소리가 나는 원리와 가장 관련이 있는 성대 근육은?","choices":["갑상피열근(성대 두께를 만드는 근육)","윤상갑상근(성대를 늘리는 근육)","구개거상근(연구개를 들어 올리는 근육)","상인두수축근(인두 위쪽을 좁히는 근육)"],"answer":2,"explanation":"윤상갑상근은 성대를 양쪽에서 당겨 늘리며, 늘어난 성대가 더 빠르게 진동해 고음을 만든다."},{"no":8,"stage":1,"week":4,"type":"mc","q":"인두 근육의 작용으로 옳지 않은 것은?","choices":["연구개 거상으로 비강을 차단해 소리를 앞으로 모은다","인두강을 넓혀 따뜻하고 둥근 음색을 만든다","인두 위쪽을 좁혀 광채(ring)를 만든다","성대 두께를 직접 조절해 음의 높낮이를 결정한다"],"answer":4,"explanation":"성대 두께·길이 조절은 하부 성대 근육의 작용이다. 인두 근육은 공명 공간의 모양을 바꿔 음색을 만든다."},{"no":9,"stage":2,"week":5,"type":"mc","q":"평균적으로 우리가 일상생활에서 사용하는 폐의 비율은?","choices":["10% 미만","20~30%","약 50%","70% 이상"],"answer":2,"explanation":"평소 우리는 폐의 20~30%만 사용하며, 발성 훈련의 목적 중 하나는 이 활용도를 50~60%까지 끌어올리는 것이다."},{"no":10,"stage":2,"week":5,"type":"mc","q":"복식호흡에 대한 설명으로 가장 정확한 것은?","choices":["공기가 배 안으로 들어가는 호흡이다","횡격막이 충분히 내려가면서 폐의 아래쪽까지 깊게 채워지는 호흡이다","배 근육에 힘을 주어 공기를 내보내는 호흡이다","코로 들이마시고 입으로 내쉬는 호흡 방식이다"],"answer":2,"explanation":"공기가 배로 들어가는 것이 아니라, 횡격막이 내려가면서 폐 아래쪽까지 채워지고 그 결과 배가 부풀어 오르는 것이다."},{"no":11,"stage":2,"week":5,"type":"mc","q":"터칭보이스에서 안내하는 호흡 경로의 순서로 옳은 것은?","choices":["입 → 가슴 → 배","코 → 가슴 → 어깨","코 → 뒷통수 → 등 → 아랫배","입 → 목구멍 → 폐"],"answer":3,"explanation":"이 경로 상상은 가슴이 먼저 부풀지 않고 폐 아래쪽부터 채워지게 돕는다. 특히 뒷통수 경로는 후일 고음 발성의 열쇠가 된다."},{"no":12,"stage":2,"week":6,"type":"mc","q":"복식호흡 교정을 위한 단계적 훈련 순서로 가장 적절한 것은?","choices":["서서 → 앉아서 → 누워서","누워서 → 앉아서 → 서서","앉아서 → 누워서 → 서서","서서 → 누워서 → 앉아서"],"answer":2,"explanation":"누운 자세에서 횡격막이 가장 자연스럽게 내려간다. 쉬운 자세에서 시작해 어려운 자세로 옮겨가는 것이 원칙이다."},{"no":13,"stage":2,"week":6,"type":"mc","q":"흉식호흡이 만성화된 사람의 일반적 특징이 아닌 것은?","choices":["어깨가 늘 올라가 있는 경향","만성적 긴장이나 불안 상태","교감신경 우위 상태","심박변이도(HRV) 지표가 매우 높음"],"answer":4,"explanation":"흉식호흡 만성화는 교감신경 우위와 연결되어 HRV가 낮아진다. 분당 6회의 느린 호흡이 HRV를 회복시킨다."},{"no":14,"stage":2,"week":7,"type":"mc","q":"터칭보이스 발성의 3대 체크포인트가 아닌 것은?","choices":["성대 마찰율","호흡량","근육 압력","발음 정확도"],"answer":4,"explanation":"3대 체크포인트는 성대 마찰율(폐쇄)·호흡량(연료)·근육 압력(균형)이다. 발음 정확도는 별도 영역이다."},{"no":15,"stage":2,"week":7,"type":"mc","q":"성대 마찰율이 너무 강할 때 나타날 수 있는 결과로 가장 적절한 것은?","choices":["기식음(바람 빠지는 소리)이 강해진다","성대가 빠르게 피로해지고 결절 위험이 커진다","음역이 자연스럽게 넓어진다","호흡량이 두 배로 증가한다"],"answer":2,"explanation":"마찰이 과하면 성대가 너무 세게 부딪혀 빠른 피로·결절·과긴장으로 이어진다. 약하면 기식음이 난다."},{"no":16,"stage":2,"week":8,"type":"mc","q":"음역 확장 훈련에서 가성(Falsetto)의 역할로 가장 적절한 것은?","choices":["강한 수축과 이완을 반복해 주변부 근육의 움직임을 직접 유도한다","성대를 이완시키고 인두근의 개입을 늘려, 근육 조직의 발달을 준비하는 단계다(팔굽혀펴기를 천천히 반만 하는 원리)","고음의 마지막 단계에서 음역의 상한선을 결정하는 도구다","공명만 강화하는 훈련으로 발성 근육과는 관련이 없다"],"answer":2,"explanation":"가성은 성대를 이완시키고 인두근의 개입을 늘리는 훈련으로, 강한 수축 전 근육 조직의 발달을 준비하는 단계다. 음이탈 훈련으로 주변부 근육이 깨어난 후 가성으로 세밀하게 강화하는 순서로 진행된다."},{"no":17,"stage":2,"week":8,"type":"mc","q":"발성 워밍업으로 가장 권장되는 입술 트릴(brrrr)의 효과는?","choices":["성대 결절을 즉각 치료한다","성대를 부드럽게 진동시키고 호흡과 발성을 자연스럽게 연결한다","고음의 음역을 한 옥타브 확장시킨다","비강 공명을 강화한다"],"answer":2,"explanation":"입술 트릴은 SOVT(반폐쇄 성도 훈련)의 일종으로, 성대에 부담을 주지 않으면서 깨우는 효과적인 워밍업이다."},{"no":18,"stage":2,"week":8,"type":"mc","q":"음역 확장 훈련의 원칙으로 적절하지 않은 것은?","choices":["사람마다 발달 정도가 다르므로 점진적으로 단계를 밟는다","한 번에 무리한 고음에 도전해 빠른 음역 확장을 시도한다","흉성에서 가성으로의 전환을 자연스럽게 익힌다","회피하던 음역대를 안전한 환경에서 의식적으로 노출한다"],"answer":2,"explanation":"음역 확장은 사람마다 발달 정도가 다르기에 점진적 접근이 핵심이다. 한 번에 무리한 도전은 성대 손상 위험이 크다. 매일의 반음이 한 달이면 옥타브가 된다."},{"no":19,"stage":3,"week":9,"type":"mc","q":"의도적 음이탈 훈련의 발성학적 작용으로 가장 적절한 것은?","choices":["성대를 이완시켜 인두근의 개입을 부드럽게 늘리는 작용을 한다","강한 수축과 이완을 반복해 발성 주변부 근육의 움직임을 끌어내고 깨우는 작용을 한다","음역의 상한선을 영구적으로 고정시킨다","공명관의 모양만 변형시키며 성대에는 영향이 없다"],"answer":2,"explanation":"의도적 음이탈은 강한 수축과 이완을 반복해 주변부 근육의 움직임을 끌어낸다. 이렇게 깨워진 주변부 근육은 이후 가성 훈련으로 세밀하게 강화된다. 가성과 음이탈은 서로 다른 단계의 도구다."},{"no":20,"stage":3,"week":10,"type":"mc","q":"발성 훈련 중에 일어나는 방어기제에 대한 설명으로 가장 적절한 것은?","choices":["고음·중음·저음 어느 음역에서나 동일한 방어 패턴이 나타난다","방어기제는 신체적 한계의 표현이며 심리적 요인은 거의 작동하지 않는다","특정 음역에 가까워질 때 자기도 모르게 회피하거나 무너지는 현상으로, 그 음역과 관련된 마음의 패턴이 함께 작동한다","방어기제는 한 번 깨지면 다시는 나타나지 않는다"],"answer":3,"explanation":"발성 훈련 중 어떤 음역대에서 회피·위축·붕괴가 일어나는 것은 단순한 신체 현상이 아니라, 그 사람의 살아온 시간이 만든 마음의 패턴이 함께 작동한 결과다. 그래서 사람마다 막히는 음역이 다르다."},{"no":21,"stage":3,"week":10,"type":"mc","q":"두려운 자극에 점진적·반복적으로 노출되며 두려움이 약해지는 심리학 개념의 이름은?","choices":["조건반사(classical conditioning)","강화학습(reinforcement learning)","체계적 둔감화(systematic desensitization)","사회적 학습(social learning)"],"answer":3,"explanation":"체계적 둔감화는 두려운 자극에 안전한 환경에서 단계적으로 노출시켜 그 반응을 점차 약화시키는 행동치료 기법이다."},{"no":22,"stage":3,"week":10,"type":"mc","q":"음역대별 방어기제와 관련된 일반적 경향성으로 가장 적절한 것은?","choices":["고음 막힘은 자기 노출에 대한 두려움과 관련될 수 있다","저음 막힘은 감정 표현이 자유로운 사람의 특징이다","음역 막힘은 신체적 요인 외에는 설명되지 않는다","방어기제는 음역대와 무관하게 작동한다"],"answer":1,"explanation":"고음은 자기를 드러내는 소리라 자기 노출이 두려운 사람이 회피하는 경향이 있다. 단정이 아닌 경향성으로 본다."},{"no":23,"stage":3,"week":11,"type":"mc","q":"빌헬름 라이히가 명명한 '근육 갑옷(muscular armor)'이 의미하는 것은?","choices":["운동 선수의 근육 발달 상태","표현하지 못한 감정이 만성적 근육 긴장으로 신체에 새겨지는 현상","근육이 외부 충격으로부터 신체를 보호하는 기능","성대 근육의 비대 현상"],"answer":2,"explanation":"라이히는 억압된 감정이 만성 근육 긴장의 형태로 몸에 갑옷처럼 굳어진다고 보았다. 발성 근육의 경직도 그 일부다."},{"no":24,"stage":3,"week":11,"type":"mc","q":"제임스-랑게(James-Lange) 이론의 핵심 주장으로 옳은 것은?","choices":["감정이 먼저 일어나고 신체 반응이 따라온다","신체 반응이 먼저 일어나고 뇌가 그것을 해석해 감정으로 인식한다","감정과 신체 반응은 무관하게 작동한다","감정은 사회적 학습의 결과일 뿐이다"],"answer":2,"explanation":"'우니까 슬프다'로 요약되는 이론이며, 신체 반응(목소리·자세·표정)을 바꾸면 감정도 따라 바뀐다는 발성 훈련의 작동 근거다."},{"no":25,"stage":3,"week":11,"type":"mc","q":"2016년 미국 국립과학원회보(PNAS) 변조 음성 연구가 시사하는 바는?","choices":["사람들은 자기 목소리를 정확히 인식한다","변조된 목소리는 감정에 영향을 주지 않는다","변조된 목소리를 듣는 본인의 실제 감정 상태가 그 톤을 따라 변한다","녹음된 음성은 원본보다 항상 더 어둡게 들린다"],"answer":3,"explanation":"이 연구는 자신의 목소리를 통해 감정을 인식한다는 것을 보여주며, 발성 훈련이 감정 변화를 만든다는 강력한 근거가 된다."},{"no":26,"stage":3,"week":11,"type":"mc","q":"'마음은 뇌에만 있지 않고 자세·호흡·근육 등 몸 전체에 분산되어 있다'고 보는 인지과학의 개념은?","choices":["행동주의(behaviorism)","체화된 인지(embodied cognition)","정신분석(psychoanalysis)","구조주의(structuralism)"],"answer":2,"explanation":"체화된 인지는 마음과 몸을 분리하지 않으며, 발성이 곧 마음에 영향을 주는 이유를 설명하는 핵심 이론이다."},{"no":27,"stage":3,"week":12,"type":"mc","q":"터칭보이스가 정의한 '소거 학습 3단계'의 올바른 순서는?","choices":["둔감화 → 노출 → 긍정 치환","노출 → 둔감화 → 긍정 치환","긍정 치환 → 노출 → 둔감화","노출 → 긍정 치환 → 둔감화"],"answer":2,"explanation":"두려운 자극에 노출하고, 반복으로 둔감화시킨 뒤, 빈 자리에 긍정적 의미를 채워넣는 3단계로 완성된다."},{"no":28,"stage":3,"week":12,"type":"mc","q":"긍정 치환(positive replacement) 단계의 핵심 원리와 가장 가까운 신경과학 개념은?","choices":["장기 기억의 저장(consolidation)","기억의 재공고화(reconsolidation)","감각 기억의 소거(sensory extinction)","작업 기억의 한계(working memory limit)"],"answer":2,"explanation":"조셉 르두가 밝힌 재공고화는 기억이 꺼내질 때 다시 새로 저장된다는 원리로, 긍정 경험이 함께 덧입혀지면 기억의 색이 바뀐다."},{"no":29,"stage":3,"week":12,"type":"mc","q":"감정전이(emotional contagion)에 대한 설명으로 옳지 않은 것은?","choices":["한 사람의 감정이 다른 사람에게 자동으로 옮아가는 현상이다","목소리는 감정전이의 가장 강력한 통로 중 하나다","강사가 흥분된 톤으로 격려해도 안정 효과가 동일하게 전달된다","강사의 안정된 상태가 수강생의 신경계 안정에 직접 영향을 준다"],"answer":3,"explanation":"강사의 톤이 흥분되어 있으면 말의 내용과 상관없이 흥분이 전이된다. 안정된 톤이 안정을 전한다."},{"no":30,"stage":3,"week":12,"type":"mc","q":"발성심리지도사의 '첫 번째 도구'로 가장 적절한 것은?","choices":["화려한 발성 시범 능력","정교한 발성 이론 지식","자기 자신의 안정된 상태","강한 카리스마와 권위"],"answer":3,"explanation":"감정전이 원리에 따라, 강사의 안정이 진심으로 있어야 수강생에게 안정이 전이된다. 기술보다 자기 상태가 우선이다."},{"no":31,"stage":4,"week":13,"type":"mc","q":"발성심리지도사 2급 단계에서 강사로서 가장 먼저 길러야 할 도구는?","choices":["화려한 발성 시범 능력","듣는 귀","무대 카리스마","고급 음향 분석 능력"],"answer":2,"explanation":"2급 단계에서는 다른 사람의 발성을 정확히 듣는 귀가 첫 번째 도구다. 시범 능력·이론·리더십은 그 위에 쌓이며, 본격적 시범과 1:1 지도 자격은 1급 과정에서 더 깊게 다룬다."},{"no":32,"stage":4,"week":13,"type":"mc","q":"목소리 관찰의 3축에 해당하지 않는 것은?","choices":["마찰","호흡","패턴","음정 정확도"],"answer":4,"explanation":"관찰의 3축은 마찰(질감)·호흡(연료)·패턴(반복되는 흐름)이다. 음정 정확도는 평가 영역이며 우리의 1차 관찰 축이 아니다."},{"no":33,"stage":3,"week":10,"type":"mc","q":"다음 사례에 대한 발성심리지도사의 접근으로 가장 적절한 것은?\n\n[사례] 40대 남성 개발자. 평소 목소리가 좁고 중인두와 비강 쪽에 소리가 몰려 있음. 신체 활동이 적고 생각으로 모든 것을 판단하는 경향. 상상 속 자기 목소리와 실제 자기 목소리 사이의 괴리가 크고, 호흡량이 적으며 발성기관의 퇴화가 진행됨. 기초 음역대 훈련 자체를 어색해 하고 변화를 거부함.","choices":["본인이 익숙한 좁은 음역대만 반복 훈련시켜 안정감을 강화한다","강한 발성 자극과 논리적 설명으로 접근하고, 거부 반응이 일어나는 새로운 소리가 나왔을 때 강하게 칭찬해 받아들이게 한다","심리상담을 우선 권유하고 발성 훈련은 보류한다","음역 확장은 포기하고 비강 공명을 더 강화하는 방향으로 간다"],"answer":2,"explanation":"생각으로 판단하는 유형은 부드러운 권유로는 변화가 어렵다. 강한 자극과 논리적 설명으로 받아들이게 하고, 평소와 다른 소리가 나오는 그 순간 강한 칭찬으로 긍정 치환(소거 학습 3단계)을 만드는 것이 효과적이다."},{"no":34,"stage":4,"week":14,"type":"mc","q":"긍정 치환 대화법의 3원칙으로 옳은 것은?","choices":["지적·해석·교정","받아들임·칭찬·작은 성공","권위·통제·반복","비판·재시도·완성"],"answer":2,"explanation":"무판단의 받아들임 → 진심의 칭찬 → 구체적인 작은 성공을 짚어주는 3원칙이다."},{"no":35,"stage":4,"week":14,"type":"mc","q":"칼 로저스의 '무조건적 긍정적 존중(unconditional positive regard)'의 핵심은?","choices":["잘하는 사람에게만 보내는 존중","어떤 조건도 달지 않고 평가 없이 한 인간으로 존중하는 것","전문가의 권위로 인정해주는 태도","상대를 항상 칭찬하기"],"answer":2,"explanation":"있는 그대로 받아들여진 사람이 변한다. 평가받는 자리에서는 사람이 굳고, 받아들여지는 자리에서는 풀린다."},{"no":36,"stage":4,"week":14,"type":"mc","q":"발성심리지도사로서 '금지 언어'를 '대체 언어'로 바꾼 예 중 적절하지 않은 것은?","choices":["'틀렸어요' → '다르게 가볼까요'","'음이탈 났네요' → '여기서 발달 지점이 보였어요'","'좋아요' → '방금 첫 호흡이 길고 안정적이었어요'","'그 음 못 내시네요' → '그 음 절대 못 내실 거예요'"],"answer":4,"explanation":"대체 언어는 '아직 자유롭지 않으신 것 같아요'처럼 발달의 여지를 두는 표현이어야 한다. '절대 못'은 더 강한 부정이다."},{"no":37,"stage":4,"week":14,"type":"mc","q":"긍정 치환 대화법을 적용할 때 가장 흔히 빠지는 함정은?","choices":["너무 자주 칭찬을 한다","구체적으로 칭찬한다","형식만 따라하고 진심이 따라가지 않는 기계적 적용","수강생의 약점을 짚어준다"],"answer":3,"explanation":"진심 없는 칭찬은 감정전이 원리에 따라 들킨다. 자세가 진짜라야 말도 진짜가 된다."},{"no":38,"stage":4,"week":15,"type":"mc","q":"터칭보이스 케이스 보고서의 5요소가 아닌 것은?","choices":["대상자 정보","음성 특성","언어환경","음정 채점표"],"answer":4,"explanation":"5요소는 대상자 정보·음성 특성·언어환경·지도 접근·변화와 소감이다. 음정 채점표는 케이스 보고서의 구성 요소가 아니다."},{"no":39,"stage":4,"week":15,"type":"mc","q":"터칭보이스 2급 케이스 보고서의 채점에서 가장 비중이 높은 두 영역은?","choices":["대상자 정보 + 응시자 자신의 변화","음성 특성(마찰·호흡·패턴) + 언어환경 분석","지도 접근 가설 + 대상자 정보","응시자 자신의 변화 + 지도 접근 가설"],"answer":2,"explanation":"채점 루브릭에서 음성 특성은 30점, 언어환경 분석은 25점으로 가장 비중이 높다. 발성심리지도사로서 가장 핵심적인 관찰·분석 역량을 보여주는 영역이기 때문이다."},{"no":40,"stage":4,"week":14,"type":"mc","q":"다음 사례에 대한 발성심리지도사의 접근으로 가장 적절한 것은?\n\n[사례] 30대 여성. 성격이 급하고 할 말이 많음. 평소 말을 빠르게 쏟아내며, 목이 자주 쉬고 발성에 스크래치(거친 마찰)가 자주 나타남. 자기 표현은 풍부하지만 섬세한 듣기와 차분한 표현에는 약한 모습.","choices":["더 큰 소리로 자신감 있게 말하도록 훈련시킨다","가성을 위주로 한 작은 소리와 차분하고 아름다운 표현을 훈련시키고, 섬세하고 꼼꼼한 사고방식을 함께 길러준다","음역 확장만 집중적으로 시켜 표현의 폭을 넓힌다","성대 휴식만 권하고 발성 훈련은 잠시 중단한다"],"answer":2,"explanation":"성격이 급하고 표현 과잉인 유형은 강한 자극이 아닌 정돈된 자극이 필요하다. 가성 중심의 작은 소리, 차분하고 섬세한 표현 훈련으로 발성과 사고방식을 함께 조율한다. 발성과 마음은 양방향이라는 원리(11주차)가 적용된다."}],"shortAnswer":[{"no":41,"stage":1,"week":3,"type":"sa","q":"성대를 둘러싸고 진동·폐쇄·신장 등 발성의 가장 기본 작동을 담당하는 8개의 근육 가족을 터칭보이스에서 부르는 이름을 쓰시오.","answer":"성대근육그룹","acceptable":["성대 근육 그룹","성대근육 그룹","성대 근육그룹","Vocal Muscle Group","vocal muscle group"],"explanation":"하부 성대의 8개 근육은 발성의 출발을 만드는 가장 기본 단위로, 터칭보이스에서는 이를 '성대근육그룹'으로 부른다."},{"no":42,"stage":1,"week":3,"type":"sa","q":"성대 점막에서 탄력과 풍부한 점막파를 만드는 핵심 영역으로, 히알루론산이 풍부하게 분포해 수분을 머금는 공간의 이름을 쓰시오.","answer":"라이네케 공간","acceptable":["Reinke 공간","Reinke's space","라이네케","라인케 공간","Reinke","reinke"],"explanation":"라이네케 공간(Reinke's space)은 성대 점막의 두 번째 층으로, 점막의 탄력성과 풍부한 음색을 만드는 핵심이다. 1급 과정에서 본격적으로 다룬다."},{"no":43,"stage":2,"week":5,"type":"sa","q":"폐 아래에 우산처럼 자리잡고 있으며, 수축하면서 폐 아래로 내려가 폐를 깊이 채우게 만드는 호흡의 핵심 근육 이름을 쓰시오.","answer":"횡격막","acceptable":["다이아프램","diaphragm","Diaphragm","DIAPHRAGM","가로막"],"explanation":"복식호흡의 정확한 이름은 사실 횡격막 호흡이다. 배가 나오는 것은 결과이고, 횡격막의 하강이 본질이다."},{"no":44,"stage":2,"week":7,"type":"sa","q":"한 호흡으로 '아~'를 가장 길게 낼 수 있는 시간을 측정해 호흡 지지·성대 폐쇄 효율을 가늠하는 발성 측정 지표의 명칭을 약어 또는 풀어쓴 이름으로 쓰시오.","answer":"MPT","acceptable":["최대 발성 지속시간","Maximum Phonation Time","최대발성지속시간","mpt","Mpt"],"explanation":"MPT(Maximum Phonation Time)는 발성 평가의 가장 기본 지표 중 하나로, 일반인 10~15초, 훈련된 가수 30~40초가 일반적이다."},{"no":45,"stage":2,"week":8,"type":"sa","q":"입술을 살짝 다물고 공기를 내보내 입술이 '브르르르' 떨리게 만들거나, 혀를 떨어 '드르르르' 소리를 내는 등의 발성 워밍업 명칭을 쓰시오. (입술/혀 어느 쪽이든 인정)","answer":"입술트릴","acceptable":["입트릴","립트릴","입 트릴","입술 트릴","혀트릴","혀 트릴","Lip trill","lip trill","tongue trill","Tongue trill","Lip Trill","트릴","trill"],"explanation":"입술 트릴(또는 혀 트릴)은 반폐쇄 성도 훈련(SOVT)의 일종으로, 성대 부담을 줄이며 발성을 깨우는 효과적인 워밍업이다."},{"no":46,"stage":4,"week":16,"type":"sa","q":"발성심리지도사 2급 과정의 진짜 성과는 발성 기술의 수치적 향상이 아닌, 자기와 타인의 목소리를 평가가 아닌 묘사로 바라보게 되는 'OO의 변화'다. 16주차 강의의 마무리에서 강조한 이 두 글자 단어를 쓰시오.","answer":"시선","acceptable":["시선의 변화","시선변화","관점","관점의 변화","관점변화"],"explanation":"16주차의 핵심 메시지는 '시선의 변화'다. 자기 목소리와 타인의 목소리를 평가의 대상이 아닌 묘사의 대상으로 보는 시선, 그것이 2급 과정의 진짜 성과이며 발성심리지도사의 출발점이다."},{"no":47,"stage":3,"week":11,"type":"sa","q":"'슬프니까 우는 것이 아니라, 우니까 슬프다'는 명제로 요약되며, 신체 반응이 먼저 일어나고 뇌가 그것을 감정으로 해석한다고 본 19세기 후반의 심리학 이론 이름을 쓰시오.","answer":"제임스-랑게 이론","acceptable":["James-Lange 이론","제임스랑게 이론","James-Lange theory","제임스-랑게","제임스랑게","James-Lange"],"explanation":"윌리엄 제임스와 칼 랑게가 거의 동시에 제안한 이론으로, 발성 훈련을 통해 마음이 변화하는 근거가 된다."},{"no":48,"stage":3,"week":12,"type":"sa","q":"한 사람의 감정 상태가 표정·자세·목소리 등을 통해 다른 사람에게 자동으로 옮아가는 현상의 명칭을 쓰시오.","answer":"감정전이","acceptable":["Emotional contagion","emotional contagion","감정 전이","감정 전염","감정전염"],"explanation":"감정전이는 발성심리지도사가 안정된 상태를 우선시해야 하는 이유이며, 강사의 톤이 곧 수강생의 신경계에 도달한다."},{"no":49,"stage":4,"week":14,"type":"sa","q":"칼 로저스가 제시한 개념으로, 어떤 조건도 달지 않고 평가 없이 한 인간으로 그를 받아들이는 태도의 명칭을 쓰시오.","answer":"무조건적 긍정적 존중","acceptable":["Unconditional positive regard","UPR","unconditional positive regard","무조건적 긍정적 수용","무조건적 긍정존중"],"explanation":"무조건적 긍정적 존중(UPR)은 사람을 변화시키는 가장 강력한 자세 중 하나이며, 긍정 치환 대화법의 바탕이 된다."},{"no":50,"stage":4,"week":13,"type":"sa","q":"발성심리지도사가 다른 사람의 목소리를 듣고 묘사할 때 사용하는 '관찰의 3축'을 모두 쓰시오. (예: ㅇㅇ·ㅇㅇ·ㅇㅇ)","answer":"마찰·호흡·패턴","acceptable":["마찰, 호흡, 패턴","마찰/호흡/패턴","마찰 호흡 패턴","호흡·마찰·패턴","마찰·패턴·호흡","호흡·패턴·마찰","패턴·마찰·호흡","패턴·호흡·마찰","마찰,호흡,패턴","호흡,마찰,패턴","호흡, 마찰, 패턴","마찰과 호흡과 패턴"],"explanation":"발성심리지도사의 첫 번째 도구인 '듣는 귀'는 마찰(소리의 질감), 호흡(연료의 흐름), 패턴(반복되는 흐름) 3축으로 작동한다. 평가가 아닌 묘사의 자세로 듣는 것이 핵심이다."}]};
+const CASE = {"overview":{"title":"케이스 보고서 작성 안내","purpose":"응시자가 자기 언어환경을 파악하고, 가까운 사람 한 명을 관찰·분석함으로써 발성심리지도사로서의 기본 사례개념화 능력을 갖추었는지 평가한다.","length":"A4 1장 (1,000~1,500자 권장)","deadline":"검정일 4주 전까지 사전 제출","delivery":"터칭보이스 아카데미 웹 업로드 (PDF/Word)","audio":"권장 — 대상자의 음성 전·후 비교 샘플(각 30초~1분) 첨부 시 가점","consent":"필수 — 대상자 동의서 함께 제출(미제출 시 보고서 무효)"},"subjectScope":{"title":"케이스 대상자 — 누구를 선정하는가","principle":"응시자가 자기 언어환경을 파악하는 것이 출발점이다. 가족 또는 가까운 지인 중 1명을 선정한다.","eligible":["가족 — 부모, 형제·자매, 배우자, 자녀","지인 — 친구, 동료, 이웃, 종교 공동체 구성원","레슨생 — 응시자가 직접 보조 코칭을 진행한 수강생"],"excluded":["본인 자신은 대상자로 선정 불가(별도 자기 분석은 보고서 내 '응시자 언어환경'에 간단히 포함)","동의를 받기 어려운 대상(미성년자의 경우 보호자 동의 필요)","공인·연예인 등 직접 접촉 없는 인물"],"why":"가까운 사람을 선정하는 이유는, 응시자의 언어환경이 그 사람과의 관계 안에서 형성되었기 때문이다. 그 사람을 정확히 들을 수 있다는 것은 응시자 자신을 이해할 수 있다는 뜻이기도 하다."},"structure":{"title":"보고서 5요소 구성","elements":[{"no":1,"name":"대상자 정보","weight":10,"length":"3~4줄","guide":"대상자 가명, 나이대, 성별, 응시자와의 관계, 발성과 관련된 직업·경험을 간단히 적는다. 실명·주소·연락처 등 식별 정보는 절대 적지 않는다.","example":"대상자 A. 50대 여성. 응시자의 어머니. 발성 훈련 경험 없음. 가정주부로 평소 가족 외 대화 빈도가 낮음."},{"no":2,"name":"음성 특성 (마찰·호흡·패턴 3축)","weight":30,"length":"5~7줄","guide":"13주차에서 배운 관찰 3축으로 묘사한다. 평가가 아닌 묘사. 가능한 한 구체적인 음역·상황·단어와 함께 적는다.","example":"마찰: 평소 대화에서 마찰이 부드러우나 갑작스레 의견을 말해야 하는 상황에서 거칠어진다. 호흡: 한 문장의 후반부로 갈수록 짧아지고, 결론 직전 호흡이 끊긴다. 패턴: 자기 의견을 말할 때 톤이 한 단계 작아지고, 가족 이야기를 할 때만 안정된 중저음이 회복된다."},{"no":3,"name":"언어환경 분석 (가족·친구·사회)","weight":25,"length":"5~7줄","guide":"2주차에서 배운 언어환경 3요소로 대상자의 발성 형성 배경을 추론한다. 직접 인터뷰가 가능한 가까운 관계라면 자연스럽게 물어보는 것을 권장한다. 단정이 아니라 가설로 적는다.","example":"가족: 엄격한 부친 아래에서 자라며 '조용히 해'라는 말을 자주 들었다고 함. 친구: 학창 시절 내향적이었고 또래보다 어른과 더 자주 어울림. 사회: 결혼 후 가정에 집중하며 외부 발성 기회가 거의 없었음. 종합하면 어린 시절 형성된 표현 억제가 성인기에 강화되어 현재의 발성 패턴으로 굳어진 것으로 보임."},{"no":4,"name":"지도 접근 가설","weight":20,"length":"4~5줄","guide":"이 대상자를 지도한다면 어떤 방향으로 갈 것인지를 적는다. 16주 과정에서 배운 도구 중 어떤 것을 어떤 순서로 적용할지를 제안한다. 실제 지도 경험이 있다면 그 결과까지 함께 적는다.","example":"1단계: 무판단 수용으로 안전감 형성(긍정 치환 대화법). 2단계: 호흡 깊이 회복(누워서 복식호흡, 자기 전 3분). 3단계: 작은 의견을 표현하는 짧은 대화로 자기 표현 음역 확장. 직접 지도 시도 결과, 첫 호흡 훈련 후 평소보다 안정된 톤으로 자기 의견을 말하는 변화가 관찰됨."},{"no":5,"name":"관찰을 통한 응시자 자신의 변화","weight":15,"length":"4~5줄","guide":"이 케이스를 통해 응시자 자신이 무엇을 배웠고, 어떤 시선의 변화를 경험했는지 솔직하게 적는다. 발성심리지도사로서 가장 중요한 자기 성찰의 영역이다. 이 부분이 부실하면 점수가 크게 깎인다.","example":"어머니의 작은 목소리를 평생 '원래 그런 분'으로 받아들였다. 이번 관찰을 통해 그 목소리가 어떤 시간을 통과해 만들어진 것인지를 처음으로 헤아렸다. 발성심리지도사의 첫 자세가 평가가 아닌 받아들임이라는 것을 가장 가까운 사람을 통해 배웠다."}]},"audioGuidelines":{"title":"음성 전·후 비교 자료 (권장)","purpose":"응시자의 관찰 정확성을 객관적으로 검증할 수 있도록 대상자의 음성 샘플을 첨부한다. 첨부 시 평가에서 가점 부여.","rules":["전(前) 샘플: 응시자가 관찰을 시작한 시점의 대상자 음성 (30초~1분)","후(後) 샘플: 응시자의 지도 시도 또는 충분한 관찰 기간 후의 음성 (30초~1분)","녹음 환경: 조용한 실내, 핸드폰 녹음 가능","내용: 자기 소개 또는 자유 대화 (특정 노래·문장 강제 아님)","파일 형식: MP3 또는 WAV, 각 10MB 이하","필수 자료가 아니므로 첨부가 어려우면 보고서만 제출 가능"],"bonus":"음성 자료가 보고서의 음성 특성 묘사와 정확히 일치할 경우 최대 10점 가점."},"consent":{"title":"대상자 동의서 (필수 제출)","purpose":"대상자의 개인 정보와 음성 데이터가 발성심리지도사 자격 검정에만 사용된다는 것에 대한 동의.","requirements":["대상자 본인의 서명 또는 디지털 서명","동의 날짜","수집 항목 명시 (음성 샘플·언어환경 인터뷰 내용 등)","사용 목적 명시 (자격 검정용에 한정)","보관·파기 조항 (검정 종료 후 1년 내 파기)"],"template":"별도 동의서 양식 다운로드 → 작성 → 보고서와 함께 업로드","minorNote":"미성년자의 경우 법정대리인(보호자) 동의 필요."},"rubric":{"title":"채점 루브릭 (100점 만점)","note":"각 요소별로 우수(상)·보통(중)·미흡(하) 3단계로 평가하며, 총점 60점 이상이면 통과한다.","criteria":[{"element":"1. 대상자 정보","max":10,"levels":[{"tier":"상 (8~10점)","desc":"가명 처리가 적절하고, 발성 분석에 필요한 핵심 정보가 간결하게 담겨 있다."},{"tier":"중 (5~7점)","desc":"기본 정보는 있으나 발성과의 관련성이 약하거나, 가명 처리가 일부 미흡하다."},{"tier":"하 (0~4점)","desc":"정보가 부족하거나 실명·식별 정보가 노출되어 있다."}]},{"element":"2. 음성 특성 (마찰·호흡·패턴)","max":30,"levels":[{"tier":"상 (22~30점)","desc":"3축 모두 구체적이고 묘사적으로 적혀 있다. 특정 음역·단어·상황과 함께 관찰되어 있다."},{"tier":"중 (15~21점)","desc":"3축 중 1~2개가 다뤄지거나, 묘사보다 평가에 가까운 표현이 있다."},{"tier":"하 (0~14점)","desc":"추상적이고 평가적이거나, '좋다/나쁘다' 수준의 묘사에 그친다."}]},{"element":"3. 언어환경 분석","max":25,"levels":[{"tier":"상 (19~25점)","desc":"3요소(가족·친구·사회)가 균형 있게 다뤄지고, 음성 특성과의 연결이 가설로 잘 정리되어 있다."},{"tier":"중 (13~18점)","desc":"1~2개 요소만 다뤄지거나, 음성 특성과의 연결이 약하다."},{"tier":"하 (0~12점)","desc":"단순한 배경 소개에 그치고 발성과의 연결이 없다."}]},{"element":"4. 지도 접근 가설","max":20,"levels":[{"tier":"상 (15~20점)","desc":"16주 과정의 도구들을 구체적으로 적용했고, 순서와 이유가 명확하다."},{"tier":"중 (10~14점)","desc":"도구 적용이 일반적이거나, 대상자의 특성과 충분히 연결되지 않는다."},{"tier":"하 (0~9점)","desc":"추상적 조언에 그치거나, 16주 과정과의 연결이 약하다."}]},{"element":"5. 응시자 자신의 변화","max":15,"levels":[{"tier":"상 (12~15점)","desc":"솔직하고 깊이 있는 자기 성찰이 담겼으며, 발성심리지도사로서의 자세 변화가 구체적이다."},{"tier":"중 (8~11점)","desc":"변화는 언급되었으나 추상적이거나 일반적이다."},{"tier":"하 (0~7점)","desc":"자기 성찰이 없거나 형식적인 마무리에 그친다."}]}],"bonus":"음성 전·후 비교 자료 첨부 시 보고서 내용과의 일치도에 따라 최대 10점 가점.","pass":"총점 60점 이상 (음성 자료 가점 포함 110점 기준 가능, 단 보고서 본문만으로도 60점 이상 권장)."},"cautions":["1. 실명 절대 금지. 대상자는 '대상자 A', 'B' 등 가명으로만 표기.","2. 평가가 아닌 묘사. '못한다/별로다' 대신 '~한 패턴이 보인다'로 적는다.","3. 단정이 아닌 가설. 언어환경 분석은 '~으로 추론된다', '~ 가능성이 있다'로 적는다.","4. A4 1장을 넘기지 않는다. 분량 초과 시 감점.","5. 자기 성찰을 형식적으로 마무리하지 않는다. 진솔함이 가장 중요하다.","6. 동의서 미제출 시 보고서 무효 처리된다."],"example":{"title":"예시 보고서 — 대상자 A (응시자의 어머니)","note":"다음은 모범 예시이며, 그대로 베끼는 것은 표절로 처리된다.","body":{"1. 대상자 정보":"대상자 A. 50대 후반 여성. 응시자의 친어머니. 가정주부로 평생 발성 훈련 경험 없음. 평소 가족 외 대화 빈도가 낮고, 외부 모임에서 의견 표현이 거의 없는 편.","2. 음성 특성 (마찰·호흡·패턴)":"마찰: 일상 대화에서 마찰이 부드럽고 안정적이나, 자기 의견을 말해야 하는 상황(예: 가족 갈등 조정)에서 갑자기 거칠어지며 음정이 흔들린다. 호흡: 한 문장의 후반부로 갈수록 호흡이 부족하고, 결론 직전 호흡을 멈추는 패턴이 반복된다. 패턴: 가족 이야기·음식·일상 주제에서는 안정된 중저음이 유지되나, 자기 감정이나 의견을 표현해야 할 때 톤이 한 단계 작아지고 음역이 좁아진다.","3. 언어환경 분석 (가족·친구·사회)":"가족: 본인 어린 시절 엄격한 부친 아래에서 '조용히 해라', '시끄럽다'는 말을 자주 들었다고 함. 친구: 학창 시절 내향적이었고, 또래보다 어른과 어울리며 표현보다 경청을 익혔다고 함. 사회: 결혼 후 30년간 외부 활동이 거의 없어 자기 표현이 필요한 사회적 상황 자체가 적었음. 종합하면 어린 시절 형성된 표현 억제가 성인기에 강화·고착되어, 현재의 자기 의견 표현 시 발성 위축으로 나타나는 것으로 추론된다.","4. 지도 접근 가설":"1단계 (1~2주): 무판단 수용으로 안전감 형성. '어머니가 의견을 말하실 때 듣기 좋다'는 긍정 피드백을 일상에서 의도적으로 전달. 2단계 (3~6주): 호흡 회복. 자기 전 누워서 4초 들숨·8초 날숨 3분간 실시. 3단계 (7주 이후): 가족 모임에서 어머니가 짧은 의견을 말할 수 있는 안전한 자리를 의도적으로 만들어 표현 음역을 점진적으로 확장. 실제 시도 결과, 호흡 훈련 2주 후 가족 식사 자리에서 평소보다 분명한 톤으로 식단 의견을 표현하는 변화가 관찰되었다.","5. 관찰을 통한 응시자 자신의 변화":"평생 어머니의 작은 목소리를 '원래 그런 분'으로 받아들였다. 이번 관찰을 통해 그 목소리가 어떤 시간을 통과해 만들어진 것인지를 처음으로 헤아리게 되었다. 어머니의 발성 패턴은 결함이 아니라 살아남기 위한 적응이었다는 것을 이해했다. 발성심리지도사로서의 첫 자세가 평가가 아닌 받아들임이라는 강의 내용이, 가장 가까운 가족을 통해 비로소 몸에 새겨졌다."},"expectedScore":88},"consentForm":{"title":"터칭보이스 발성심리지도사 2급 — 대상자 동의서","body":["본인은 터칭보이스 발성심리지도사 2급 자격 검정 응시자 ___________의 케이스 보고서 작성을 위해 다음 사항에 동의합니다.","","1. 수집 항목","   · 음성 샘플 (대화·자기소개·노래 등, 30초~1분 이내)","   · 언어환경 관련 인터뷰 내용 (가족·친구·사회)","   · 발성 관련 관찰 기록","","2. 사용 목적","   · 발성심리지도사 2급 자격 검정 평가에 한정","   · 외부 공개·상업적 이용 불가","","3. 보관·파기","   · 검정 종료 후 1년 이내 모든 자료 파기","   · 본인 요청 시 즉시 파기 가능","","4. 권리 보장","   · 본인은 언제든 동의를 철회할 수 있음","   · 본인의 실명·식별 정보는 보고서에 포함되지 않으며 가명 처리됨","","대상자 성명(가명 표기용): _______________","대상자 본명 서명: _______________ (응시자 확인용 / 검정 종료 후 폐기)","동의 날짜: _____년 _____월 _____일","","응시자 성명: _______________","응시자 서명: _______________","","※ 미성년자의 경우 법정대리인(보호자)의 동의·서명을 함께 받습니다."]}};
+const CORP = {"hero":{"tag":"Corporate Solution","title":"내 마음의 창 '목소리'로 관리하는 직무스트레스","subtitle":"발성심리 기반 자율신경 회복 프로그램","description":"마음챙김은 어렵습니다. 발성은 즉시 변합니다. 호흡 하나, 목소리 한 마디로 자율신경이 반응하고 신경계가 안정됩니다. 터칭보이스는 발성을 다루지만 본질은 마음을 다루는 신개념 직무스트레스 관리 솔루션입니다."},"problem":{"title":"교육 담당자의 고민","items":[{"q":"교육 분위기는 좋았는데, 업무 복귀 후 제자리인 일회성 교육이 많습니다","a":"한 번 배우면 평생 따라오는 호흡과 목소리 — 강의가 끝나도 회복 도구는 몸에 남습니다."},{"q":"마음챙김·명상을 시도해도 효과가 추상적이라 직원들이 자주 이탈합니다","a":"발성은 호흡량(초), 음역(반음), 마찰감 같은 측정 가능한 지표로 변화를 즉시 확인합니다."},{"q":"민원전화 한 통, 회의 발표 한 번에 하루 종일 영향받는 직원이 많습니다","o":"발성 기반 즉시 셀프 리셋(60초 호흡 회복법)으로 응대와 응대 사이를 끊어줍니다."},{"q":"스트레스 관리는 결국 개인의 영역이라 조직 차원의 효과가 안 보입니다","o":"강사 양성 과정(2급)을 통해 사내 자체 강사 풀을 구축하면 지속 가능한 자기 돌봄 문화가 만들어집니다."}]},"evidence":{"title":"왜 발성인가 — 학문적 근거","points":[{"title":"체화된 인지 (Embodied Cognition)","body":"마음은 뇌에만 있지 않고 자세·호흡·근육 등 몸 전체에 분산되어 있습니다. 몸의 상태를 바꾸면 마음의 상태가 따라옵니다."},{"title":"제임스-랑게 이론 (1885~)","body":"신체 반응이 먼저 일어나고 뇌가 그것을 해석해 감정으로 인식합니다. 톤을 바꾸면 마음이 따라오는 발성 훈련의 작동 원리입니다."},{"title":"PNAS 2016 변조 음성 연구","body":"미국 국립과학원회보 연구. 자기 목소리가 밝게 들리면 실제 감정도 따라 밝아진다는 것이 측정 가능한 생리지표로 확인되었습니다."},{"title":"라이히 근육 갑옷 이론","body":"표현하지 못한 감정은 만성 근육 긴장으로 신체에 새겨집니다. 발성 근육의 경직을 풀어주는 것이 마음의 풀림과 직결됩니다."},{"title":"HRV·자율신경 안정","body":"분당 6회의 깊은 호흡을 5분만 해도 심박변이도(HRV)가 회복됩니다. 발성 훈련은 가장 직접적인 자율신경 안정 도구입니다."}]},"programs":[{"no":1,"tag":"전 직군","title":"직무스트레스 회복 프로그램","hashtag":"#회복탄력성 #자율신경 #몰입회복","target":"정부기관·관공서·공기업·공공기관 직원, 일반 기업 임직원","duration":"4시간 / 1 Day / 2 Day / 8주 온라인 (선택)","goal":"발성 회복을 통한 자율신경 안정 및 업무 몰입 회복","modules":["내 목소리가 보내는 신호 — 자기 진단 (호흡량 MPT·마찰감·음역 측정)","호흡 회복 — 4초 들숨·8초 날숨, 자율신경 안정 훈련","표현 회복 — 자기 표현 음역 확장과 안전한 자리 만들기","시선의 변화 — 평생 가는 자기 돌봄 도구"],"expected":["회복탄력성 강화","자율신경 안정 (HRV 개선)","업무 몰입도 향상"]},{"no":2,"tag":"응대 직군","title":"감정노동·민원응대 발성 프로그램","hashtag":"#감정노동 #민원응대 #셀프리셋","target":"콜센터 상담사, 민원 응대 공무원, 서비스직 직원, 의료·돌봄 종사자","duration":"1 Day / 7시간 / 4주 온라인","goal":"발성 기반 긍정 치환 대화법 습득 및 응대 사이 셀프 리셋","modules":["감정노동의 발성학 — 왜 목이 잠기는가 (라이히·인두 근육)","긍정 치환 대화법 — 응대 매뉴얼 (받아들임·칭찬·작은 성공)","60초 셀프 호흡 리셋 — 응대와 응대 사이 회복법","음이탈을 발견했을 때 — 방어기제 셀프 케어"],"expected":["감정노동 소진 완화","민원 응대 만족도 향상","응대 직원 이직률 감소"]},{"no":3,"tag":"관리자","title":"리더십 발성 프로그램","hashtag":"#감정전이 #리더의톤 #신뢰감","target":"팀장·임원·관리자·HR 리더","duration":"2시간 × 4회 또는 4주 온라인","goal":"신뢰감 있는 목소리와 감정전이로 팀 안정시키기","modules":["리더의 목소리 — 듀크대 CEO 연구 (중저음 안정 톤의 신뢰감)","감정전이 — 리더의 안정이 팀의 안정으로 (감정 전염의 과학)","듣는 귀 — 마찰·호흡·패턴 3축으로 팀원 상태 읽기","긍정 치환 대화법 — 피드백·코칭의 언어 기술"],"expected":["리더의 신뢰감 강화","팀 분위기 안정","1:1 코칭 역량 향상"]},{"no":4,"tag":"사내 강사 양성","title":"사내 발성심리지도사 양성 (자격증 발급)","hashtag":"#자격증 #사내강사 #지속가능","target":"HR·교육 담당자, 사내 상담 인력, 자체 케어 인력 후보자","duration":"16주 발성심리지도사 2급 과정 (온라인)","goal":"사내 자체 케어 인력 양성 및 지속 가능한 자기 돌봄 문화 구축","modules":["1단계 (1~4주) — 발성심리 기초 (목소리·환경·해부·공명)","2단계 (5~8주) — 호흡과 발성 훈련","3단계 (9~12주) — 음이탈과 심리 (방어기제·소거 학습)","4단계 (13~16주) — 지도 실습과 검정 (긍정 치환 대화법·케이스 보고서)"],"expected":["사내 발성심리지도사 2급 자격 보유자 확보","외부 강사 의존도 감소","지속적 자기 돌봄 문화"]}],"effects":[{"icon":"♻︎","title":"회복탄력성 강화","en":"Resilience","body":"발성 훈련으로 자율신경계의 균형이 회복되면 같은 스트레스 상황에서도 흔들림이 줄어듭니다. 분당 6회 깊은 호흡 5분으로 HRV가 회복됩니다."},{"icon":"♡","title":"원활한 소통","en":"Communication","body":"긍정 치환 대화법과 듣는 귀 훈련으로 동료와의 신뢰 관계가 회복됩니다. 감정전이의 원리로 리더의 안정이 팀 전체로 퍼집니다."},{"icon":"☾","title":"수면의 질 향상","en":"Quality Sleep","body":"발성 훈련의 부수 효과로 몸과 마음의 이완이 깊어지며 자기 전 호흡 훈련으로 깊은 수면이 가능해집니다."}],"difference":{"title":"왜 터칭보이스인가","items":[{"from":"명상은 어렵습니다","to":"발성은 즉시 변합니다","body":"5분 훈련으로 호흡량·톤·자율신경 변화가 측정됩니다."},{"from":"심리치료는 깊습니다","to":"발성 훈련은 매일 가능합니다","body":"전문가 없이도 셀프 케어로 일상에 통합됩니다."},{"from":"강의는 끝납니다","to":"호흡과 목소리는 평생 따라옵니다","body":"체화된 인지의 원리로 강의 종료 후에도 지속 가능합니다."},{"from":"추상적 기대효과","to":"측정 가능한 변화","body":"MPT·HNR·음역·자가 마찰감 척도로 효과를 수치로 확인합니다."}]},"process":{"title":"도입 절차","steps":[{"no":1,"title":"사전 협의","body":"교육 담당자와 1:1 미팅. 조직 현황·목표·예산 협의."},{"no":2,"title":"맞춤 진단","body":"기관 특성에 맞는 프로그램 매칭. 사전 자가 진단 시행."},{"no":3,"title":"전용 페이지 구축","body":"기관 전용 로그인 페이지와 수강실 구축 (1주일 내)."},{"no":4,"title":"프로그램 진행","body":"온라인 강의·실시간 워크숍·1:1 코칭 (선택 조합)."},{"no":5,"title":"효과 측정 보고서","body":"프로그램 전후 측정 비교 보고서 발급."},{"no":6,"title":"사후 관리","body":"분기별 후속 케어 및 사내 발성심리지도사 양성 (선택)."}]},"references":{"title":"도입 기관 (가나다 순)","note":"실제 도입 기관은 계약 체결 시 안내됩니다.","sectors":["정부기관·관공서","공기업·공공기관","민원응대 부서","콜센터","교육기관"]},"cta":{"title":"지금 도입 문의하세요","subtitle":"기관 맞춤형 제안서를 무료로 제공합니다","button":"도입 문의하기","demo_link":"데모 페이지 미리보기"}};
+const SCRIPTS = { level2: L2, level1: L1 };
+
+function go(v){
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
+  document.getElementById('view-'+v).classList.add('active');
+  document.querySelectorAll('.nav a').forEach(a=>a.classList.toggle('on', a.dataset.go===v));
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+document.querySelectorAll('[data-go]').forEach(el=> el.addEventListener('click',()=>go(el.dataset.go)) );
+
+document.getElementById('tagline').textContent = DATA.brand.tagline;
+function fillPhilo(t,b,v){
+  document.getElementById(t).textContent = DATA.philosophy.title;
+  document.getElementById(b).innerHTML = DATA.philosophy.paragraphs.map(p=>'<p>'+p+'</p>').join('');
+  document.getElementById(v).innerHTML = DATA.philosophy.values.map(x=>'<div class="value"><div class="k">'+x.k+'</div><div class="v">'+x.v+'</div></div>').join('');
+}
+fillPhilo('philo-title','philo-body','philo-values');
+fillPhilo('philo-title2','philo-body2','philo-values2');
+
+document.getElementById('home-cards').innerHTML = DATA.programs.map(function(p,i){
+  return '<div class="pcard '+p.color+'" data-open="'+i+'"><span class="pbadge">'+p.badge+'</span>'+
+  '<h3>'+p.title+'</h3><div class="pdur">'+p.duration+'</div>'+
+  '<div class="prole">'+p.role+'</div><div class="pcta">강의실 입장</div></div>';
+}).join('');
+document.querySelectorAll('.pcard').forEach(function(c){ c.addEventListener('click',function(){ openRoom(+c.dataset.open); go('programs'); }); });
+
+function renderSection(s){
+  var h='<div class="tsec"><h4>'+s.h+'</h4>';
+  if(s.items) h+='<div class="tlist">'+s.items.map(function(it){return '<div class="titem"><div class="a">'+it[0]+'</div><div class="b">'+it[1]+'</div></div>';}).join('')+'</div>';
+  if(s.table) h+='<table class="ttab"><thead><tr>'+s.table.head.map(function(x){return '<th>'+x+'</th>';}).join('')+'</tr></thead><tbody>'+s.table.rows.map(function(r){return '<tr>'+r.map(function(c){return '<td>'+c+'</td>';}).join('')+'</tr>';}).join('')+'</tbody></table>';
+  if(s.flow){ h+='<div class="flows">'+s.flow.map(function(f){return '<div class="flow '+f.color+'"><div class="fl">'+f.label+'</div>'+f.steps.map(function(st){return '<div class="step">'+st+'</div>';}).join('')+'</div>';}).join('')+'</div>'; if(s.note) h+='<div class="tnote">'+s.note+'</div>'; }
+  return h+'</div>';
+}
+document.getElementById('theory-grid').innerHTML = DATA.theory.map(function(ch){
+  return '<div class="tcard"><div class="tcard-head" onclick="this.parentElement.classList.toggle(\'open\')">'+
+  '<div class="tcard-no">'+ch.no+'</div><div class="tcard-tt"><h3>'+ch.title+'</h3><p>'+ch.summary+'</p></div><div class="tcard-arrow">\u2304</div></div>'+
+  '<div class="tcard-body"><div class="tcard-inner">'+ch.sections.map(renderSection).join('')+'</div></div></div>';
+}).join('');
+
+var roomTabs = document.getElementById('room-tabs');
+var roomBody = document.getElementById('room-body');
+roomTabs.innerHTML = DATA.programs.map(function(p,i){return '<div class="rtab '+p.color+'" data-i="'+i+'">'+p.badge+'<span class="d">'+p.duration+'</span></div>';}).join('');
+
+function lessonHtml(prog, wk){
+  var sc = SCRIPTS[prog.id] && SCRIPTS[prog.id][wk.w];
+  if(!sc) return '<div class="no-script">이 주차의 60분 상세 스크립트는 준비 중입니다.<br><span style="font-size:.76rem;color:var(--plum-soft)">2급 전체와 1급 1단계가 완성되었습니다. 나머지는 순차 업데이트됩니다.</span></div>';
+  var tl = ['도입','이론','실습','정리'].map(function(p){return '<div class="tl t-'+p+'">'+p+'</div>';}).join('');
+  var blocks = sc.blocks.map(function(b){
+    return '<div class="block b-'+b.phase+'"><div class="block-head">'+b.phase+' \u00B7 '+b.title+'<span class="bmin">'+b.min+'분</span></div>'+
+    '<div class="block-body">'+
+    '<div class="say"><span class="say-label">강사 멘트</span>'+b.say.map(function(s){return '<div class="line">'+s+'</div>';}).join('')+'</div>'+
+    '<div class="guide"><span class="guide-label">진행 가이드</span><ul>'+b.guide.map(function(g){return '<li>'+g+'</li>';}).join('')+'</ul></div>'+
+    '</div></div>';
+  }).join('');
+  var vid = wk.video ? '<div class="video-slot"><iframe src="'+wk.video+'" allowfullscreen></iframe></div>'
+    : '<div class="video-slot"><div class="vi">\u25B6</div><div class="vt">강의 영상 준비 중</div><div class="vhint">데이터의 video 필드에 URL을 넣으면 자동 임베드</div></div>';
+  var refChips = (sc.ref && sc.ref.length)
+    ? '<div class="ref-chips"><span class="rc-label">참고문헌</span>'+sc.ref.map(function(n){return '<span class="rc" title="아래 참고문헌 '+n+'번">['+n+']</span>';}).join('')+'</div>'
+    : '';
+  return '<div class="lesson"><div class="lesson-meta"><b>수업 목표</b> \u00B7 '+sc.goal+'<br><b>준비물</b> \u00B7 '+sc.materials+refChips+'</div>'+
+    '<div class="timeline">'+tl+'</div>'+blocks+vid+'</div>';
+}
+function weekHtml(prog, wk){
+  var hasScript = SCRIPTS[prog.id] && SCRIPTS[prog.id][wk.w];
+  return '<div class="week"><div class="week-head" onclick="this.parentElement.classList.toggle(\'open\')">'+
+    '<div class="week-w">'+wk.w+'</div><div class="week-t">'+wk.t+'</div><div class="week-d">'+wk.d+'</div>'+
+    (hasScript?'<span class="week-script-badge">60분 스크립트</span>':'')+
+    '<div class="week-arrow">\u2304</div></div>'+
+    '<div class="week-body"><div class="week-inner">'+
+    '<div class="week-tags"><span class="wtag">'+wk.cap+'</span>'+(wk.data&&wk.data!=='—'?'<span class="wtag data">데이터 \u00B7 '+wk.data+'</span>':'')+'</div>'+
+    lessonHtml(prog, wk)+'</div></div></div>';
+}
+function immHtml(im){ if(!im) return '';
+  return '<div class="imm"><h3>'+im.title+'</h3><p class="intro">'+im.intro+'</p><div class="imm-els">'+
+    im.elements.map(function(e,i){return '<div class="imm-el"><div class="n">'+(i+1)+'</div><div><div class="ek">'+e[0]+'</div><div class="ev">'+e[1]+'</div></div></div>';}).join('')+
+    '</div><div class="imm-ethics">'+im.ethics+'</div></div>';
+}
+function simpleTable(obj){
+  return '<table class="reftab"><thead><tr>'+obj.head.map(function(x){return '<th>'+x+'</th>';}).join('')+'</tr></thead><tbody>'+
+    obj.rows.map(function(r){return '<tr>'+r.map(function(c){return '<td>'+c+'</td>';}).join('')+'</tr>';}).join('')+'</tbody></table>';
+}
+function refHtml(R){
+  if(!R) return '';
+  var h = '<div class="ref-wrap"><div class="ref-head" onclick="this.parentElement.classList.toggle(\'open\')">'+
+    '<h3>1급 전문 자료실 — 음성분석 · 근육별 처방 · 심리 기법</h3><span class="rtag">전문가용</span><span class="ra">\u2304</span></div>'+
+    '<div class="ref-body"><div class="ref-inner">';
+
+  // 근육별 주파수 매핑
+  var mf = R.muscleFreqMap;
+  h += '<div class="ref-block"><h4>'+mf.title+'</h4><div class="sub-note">'+mf.note+'</div>';
+  h += '<div class="ref-sublabel">'+mf.layer1.label+'</div>'+
+    simpleTable({head:["근육","기여 주파수·역할","소리 특성","활성 신호"], rows:mf.layer1.rows});
+  h += '<div class="ref-sublabel">'+mf.layer2.label+'</div>'+
+    simpleTable({head:["근육","기여 주파수·역할","소리 특성","활성 신호"], rows:mf.layer2.rows});
+  h += '<div class="ref-sublabel">'+mf.formantGuide.label+'</div>'+
+    simpleTable({head:["포먼트","결정 요인","해석"], rows:mf.formantGuide.rows});
+  h += '</div>';
+
+  // Big Five 음향
+  var bf = R.bigFiveAcoustic;
+  h += '<div class="ref-block"><h4>'+bf.title+'</h4><div class="sub-note">'+bf.note+'</div>'+
+    simpleTable({head:["성격 요인","음향 경향","관련 지표","발성 지도 시사점"], rows:bf.rows});
+  h += '<div class="ref-sublabel">'+bf.interpretation.label+'</div>'+
+    simpleTable({head:["음성 패턴","추론 & 지도 방향"], rows:bf.interpretation.cases});
+  h += '</div>';
+
+  // 근육별 처방 훈련
+  var mt = R.muscleTraining;
+  h += '<div class="ref-block"><h4>'+mt.title+'</h4><div class="sub-note">'+mt.note+'</div>';
+  h += mt.rows.map(function(t){
+    return '<div class="train-card"><div class="tm">'+t.muscle+'</div><div class="tr">'+
+      '<div class="tk">문제</div><div class="tv">'+t.problem+'</div>'+
+      '<div class="tk">처방 발음·음역</div><div class="tv">'+t.sound+'</div>'+
+      '<div class="tk">훈련</div><div class="tv">'+t.drill+'</div>'+
+      '</div><div class="tcase">사례 · '+t.case+'</div></div>';
+  }).join('');
+  h += '</div>';
+
+  // 심리 기법
+  var pt = R.psychTechniques;
+  h += '<div class="ref-block"><h4>'+pt.title+'</h4><div class="sub-note">'+pt.note+'</div>';
+  h += pt.techniques.map(function(t){
+    return '<div class="psy-card"><div class="pn">'+t.name+'</div><div class="ph">'+t.how+'</div>'+
+      '<ol>'+t.steps.map(function(s){return '<li>'+s+'</li>';}).join('')+'</ol>'+
+      '<div class="psay">'+t.say+'</div></div>';
+  }).join('');
+  h += '</div>';
+
+  h += '</div></div></div>';
+  return h;
+}
+function proHtml(P){
+  if(!P) return '';
+  var h = '<div class="pro-wrap"><div class="pro-head" onclick="this.parentElement.classList.toggle(\'open\')">'+
+    '<h3>1급 프로페셔널 트레이너 자료 — 튜닝 · 공명 · 장르 · 무대 안정</h3><span class="rtag">연습생/프로</span><span class="ra">\u2304</span></div>'+
+    '<div class="pro-body"><div class="pro-inner">';
+
+  // 하부 튜닝
+  var lt = P.lowerTuning;
+  h += '<div class="pro-block"><h4>'+lt.title+'</h4><div class="pintro">'+lt.intro+'</div><div class="pnote">'+lt.note+'</div>'+
+    simpleTable({head:["튜닝 축","담당 근육","조절 방향","발음·드릴","음향 확인"], rows:lt.params})+
+    '<div class="flowbox"><div class="fbl">'+lt.drillFlow.label+'</div><ol>'+lt.drillFlow.steps.map(function(s){return '<li>'+s+'</li>';}).join('')+'</ol></div></div>';
+
+  // 인두 협업
+  var pc = P.pharyngealCombo;
+  h += '<div class="pro-block"><h4>'+pc.title+'</h4><div class="pintro">'+pc.intro+'</div><div class="pnote">'+pc.note+'</div>'+
+    simpleTable({head:["공명 설계","근육 조합","음색 결과","발음·드릴","장르"], rows:pc.combos})+
+    '<div class="flowbox"><div class="fbl">'+pc.drillFlow.label+'</div><ol>'+pc.drillFlow.steps.map(function(s){return '<li>'+s+'</li>';}).join('')+'</ol></div></div>';
+
+  // Big5 설계
+  var bd = P.big5Design;
+  h += '<div class="pro-block"><h4>'+bd.title+'</h4><div class="pintro">'+bd.intro+'</div><div class="pnote">'+bd.note+'</div>'+
+    simpleTable({head:["요인","높을 때 설계","낮을 때 설계"], rows:bd.factors})+
+    '<div class="flowbox"><div class="fbl">'+bd.designExercise.label+'</div><ol>'+bd.designExercise.steps.map(function(s){return '<li>'+s+'</li>';}).join('')+'</ol></div></div>';
+
+  // 신경성 프로토콜
+  var np = P.neuroticismProtocol;
+  h += '<div class="pro-block"><h4>'+np.title+'</h4><div class="pintro">'+np.intro+'</div><div class="pnote">'+np.note+'</div>';
+  h += np.pillars.map(function(p){
+    return '<div class="psy-card"><div class="pn">'+p.name+'</div><div class="ph">'+p.how+'</div>'+
+      '<ol>'+p.steps.map(function(s){return '<li>'+s+'</li>';}).join('')+'</ol>'+
+      '<div class="psay" style="border-left-color:var(--c-green); background:rgba(30,86,49,.06)">측정 · '+p.metric+'</div></div>';
+  }).join('');
+  h += '<div class="pnote" style="border-left-color:var(--c-green); background:rgba(30,86,49,.06); color:#1E5631">'+np.maintenance+'</div></div>';
+
+  // 장르별
+  var g = P.genres;
+  h += '<div class="pro-block"><h4>'+g.title+'</h4><div class="pintro">'+g.intro+'</div><div class="pnote">'+g.note+'</div>';
+  h += g.list.map(function(x){
+    return '<div class="genre '+x.color+'"><div class="genre-head">'+x.key+'<span class="gsound">'+x.sound+'</span></div>'+
+      '<div class="genre-body">'+
+      '<div class="genre-row"><span class="gk">주훈련 근육</span><span class="gv">'+x.muscle+'</span></div>'+
+      '<div class="genre-row"><span class="gk">공명 설계</span><span class="gv">'+x.resonance+'</span></div>'+
+      '<div class="genre-row"><span class="gk">발음</span><span class="gv">'+x.diction+'</span></div>'+
+      '<div class="genre-row"><span class="gk">리듬</span><span class="gv">'+x.rhythm+'</span></div>'+
+      '<div class="genre-row"><span class="gk">비브라토</span><span class="gv">'+x.vibrato+'</span></div>'+
+      '<div class="gtrain"><b>훈련</b> · '+x.train+'</div>'+
+      '<div class="gref">근거 · '+x.ref+'</div>'+
+      '</div></div>';
+  }).join('');
+  // 발음·리듬 원리
+  h += '<div class="ref-sublabel">'+g.dictionPrinciple.label+'</div><div class="sub-note">'+g.dictionPrinciple.note+'</div>'+
+    simpleTable({head:["스펙트럼","발음 특징","집중 위치"], rows:g.dictionPrinciple.axis});
+  h += '<div class="ref-sublabel">'+g.rhythmPrinciple.label+'</div><div class="sub-note">'+g.rhythmPrinciple.note+'</div>'+
+    simpleTable({head:["장르","리듬 핵심"], rows:g.rhythmPrinciple.items});
+  h += '</div>';
+
+  h += '</div></div></div>';
+  return h;
+}
+function refsListHtml(refs){
+  if(!refs || !refs.length) return '';
+  // 유형별 그룹화
+  var groups = {};
+  refs.forEach(function(r){ (groups[r.type] = groups[r.type] || []).push(r); });
+  var inner = Object.keys(groups).map(function(t){
+    return '<div class="reflist-group"><div class="reflist-type">'+t+'</div>'+
+      groups[t].map(function(r){
+        return '<div class="reflist-item"><span class="rli-n">['+r.n+']</span><div class="rli-body"><div class="rli-cite">'+r.cite+'</div>'+(r.note?'<div class="rli-note">'+r.note+'</div>':'')+'</div></div>';
+      }).join('')+'</div>';
+  }).join('');
+  return '<div class="reflist-wrap"><div class="reflist-head" onclick="this.parentElement.classList.toggle(\'open\')">'+
+    '<h3>참고문헌 — 1급 전문 지식 출처</h3><span class="rtag" style="background:var(--gold)">'+refs.length+'편</span><span class="ra" style="color:var(--gold)">\u2304</span></div>'+
+    '<div class="reflist-body"><div class="reflist-inner"><div class="reflist-note">각 주차 수업의 [번호]가 아래 문헌에 대응합니다. 발성 과학·보컬 교육·심리학·무대불안·데이터 윤리 분야를 교차 참고했습니다.</div>'+inner+'</div></div></div>';
+}
+function roomHtml(p,i){
+  return '<div class="room'+(i===0?' active':'')+'" data-i="'+i+'">'+
+    '<div class="prog-meta">'+
+      '<div class="meta"><div class="ml">기간</div><div class="mv">'+p.duration+'</div></div>'+
+      '<div class="meta"><div class="ml">역할</div><div class="mv">'+p.role+'</div></div>'+
+      '<div class="meta"><div class="ml">이론 깊이</div><div class="mv">'+p.depth+'</div></div>'+
+      (p.req?'<div class="meta"><div class="ml">응시 자격</div><div class="mv">'+p.req+'</div></div>':'')+
+    '</div>'+
+    '<div class="exam-box"><div class="el">검정 기준</div><div class="ev">'+p.exam+'</div></div>'+
+    (p.id==='level1'?refHtml(L1REF):'')+
+    (p.id==='level1'?proHtml(L1PRO):'')+
+    (p.id==='master'?immHtml(p.immersion):'')+
+    p.stages.map(function(st){return '<div class="stage'+(st.highlight?' hl':'')+'"><div class="stage-name"><span class="dot"></span>'+st.name+'</div>'+
+      '<div class="weeks">'+st.weeks.map(function(wk){return weekHtml(p,wk);}).join('')+'</div></div>';}).join('')+
+    (p.id==='level1'?refsListHtml(L1REFS):'')+
+    '</div>';
+}
+roomBody.innerHTML = DATA.programs.map(roomHtml).join('');
+
+function openRoom(i){
+  document.querySelectorAll('.rtab').forEach(function(x){x.classList.remove('active');});
+  document.querySelectorAll('.room').forEach(function(x){x.classList.remove('active');});
+  roomTabs.children[i].classList.add('active');
+  document.querySelector('.room[data-i="'+i+'"]').classList.add('active');
+}
+roomTabs.addEventListener('click', function(e){ var t=e.target.closest('.rtab'); if(t) openRoom(+t.dataset.i); });
+openRoom(0);
+
+document.querySelector('.tcard') && document.querySelector('.tcard').classList.add('open');
+
+// ───────────────────────────────────────
+// 검정·자격 페이지
+// ───────────────────────────────────────
+(function renderExam(){
+  if(!EXAM) return;
+
+  // 1. 개요 + 응시 자격
+  var introEl = document.getElementById('exam-intro');
+  introEl.innerHTML =
+    '<div class="exam-hero">'+
+      '<h3>'+EXAM.overview.title+'</h3>'+
+      '<div class="sub">'+EXAM.overview.subtitle+'</div>'+
+      '<p>'+EXAM.overview.purpose+'</p>'+
+      '<p style="margin-top:.5rem"><b>역할 범위 · </b>'+EXAM.overview.role+'</p>'+
+      '<div class="exam-elig">'+
+        '<h4>응시 자격</h4>'+
+        '<ul>'+EXAM.eligibility.requirements.map(function(r){return '<li>'+r+'</li>';}).join('')+'</ul>'+
+        '<div class="note">'+EXAM.eligibility.note+'</div>'+
+      '</div>'+
+    '</div>';
+
+  // 2. 4영역 + 합격 기준
+  var domEl = document.getElementById('exam-domains');
+  var domHtml = '<div class="exam-section-title">검정 4영역 · 배점</div><div class="dom-cards">';
+  EXAM.domains.forEach(function(d){
+    domHtml += '<div class="dom-card">'+
+      '<div class="dweight">'+d.weight+'%</div>'+
+      '<div class="dname">'+d.name+'</div>'+
+      '<div class="drow"><div class="dk">형식</div><div class="dv">'+d.format+'</div></div>'+
+      '<div class="drow"><div class="dk">소요</div><div class="dv">'+d.duration+'</div></div>'+
+      '<div class="drow"><div class="dk">통과</div><div class="dv">'+d.pass+'</div></div>'+
+      '<div class="ddetail">'+d.detail+'</div>'+
+    '</div>';
+  });
+  domHtml += '</div>';
+  domHtml += '<div class="pass-card"><h4>최종 합격 기준</h4>'+
+    '<p>· 총점: '+EXAM.passing.total+'</p>'+
+    '<p>· 영역별: '+EXAM.passing.domain+'</p>'+
+    '<p class="note">'+EXAM.passing.note+'</p>'+
+  '</div>';
+  domEl.innerHTML = domHtml;
+
+  // 3. 운영 규정 + 합격 후
+  var rulesEl = document.getElementById('exam-rules');
+  rulesEl.innerHTML =
+    '<div class="exam-section-title">시험 운영 규정</div>'+
+    '<div class="rule-card">'+
+      '<h4>플랫폼 · '+EXAM.operation.platform+' / 시행 · '+EXAM.operation.schedule+'</h4>'+
+      '<ul>'+EXAM.operation.rules.map(function(r){return '<li>'+r+'</li>';}).join('')+'</ul>'+
+    '</div>'+
+    '<div class="exam-section-title">합격 후 자격</div>'+
+    '<div class="pass-card" style="background:rgba(30,86,49,.05); border-color:var(--green)">'+
+      '<h4 style="color:var(--green)">자격증 발급 · '+EXAM.certification.issuance+'</h4>'+
+      '<p>· 유효기간: '+EXAM.certification.validity+'</p>'+
+      '<p>· 다음 단계: '+EXAM.certification.nextStep+'</p>'+
+      '<p style="margin-top:.5rem"><b>활동 자격</b></p>'+
+      '<ul style="margin-left:1.1rem; font-size:.83rem; color:var(--ink)">'+
+        EXAM.certification.privilege.map(function(p){return '<li>'+p+'</li>';}).join('')+
+      '</ul>'+
+    '</div>';
+
+  // 4. 모의시험 시작 버튼
+  var launcherEl = document.getElementById('exam-mock-launcher');
+  launcherEl.innerHTML =
+    '<div class="exam-section-title">이론 필기 모의시험</div>'+
+    '<div class="mock-launcher">'+
+      '<h3>50문항 · 75분 모의시험</h3>'+
+      '<p>객관식 40문항 + 단답형 10문항으로 구성된 실제 검정 형식의 모의시험입니다.<br>제출 시 자동 채점되며, 영역별 성취도와 오답 해설을 함께 보실 수 있습니다.</p>'+
+      '<button class="mock-btn" onclick="startMock()">모의시험 시작 \u2192</button>'+
+    '</div>';
+
+  // 5. 케이스 보고서 안내
+  if(CASE) renderCaseReport();
+})();
+
+// ───────────────────────────────────────
+// 케이스 보고서 안내 렌더링
+// ───────────────────────────────────────
+function renderCaseReport(){
+  var el = document.getElementById('exam-case');
+  if(!el || !CASE) return;
+
+  var html = '<div class="exam-section-title">케이스 보고서</div>';
+  html += '<div class="case-wrap">';
+
+  // 개요
+  var ov = CASE.overview;
+  html += '<div class="case-overview">'+
+    '<h3>'+ov.title+'</h3>'+
+    '<p class="purpose">'+ov.purpose+'</p>'+
+    '<div class="case-meta">'+
+      '<div class="ck">분량</div><div class="cv">'+ov.length+'</div>'+
+      '<div class="ck">제출 기한</div><div class="cv">'+ov.deadline+'</div>'+
+      '<div class="ck">제출 방법</div><div class="cv">'+ov.delivery+'</div>'+
+      '<div class="ck">음성 자료</div><div class="cv">'+ov.audio+'</div>'+
+      '<div class="ck">동의서</div><div class="cv">'+ov.consent+'</div>'+
+    '</div>'+
+  '</div>';
+
+  // 대상자 범위 패널
+  var sc = CASE.subjectScope;
+  html += panel('subj', sc.title,
+    '<p style="font-size:.88rem; color:var(--ink); line-height:1.6; margin-bottom:.7rem">'+sc.principle+'</p>'+
+    '<div style="font-weight:700; color:var(--green); font-size:.85rem; margin:.5rem 0 .3rem">선정 가능한 대상</div>'+
+    '<ul class="scope-list">'+sc.eligible.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>'+
+    '<div style="font-weight:700; color:#8a2020; font-size:.85rem; margin:.7rem 0 .3rem">선정할 수 없는 대상</div>'+
+    '<ul class="scope-list excl">'+sc.excluded.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>'+
+    '<div class="scope-why">'+sc.why+'</div>',
+    true);
+
+  // 5요소 구성 패널
+  var st = CASE.structure;
+  html += panel('struct', st.title,
+    st.elements.map(function(e){
+      return '<div class="elem-card">'+
+        '<div class="elem-head">'+
+          '<span class="elem-no">'+e.no+'.</span>'+
+          '<span class="elem-name">'+e.name+'</span>'+
+          '<span class="elem-weight">'+e.weight+'점</span>'+
+        '</div>'+
+        '<div class="elem-length">권장 분량: '+e.length+'</div>'+
+        '<div class="elem-guide" style="margin-top:.4rem">'+e.guide+'</div>'+
+        '<div class="elem-ex"><div class="exlabel">예시</div>'+e.ex_replaced(e.example)+'</div>'+
+      '</div>';
+    }).join(''),
+    true);
+
+  // 음성 자료 패널
+  var au = CASE.audioGuidelines;
+  html += panel('audio', au.title,
+    '<p style="font-size:.88rem; color:var(--ink); margin-bottom:.6rem; line-height:1.6">'+au.purpose+'</p>'+
+    '<ul class="scope-list">'+au.rules.map(function(r){return '<li>'+r+'</li>';}).join('')+'</ul>'+
+    '<div style="margin-top:.7rem; padding:.6rem .8rem; background:rgba(184,134,42,.1); border-radius:8px; font-size:.83rem; color:#6b5012"><b>가점 · </b>'+au.bonus+'</div>',
+    false);
+
+  // 동의서 패널
+  var co = CASE.consent;
+  html += panel('consent', co.title,
+    '<p style="font-size:.88rem; color:var(--ink); margin-bottom:.6rem">'+co.purpose+'</p>'+
+    '<div style="font-weight:700; color:var(--navy); font-size:.85rem; margin-bottom:.3rem">필수 포함 사항</div>'+
+    '<ul class="scope-list">'+co.requirements.map(function(r){return '<li>'+r+'</li>';}).join('')+'</ul>'+
+    '<div style="margin-top:.7rem; padding:.6rem .8rem; background:rgba(160,40,40,.06); border-radius:8px; font-size:.83rem; color:#7a2020"><b>미성년자 · </b>'+co.minorNote+'</div>'+
+    '<div style="margin-top:1rem; font-weight:700; color:var(--navy); font-size:.85rem; margin-bottom:.4rem">동의서 양식 (전문)</div>'+
+    '<div class="consent-form">'+CASE.consentForm.body.join('\\n')+'</div>'+
+    '<div class="consent-actions">'+
+      '<button class="consent-btn primary" onclick="downloadConsent()">동의서 다운로드 (TXT)</button>'+
+    '</div>',
+    false);
+
+  // 채점 루브릭 패널
+  var rb = CASE.rubric;
+  html += panel('rubric', rb.title,
+    '<p style="font-size:.83rem; color:var(--ink-soft); font-style:italic; margin-bottom:.8rem">'+rb.note+'</p>'+
+    rb.criteria.map(function(c){
+      return '<div style="margin-bottom:1rem">'+
+        '<div class="rubric-elem-name">'+c.element+' <span style="color:var(--gold); font-size:.82rem">(최대 '+c.max+'점)</span></div>'+
+        c.levels.map(function(lv){
+          var cls = lv.tier.startsWith('상')?'high':(lv.tier.startsWith('중')?'mid':'low');
+          return '<div class="rubric-row"><div class="rubric-tier '+cls+'">'+lv.tier+'</div><div class="rubric-desc">'+lv.desc+'</div></div>';
+        }).join('')+
+      '</div>';
+    }).join('')+
+    '<div style="margin-top:.8rem; padding:.6rem .8rem; background:rgba(184,134,42,.08); border-radius:8px; font-size:.83rem"><b>가점 · </b>'+rb.bonus+'</div>'+
+    '<div style="margin-top:.4rem; padding:.6rem .8rem; background:rgba(30,86,49,.08); border-radius:8px; font-size:.83rem; color:#1E5631"><b>합격 · </b>'+rb.pass+'</div>',
+    false);
+
+  // 주의사항 패널
+  html += panel('caution', '작성 시 주의사항',
+    '<div class="caution-card"><ul>'+CASE.cautions.map(function(c){return '<li>'+c+'</li>';}).join('')+'</ul></div>',
+    false);
+
+  // 예시 보고서 패널
+  var ex = CASE.example;
+  html += panel('example', ex.title,
+    '<div class="example-warn">'+ex.note+'</div>'+
+    '<div class="example-body">'+
+      Object.keys(ex.body).map(function(k){
+        return '<div class="ex-item">'+
+          '<div class="ex-label">'+k+'</div>'+
+          '<div class="ex-text">'+ex.body[k]+'</div>'+
+        '</div>';
+      }).join('')+
+    '</div>'+
+    '<div class="example-score">예상 점수: '+ex.expectedScore+'점 (상위 등급)</div>',
+    false);
+
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+// 패널 헬퍼
+function panel(id, title, body, openByDefault){
+  return '<div class="case-panel'+(openByDefault?' open':'')+'" id="case-'+id+'">'+
+    '<div class="case-panel-head" onclick="this.parentElement.classList.toggle(\'open\')">'+title+'</div>'+
+    '<div class="case-panel-body"><div class="case-panel-inner">'+body+'</div></div>'+
+  '</div>';
+}
+
+// 보조 — elem 객체에 헬퍼 메서드(브라우저 환경에서)
+if(typeof CASE !== 'undefined' && CASE && CASE.structure){
+  CASE.structure.elements.forEach(function(e){
+    e.ex_replaced = function(s){ return s; };
+  });
+}
+
+// 동의서 다운로드
+function downloadConsent(){
+  if(!CASE || !CASE.consentForm) return;
+  var text = CASE.consentForm.title + '\\n\\n' + CASE.consentForm.body.join('\\n');
+  var blob = new Blob([text], {type:'text/plain;charset=utf-8'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = '터칭보이스_2급_케이스보고서_동의서.txt';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// ───────────────────────────────────────
+// 기업·기관 페이지 렌더링
+// ───────────────────────────────────────
+(function renderCorporate(){
+  if(!CORP) return;
+
+  // Hero
+  document.getElementById('corp-hero').innerHTML =
+    '<div class="corp-hero">'+
+      '<div class="ctag">'+CORP.hero.tag+'</div>'+
+      '<h1>'+CORP.hero.title+'</h1>'+
+      '<div class="csub">'+CORP.hero.subtitle+'</div>'+
+      '<p>'+CORP.hero.description+'</p>'+
+    '</div>';
+
+  // 3대 도입 효과 (가장 먼저)
+  document.getElementById('corp-effects').innerHTML =
+    '<div class="corp-sec-title">도입 효과 — 3가지 변화</div>'+
+    '<div class="effects-grid">'+
+      CORP.effects.map(function(e){
+        return '<div class="effect-card">'+
+          '<div class="effect-icon">'+e.icon+'</div>'+
+          '<div class="effect-title">'+e.title+'</div>'+
+          '<div class="effect-en">'+e.en+'</div>'+
+          '<div class="effect-body">'+e.body+'</div>'+
+        '</div>';
+      }).join('')+
+    '</div>';
+
+  // 교육 담당자 페인 포인트 & 해결
+  document.getElementById('corp-problem').innerHTML =
+    '<div class="corp-sec-title">'+CORP.problem.title+'</div>'+
+    '<div class="problem-grid">'+
+      CORP.problem.items.map(function(it){
+        var ans = it.a || it.o || '';
+        return '<div class="problem-card">'+
+          '<div class="problem-q">'+it.q+'</div>'+
+          '<div class="problem-a">'+ans+'</div>'+
+        '</div>';
+      }).join('')+
+    '</div>';
+
+  // 학문적 근거
+  document.getElementById('corp-evidence').innerHTML =
+    '<div class="corp-sec-title">'+CORP.evidence.title+'</div>'+
+    '<div class="evidence-list">'+
+      CORP.evidence.points.map(function(p){
+        return '<div class="evidence-item"><h4>'+p.title+'</h4><p>'+p.body+'</p></div>';
+      }).join('')+
+    '</div>';
+
+  // 4가지 프로그램
+  document.getElementById('corp-programs').innerHTML =
+    '<div class="corp-sec-title">4가지 프로그램 라인업</div>'+
+    CORP.programs.map(function(p){
+      return '<div class="prog-card">'+
+        '<div class="prog-header">'+
+          '<div class="prog-no">0'+p.no+'</div>'+
+          '<div class="prog-titles">'+
+            '<span class="prog-tag">'+p.tag+'</span>'+
+            '<span class="prog-name">'+p.title+'</span>'+
+            '<div class="prog-hash">'+p.hashtag+'</div>'+
+          '</div>'+
+        '</div>'+
+        '<div class="prog-meta">'+
+          '<div class="pk">대상</div><div class="pv">'+p.target+'</div>'+
+          '<div class="pk">시간</div><div class="pv">'+p.duration+'</div>'+
+          '<div class="pk">목표</div><div class="pv">'+p.goal+'</div>'+
+        '</div>'+
+        '<div class="prog-mods-title">커리큘럼</div>'+
+        '<ul class="prog-mods">'+p.modules.map(function(m){return '<li>'+m+'</li>';}).join('')+'</ul>'+
+        '<div class="prog-expected">'+
+          p.expected.map(function(e){return '<span class="exp-chip">'+e+'</span>';}).join('')+
+        '</div>'+
+      '</div>';
+    }).join('');
+
+  // 차별화
+  document.getElementById('corp-difference').innerHTML =
+    '<div class="corp-sec-title">'+CORP.difference.title+'</div>'+
+    '<div class="diff-grid">'+
+      CORP.difference.items.map(function(d){
+        return '<div class="diff-card">'+
+          '<div class="diff-row">'+
+            '<span class="diff-from">'+d.from+'</span>'+
+            '<span class="diff-arrow">→</span>'+
+            '<span class="diff-to">'+d.to+'</span>'+
+          '</div>'+
+          '<div class="diff-body">'+d.body+'</div>'+
+        '</div>';
+      }).join('')+
+    '</div>';
+
+  // 도입 절차
+  document.getElementById('corp-process').innerHTML =
+    '<div class="corp-sec-title">'+CORP.process.title+'</div>'+
+    '<div class="process-list">'+
+      CORP.process.steps.map(function(s){
+        return '<div class="process-step">'+
+          '<div class="pno">'+s.no+'</div>'+
+          '<h4>'+s.title+'</h4>'+
+          '<p>'+s.body+'</p>'+
+        '</div>';
+      }).join('')+
+    '</div>';
+
+  // CTA
+  document.getElementById('corp-cta').innerHTML =
+    '<div class="corp-cta">'+
+      '<h3>'+CORP.cta.title+'</h3>'+
+      '<p>'+CORP.cta.subtitle+'</p>'+
+      '<div class="corp-cta-btns">'+
+        '<button class="corp-cta-btn primary" onclick="alert(\'도입 문의 — 별도 안내 페이지로 연결됩니다\')">'+CORP.cta.button+'</button>'+
+        '<button class="corp-cta-btn secondary" onclick="window.open(\'터칭보이스_기업데모_OO공사.html\', \'_blank\') || alert(\'데모 파일: 터칭보이스_기업데모_OO공사.html — 같은 폴더에서 열어주세요\')">'+CORP.cta.demo_link+' →</button>'+
+      '</div>'+
+    '</div>';
+})();
+
+// ───────────────────────────────────────
+// 모의시험 응시·채점
+// ───────────────────────────────────────
+var mockState = { answers:{}, started:false, submitted:false };
+
+function startMock(){
+  mockState = { answers:{}, started:true, submitted:false };
+  renderMock();
+  window.scrollTo({top: document.getElementById('exam-mock-area').offsetTop - 80, behavior:'smooth'});
+}
+
+function renderMock(){
+  var area = document.getElementById('exam-mock-area');
+  var all = EXAMQ.multipleChoice.concat(EXAMQ.shortAnswer);
+  var answered = Object.keys(mockState.answers).length;
+  var progress = Math.round(answered / all.length * 100);
+
+  var html = '<div class="mock-area">'+
+    '<div class="mock-header">'+
+      '<div class="mock-title">발성심리지도사 2급 — 이론 필기 모의시험</div>'+
+      '<div class="mock-meta">진행 <b>'+answered+'</b>/'+all.length+' · 시간 75분</div>'+
+    '</div>'+
+    '<div class="mock-progress"><div class="mock-progress-bar" style="width:'+progress+'%"></div></div>';
+
+  html += all.map(function(q){ return renderQ(q); }).join('');
+
+  html += '<div class="mock-actions">'+
+    '<button class="mock-action-btn primary" onclick="submitMock()">채점하기 ('+answered+'/'+all.length+')</button>'+
+    '<button class="mock-action-btn secondary" onclick="cancelMock()">취소</button>'+
+  '</div></div>';
+
+  area.innerHTML = html;
+}
+
+function renderQ(q){
+  var answered = mockState.answers[q.no] !== undefined;
+  var h = '<div class="q-card'+(answered?' answered':'')+'">'+
+    '<span class="q-num">Q'+q.no+'</span>'+
+    '<span class="q-stage">'+q.stage+'단계</span>'+
+    '<span class="q-type '+q.type+'">'+(q.type==='mc'?'객관식':'단답형')+'</span>'+
+    '<div class="q-text">'+escapeHtml(q.q)+'</div>';
+
+  if(q.type === 'mc'){
+    h += '<div class="choices">';
+    q.choices.forEach(function(c, idx){
+      var n = idx + 1;
+      var selected = mockState.answers[q.no] === n;
+      h += '<div class="choice'+(selected?' selected':'')+'" onclick="selectMC('+q.no+','+n+')">'+
+        '<span class="cnum">'+n+'</span><span class="ctext">'+escapeHtml(c)+'</span>'+
+      '</div>';
+    });
+    h += '</div>';
+  } else {
+    var v = mockState.answers[q.no] || '';
+    h += '<input type="text" class="sa-input" placeholder="답을 입력하세요" value="'+escapeHtml(v)+'" oninput="inputSA('+q.no+', this.value)">';
+  }
+  h += '</div>';
+  return h;
+}
+
+function escapeHtml(s){
+  if(typeof s !== 'string') s = String(s);
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function selectMC(no, n){
+  mockState.answers[no] = n;
+  renderMock();
+}
+
+function inputSA(no, v){
+  if(v.trim() === ''){ delete mockState.answers[no]; }
+  else { mockState.answers[no] = v.trim(); }
+  // re-render only the progress (avoid losing focus)
+  var all = EXAMQ.multipleChoice.concat(EXAMQ.shortAnswer);
+  var answered = Object.keys(mockState.answers).length;
+  var progress = Math.round(answered / all.length * 100);
+  var pb = document.querySelector('.mock-progress-bar');
+  if(pb) pb.style.width = progress + '%';
+  var meta = document.querySelector('.mock-meta');
+  if(meta) meta.innerHTML = '진행 <b>'+answered+'</b>/'+all.length+' · 시간 75분';
+  var btn = document.querySelector('.mock-action-btn.primary');
+  if(btn) btn.textContent = '채점하기 ('+answered+'/'+all.length+')';
+}
+
+function cancelMock(){
+  if(!confirm('응시를 취소하시겠습니까? 입력한 답안이 사라집니다.')) return;
+  mockState = { answers:{}, started:false, submitted:false };
+  document.getElementById('exam-mock-area').innerHTML = '';
+}
+
+function submitMock(){
+  var all = EXAMQ.multipleChoice.concat(EXAMQ.shortAnswer);
+  var unanswered = all.filter(function(q){ return mockState.answers[q.no] === undefined; });
+  if(unanswered.length > 0){
+    if(!confirm(unanswered.length+'문항이 미응답입니다. 그대로 채점하시겠습니까?')) return;
+  }
+
+  // 채점
+  var correct = 0, wrong = 0, blank = 0;
+  var stageResult = {1:{c:0,t:0}, 2:{c:0,t:0}, 3:{c:0,t:0}, 4:{c:0,t:0}};
+  var reviews = [];
+
+  all.forEach(function(q){
+    stageResult[q.stage].t++;
+    var ua = mockState.answers[q.no];
+    if(ua === undefined){
+      blank++;
+      reviews.push({q:q, ua:null, isCorrect:false});
+      return;
+    }
+    var isCorrect = false;
+    if(q.type === 'mc'){
+      isCorrect = (ua === q.answer);
+    } else {
+      var normalize = function(s){ return String(s).trim().toLowerCase().replace(/\s+/g,''); };
+      var nua = normalize(ua);
+      var nans = normalize(q.answer);
+      isCorrect = (nua === nans) || (q.acceptable||[]).some(function(a){ return normalize(a) === nua; });
+    }
+    if(isCorrect){ correct++; stageResult[q.stage].c++; }
+    else wrong++;
+    reviews.push({q:q, ua:ua, isCorrect:isCorrect});
+  });
+
+  var score = Math.round(correct / all.length * 100);
+  var passed = score >= 70;
+  mockState.submitted = true;
+
+  // 결과 화면
+  var area = document.getElementById('exam-mock-area');
+  var html = '<div class="mock-area">'+
+    '<div class="result-hero '+(passed?'pass':'fail')+'">'+
+      '<div class="result-score">'+score+'</div>'+
+      '<div class="result-label">100점 만점</div>'+
+      '<div class="result-status '+(passed?'pass':'fail')+'">'+
+        (passed?'✓ 이론 필기 통과 (70점 이상)':'✗ 이론 필기 미통과 (70점 이상 필요)')+
+      '</div>'+
+      '<div style="margin-top:.8rem; font-size:.86rem; color:var(--ink-soft)">'+
+        '정답 <b style="color:var(--green)">'+correct+'</b> · 오답 <b style="color:#9a2a2a">'+wrong+'</b>'+
+        (blank>0?' · 미응답 <b>'+blank+'</b>':'')+
+      '</div>'+
+    '</div>';
+
+  html += '<div class="exam-section-title">단계별 성취도</div>';
+  html += '<div class="stage-breakdown">';
+  [1,2,3,4].forEach(function(s){
+    var r = stageResult[s];
+    var pct = r.t > 0 ? Math.round(r.c/r.t*100) : 0;
+    var names = ['','기초', '호흡·발성', '음이탈·심리', '지도·검정'];
+    html += '<div class="stage-box">'+
+      '<div class="sname">'+s+'단계 · '+names[s]+'</div>'+
+      '<div class="sscore">'+pct+'%</div>'+
+      '<div class="sdetail">'+r.c+' / '+r.t+'</div>'+
+    '</div>';
+  });
+  html += '</div>';
+
+  html += '<div class="exam-section-title">문항별 검토 · 오답 해설</div>';
+  html += '<div class="review-list">';
+  reviews.forEach(function(r){
+    var q = r.q;
+    html += '<div class="review-item'+(r.isCorrect?'':' wrong')+'">'+
+      '<span class="review-num">Q'+q.no+' · '+q.stage+'단계 · '+(q.type==='mc'?'객관식':'단답형')+'</span>'+
+      '<div class="review-q">'+escapeHtml(q.q)+'</div>';
+    if(q.type === 'mc'){
+      var uaText = r.ua ? (r.ua + '. ' + q.choices[r.ua-1]) : '미응답';
+      var ansText = q.answer + '. ' + q.choices[q.answer-1];
+      html += '<div class="review-row"><b>내 답: </b><span class="'+(r.isCorrect?'ok':'ng')+'">'+escapeHtml(uaText)+'</span></div>';
+      if(!r.isCorrect) html += '<div class="review-row"><b>정답: </b><span class="ok">'+escapeHtml(ansText)+'</span></div>';
+    } else {
+      html += '<div class="review-row"><b>내 답: </b><span class="'+(r.isCorrect?'ok':'ng')+'">'+escapeHtml(r.ua||'미응답')+'</span></div>';
+      if(!r.isCorrect) html += '<div class="review-row"><b>정답: </b><span class="ok">'+escapeHtml(q.answer)+'</span></div>';
+    }
+    html += '<div class="review-explain">'+escapeHtml(q.explanation)+'</div>';
+    html += '</div>';
+  });
+  html += '</div>';
+
+  html += '<div class="mock-actions">'+
+    '<button class="mock-action-btn primary" onclick="startMock()">다시 응시하기</button>'+
+    '<button class="mock-action-btn secondary" onclick="cancelMock()">닫기</button>'+
+  '</div></div>';
+
+  area.innerHTML = html;
+  window.scrollTo({top: area.offsetTop - 80, behavior:'smooth'});
+}
+</script>
+<!-- ═══ 로그인 게이팅 + 등급별 접근 (협회 세션 연동) ═══ -->
+<script>
+(function(){
+  var ASSOC = 'association.html';
+  var EXEC = 'https://script.google.com/macros/s/AKfycbyNuWzvVD6Vjx5-fsAWhkSR5WAJjI2gDIZu8JboZsy4bqKJ44RH23-j3HCgPqWwBC9XMg/exec';
+  var RANK = {'없음':0,'2급수강':1,'2급':2,'1급수강':3,'1급':4};
+  var ov = document.createElement('div'); ov.id='acadGate'; ov.textContent='불러오는 중…';
+  document.body.appendChild(ov);
+  function toLogin(){ location.replace(ASSOC + '#login'); }
+  var token = localStorage.getItem('tv_assoc_token');
+  if(!token){ toLogin(); return; }
+  fetch(EXEC, {method:'POST', body: JSON.stringify({action:'me', data:{token:token}})})
+    .then(function(r){ return r.json(); })
+    .then(function(res){
+      if(res.status !== 'ok'){ localStorage.removeItem('tv_assoc_token'); toLogin(); return; }
+      var lv = res.member.level, role = res.member.role, rank = RANK[lv] || 0;
+      var acc = { 0:(role==='admin'||rank>=1), 1:(role==='admin'||rank>=3), 2:(role==='admin'||rank>=4) };
+      applyGate(acc, res.member, role);
+      ov.remove();
+    })
+    .catch(function(){ localStorage.removeItem('tv_assoc_token'); toLogin(); });
+
+  function lock(el, msg){
+    if(getComputedStyle(el).position === 'static') el.style.position = 'relative';
+    var l = document.createElement('div'); l.className='acad-lock';
+    l.innerHTML = '<span style="font-size:28px">🔒</span>' + msg;
+    el.appendChild(l);
+    el.style.pointerEvents = 'none';
+    l.style.pointerEvents = 'auto';
+    l.querySelectorAll('a').forEach(function(a){ a.style.pointerEvents='auto'; });
+  }
+  function applyGate(acc, member, role){
+    document.querySelectorAll('.pcard').forEach(function(c){
+      var i = +c.dataset.open;
+      if(!acc[i]) lock(c, '수강 등록 후 열립니다');
+    });
+    document.querySelectorAll('.rtab').forEach(function(t){
+      if(!acc[+t.dataset.i]) t.classList.add('locked');
+    });
+    document.querySelectorAll('.room').forEach(function(r){
+      var i = +r.dataset.i;
+      if(!acc[i]) lock(r, '이 과정은 수강 등록(또는 수강 코드) 후 열립니다<br><a href="'+ASSOC+'#course" style="color:var(--gold);font-weight:800">→ 수강 신청 · 코드 등록</a>');
+    });
+    var nav = document.querySelector('.nav');
+    if(nav && !nav.querySelector('.acad-back')){
+      var back = document.createElement('a');
+      back.href = ASSOC; back.className='acad-back'; back.textContent = '← 협회 홈';
+      back.style.opacity = '.72';
+      nav.appendChild(back);
+    }
+    var first = [0,1,2].filter(function(i){ return acc[i]; })[0];
+    if(first != null && typeof openRoom === 'function'){ try{ openRoom(first); }catch(e){} }
+  }
+})();
+</script>
+</body>
+</html>
