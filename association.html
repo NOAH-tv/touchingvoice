@@ -440,6 +440,7 @@ td select{padding:6px 8px;border:1px solid var(--rule);background:#fff}
       <a href="#home" data-nav="home">협회 소개</a>
       <a href="#course" data-nav="course">자격과정</a>
       <a href="#lectures" data-nav="lectures">온라인 강의실</a>
+      <a href="./academy.html" id="navAcademy" style="display:none">아카데미</a>
       <a href="#mypage" data-nav="mypage" id="navMypage" style="display:none">마이페이지</a>
       <a href="#admin" data-nav="admin" id="navAdmin" style="display:none">관리자</a>
       <a href="#login" class="btn btn-purple btn-sm nav-cta" id="navAuthBtn">로그인</a>
@@ -1059,11 +1060,13 @@ function renderNav(){
     b.textContent = ME.name + ' 님';
     b.setAttribute('href', '#mypage');
     $('#navMypage').style.display = '';
+    $('#navAcademy').style.display = '';
     $('#navAdmin').style.display = ME.role === 'admin' ? '' : 'none';
   }else{
     b.textContent = '로그인';
     b.setAttribute('href', '#login');
     $('#navMypage').style.display = 'none';
+    $('#navAcademy').style.display = 'none';
     $('#navAdmin').style.display = 'none';
   }
 }
