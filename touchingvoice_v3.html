@@ -2216,6 +2216,8 @@ function buildResults() {
 // GOOGLE DRIVE + SHEETS 저장
 // ═══════════════════════════
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx7Pq9FujnDsGZRDD85C39ml6AlikH935lL0BB2n-RwXzm2O_kM059nV4eV87AgLo16dg/exec';
+// 백엔드(Apps Script) adminToken 검증용 — r.html/서초유스센터 백엔드와 반드시 동일 (없으면 저장이 'unauthorized'로 거부됨)
+const ACCESS_TOKEN = 'tv-scy-72a3da7c2fd012ec05e4e9d67e3b0bf396d4ea58';
 
 // 전역 Drive 파일 URL (업로드 완료 후 채워짐)
 let introFileUrl  = '';  // 자기소개/후렴 녹음
@@ -2243,6 +2245,7 @@ async function uploadAudioToDrive(blob, fileName, category) {
       method : 'POST',
       body   : JSON.stringify({
         type      : 'audio',
+        adminToken: ACCESS_TOKEN,
         base64,
         mimeType  : blob.type || 'audio/wav',
         filename  : finalName,   // Apps Script 기대 필드명 (소문자)
@@ -2286,6 +2289,7 @@ async function saveToSheets(scores, name) {
 
     const payload = {
       type: 'sheet',
+      adminToken: ACCESS_TOKEN,
       name,
       age    : document.getElementById('user-age')?.value || '',
       gender : selectedGender || '',
