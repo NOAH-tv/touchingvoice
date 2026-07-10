@@ -855,17 +855,17 @@ function blobToB64(blob){ return new Promise(function(res,rej){ var r=new FileRe
 function fetchT(url,opts,ms){ var ctl=new AbortController(); var t=setTimeout(function(){ctl.abort();},ms||7000); opts=Object.assign({},opts,{signal:ctl.signal}); return fetch(url,opts).finally(function(){clearTimeout(t);}); }
 function uploadReport(dataUrl){
   var date=new Date().toISOString().slice(0,10); var filename=date+'_'+S.name+'_레포트.png';
-  return fetchT(APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({type:'audio',adminToken:getAdminToken(),base64:dataUrl.split(',')[1],mimeType:'image/png',filename:filename,category:'report',name:S.name,gender:S.gender,timestamp:new Date().toISOString()})},7000)
+  return fetchT(APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({type:'audio',adminToken:(getAdminToken()||ACCESS_TOKEN),base64:dataUrl.split(',')[1],mimeType:'image/png',filename:filename,category:'report',name:S.name,gender:S.gender,timestamp:new Date().toISOString()})},7000)
     .then(function(res){return res.text();}).then(function(text){ var j; try{j=JSON.parse(text);}catch(e){return '';} return j.success?(j.fileUrl||j.url||''):''; });
 }
 function uploadRecordToServer(rec){
   var up=rec.uploadAudio||rec.audio;
   var voiceP=Promise.resolve('');
-  if(up){ voiceP=blobToB64(up).then(function(b64){ var ext=(up.type&&up.type.indexOf('webm')>=0)?'.webm':(up.type&&up.type.indexOf('mp4')>=0?'.mp4':'.wav'); var fn=(rec.timestamp||new Date().toISOString()).slice(0,10)+'_'+rec.name+'_'+rec.song+ext; return fetchT(APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({type:'audio',adminToken:getAdminToken(),base64:b64,mimeType:up.type,filename:fn,category:'song',name:rec.name,gender:rec.gender,timestamp:rec.timestamp})},20000).then(function(r){return r.text();}).then(function(t){ try{var j=JSON.parse(t); return j.fileUrl||j.url||'';}catch(e){return '';} }); }); }
+  if(up){ voiceP=blobToB64(up).then(function(b64){ var ext=(up.type&&up.type.indexOf('webm')>=0)?'.webm':(up.type&&up.type.indexOf('mp4')>=0?'.mp4':'.wav'); var fn=(rec.timestamp||new Date().toISOString()).slice(0,10)+'_'+rec.name+'_'+rec.song+ext; return fetchT(APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({type:'audio',adminToken:(getAdminToken()||ACCESS_TOKEN),base64:b64,mimeType:up.type,filename:fn,category:'song',name:rec.name,gender:rec.gender,timestamp:rec.timestamp})},20000).then(function(r){return r.text();}).then(function(t){ try{var j=JSON.parse(t); return j.fileUrl||j.url||'';}catch(e){return '';} }); }); }
   return voiceP.then(function(voiceUrl){
     var m=rec.metrics||{};
     var fp=m.freqPct||{};
-    var payload={type:'sheet',adminToken:getAdminToken(),name:rec.name,age:rec.age,gender:rec.gender,song:rec.song,scores:rec.scores,voiceUrl:voiceUrl,
+    var payload={type:'sheet',adminToken:(getAdminToken()||ACCESS_TOKEN),name:rec.name,age:rec.age,gender:rec.gender,song:rec.song,scores:rec.scores,voiceUrl:voiceUrl,
       freqBands:m.bandEnergy||[],harmonic:m.harmonic||'',articulation:m.articulation||'',balance:m.balance||'',
       F0:m.F0||'',F1:m.F1||'',F2:m.F2||'',F3:m.F3||'',F4:m.F4||'',F5:m.F5||'',
       rms:m.rms||'',dr:m.dr||'',hnr:m.hnr||'',jitter:m.jitter||'',shimmer:m.shimmer||'',freqPct:fp,
