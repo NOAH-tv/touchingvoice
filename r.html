@@ -595,10 +595,10 @@ function publish(){
     });
   }
 }
-// 파형(peaks)을 48포인트·1자리로 압축 (QR 길이 절약, 실제 파형 유지)
+// 파형(peaks)을 32포인트·1자리로 압축 (QR 길이 절약, 실제 파형 유지)
 function encodePeaks(peaks){
   if(!peaks||!peaks.length) return '';
-  var n=48, out='';
+  var n=32, out='';
   for(var i=0;i<n;i++){ var idx=Math.round(i*(peaks.length-1)/(n-1)); var v=Math.max(0,Math.min(9,Math.round((peaks[idx]||0)*9))); out+=v; }
   return out;
 }
@@ -606,19 +606,21 @@ function encodePeaks(peaks){
 function buildResultURL(){
   var m=S.metrics||{}, fp=(m.freqPct)||{}, sc=S.scores||{}, q=[];
   function add(k,v){ q.push(k+'='+encodeURIComponent(v)); }
+  function ri(v){ return Math.round(v||0); }                        // 정수 반올림
+  function rd(v,d){ var p=Math.pow(10,d); return Math.round((v||0)*p)/p; }  // 소수 d자리 반올림 (QR 길이 절약)
   if(S.name) add('nm',S.name);
   if(S.age) add('ag',S.age);
   if(S.gender) add('g',S.gender);
   if(S.song) add('sg',S.song);
-  ['E','C','A','N','O'].forEach(function(k){ add(k, Math.round(sc[k]||0)); });
-  add('f0',m.F0||0); add('f1',m.F1||0); add('f2',m.F2||0); add('f3',m.F3||0); add('f4',m.F4||0); add('f5',m.F5||0);
-  add('rm',m.rms||0); add('dr',m.dr||0); add('hn',m.hnr||0); add('jt',m.jitter||0); add('sh',m.shimmer||0);
-  add('b0',fp.hz100||0); add('b1',fp.hz300||0); add('b2',fp.hz600||0); add('b3',fp.hz1200||0); add('b4',fp.hz2500||0); add('b5',fp.hz4000||0); add('b6',fp.hz5500||0); add('b7',fp.hz7000||0); add('b8',fp.hz8000||0);
+  ['E','C','A','N','O'].forEach(function(k){ add(k, ri(sc[k])); });
+  add('f0',ri(m.F0)); add('f1',ri(m.F1)); add('f2',ri(m.F2)); add('f3',ri(m.F3)); add('f4',ri(m.F4)); add('f5',ri(m.F5));
+  add('rm',rd(m.rms,3)); add('dr',rd(m.dr,1)); add('hn',rd(m.hnr,1)); add('jt',rd(m.jitter,3)); add('sh',rd(m.shimmer,2));
+  add('b0',rd(fp.hz100,2)); add('b1',rd(fp.hz300,2)); add('b2',rd(fp.hz600,2)); add('b3',rd(fp.hz1200,2)); add('b4',rd(fp.hz2500,2)); add('b5',rd(fp.hz4000,2)); add('b6',rd(fp.hz5500,2)); add('b7',rd(fp.hz7000,2)); add('b8',rd(fp.hz8000,2));
   var pk=encodePeaks(m.peaks); if(pk) add('pk',pk);
   return location.origin + '/r.html?' + q.join('&');
 }
 function makeQR(text){
-  try{ var tmp=document.createElement('div'); new QRCode(tmp,{text:text,width:520,height:520,colorDark:'#2a0f4d',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M}); var cv=tmp.querySelector('canvas'); if(cv) return cv.toDataURL('image/png'); var im=tmp.querySelector('img'); return im?im.src:''; }catch(e){ console.warn('qr',e); return ''; }
+  try{ var tmp=document.createElement('div'); new QRCode(tmp,{text:text,width:600,height:600,colorDark:'#2a0f4d',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.L}); var cv=tmp.querySelector('canvas'); if(cv) return cv.toDataURL('image/png'); var im=tmp.querySelector('img'); return im?im.src:''; }catch(e){ console.warn('qr',e); return ''; }
 }
 
 function buildReport(){
