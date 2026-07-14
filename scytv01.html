@@ -874,9 +874,20 @@ function uploadReport(dataUrl){
     .then(function(res){return res.text();}).then(function(text){ var j; try{j=JSON.parse(text);}catch(e){return '';} return j.success?(j.fileUrl||j.url||''):''; });
 }
 function uploadRecordToServer(rec){
-  var up=rec.uploadAudio||rec.audio;
-  var voiceP=Promise.resolve('');
-  if(up){ voiceP=blobToB64(up).then(function(b64){ var ext=(up.type&&up.type.indexOf('webm')>=0)?'.webm':(up.type&&up.type.indexOf('mp4')>=0?'.mp4':'.wav'); var fn=(rec.timestamp||new Date().toISOString()).slice(0,10)+'_'+rec.name+'_'+rec.song+ext; return fetchT(APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({type:'audio',adminToken:(getAdminToken()||ACCESS_TOKEN),base64:b64,mimeType:up.type,filename:fn,category:'song',name:rec.name,gender:rec.gender,timestamp:rec.timestamp})},20000).then(function(r){return r.text();}).then(function(t){ try{var j=JSON.parse(t); return j.fileUrl||j.url||'';}catch(e){return '';} }); }); }
+  // 오디오 1건 업로드(서초 폴더). forceWav=true면 확장자를 .wav로 고정. wav는 용량이 커 타임아웃을 넉넉히.
+  function _upAudio(blob, forceWav){
+    return blobToB64(blob).then(function(b64){
+      var t=blob.type||''; var ext=forceWav?'.wav':(t.indexOf('webm')>=0?'.webm':(t.indexOf('mp4')>=0?'.mp4':'.wav'));
+      var fn=(rec.timestamp||new Date().toISOString()).slice(0,10)+'_'+rec.name+'_'+rec.song+ext;
+      return fetchT(APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({type:'audio',adminToken:(getAdminToken()||ACCESS_TOKEN),base64:b64,mimeType:blob.type,filename:fn,category:'song',name:rec.name,gender:rec.gender,timestamp:rec.timestamp})}, forceWav?45000:20000).then(function(r){return r.text();}).then(function(t2){ try{var j=JSON.parse(t2); return j.fileUrl||j.url||'';}catch(e){return '';} });
+    });
+  }
+  // 1차: webm(가벼움) 먼저 올려 시트에 넣을 voiceUrl 확보 — 사람은 여기까지만 기다림
+  var _webm=rec.uploadAudio, _wav=rec.audio;
+  var _primary=_webm||_wav;
+  var voiceP = _primary ? _upAudio(_primary, false) : Promise.resolve('');
+  // 2차: wav(무손실 원본)는 둘 다 있을 때 백그라운드로 뒤이어 저장 — 실패해도 메인 저장엔 영향 없음
+  if(_webm && _wav){ try{ _upAudio(_wav, true).catch(function(){}); }catch(e){} }
   return voiceP.then(function(voiceUrl){
     var m=rec.metrics||{};
     var fp=m.freqPct||{};
