@@ -131,7 +131,14 @@ function apiGet(view, cb){ var u=CONFIG.API_URL+'?token='+encodeURIComponent(AUT
   jsonp(u, function(d){ if(d&&d.ok===false&&/로그인/.test(d.error||'')){ logout(); return; } cb(d||{}); }); }
 function post(payload, cb){ payload.token=AUTH?AUTH.token:'';
   fetch(CONFIG.API_URL,{method:'POST',body:JSON.stringify(payload),headers:{'Content-Type':'text/plain;charset=utf-8'}})
-    .then(function(r){return r.json();}).then(function(j){ if(cb)cb(j); }).catch(function(){ if(cb)cb(null); }); }
+    .then(function(r){return r.json();}).then(function(j){ cacheClear(); if(cb)cb(j); }).catch(function(){ if(cb)cb(null); }); }
+
+// ── 응답 캐시: 화면 전환 시 마지막 데이터를 즉시 보여주고 뒤에서 갱신 (느린 백엔드 체감 개선) ──
+var CACHE={}; try{ CACHE=JSON.parse(localStorage.getItem('tv_cache')||'{}'); }catch(e){}
+function cacheKey(v){ return v+'|'+(AUTH&&AUTH.role==='원장'?(state.teacher||'전체'):'me'); }
+function cacheGet(v){ return CACHE[cacheKey(v)]; }
+function cacheSet(v,d){ CACHE[cacheKey(v)]=d; try{ localStorage.setItem('tv_cache', JSON.stringify(CACHE)); }catch(e){} }
+function cacheClear(){ CACHE={}; try{ localStorage.removeItem('tv_cache'); }catch(e){} }
 
 // ===== 로그인 =====
 function renderLogin(err){
@@ -173,7 +180,9 @@ function setTeacher(t){ state.teacher=t; state.selDay=null; if(state.screen==='s
 
 // ===== 오늘 =====
 var WDAY=['일','월','화','수','목','금','토'];
-function loadToday(){ app().innerHTML='<div class="mode">불러오는 중…</div>'; apiGet('', renderToday); }
+function loadToday(){ var c=cacheGet('today');
+  if(c){ renderToday(c); } else { app().innerHTML='<div class="mode">불러오는 중…</div>'; }
+  apiGet('', function(d){ if(d&&d.stats){ cacheSet('today',d); if(state.screen==='today') renderToday(d); } }); }
 function renderToday(d){
   var dt=new Date((d.today||'')+'T00:00:00');
   var dstr=isNaN(dt)?d.today:((dt.getMonth()+1)+'월 '+dt.getDate()+'일 '+WDAY[dt.getDay()]+'요일');
@@ -209,7 +218,9 @@ function lessonEl(l){ var el=document.createElement('div'); el.className='row'+(
 }
 
 // ===== 학생 =====
-function loadStudents(){ app().innerHTML='<div class="mode">불러오는 중…</div>'; apiGet('students', function(d){ state.students=(d&&d.students)||[]; renderStudents(); }); }
+function loadStudents(){ var c=cacheGet('students');
+  if(c){ state.students=c.students||[]; renderStudents(); } else { app().innerHTML='<div class="mode">불러오는 중…</div>'; }
+  apiGet('students', function(d){ if(d){ state.students=(d.students)||[]; cacheSet('students',{students:state.students}); if(state.screen==='students') renderStudents(); } }); }
 function renderStudents(){
   var h=headHtml('전체 '+state.students.length+'명', '학생 관리')+teacherChips();
   h+='<div class="sec"><div class="sec-h"><b>수강생</b><button class="add" onclick="studentSheet(null)">+ 학생 추가</button></div><div id="list"></div>'+
@@ -244,10 +255,17 @@ function studentSheet(s){ var edit=!!s;
 }
 
 // ===== 수업 (캘린더) =====
-function loadLessons(){ app().innerHTML='<div class="mode">불러오는 중…</div>';
-  apiGet('students', function(sd){ state.students=(sd&&sd.students)||[];
-    apiGet('lessons', function(d){ state.lessons=(d&&d.lessons)||[]; state.today=(d&&d.today)||todayISO();
-      if(!state.refDate) state.refDate=parseISO(state.today); renderLessons(); }); }); }
+function loadLessons(){ var c=cacheGet('lessons');
+  if(c){ state.students=c.students||[]; state.lessons=c.lessons||[]; state.today=c.today||todayISO(); if(!state.refDate) state.refDate=parseISO(state.today); renderLessons(); }
+  else { app().innerHTML='<div class="mode">불러오는 중…</div>'; }
+  var sd=null, ld=null, done=0;
+  function fin(){ if(++done<2) return;
+    state.students=(sd&&sd.students)||[]; state.lessons=(ld&&ld.lessons)||[]; state.today=(ld&&ld.today)||todayISO();
+    if(!state.refDate) state.refDate=parseISO(state.today);
+    cacheSet('lessons',{students:state.students,lessons:state.lessons,today:state.today});
+    if(state.screen==='lessons') renderLessons(); }
+  apiGet('students', function(d){ sd=d; fin(); });
+  apiGet('lessons', function(d){ ld=d; fin(); }); }
 function setView(v){ state.calView=v; state.selDay=null; renderLessons(); }
 function shift(dir){ var d=state.refDate;
   if(state.calView==='month') state.refDate=new Date(d.getFullYear(),d.getMonth()+dir,1);
