@@ -627,7 +627,9 @@ function buildResultURL(){
   add('rm',m.rms||0); add('dr',m.dr||0); add('hn',m.hnr||0); add('jt',m.jitter||0); add('sh',m.shimmer||0);
   add('b0',fp.hz100||0); add('b1',fp.hz300||0); add('b2',fp.hz600||0); add('b3',fp.hz1200||0); add('b4',fp.hz2500||0); add('b5',fp.hz4000||0); add('b6',fp.hz5500||0); add('b7',fp.hz7000||0); add('b8',fp.hz8000||0);
   var pk=encodePeaks(m.peaks); if(pk) add('pk',pk);
-  return location.origin + '/r.html?' + q.join('&');
+  // 로컬 파일(file://)로 열려 있어도 QR은 항상 라이브를 가리키게 함 (폰이 file:// URL을 못 열어 "데이터 없음" 뜨는 문제 방지)
+  var origin=(location.protocol==='file:'||!location.origin||location.origin==='null')?'https://touchingvoice.app':location.origin;
+  return origin + '/r.html?' + q.join('&');
 }
 function makeQR(text){
   try{ var tmp=document.createElement('div'); new QRCode(tmp,{text:text,width:520,height:520,colorDark:'#2a0f4d',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M}); var cv=tmp.querySelector('canvas'); if(cv) return cv.toDataURL('image/png'); var im=tmp.querySelector('img'); return im?im.src:''; }catch(e){ console.warn('qr',e); return ''; }
