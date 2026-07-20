@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>터칭보이스 · 레슨 온라인결제</title>
+<meta name="description" content="터칭보이스 발성심리 보컬 레슨 온라인 결제">
+<style>
+@font-face{font-family:'Paperlogy';font-weight:300;font-display:swap;src:url('https://noah-tv.github.io/touchingvoice/Paperlogy-3Light.ttf') format('truetype')}
+@font-face{font-family:'Paperlogy';font-weight:400;font-display:swap;src:url('https://noah-tv.github.io/touchingvoice/Paperlogy-4Regular.ttf') format('truetype')}
+@font-face{font-family:'Paperlogy';font-weight:500;font-display:swap;src:url('https://noah-tv.github.io/touchingvoice/Paperlogy-5Medium.ttf') format('truetype')}
+@font-face{font-family:'Paperlogy';font-weight:600;font-display:swap;src:url('https://noah-tv.github.io/touchingvoice/Paperlogy-6SemiBold.ttf') format('truetype')}
+@font-face{font-family:'Paperlogy';font-weight:700;font-display:swap;src:url('https://noah-tv.github.io/touchingvoice/Paperlogy-7Bold.ttf') format('truetype')}
+:root{--plum:#43227D;--plum-d:#2f1859;--cream:#F5EEE0;--gold:#A8925A;--ink:#241a35;--muted:#7a7188;--line:#e7e0d2;--ok:#2e7d5b}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{font-family:'Paperlogy',-apple-system,sans-serif;color:var(--ink);background:#ded6ea}
+body{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:0}
+/* phone frame */
+.phone{width:100%;max-width:420px;min-height:100vh;background:var(--cream);position:relative;display:flex;flex-direction:column;box-shadow:0 0 60px rgba(47,24,89,.25)}
+@media(min-width:440px){.phone{min-height:760px;height:820px;border-radius:26px;overflow:hidden;margin:20px 0}}
+.bar{background:var(--plum);color:#fff;display:flex;align-items:center;gap:10px;padding:15px 16px;position:sticky;top:0;z-index:5}
+.bar .back{cursor:pointer;font-size:20px;width:24px;opacity:.9}
+.bar .ttl{font-weight:600;font-size:16px;flex:1;text-align:center;letter-spacing:-.3px}
+.bar .r{width:24px;text-align:right;font-size:12px;opacity:.8}
+.brandtag{font-size:11px;letter-spacing:2px;opacity:.7}
+.body{flex:1;overflow-y:auto;padding:22px 20px 30px}
+h1.lead{font-size:24px;font-weight:700;line-height:1.28;letter-spacing:-.6px;margin-bottom:8px}
+h1.lead em{font-style:italic;color:var(--plum)}
+.sub{color:var(--muted);font-size:13.5px;line-height:1.6;margin-bottom:22px}
+label.f{display:block;font-size:12.5px;color:var(--muted);margin:14px 0 6px;font-weight:500}
+input.t,select.t{width:100%;border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:14px 14px;font-family:inherit;font-size:15px;color:var(--ink)}
+input.t:focus,select.t:focus{outline:none;border-color:var(--plum)}
+select.t{-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2343227D' stroke-width='3'><path d='M6 9l6 6 6-6'/></svg>");background-repeat:no-repeat;background-position:right 16px center;cursor:pointer}
+.btn{display:block;width:100%;border:none;border-radius:14px;padding:16px;font-family:inherit;font-size:16px;font-weight:600;cursor:pointer;letter-spacing:-.3px;transition:.15s}
+.btn.p{background:var(--plum);color:#fff}
+.btn.p:active{background:var(--plum-d)}
+.btn.g{background:var(--gold);color:#fff}
+.btn.o{background:#fff;color:var(--plum);border:1.5px solid var(--plum)}
+.btn[disabled]{opacity:.4;cursor:not-allowed}
+.hint{font-size:11.5px;color:var(--muted);text-align:center;margin-top:14px;line-height:1.6}
+.hint b{color:var(--plum)}
+.foot{padding:14px 20px 22px;border-top:1px solid var(--line);background:var(--cream)}
+/* product cards */
+.card{background:#fff;border:1.5px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px;cursor:pointer;transition:.15s;position:relative}
+.card.sel{border-color:var(--plum);box-shadow:0 6px 18px rgba(67,34,125,.14)}
+.card .badge{display:inline-block;font-size:11px;font-weight:600;color:var(--plum);background:#efe8fb;padding:3px 9px;border-radius:20px;margin-bottom:8px}
+.card .nm{font-size:16px;font-weight:600;letter-spacing:-.3px}
+.card .ds{font-size:12.5px;color:var(--muted);margin:6px 0 10px;line-height:1.55}
+.card .pr{font-size:19px;font-weight:700;color:var(--plum)}
+.card .pr small{font-size:12px;color:var(--muted);font-weight:400}
+.card .chk{position:absolute;top:16px;right:16px;width:22px;height:22px;border-radius:50%;border:2px solid var(--line)}
+.card.sel .chk{border-color:var(--plum);background:var(--plum)}
+.card.sel .chk:after{content:'✓';color:#fff;font-size:13px;position:absolute;top:0;left:4px}
+/* order summary rows */
+.row{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid var(--line);font-size:14px}
+.row .k{color:var(--muted)}
+.row .v{font-weight:500}
+.row.total{border-bottom:none;padding-top:16px}
+.row.total .k{color:var(--ink);font-weight:600;font-size:15px}
+.row.total .v{color:var(--plum);font-weight:700;font-size:22px}
+.sec-t{font-size:13px;font-weight:600;color:var(--plum);margin:22px 0 10px;letter-spacing:-.2px}
+.box{background:#fff;border:1px solid var(--line);border-radius:14px;padding:4px 16px}
+.agree{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--ink);margin-top:16px;line-height:1.5}
+.agree input{margin-top:2px;width:18px;height:18px;accent-color:var(--plum);flex:none}
+.agree a{color:var(--plum);text-decoration:underline;cursor:pointer}
+/* pay methods */
+.pm{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+.pm .m{border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:16px 8px;text-align:center;font-size:13.5px;font-weight:500;cursor:pointer}
+.pm .m.sel{border-color:var(--plum);background:#efe8fb;color:var(--plum);font-weight:600}
+.pm .m .ic{font-size:20px;display:block;margin-bottom:6px}
+/* PG modal */
+.pg{position:absolute;inset:0;background:rgba(20,10,40,.55);display:none;align-items:flex-end;z-index:20}
+.pg.on{display:flex}
+.pg-sheet{background:#fff;width:100%;border-radius:20px 20px 0 0;padding:20px 20px 26px;animation:up .25s ease}
+@keyframes up{from{transform:translateY(40px);opacity:.3}to{transform:none;opacity:1}}
+.pg-head{display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:16px}
+.pg-head .kpn{font-weight:700;color:var(--plum);font-size:15px}
+.pg-head .sec{margin-left:auto;font-size:11px;color:var(--ok);font-weight:600}
+.pg-card{border:1.5px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+.pg-card .cl{font-size:11px;color:var(--muted)}
+.spin{width:40px;height:40px;border:4px solid #e7e0f0;border-top-color:var(--plum);border-radius:50%;margin:20px auto;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* complete */
+.done-ic{width:84px;height:84px;border-radius:50%;background:var(--ok);margin:30px auto 20px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:44px}
+.hidden{display:none!important}
+.center{text-align:center}
+/* 캡처 전용: 프레임 제거·내부 스크롤 해제해 전체 화면 렌더 */
+.phone.capmode{max-width:420px;width:420px;min-height:0;height:auto;border-radius:0;box-shadow:none;margin:0}
+.phone.capmode .body{overflow:visible;flex:none}
+.phone.capmode .pg{position:absolute}
+.stepline{display:flex;gap:6px;padding:12px 20px 0;background:var(--cream)}
+.stepline i{flex:1;height:4px;border-radius:3px;background:#e2dbcf}
+.stepline i.on{background:var(--plum)}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="bar">
+    <span class="back" id="backBtn" onclick="goBack()" style="visibility:hidden">‹</span>
+    <span class="ttl" id="barTitle">터칭보이스</span>
+    <span class="r" id="barRight"></span>
+  </div>
+  <div class="stepline" id="stepline">
+    <i></i><i></i><i></i><i></i>
+  </div>
+
+  <!-- STEP 0 : LOGIN -->
+  <div class="body" id="s-login">
+    <div class="brandtag" style="color:var(--plum)">TOUCHINGVOICE · 터칭보이스</div>
+    <h1 class="lead" style="margin-top:10px">레슨 결제를 위해<br><em>로그인</em> 해주세요</h1>
+    <p class="sub">발성심리학 기반 1:1 보컬 레슨 · 온라인 결제 서비스입니다.</p>
+    <label class="f">아이디</label>
+    <input class="t" id="loginId" placeholder="아이디를 입력하세요" autocomplete="username">
+    <label class="f">비밀번호</label>
+    <input class="t" id="loginPw" type="password" placeholder="비밀번호를 입력하세요" autocomplete="current-password">
+    <div style="height:22px"></div>
+    <button class="btn p" onclick="doLogin()">로그인</button>
+    <p class="hint" id="loginMsg">계정이 없으신가요? 담당 강사에게 문의해 주세요.</p>
+  </div>
+
+  <!-- STEP 1 : PRODUCTS -->
+  <div class="body hidden" id="s-products">
+    <h1 class="lead">수강할 <em>레슨</em>을<br>선택해 주세요</h1>
+    <p class="sub">원하는 레슨권을 선택하면 결제 화면으로 이동합니다.</p>
+    <div id="prodList"></div>
+  </div>
+
+  <!-- STEP 2 : ORDER -->
+  <div class="body hidden" id="s-order">
+    <div class="sec-t">주문 상품</div>
+    <div class="box" id="orderBox"></div>
+    <div class="sec-t">구매자 정보</div>
+    <label class="f">이름</label>
+    <input class="t" id="buyerName" placeholder="예금주/수강생 성함">
+    <label class="f">휴대폰 번호</label>
+    <input class="t" id="buyerPhone" placeholder="010-0000-0000" inputmode="numeric">
+    <div id="codeSec">
+      <div class="sec-t">할인코드 (선택)</div>
+      <div style="display:flex;gap:8px">
+        <input class="t" id="codeInput" placeholder="본사에서 발급받은 코드 입력" style="flex:1">
+        <button class="btn o" style="width:auto;padding:0 20px" onclick="applyCode()">적용</button>
+      </div>
+      <div id="codeMsg" class="hint" style="text-align:left;margin-top:8px"></div>
+    </div>
+    <div class="sec-t">결제 금액</div>
+    <div class="box">
+      <div class="row"><span class="k">상품 금액</span><span class="v" id="oAmt"></span></div>
+      <div class="row" id="oDiscRow" style="display:none"><span class="k">할인코드 적용</span><span class="v" id="oDisc" style="color:#c0392b"></span></div>
+      <div class="row total"><span class="k">총 결제금액</span><span class="v" id="oTotal"></span></div>
+    </div>
+    <label class="agree"><input type="checkbox" id="agree1"><span>주문 내용을 확인하였으며, <a onclick="showRefund()">환불 규정 및 결제 진행</a>에 동의합니다. (필수)</span></label>
+  </div>
+
+  <!-- STEP 3 : PAY METHOD -->
+  <div class="body hidden" id="s-method">
+    <div class="sec-t">결제 상품</div>
+    <div class="box"><div class="row" style="border:none"><span class="k" id="mName"></span><span class="v" id="mAmt"></span></div></div>
+    <div class="sec-t">결제 수단 선택</div>
+    <div class="pm" id="pmGrid">
+      <div class="m sel" data-m="card"><span class="ic">💳</span>신용/체크카드</div>
+      <div class="m" data-m="trans"><span class="ic">🏦</span>계좌이체</div>
+      <div class="m" data-m="vbank"><span class="ic">🧾</span>가상계좌</div>
+      <div class="m" data-m="phone"><span class="ic">📱</span>휴대폰 결제</div>
+    </div>
+    <div id="instSec">
+      <div class="sec-t">할부 개월 선택</div>
+      <select class="t" id="instSel" onchange="state.installment=this.value">
+        <option value="일시불">일시불</option>
+        <option value="2개월">2개월</option>
+        <option value="3개월">3개월</option>
+        <option value="6개월">6개월</option>
+        <option value="12개월">12개월</option>
+      </select>
+    </div>
+    <div class="box" style="margin-top:20px">
+      <div class="row total" style="padding:16px 0"><span class="k">최종 결제금액</span><span class="v" id="mTotal"></span></div>
+    </div>
+    <p class="hint">결제하기를 누르면 <b>한국결제네트웍스(KPN)</b> 결제창이 열립니다.</p>
+  </div>
+
+  <!-- STEP 4 : COMPLETE -->
+  <div class="body hidden center" id="s-done">
+    <div class="done-ic">✓</div>
+    <h1 class="lead center" style="font-size:22px">결제가 완료되었습니다</h1>
+    <p class="sub center" style="margin-top:10px">수강 안내와 영수증이 등록된 연락처로 발송됩니다.</p>
+    <div class="box" style="text-align:left;margin-top:8px">
+      <div class="row"><span class="k">주문번호</span><span class="v" id="dOrder"></span></div>
+      <div class="row"><span class="k">상품</span><span class="v" id="dName"></span></div>
+      <div class="row"><span class="k">결제수단</span><span class="v" id="dMethod"></span></div>
+      <div class="row" id="dInstRow" style="display:none"><span class="k">할부</span><span class="v" id="dInst"></span></div>
+      <div class="row total"><span class="k">결제금액</span><span class="v" id="dTotal"></span></div>
+    </div>
+  </div>
+
+  <!-- FOOTER BUTTON -->
+  <div class="foot hidden" id="foot">
+    <button class="btn p" id="footBtn" onclick="footNext()">다음</button>
+  </div>
+
+  <!-- PG WINDOW (KPN) -->
+  <div class="pg" id="pgModal">
+    <div class="pg-sheet">
+      <div class="pg-head">
+        <span class="kpn">KPN PAY</span>
+        <span style="font-size:11px;color:var(--muted)">한국결제네트웍스</span>
+        <span class="sec">🔒 보안결제</span>
+      </div>
+      <div id="pgForm">
+        <div class="pg-card"><div class="cl">가맹점</div><div style="font-weight:600">터칭보이스</div></div>
+        <div class="pg-card"><div class="cl">결제금액</div><div style="font-weight:700;color:var(--plum);font-size:20px" id="pgAmt"></div></div>
+        <div class="pg-card"><div class="cl">카드번호</div><div style="font-weight:600;letter-spacing:2px">1234 - **** - **** - 5678</div></div>
+        <button class="btn g" onclick="pgPay()">결제 진행</button>
+        <p class="hint" style="margin-top:12px">※ PG 심사 승인 후 실 카드결제창이 연동됩니다.</p>
+      </div>
+      <div id="pgLoad" class="hidden center">
+        <div class="spin"></div>
+        <p class="sub center">결제를 처리하고 있습니다…</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- REFUND MODAL -->
+  <div class="pg" id="refundModal">
+    <div class="pg-sheet" style="max-height:80%;overflow-y:auto">
+      <div class="pg-head"><span class="kpn">환불 규정</span><span class="sec" style="cursor:pointer" onclick="hideRefund()">닫기 ✕</span></div>
+      <div style="font-size:12.5px;line-height:1.7;color:var(--ink)" id="refundText"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+var PRODUCTS=[
+  {id:'cert2',badge:'자격과정',nm:'발성심리지도사 2급 교육과정',ds:'발성심리지도사 민간자격 2급 정규 교육과정 · 본사 발급 할인코드 적용 시 1,500,000원 · 할부 결제 가능',price:2000000,codePrice:1500000,installment:true},
+  {id:'lesson4',badge:'대표 상품',nm:'1:1 발성심리 보컬 레슨 4회권',ds:'발성 진단 리포트 + 1:1 맞춤 레슨 4회 (회당 50분)',price:300000},
+  {id:'group4',badge:'그룹',nm:'발성심리 그룹 레슨 4주 과정',ds:'주 1회 · 4주 그룹 레슨 (정원 6인)',price:200000},
+  {id:'report',badge:'검사',nm:'음성·성격 분석 리포트',ds:'Big Five 성격검사 + 음성 분석 정밀 리포트',price:50000}
+];
+var METHOD_LABEL={card:'신용/체크카드',trans:'계좌이체',vbank:'가상계좌',phone:'휴대폰 결제'};
+var state={step:0,product:null,method:'card',order:null,discount:false,installment:'일시불'};
+var STEPS=['s-login','s-products','s-order','s-method','s-done'];
+var TITLES=['로그인','상품 선택','주문/결제','결제하기','결제완료'];
+
+function won(n){return n.toLocaleString('ko-KR')+'원';}
+function eff(){var p=state.product;return (state.discount&&p.codePrice)?p.codePrice:p.price;}
+function show(id){STEPS.forEach(function(s){document.getElementById('s-'+s.split('-')[1]).classList.add('hidden');});document.getElementById(id).classList.remove('hidden');}
+function render(){
+  var stepIds=['s-login','s-products','s-order','s-method','s-done'];
+  stepIds.forEach(function(s){document.getElementById(s).classList.add('hidden');});
+  document.getElementById(stepIds[state.step]).classList.remove('hidden');
+  document.getElementById('barTitle').textContent=TITLES[state.step];
+  document.getElementById('backBtn').style.visibility=(state.step>0&&state.step<4)?'visible':'hidden';
+  document.getElementById('barRight').textContent=state.product?'':'';
+  // stepline
+  var bars=document.querySelectorAll('#stepline i');
+  bars.forEach(function(b,i){b.classList.toggle('on',i<state.step);});
+  document.getElementById('stepline').style.display=state.step===0?'none':'flex';
+  // footer
+  var foot=document.getElementById('foot'),btn=document.getElementById('footBtn');
+  if(state.step===1){foot.classList.add('hidden');}
+  else if(state.step===2){foot.classList.remove('hidden');btn.textContent='결제 진행';btn.className='btn p';}
+  else if(state.step===3){foot.classList.remove('hidden');btn.textContent='결제하기';btn.className='btn g';}
+  else if(state.step===4){foot.classList.remove('hidden');btn.textContent='확인';btn.className='btn p';}
+  else{foot.classList.add('hidden');}
+  document.querySelector('.body#'+stepIds[state.step]) && document.getElementById(stepIds[state.step]).scrollTo(0,0);
+}
+
+function doLogin(){
+  var id=document.getElementById('loginId').value.trim();
+  var pw=document.getElementById('loginPw').value;
+  if(id==='touchingvoice'&&pw==='touchingvoice0710'){
+    state.step=1;renderProducts();render();
+  }else{
+    var m=document.getElementById('loginMsg');
+    m.innerHTML='<b style="color:#c0392b">아이디 또는 비밀번호가 올바르지 않습니다.</b>';
+  }
+}
+function renderProducts(){
+  var h='';
+  PRODUCTS.forEach(function(p){
+    h+='<div class="card'+(state.product&&state.product.id===p.id?' sel':'')+'" onclick="pickProduct(\''+p.id+'\')">'
+      +'<span class="badge">'+p.badge+'</span><div class="chk"></div>'
+      +'<div class="nm">'+p.nm+'</div><div class="ds">'+p.ds+'</div>'
+      +'<div class="pr">'+won(p.price)+'</div></div>';
+  });
+  document.getElementById('prodList').innerHTML=h;
+}
+function pickProduct(id){
+  state.product=PRODUCTS.filter(function(p){return p.id===id;})[0];
+  state.discount=false;state.installment='일시불';
+  var ci=document.getElementById('codeInput');if(ci)ci.value='';
+  var cm=document.getElementById('codeMsg');if(cm)cm.innerHTML='';
+  renderProducts();
+  setTimeout(function(){goStep(2);},180);
+}
+function goStep(n){state.step=n;fillStep();render();}
+function fillStep(){
+  var p=state.product;if(!p)return;
+  if(state.step===2){
+    document.getElementById('orderBox').innerHTML='<div class="row"><span class="k">'+p.nm+'</span><span class="v">'+won(p.price)+'</span></div>';
+    document.getElementById('oAmt').textContent=won(p.price);
+    document.getElementById('oTotal').textContent=won(eff());
+    // 할인코드 섹션은 codePrice 있는 상품에만
+    document.getElementById('codeSec').style.display=p.codePrice?'block':'none';
+    var dr=document.getElementById('oDiscRow');
+    if(state.discount&&p.codePrice){dr.style.display='flex';document.getElementById('oDisc').textContent='-'+won(p.price-p.codePrice);}
+    else{dr.style.display='none';}
+  }
+  if(state.step===3){
+    document.getElementById('mName').textContent=p.nm;
+    document.getElementById('mAmt').textContent=won(eff());
+    document.getElementById('mTotal').textContent=won(eff());
+    // 할부 섹션은 카드결제 + 5만원 이상 + 할부 가능 상품
+    var showInst=(state.method==='card'&&eff()>=50000&&p.installment);
+    document.getElementById('instSec').style.display=showInst?'block':'none';
+  }
+}
+function applyCode(){
+  var p=state.product,code=document.getElementById('codeInput').value.trim();
+  var msg=document.getElementById('codeMsg');
+  if(!p.codePrice){return;}
+  if(!code){msg.innerHTML='<b>코드를 입력해 주세요.</b>';return;}
+  if(/^TV/i.test(code)){
+    state.discount=true;fillStep();
+    msg.innerHTML='<b style="color:#2e7d5b">할인코드가 적용되었습니다. ('+won(p.price-p.codePrice)+' 할인)</b>';
+  }else{
+    state.discount=false;fillStep();
+    msg.innerHTML='<b style="color:#c0392b">유효하지 않은 코드입니다.</b>';
+  }
+}
+function footNext(){
+  if(state.step===2){
+    if(!document.getElementById('agree1').checked){alert('환불 규정 및 결제 진행에 동의해 주세요.');return;}
+    if(!document.getElementById('buyerName').value.trim()){alert('구매자 이름을 입력해 주세요.');return;}
+    goStep(3);
+  }else if(state.step===3){
+    openPG();
+  }else if(state.step===4){
+    location.reload();
+  }
+}
+function goBack(){if(state.step>1&&state.step<4){goStep(state.step-1);}else if(state.step===1){location.reload();}}
+
+// pay method select
+document.getElementById('pmGrid').addEventListener('click',function(e){
+  var m=e.target.closest('.m');if(!m)return;
+  document.querySelectorAll('#pmGrid .m').forEach(function(x){x.classList.remove('sel');});
+  m.classList.add('sel');state.method=m.dataset.m;
+  if(state.method!=='card')state.installment='일시불';
+  fillStep();
+});
+
+function openPG(){
+  document.getElementById('pgAmt').textContent=won(eff())+(state.method==='card'&&state.installment!=='일시불'?' ('+state.installment+' 할부)':'');
+  document.getElementById('pgForm').classList.remove('hidden');
+  document.getElementById('pgLoad').classList.add('hidden');
+  document.getElementById('pgModal').classList.add('on');
+}
+function pgPay(){
+  document.getElementById('pgForm').classList.add('hidden');
+  document.getElementById('pgLoad').classList.remove('hidden');
+  setTimeout(function(){
+    document.getElementById('pgModal').classList.remove('on');
+    completeOrder();
+  },1600);
+}
+function completeOrder(){
+  var d=new Date?null:null; // Date allowed in browser runtime
+  var now=new Date();
+  var ord='TV'+now.getFullYear()+(''+(now.getMonth()+1)).padStart(2,'0')+(''+now.getDate()).padStart(2,'0')+'-'+Math.floor(1000+Math.random()*9000);
+  document.getElementById('dOrder').textContent=ord;
+  document.getElementById('dName').textContent=state.product.nm+(state.discount?' (할인코드 적용)':'');
+  document.getElementById('dMethod').textContent=METHOD_LABEL[state.method];
+  var ir=document.getElementById('dInstRow');
+  if(state.method==='card'&&state.installment!=='일시불'){ir.style.display='flex';document.getElementById('dInst').textContent=state.installment;}
+  else{ir.style.display='none';}
+  document.getElementById('dTotal').textContent=won(eff());
+  goStep(4);
+}
+
+var REFUND='<b>터칭보이스 환불 규정</b><br><br>'
++'<b>1. 환불 요청 조건</b><br>· 레슨 개시 전: 결제 취소 시 전액 환불<br>· 레슨 개시 후: 학원의 설립·운영 및 과외교습에 관한 법률 시행령 제18조에 준하여 이용 회차를 공제한 잔여 수강료 환불<br>· 디지털 리포트(음성·성격 분석): 리포트 발송(제공) 완료 전에는 전액 환불, 제공 완료 후에는 환불이 제한됩니다.<br><br>'
++'<b>2. 환불 요청 절차</b><br>결제일로부터 7일 이내 공식 이메일(lubere12@naver.com) 또는 고객센터(010-9947-3682)로 [성함][연락처][주문번호]와 함께 요청해 주세요.<br><br>'
++'<b>3. 환불 처리</b><br>요청 접수 후 3영업일 이내 검토하여 승인 시 결제 수단으로 원복 환불합니다. 카드 취소는 카드사 사정에 따라 영업일이 소요될 수 있습니다.<br><br>'
++'<b>4. 환불 불가</b><br>· 단순 변심에 의한 레슨 진행분<br>· 정상 제공이 완료된 디지털 콘텐츠<br><br>'
++'<b>5. 기타</b><br>본 약관에 명시되지 않은 사항은 전자상거래 등에서의 소비자보호에 관한 법률 등 관련 법령에 따릅니다.';
+document.getElementById('refundText').innerHTML=REFUND;
+function showRefund(){document.getElementById('refundModal').classList.add('on');}
+function hideRefund(){document.getElementById('refundModal').classList.remove('on');}
+
+render();
+
+/* ── 캡처 모드 (문서용 스크린샷 전용, ?cap=화면) ── */
+(function(){
+  var cap=new URLSearchParams(location.search).get('cap');
+  if(!cap)return;
+  document.querySelector('.phone').classList.add('capmode');
+  document.documentElement.style.background='transparent';document.body.style.background='transparent';
+  document.getElementById('loginId').value='touchingvoice';
+  document.getElementById('loginPw').value='touchingvoice0710';
+  if(cap==='login')return;
+  state.step=1;renderProducts();render();
+  if(cap==='products')return;
+  state.product=PRODUCTS[0]; // 발성심리지도사 2급 교육과정
+  function capOrderInfo(){document.getElementById('buyerName').value='천우경';document.getElementById('buyerPhone').value='010-9947-3682';document.getElementById('agree1').checked=true;document.getElementById('codeInput').value='TV-2G-150';applyCode();}
+  function capInst(){state.installment='3개월';var sel=document.getElementById('instSel');if(sel)sel.value='3개월';fillStep();}
+  if(cap==='order'){goStep(2);capOrderInfo();return;}
+  if(cap==='method'){goStep(2);capOrderInfo();goStep(3);capInst();return;}
+  if(cap==='pg'){goStep(2);capOrderInfo();goStep(3);capInst();openPG();return;}
+  if(cap==='done'){goStep(2);capOrderInfo();goStep(3);capInst();completeOrder();return;}
+  if(cap==='refund'){goStep(2);showRefund();return;}
+})();
+</script>
+</body>
+</html>
