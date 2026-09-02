@@ -3252,9 +3252,10 @@ h1{font-weight:800;font-size:24px;letter-spacing:-.4px;margin:5px 0 3px;}
   window.tvBuildReportHTML = function(d){
     const big5 = Object.assign({}, d.big5||{});
     const f = Object.assign({}, d.f||{}), q = Object.assign({}, d.q||{});
-    const name = d.name || '대상자';
-    const song = d.song || '응급실';
-    let meta = d.meta || '';
+    const esc = v => String(v==null?'':v).replace(/[<>&"']/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c])).slice(0,80);
+    const name = esc(d.name) || '대상자';
+    const song = esc(d.song) || '응급실';
+    let meta = esc(d.meta);
     if(!meta) meta = `측정 구간 ${song}(1절) · ${new Date().getFullYear()}.${String(new Date().getMonth()+1).padStart(2,'0')}`;
     ['E','C','A','N','O'].forEach(k=>{ if(big5[k]==null) big5[k]=50; });
     const voice = projectVoice(big5, f, q);
@@ -3611,7 +3612,8 @@ function tvPackReport(d){
   return tvB64uEnc(JSON.stringify(p));
 }
 function tvUnpackReport(s){
-  const p=JSON.parse(tvB64uDec(s)); const d={name:p.n,meta:p.m,song:p.s,big5:{},f:{},q:{},adv:null};
+  const p=JSON.parse(tvB64uDec(s)); if(!p||p.v!==1||!Array.isArray(p.b)||!Array.isArray(p.f)||!Array.isArray(p.q)) throw new Error('bad report link'); const num=x=>(typeof x==='number'&&isFinite(x))?x:null; p.b=p.b.map(num); p.f=p.f.map(num); p.q=p.q.map(num); if(p.a) p.a=p.a.map(num);
+  const d={name:String(p.n||'').slice(0,80),meta:String(p.m||'').slice(0,80),song:String(p.s||'').slice(0,80),big5:{},f:{},q:{},adv:null};
   ['E','C','A','N','O','V'].forEach((k,i)=>d.big5[k]=p.b[i]);
   ['F0','F1','F2','F3','F4','F5','RMS','DR','HNR','JIT','SHI'].forEach((k,i)=>d.f[k]=p.f[i]);
   ['b100','b300','b600','b1200','b2500','b4000','b5500','b7000','b8000'].forEach((k,i)=>d.q[k]=p.q[i]);
