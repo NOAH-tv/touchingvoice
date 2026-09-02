@@ -691,8 +691,8 @@ input::placeholder{color:#6C5F8F}
 
       <div class="ed-label">📝 개인정보·음성 수집 동의 <span style="font-weight:400;color:var(--gray-400);font-size:11px">— 참가자에게 읽어 주고 체크 · 필수 동의 없이는 녹음이 시작되지 않음</span></div>
       <div class="tvc" id="tvc" style="border:1px solid rgba(168,146,90,.45);border-radius:12px;padding:12px 14px;margin-bottom:14px;background:rgba(168,146,90,.08)">
-        <label style="display:flex;gap:9px;align-items:flex-start;font-size:12px;line-height:1.55;cursor:pointer;color:var(--cream,#F5EEE0)"><input type="checkbox" id="tvc-req" style="margin-top:3px;accent-color:#E05CFF;width:15px;height:15px;flex-shrink:0"><span><b>[필수]</b> 개인정보 수집·이용 동의 — <b>항목</b> 이름·연락처·성별/나이·성격검사 점수·<b>음성 녹음 파일과 음향 분석값</b> / <b>목적</b> 발성심리 리포트 제작과 결과 문자 전달 / <b>보유</b> 수집일로부터 1년 후 파기(요청 시 즉시 삭제) / 동의를 거부할 수 있으나 거부 시 부스 서비스 이용이 불가합니다.</span></label>
-        <label style="display:flex;gap:9px;align-items:flex-start;font-size:11.5px;line-height:1.5;cursor:pointer;margin-top:7px;color:var(--gray-600)"><input type="checkbox" id="tvc-research" style="margin-top:3px;accent-color:#E05CFF;width:14px;height:14px;flex-shrink:0"><span><b>[선택]</b> 연구·통계 활용 동의 — 이름·연락처를 제거한 비식별 데이터로 발성심리 연구와 서비스 개선에 활용</span></label>
+        <label style="display:flex;gap:9px;align-items:flex-start;font-size:12px;line-height:1.55;cursor:pointer;color:var(--cream,#F5EEE0)"><input type="checkbox" id="tvc-req" style="margin-top:3px;accent-color:#E05CFF;width:15px;height:15px;flex-shrink:0"><span><b>[필수]</b> 개인정보 수집·이용 동의 — <b>항목</b> 이름·연락처·성별/나이·성격검사 점수·<b>음성 녹음 파일과 음향 분석값</b> / <b>목적</b> 발성심리 리포트 제작과 결과 문자 전달 / <b>보유</b> 수집일로부터 1년 후 파기(요청 시 즉시 삭제) / 동의를 거부할 수 있으나 거부 시 부스 서비스 이용이 불가합니다. <b>동의 시 요약 리포트를 제공합니다.</b></span></label>
+        <label style="display:flex;gap:9px;align-items:flex-start;font-size:11.5px;line-height:1.5;cursor:pointer;margin-top:7px;color:var(--gray-600)"><input type="checkbox" id="tvc-research" style="margin-top:3px;accent-color:#E05CFF;width:14px;height:14px;flex-shrink:0"><span><b>[선택]</b> 연구·통계 활용 동의 — 이름·연락처를 제거한 비식별 데이터로 발성심리 연구와 서비스 개선에 활용 <b style="color:#F0C778">→ 데이터 기여에 대한 보답으로 상세 리포트(측정 4페이지 + 2주 코칭 플랜)를 드립니다</b></span></label>
         <label style="display:flex;gap:9px;align-items:flex-start;font-size:11.5px;line-height:1.5;cursor:pointer;margin-top:5px;color:var(--gray-600)"><input type="checkbox" id="tvc-marketing" style="margin-top:3px;accent-color:#E05CFF;width:14px;height:14px;flex-shrink:0"><span><b>[선택]</b> 마케팅 정보 수신 동의 — 터칭보이스 소식·이벤트 문자 수신(언제든 철회 가능)</span></label>
         <div style="font-size:10.5px;color:var(--gray-400);margin-top:8px">개인정보 처리 책임: ㈜터칭보이스 (chun3682@gmail.com) · 동의 내용은 결과 기록과 함께 저장됩니다.</div>
       </div>
@@ -3070,6 +3070,23 @@ h1{font-weight:800;font-size:24px;letter-spacing:-.4px;margin:5px 0 3px;}
 .rxrow .rn{font-weight:800;color:#E6C98A;flex:0 0 22px;}
 .ai-foot{font-size:9px;color:#C7B8D5;line-height:1.5;margin-top:11px;padding-top:9px;border-top:1px dashed rgba(255,255,255,0.18);}
 @media print{.page{page-break-before:always;}body{font-size:11px;}}
+.coach{display:grid;gap:10px;margin-top:6px;}
+.cc{border:1px solid var(--line);border-left:4px solid var(--purple);border-radius:10px;padding:11px 13px;background:#fff;}
+.cc .ch{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.cc .cn{font-size:9px;font-weight:800;color:#fff;background:var(--purple);border-radius:4px;padding:2px 7px;}
+.cc .ct{font-weight:800;font-size:12.5px;}
+.cc .cs{margin-left:auto;font-size:9.5px;font-weight:700;color:var(--gold);letter-spacing:.05em;}
+.cc .cw{font-size:10.5px;color:var(--ink2);margin-bottom:6px;line-height:1.6;}
+.cc .cm{font-size:11px;line-height:1.65;color:var(--ink);}
+.cc .cm b{color:var(--purple);}
+.cc .ck{margin-top:5px;font-size:10px;color:var(--peach);font-weight:700;}
+.routine{margin-top:12px;background:var(--paper);border-radius:10px;padding:11px 13px;font-size:10.5px;line-height:1.7;color:var(--ink2);}
+.routine b{color:var(--ink);}
+.teaser{margin-top:14px;border:1px dashed var(--gold);border-radius:10px;padding:12px 14px;background:#FFFDF8;}
+.teaser .tt{font-size:9px;letter-spacing:.25em;font-weight:700;color:var(--gold);text-transform:uppercase;margin-bottom:5px;}
+.teaser .tb{font-size:12px;font-weight:800;margin-bottom:4px;}
+.teaser p{font-size:10.5px;color:var(--ink2);line-height:1.65;margin:0 0 4px;}
+.teaser .note{margin-top:8px;font-size:10px;color:var(--muted);border-top:1px solid var(--line);padding-top:7px;}
 `;
 
     // BIG5 trait map (성향 vs 음성)
@@ -3263,10 +3280,63 @@ h1{font-weight:800;font-size:24px;letter-spacing:-.4px;margin:5px 0 3px;}
     const text = composeNarrative(big5, voice, f, q, gauges, name);
     text.traitInterps = composeTraitInterpretations(big5, voice, f, q);
     text.compInterps = composeCompetencyInterpretations(big5, voice, f, q);
-    return buildReportHTML({name, meta, song, big5, voice, f, q, gauges, text});
+    let html = buildReportHTML({name, meta, song, big5, voice, f, q, gauges, text});
+    const level = d.level===1 ? 1 : 2;
+    const plan = tvCoachPlan(gauges, f, q);
+    const pageIdx = []; let from = 0; while(true){ const i = html.indexOf('<div class="page">', from); if(i<0) break; pageIdx.push(i); from = i+10; }
+    if(level===1){
+      // 요약본: 1~2페이지(판정·한눈에·성격×목소리) + 코칭 맛보기 + 상세본 안내
+      const cut = pageIdx.length>=2 ? pageIdx[1] : html.lastIndexOf('<div style="margin-top:30px;text-align:center;padding:20px;background:#FAF6EF');
+      const p0 = plan[0];
+      const teaser = `<div class="sec"><div class="teaser"><div class="tt">Coaching Preview · 코칭 맛보기</div>
+  <div class="tb">지금 가장 먼저 다듬을 곳: ${p0.title} <span style="font-weight:400;color:var(--gold);font-size:10px">(${p0.stage})</span></div>
+  <p>${p0.why}</p><p><b>오늘 하나만:</b> ${p0.quick}</p>
+  <div class="note">이 결과지는 <b>요약본</b>입니다. 발성 측정 상세(포먼트·바이오마커·주파수 대역), AI 종합 소견, 그리고 개선 포인트 3가지의 <b>2주 코칭 플랜</b>이 담긴 상세본은 연구·통계 활용 동의 시 제공됩니다.</div>
+</div></div>
+<div class="ai-foot" style="margin-top:14px;font-size:9.5px;color:var(--muted);line-height:1.6">· 본 리포트는 BIG5 자기보고와 음향 측정값을 통합한 발성·자기인식 코칭 자료이며, 임상 진단이나 채용·인사 평가의 단독 근거가 아닙니다. · TouchingVoice 보이스매트릭스 · ${new Date().getFullYear()}</div>
+</body></html>`;
+      html = html.slice(0, cut) + teaser;
+    } else {
+      const cards = plan.slice(0,3).map((p,i)=>`<div class="cc"><div class="ch"><span class="cn">POINT ${i+1}</span><span class="ct">${p.title}</span><span class="cs">${p.stage} · ${p.score}점</span></div>
+  <div class="cw">${p.why}</div>
+  <div class="cm"><b>방법 ①</b> ${p.m1}<br><b>방법 ②</b> ${p.m2}</div>
+  <div class="ck">셀프 체크 · ${p.check}</div></div>`).join('');
+      const routine = `<div class="routine"><b>2주 루틴 (하루 10분)</b> — 립트릴 워밍업 2분 → POINT 1 연습 4분 → POINT 2 연습 3분 → 허밍 쿨다운 1분. 주 5일, 2주 뒤 같은 곡 같은 구간으로 다시 측정해 변화를 확인하세요. 통증·쉰 목소리가 생기면 즉시 중단하고 휴식합니다.</div>`;
+      const coachPage = `<div class="page"><div class="sec"><div class="sec-h"><span class="sec-n">05</span><span class="sec-t">개선 코칭 플랜 — 무엇을, 왜, 어떻게</span><span class="sec-line"></span></div>
+  <p class="lead">측정값에서 가장 낮은 세 영역을 골라, 원인과 연습 방법을 묶었습니다. 발성은 근육 협응이라 "더 세게"가 아니라 "덜 마찰하고 더 떠받치는" 방향으로 연습합니다.</p>
+  <div class="coach">${cards}</div>${routine}</div></div>
+`;
+      html = html.replace('<div style="margin-top:30px;text-align:center;padding:20px;background:#FAF6EF', coachPage + '<div style="margin-top:30px;text-align:center;padding:20px;background:#FAF6EF');
+    }
+    return html;
   };
+  // 6개 발달 게이지(흉성·중역·광채·호흡·톤·표현) 중 낮은 순으로 개선 포인트 생성
+  function tvCoachPlan(g, f, q){
+    const L = {
+      bass:{title:'흉성 토대 (저음 공명)', why:`가슴 울림 대역이 얇습니다. 낮은 F1과 저역 비율(흉성 ${q.b100||0}%)이 후두가 높거나 인두 공간이 좁다는 신호입니다.`,
+        m1:'반하품으로 후두를 편안히 내린 채 허밍으로 낮은 음까지 미끄러지듯 내려가기(글라이드) 3분.', m2:'립트릴 → "우-오" 모음으로 편한 저음 5회 × 3세트. 가슴에 손을 얹고 진동을 확인.',
+        check:'가슴에 손을 얹었을 때 진동이 손바닥으로 느껴지는가', quick:'반하품 상태로 낮은 허밍 1분 — 가슴에 진동이 오면 성공.'},
+      mid:{title:'중역 공명 (말소리·명료도)', why:`600Hz~1.2kHz 대역이 비어 있어 가사가 또렷하게 전달되지 않습니다(명료 ${q.b1200||0}%, F2 ${f.F2||'-'}Hz).`,
+        m1:'같은 음높이에서 [아-에-이] 모음을 이어 부르며 혀 앞부분 공간 정렬 5회.', m2:'"냐·녜·뇨" 비강 자음으로 마스크(코 뒤) 위치를 찾고, 그 위치를 유지한 채 가사 한 줄 3분.',
+        check:'녹음해서 들었을 때 가사가 자막 없이 들리는가', quick:'"냐냐냐" 5초 허밍 후 곧바로 가사 한 줄 — 위치가 앞으로 오는지 느끼기.'},
+      top:{title:'상단 광채 (투사력)', why:`2.5~4kHz 응집이 약해 소리가 멀리 뻗지 못합니다(존재감 ${q.b2500||0}% · 공기감 ${q.b4000||0}%).`,
+        m1:'"응(NG)" 허밍 → 입을 열며 "응-아"로 광채를 모음에 옮기기 5회.', m2:'[h]를 앞세운 스타카토(하-하-하) 3분 — 성대를 조이지 않고 호흡으로 튕기기.',
+        check:'3m 떨어진 사람에게 작은 소리로도 또렷이 들리는가', quick:'"응-아" 5회 — 코 뒤가 울리면서 모음으로 넘어가는지.'},
+      breath:{title:'호흡 지지 (떠받치는 힘)', why:`음량 흔들림과 다이내믹(RMS ${f.RMS||'-'} · DR ${f.DR||'-'}dB · 시머 ${f.SHI||'-'}%)이 호흡이 소리를 떠받치지 못하고 있음을 보여줍니다.`,
+        m1:'복식 들숨 4초 → 멈춤 2초 → "스~" 날숨 12초 × 5회. 어깨가 올라가지 않게.', m2:'립트릴 롱톤 10초 × 5회 — 미는 힘 없이 일정한 세기 유지.',
+        check:'문장 끝에서 소리가 꺼지거나 떨리지 않는가', quick:'"스~" 12초 날숨 3회 — 끝까지 일정한 세기로.'},
+      clarity:{title:'톤 청정도 (성문 접촉)', why:`HNR ${f.HNR||'-'}dB · 지터 ${f.JIT||'-'}%로 성대 접촉이 고르지 않거나 호흡이 새고 있습니다.`,
+        m1:'허밍 "음~"으로 입술이 간지러운 지점 찾기 3분 — 그 느낌이 성문이 모인 상태.', m2:'빨대 발성(빨대를 물고 소리내기)으로 낮은음→높은음 글라이드 5회. 목 안 압력을 낮추면서 성대가 고르게 닿습니다.',
+        check:'새는 소리·쉰 느낌이 줄고 소리가 맑아졌는가', quick:'빨대 물고 5초 글라이드 3회.'},
+      expr:{title:'표현 개방 (감정의 음향화)', why:'측정된 표현 대역이 성격 점수보다 낮습니다. 감정이 있는데 소리로 덜 나오는 상태입니다.',
+        m1:'같은 문장을 밝게·따뜻하게·어둡게 세 가지 색으로 낭독하고 녹음 비교.', m2:'좋아하는 노래 한 소절을 미소 지은 채 부르기(미소 공명) 3회 — 표정이 공명을 바꿉니다.',
+        check:'녹음 비교에서 세 가지 색의 차이가 들리는가', quick:'한 문장을 "밝게" 한 번, "따뜻하게" 한 번 말해보기.'}
+    };
+    const order = ['bass','mid','top','breath','clarity','expr'];
+    return order.map(k=>({key:k, score:(g[k]==null?50:g[k])})).sort((a,b)=>a.score-b.score).map(x=>Object.assign({score:x.score, stage:stageOf(x.score)[1]}, L[x.key]));
+  }
   window.renderTVReport5Page = function(){
-    const html = window.tvBuildReportHTML(window.tvGatherReportData());
+    const html = window.tvBuildReportHTML(Object.assign(window.tvGatherReportData(), {level:2}));
     const w = window.open('', '_blank', 'width=920,height=1100');
     if(!w){ alert('팝업이 차단되었습니다. 팝업 차단을 해제하고 다시 시도해주세요.'); return; }
     w.document.write(html);
@@ -3609,11 +3679,12 @@ function tvPackReport(d){
     f:['F0','F1','F2','F3','F4','F5','RMS','DR','HNR','JIT','SHI'].map(k=>k==='RMS'?(d.f[k]==null?null:Math.round(d.f[k]*10000)/10000):r1(d.f[k])),
     q:['b100','b300','b600','b1200','b2500','b4000','b5500','b7000','b8000'].map(k=>r1(d.q[k]))};
   if(d.adv) p.a=['subBass','singerCluster','VTL','F0_mean','F0_sd','F0_range_st','CPP'].map(k=>r1(d.adv[k]));
+  p.l=(d.level===1)?1:2;
   return tvB64uEnc(JSON.stringify(p));
 }
 function tvUnpackReport(s){
   const p=JSON.parse(tvB64uDec(s)); if(!p||p.v!==1||!Array.isArray(p.b)||!Array.isArray(p.f)||!Array.isArray(p.q)) throw new Error('bad report link'); const num=x=>(typeof x==='number'&&isFinite(x))?x:null; p.b=p.b.map(num); p.f=p.f.map(num); p.q=p.q.map(num); if(p.a) p.a=p.a.map(num);
-  const d={name:String(p.n||'').slice(0,80),meta:String(p.m||'').slice(0,80),song:String(p.s||'').slice(0,80),big5:{},f:{},q:{},adv:null};
+  const d={name:String(p.n||'').slice(0,80),meta:String(p.m||'').slice(0,80),song:String(p.s||'').slice(0,80),big5:{},f:{},q:{},adv:null,level:(p.l===1?1:2)};
   ['E','C','A','N','O','V'].forEach((k,i)=>d.big5[k]=p.b[i]);
   ['F0','F1','F2','F3','F4','F5','RMS','DR','HNR','JIT','SHI'].forEach((k,i)=>d.f[k]=p.f[i]);
   ['b100','b300','b600','b1200','b2500','b4000','b5500','b7000','b8000'].forEach((k,i)=>d.q[k]=p.q[i]);
@@ -3621,7 +3692,7 @@ function tvUnpackReport(s){
   return d;
 }
 function tvReportLink(d){ return TV_REPORT_BASE+'#r='+tvPackReport(d); }
-function tvSmsText(name, link){ return '[터칭보이스] '+(name||'')+'님의 발성심리 리포트가 준비됐어요 🎤\n아래 링크를 열어 확인하세요.\n'+link; }
+function tvSmsText(name, link){ const lvl=/"l":1|%22l%22:1/.test(tvB64uDec((link.split('#r=')[1]||'')))?'요약본':'상세본'; return '[터칭보이스] '+(name||'')+'님의 발성심리 리포트('+lvl+')가 준비됐어요 🎤\n아래 링크를 열어 확인하세요.\n'+link; }
 
 /* ── 리포트 오버레이 ── */
 function tvShowReport(html, link, smsText, phone){
@@ -3695,7 +3766,7 @@ async function tvrPipeline(blob){
   // 3) 리포트 + 링크
   let link='', html='';
   try{
-    const d=window.tvGatherReportData(); html=window.tvBuildReportHTML(d); link=tvReportLink(d);
+    const d=window.tvGatherReportData(); d.level=($g('tvc-research')&&$g('tvc-research').checked)?2:1; html=window.tvBuildReportHTML(d); link=tvReportLink(d); tvrLog('리포트 등급: '+(d.level===2?'상세본(코칭 플랜 포함)':'요약본'));
     TVR.last.reportUrl=link; tvrStep('rep','ok','📄 리포트 생성'); tvrLog('리포트 링크 '+link.length+'자');
     try{ if(typeof saveCurrentRecord==='function') saveCurrentRecord(); }catch(_){}
     tvShowReport(html, link, tvSmsText(name,link), phone);
