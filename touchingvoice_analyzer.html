@@ -433,6 +433,157 @@ html.tv-report-view body{padding:0}
 .tvd-btns button:disabled{opacity:.35;cursor:default}
 .tvd-hint{font-size:10.5px;color:#7F7AA8;line-height:1.5}
 </style>
+<link rel="stylesheet" href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square.css">
+<style id="tv-skin">
+/* ═══ 터칭보이스 스킨 — 나눔스퀘어 · 딥퍼플 #43227D · 크림 #F5EEE0 · 골드 #A8925A · 네온퍼플(서초 컨셉) ═══ */
+:root{
+  --plum:#43227D; --cream:#F5EEE0; --gold:#A8925A; --neon:#A26BFF; --neon2:#E05CFF; --glow:rgba(224,92,255,.35);
+  --bg:#0F0722; --white:#1A0F35; --black:#F5EEE0;
+  --gray-800:#EADFC9; --gray-700:#D9CDB6; --gray-600:#BDB0D6; --gray-500:#A597C4; --gray-400:#8B7EAF; --gray-200:#3B2A62; --gray-100:#241546;
+  --accent:#B98CFF; --accent-light:rgba(162,107,255,.16);
+  --green:#7EDBA8; --green-light:rgba(46,158,107,.18); --green-soft:#2E9E6B;
+  --red:#FF9A97; --red-light:rgba(208,91,87,.2);
+  --amber:#F0C778; --amber-light:rgba(168,146,90,.2);
+  --blue:#9CBBE8; --blue-light:rgba(74,127,208,.2);
+  --border:#3B2A62; --shadow:0 0 0 1px rgba(162,107,255,.10),0 12px 40px rgba(123,59,255,.22);
+  --t-E:#B98CFF; --t-C:#5AD08A; --t-A:#7FB0FF; --t-N:#FF7A76; --t-O:#F2B84B; --t-V:#E05CFF;
+}
+html{background:var(--bg)}
+body{font-family:'NanumSquare','NanumSquareOTF',sans-serif;background:radial-gradient(1200px 600px at 15% -10%,rgba(123,59,255,.28),transparent 60%),radial-gradient(900px 500px at 100% 10%,rgba(224,92,255,.16),transparent 55%),var(--bg);color:var(--black)}
+body *,.mono,.editor-head .tag,.rep-kicker,.sec-title,.hero-brand,.hero-idx-val,.cmap-code,.cmap-gap,.db-val,.mk-code,.mk-val,.fb-val,.tcard-scores,.rx-num,.rx-target,.rep-foot,.jc-sub,.pot-rank,.pot-gap,.modebar-lab,.wavefig-cap,.part-divider .pd-tag,.part-divider .pd-sub,.band-chip,.mk-norm,.mk-range,.fb-rangetext,.fld-range,.bal-score,.bal-detail,.so-tag,.sb-privacy,.rec-count,.rec-card .rc-snap,.fld input,.fld-box input,.box-range,.ares .mono,.tvr-head .tvr-state,.tvr-meter .tvr-db,.tvr-meter .tvr-clip,.tvr-timer,.tvr-fx .row .val,.tvr-log,.tvo-note,.tvd-state,.tvd-time,.tvd-kv,.tvd-mbar s,.tvd-mlab,.tvd-log,.tvd-lane .ovl{font-family:'NanumSquare','NanumSquareOTF',sans-serif !important}
+/* 사이트바 */
+.sitebar{background:linear-gradient(90deg,#1B0B3A,#2A1258 60%,#1B0B3A);border-bottom:1px solid rgba(162,107,255,.35);box-shadow:0 6px 30px rgba(123,59,255,.25)}
+.sb-back{background:rgba(162,107,255,.14);color:#E9DDFF;border:1px solid rgba(162,107,255,.3)}
+.sb-back:hover{background:rgba(162,107,255,.3)}
+.sb-crumb{color:#A597C4}.sb-crumb b,.sb-crumb .sb-cur{color:#F5EEE0}
+.sb-privacy{color:#F0C778;background:rgba(168,146,90,.14);border-color:rgba(168,146,90,.35)}
+/* 카드·패널 */
+.editor,.records-bar,.records-panel,.report,.pbox,.ai-status{background:linear-gradient(180deg,rgba(43,22,86,.75),rgba(26,15,53,.9));border:1px solid rgba(162,107,255,.22);box-shadow:var(--shadow)}
+.editor-head h2{color:var(--cream)}
+.editor-head .tag{color:#E9DDFF;background:rgba(162,107,255,.22);border:1px solid rgba(162,107,255,.35)}
+.ed-label{color:var(--gold);letter-spacing:.14em}
+.fld label{color:#CDBFE6}.fld label .lh{color:#8B7EAF}
+.fld input,.fld-box{background:rgba(15,7,34,.7);border-color:#3B2A62;color:var(--cream)}
+.fld input:focus,.fld-box:focus-within{border-color:var(--neon);background:rgba(15,7,34,.95);box-shadow:0 0 0 3px rgba(162,107,255,.22),0 0 18px rgba(224,92,255,.25)}
+.fld-box input{color:var(--cream)}
+input::placeholder{color:#6C5F8F}
+.gen-btn,.ai-btn{background:linear-gradient(135deg,#7B3BFF,#E05CFF);color:#fff;border:none;box-shadow:0 10px 30px rgba(123,59,255,.45),0 0 40px rgba(224,92,255,.25);letter-spacing:.04em}
+.gen-btn:hover,.ai-btn:hover{background:linear-gradient(135deg,#8B4FFF,#EA74FF);opacity:1;box-shadow:0 12px 40px rgba(123,59,255,.6),0 0 60px rgba(224,92,255,.4)}
+.rec-btn{background:rgba(162,107,255,.10);border-color:rgba(162,107,255,.25);color:#E9DDFF}
+.rec-btn:hover{background:rgba(162,107,255,.22);border-color:var(--neon)}
+.rec-btn.primary{background:linear-gradient(135deg,#7B3BFF,#B24DFF);border-color:transparent;color:#fff;box-shadow:0 6px 20px rgba(123,59,255,.4)}
+.rec-btn.primary:hover{background:linear-gradient(135deg,#8B4FFF,#C45FFF);border-color:transparent}
+.rec-btn.ghost{color:#BDB0D6}.rec-btn.ghost:hover{background:rgba(162,107,255,.14);color:#F5EEE0}
+.rec-count{background:var(--gold);color:#1A0F35}
+.rp-head h3{color:var(--cream)}
+.rec-card{background:rgba(15,7,34,.55);border-color:#3B2A62}
+.rec-card:hover{background:rgba(162,107,255,.16);border-color:var(--neon);box-shadow:0 0 22px rgba(224,92,255,.25)}
+.rec-card .rc-del:hover{background:rgba(208,91,87,.25);color:#FF9A97}
+.tb-btn{background:rgba(162,107,255,.10);border-color:rgba(162,107,255,.25);color:#E9DDFF}
+.tb-btn:hover{background:rgba(162,107,255,.22)}
+.tb-btn.primary{background:linear-gradient(135deg,#7B3BFF,#E05CFF);border-color:transparent;box-shadow:0 8px 24px rgba(123,59,255,.4)}
+.modeseg{background:rgba(15,7,34,.7);border-color:#3B2A62}
+.modeopt{color:#A597C4}.modeopt.active{background:linear-gradient(135deg,#7B3BFF,#B24DFF);color:#fff;box-shadow:0 0 16px rgba(224,92,255,.35)}
+/* 업로드 존·분석 결과 */
+.uz{background:rgba(15,7,34,.55);border-color:#4A3A72;color:var(--cream)}
+.uz:hover,.uz.has,.uz.has-img{background:rgba(162,107,255,.14);border-color:var(--neon);box-shadow:0 0 22px rgba(224,92,255,.2)}
+.pbar{background:#241546}.pbar>div{background:linear-gradient(90deg,#7B3BFF,#E05CFF);box-shadow:0 0 12px rgba(224,92,255,.6)}
+.ares{background:rgba(46,158,107,.12);border-color:rgba(90,208,138,.45)}
+.ares-t{color:#7EDBA8}.ares .mono{color:#D9CDB6}
+.ai-status.err{background:rgba(208,91,87,.15);border-color:#FF7A76;color:#FF9A97}
+/* 리포트(화면) */
+.rep-h1,.tcard-name,.pot-name,.rx-title,.cmap-name,.jc-name,.ii-tag,.bal-head>span:first-child,.part-divider,.so-overall{color:var(--cream)}
+.sec-title{color:var(--gold);border-bottom-color:rgba(168,146,90,.35)}
+.rep-kicker{color:var(--neon)}
+.hero,.synth,.bigpot,.headline{background:linear-gradient(135deg,#2A1258 0%,#43227D 55%,#1B0B3A 100%);box-shadow:0 0 0 1px rgba(162,107,255,.25),0 16px 50px rgba(123,59,255,.35)}
+.hero::after{background:radial-gradient(circle,rgba(224,92,255,.45),transparent 70%)}
+.hero-brand,.hero-idx-label,.hero-identity .lab,.synth .lab,.bigpot .lab,.headline .lab{color:#E6C98A}
+.hero-meta,.hero-idx-cap,.hero-identity .desc,.synth p,.bigpot .sm{color:#E9DDFF}
+.headline .txt strong,.bigpot .big-em{color:#F2B84B}
+.db-track,.fb-track{background:rgba(15,7,34,.8)}
+.tcard,.pot,.wavefig{background:rgba(26,15,53,.6);border-color:#3B2A62}
+.tcard-meaning,.combo-card,.balance-box,.so-caveat,.hr-summary,.calib{background:rgba(15,7,34,.55);color:#D9CDB6}
+.career-box{background:rgba(162,107,255,.14);border:1px solid rgba(162,107,255,.3)}
+.career-box .cb-env{color:#E9DDFF}
+.care-flag{background:rgba(168,146,90,.14);border-color:rgba(240,199,120,.45);color:#F0C778}
+.pot-rank{background:linear-gradient(135deg,#7B3BFF,#B24DFF)}
+.pot-rx{background:rgba(162,107,255,.14);color:#E9DDFF}
+.band-chip.high{background:rgba(46,158,107,.2);color:#7EDBA8}
+.band-chip.low{background:rgba(199,126,26,.2);color:#F0C778}
+.band-chip.ext{background:rgba(224,92,255,.2);color:#F0B8FF}
+.chip-fit{background:rgba(46,158,107,.2);color:#7EDBA8}.chip-under{background:rgba(199,126,26,.2);color:#F0C778}.chip-over{background:rgba(74,127,208,.2);color:#9CBBE8}
+.b-green{background:rgba(46,158,107,.2);color:#7EDBA8}.b-red{background:rgba(208,91,87,.2);color:#FF9A97}.b-amber{background:rgba(199,126,26,.2);color:#F0C778}
+.ins-warn{background:rgba(168,146,90,.16)}.ins-good{background:rgba(46,158,107,.14)}.ins-info{background:rgba(74,127,208,.16)}
+.rep-foot{border-top-color:#3B2A62}
+.part-divider{border-top-color:rgba(168,146,90,.35)}
+.part-divider .pd-tag{background:linear-gradient(135deg,#7B3BFF,#B24DFF)}
+.fb-range{background:rgba(162,107,255,.22)}
+/* 부스 녹음 패널 */
+.tvr{background:linear-gradient(180deg,rgba(43,22,86,.55),rgba(15,7,34,.85));border-color:rgba(162,107,255,.45);box-shadow:0 0 0 1px rgba(224,92,255,.12),0 0 40px rgba(123,59,255,.25)}
+.tvr-head h3{color:var(--cream)}
+.tvr-head .tvr-state{background:rgba(15,7,34,.7);color:#BDB0D6;border:1px solid #3B2A62}
+.tvr-head .tvr-state.armed{color:#E9DDFF;background:rgba(162,107,255,.22);border-color:var(--neon)}
+.tvr-head .tvr-state.on{background:linear-gradient(135deg,#D05B57,#E05CFF);color:#fff;border-color:transparent;box-shadow:0 0 18px rgba(224,92,255,.6)}
+.tvr-dev label{color:var(--gold) !important}
+.tvr-dev select{background:rgba(15,7,34,.8);border-color:#3B2A62;color:var(--cream)}
+.tvr-meter{background:#0A0418;border:1px solid #3B2A62;box-shadow:inset 0 0 30px rgba(123,59,255,.2)}
+.tvr-btn{background:rgba(162,107,255,.10);border-color:rgba(162,107,255,.3);color:#E9DDFF}
+.tvr-btn:hover{background:rgba(162,107,255,.24)}
+.tvr-btn.arm{background:linear-gradient(135deg,#7B3BFF,#B24DFF);border-color:transparent;color:#fff;box-shadow:0 8px 24px rgba(123,59,255,.45)}
+.tvr-btn.rec{background:linear-gradient(135deg,#A26BFF,#E05CFF);border-color:transparent;color:#fff;box-shadow:0 0 30px rgba(224,92,255,.5)}
+.tvr-btn.rec.stop{background:#1A0F35;border-color:#FF7A76;box-shadow:0 0 24px rgba(255,122,118,.5)}
+.tvr-timer{color:var(--cream)}
+.tvr-fx .row label{color:#E9DDFF}.tvr-fx .row .val{color:#BDB0D6}
+.tvr-fx .row input[type=range],.tvr-opts input[type=checkbox],.tvr-fx .row input[type=checkbox]{accent-color:#E05CFF}
+.tvr-opts{color:#E9DDFF}
+.tvr-step{background:rgba(15,7,34,.7);border-color:#3B2A62;color:#A597C4}
+.tvr-step.run{border-color:var(--neon);background:rgba(162,107,255,.2);color:#F0B8FF;box-shadow:0 0 14px rgba(224,92,255,.35)}
+.tvr-step.ok{border-color:#5AD08A;background:rgba(46,158,107,.16);color:#7EDBA8}
+.tvr-step.err{border-color:#FF7A76;background:rgba(208,91,87,.16);color:#FF9A97}
+.tvr-log{color:#A597C4}
+/* 리포트 오버레이·DAW */
+.tvo{background:rgba(10,4,24,.82)}
+.tvo-bar{background:linear-gradient(90deg,#1B0B3A,#2A1258)}
+.tvo-bar button.gold{background:var(--gold);border-color:var(--gold);color:#1A0F35}
+.tvo-note{background:#0F0722;color:#BDB0D6}
+.tvd{background:radial-gradient(1000px 500px at 20% -10%,rgba(123,59,255,.25),transparent 60%),#0F0722;color:var(--cream)}
+.tvd-top{background:rgba(27,11,58,.85);border-bottom-color:rgba(162,107,255,.3);box-shadow:0 6px 30px rgba(123,59,255,.2)}
+.tvd-brand{color:var(--gold)}.tvd-brand small{color:#8B7EAF}
+.tvd-who{background:rgba(162,107,255,.12);border-color:rgba(162,107,255,.3)}
+.tvd-tb{background:rgba(162,107,255,.12);border-color:rgba(162,107,255,.3)}
+.tvd-tb:hover{background:rgba(162,107,255,.26)}
+.tvd-tb.arm{background:linear-gradient(135deg,#7B3BFF,#B24DFF);border-color:transparent;box-shadow:0 8px 24px rgba(123,59,255,.45)}
+.tvd-tb.rec{background:linear-gradient(135deg,#A26BFF,#E05CFF);border-color:transparent;box-shadow:0 0 30px rgba(224,92,255,.5)}
+.tvd-tb.rec.live{background:#1A0F35;border-color:#FF7A76}
+@keyframes tvdBlink{50%{box-shadow:0 0 0 4px rgba(255,122,118,.4),0 0 40px rgba(224,92,255,.6)}}
+.tvd-strip,.tvd-side{background:rgba(20,9,44,.9)}
+.tvd-strip{border-right-color:rgba(162,107,255,.2)}.tvd-side{border-left-color:rgba(162,107,255,.2)}
+.tvd-mod{background:rgba(43,22,86,.45);border-color:rgba(162,107,255,.22)}
+.tvd-mod h4{color:var(--gold)}.tvd-mod h4 label{color:#E9DDFF}
+.tvd-mod select{background:rgba(15,7,34,.8);border-color:#3B2A62;color:var(--cream)}
+.tvd-mod input[type=range],.tvd-mod input[type=checkbox]{accent-color:#E05CFF}
+.tvd-kv{color:#BDB0D6}.tvd-kv b{color:var(--cream)}
+.tvd-gr{background:#0A0418}.tvd-gr i{background:linear-gradient(90deg,#A8925A,#F0C778)}
+.tvd-lane{background:#0A0418}
+.tvd-lane .hdr{border-bottom-color:rgba(162,107,255,.2);color:#A597C4}.tvd-lane .hdr b{color:var(--cream)}
+.tvd-mbar{background:#0A0418;border-color:#3B2A62}
+.tvd-mr input{background:rgba(15,7,34,.8);border-color:#3B2A62;color:var(--cream)}
+.tvd-mr button{background:linear-gradient(135deg,#7B3BFF,#E05CFF);color:#fff}
+.tvd-steps .st{background:rgba(15,7,34,.6);border-color:#3B2A62;color:#A597C4}
+.tvd-steps .st.run{border-color:var(--neon);color:#F0B8FF;box-shadow:0 0 12px rgba(224,92,255,.3)}
+.tvd-log{background:#0A0418;color:#A597C4}
+.tvd-btns button{background:rgba(162,107,255,.12);border-color:rgba(162,107,255,.3)}
+.tvd-btns button:hover{background:rgba(162,107,255,.26)}
+.tvd-btns button.gold{background:var(--gold);border-color:var(--gold);color:#1A0F35}
+/* 인쇄는 원래 밝은 팔레트 */
+@media print{
+  :root{--bg:#fff; --white:#fff; --black:#111110; --gray-800:#2C2C2A; --gray-700:#3F3F3B; --gray-600:#5C5C58; --gray-500:#7A7A75; --gray-400:#9C9C96; --gray-200:#E4E4DF; --gray-100:#F0F0EB; --accent:#43227D; --accent-light:#EEEDFE; --green:#166534; --green-light:#DCFCE7; --red:#991B1B; --red-light:#FEE2E2; --amber:#92400E; --amber-light:#FEF3C7; --blue:#1E40AF; --blue-light:#DBEAFE; --border:#E4E4DF; --shadow:none; --t-E:#534AB7; --t-C:#1D9E75; --t-A:#378ADD; --t-N:#E24B4A; --t-O:#EF9F27; --t-V:#A855F7}
+  body{background:#fff}
+  .report,.tcard,.pot,.wavefig,.tcard-meaning,.combo-card,.balance-box,.so-caveat,.hr-summary,.calib,.career-box,.pot-rx{background:#fff;color:#111110;backdrop-filter:none}
+  .rep-h1,.tcard-name,.pot-name,.rx-title,.cmap-name,.jc-name,.ii-tag,.bal-head>span:first-child,.part-divider,.so-overall,.career-box .cb-env{color:#111110}
+  .sec-title{color:#43227D}
+}
+</style>
 </head>
 <body>
 <!-- ── 사이트 컨텍스트 바 (iframe 임베드 시 ?embed=1 로 자동 숨김 / 인쇄 시 자동 숨김) ── -->
