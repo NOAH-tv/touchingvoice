@@ -2,6 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow, noarchive">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>음성 분석 도구 · TouchingVoice 보이스매트릭스</title>
 <meta name="description" content="목소리 분석과 BIG5 성격 점수를 결합해 발성 코칭·직무역량·성격 종합 해석을 한 리포트로 제공하는 터칭보이스 보이스매트릭스의 음성 분석 도구입니다.">
@@ -586,6 +587,43 @@ input::placeholder{color:#6C5F8F}
 </style>
 </head>
 <body>
+<!-- ── 접근코드 게이트 (TV_GATE) — 리포트 링크(#r=)는 통과 ── -->
+<div id="tvgate" style="position:fixed;inset:0;z-index:100000;background:radial-gradient(900px 500px at 50% -10%,rgba(123,59,255,.35),transparent 60%),#0F0722;display:flex;align-items:center;justify-content:center;font-family:'NanumSquare',sans-serif;color:#F5EEE0">
+  <div style="width:min(92vw,380px);background:linear-gradient(180deg,rgba(43,22,86,.8),rgba(26,15,53,.95));border:1px solid rgba(162,107,255,.35);border-radius:18px;padding:30px 28px;box-shadow:0 0 0 1px rgba(224,92,255,.12),0 20px 60px rgba(123,59,255,.35);text-align:center">
+    <div style="font-size:10px;letter-spacing:.3em;color:#A8925A;font-weight:800">TOUCHINGVOICE</div>
+    <div style="font-size:18px;font-weight:800;margin:8px 0 4px">음성 분석 도구</div>
+    <div style="font-size:12px;color:#BDB0D6;margin-bottom:18px">운영자 전용입니다. 접근 코드 4자리를 입력하세요.</div>
+    <input id="tvgate-in" inputmode="numeric" maxlength="4" pattern="[0-9]*" autocomplete="off" placeholder="● ● ● ●" style="width:100%;text-align:center;font-size:28px;letter-spacing:.5em;padding:12px 0 12px .5em;border-radius:12px;border:1px solid #3B2A62;background:rgba(15,7,34,.8);color:#F5EEE0;font-family:inherit;outline:none">
+    <button id="tvgate-btn" style="width:100%;margin-top:12px;padding:13px;border:none;border-radius:12px;font-weight:800;font-size:14px;color:#fff;background:linear-gradient(135deg,#7B3BFF,#E05CFF);box-shadow:0 10px 30px rgba(123,59,255,.45);cursor:pointer;font-family:inherit">입장</button>
+    <div id="tvgate-msg" style="min-height:18px;font-size:11.5px;color:#FF9A97;margin-top:10px"></div>
+    <div style="font-size:10.5px;color:#6C5F8F;margin-top:6px">코드는 운영자에게 문의하세요 · 참가자 리포트 링크는 코드 없이 열립니다</div>
+  </div>
+</div>
+<script>
+(function(){
+  var HASH='8c4071232533475e3d9e67eea949082bde41fa032ebb4a38d6b85c69fbd3237b'; // SHA-256(접근코드)
+  var KEY='tv_analyzer_gate', TTL=12*60*60*1000; // 통과 후 12시간 유지
+  var gate=document.getElementById('tvgate'), inp=document.getElementById('tvgate-in'), btn=document.getElementById('tvgate-btn'), msg=document.getElementById('tvgate-msg');
+  function open(){ if(gate&&gate.parentNode) gate.parentNode.removeChild(gate); document.documentElement.classList.add('tv-unlocked'); }
+  if((location.hash||'').indexOf('#r=')===0){ open(); return; }              // 참가자 리포트 링크
+  try{ var t=JSON.parse(localStorage.getItem(KEY)||'null'); if(t&&t.h===HASH&&Date.now()-t.at<TTL){ open(); return; } }catch(_){}
+  async function sha256(s){ var b=new TextEncoder().encode(s); var d=await crypto.subtle.digest('SHA-256',b); return Array.from(new Uint8Array(d)).map(function(x){return x.toString(16).padStart(2,'0');}).join(''); }
+  var fails=0;
+  async function check(){
+    var v=(inp.value||'').replace(/\D/g,'');
+    if(v.length!==4){ msg.textContent='숫자 4자리를 입력하세요.'; return; }
+    if(!(window.crypto&&crypto.subtle)){ msg.textContent='이 환경(https 아님)에서는 코드 확인이 불가합니다. touchingvoice.app 주소로 여세요.'; return; }
+    btn.disabled=true;
+    var h=await sha256(v);
+    if(h===HASH){ try{ localStorage.setItem(KEY,JSON.stringify({h:HASH,at:Date.now()})); }catch(_){} open(); }
+    else { fails++; msg.textContent='코드가 맞지 않습니다.'+(fails>=3?' 잠시 후 다시 시도하세요.':''); inp.value=''; inp.focus(); setTimeout(function(){ btn.disabled=false; }, fails>=3?3000:300); }
+  }
+  btn.addEventListener('click',check);
+  inp.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
+  inp.addEventListener('input',function(){ inp.value=inp.value.replace(/\D/g,'').slice(0,4); if(inp.value.length===4) check(); });
+  setTimeout(function(){ try{ inp.focus(); }catch(_){} },100);
+})();
+</script>
 <!-- ── 사이트 컨텍스트 바 (iframe 임베드 시 ?embed=1 로 자동 숨김 / 인쇄 시 자동 숨김) ── -->
 <header class="sitebar">
   <div class="sb-inner">
@@ -650,6 +688,14 @@ input::placeholder{color:#6C5F8F}
       </div>
 
 
+
+      <div class="ed-label">📝 개인정보·음성 수집 동의 <span style="font-weight:400;color:var(--gray-400);font-size:11px">— 참가자에게 읽어 주고 체크 · 필수 동의 없이는 녹음이 시작되지 않음</span></div>
+      <div class="tvc" id="tvc" style="border:1px solid rgba(168,146,90,.45);border-radius:12px;padding:12px 14px;margin-bottom:14px;background:rgba(168,146,90,.08)">
+        <label style="display:flex;gap:9px;align-items:flex-start;font-size:12px;line-height:1.55;cursor:pointer;color:var(--cream,#F5EEE0)"><input type="checkbox" id="tvc-req" style="margin-top:3px;accent-color:#E05CFF;width:15px;height:15px;flex-shrink:0"><span><b>[필수]</b> 개인정보 수집·이용 동의 — <b>항목</b> 이름·연락처·성별/나이·성격검사 점수·<b>음성 녹음 파일과 음향 분석값</b> / <b>목적</b> 발성심리 리포트 제작과 결과 문자 전달 / <b>보유</b> 수집일로부터 1년 후 파기(요청 시 즉시 삭제) / 동의를 거부할 수 있으나 거부 시 부스 서비스 이용이 불가합니다.</span></label>
+        <label style="display:flex;gap:9px;align-items:flex-start;font-size:11.5px;line-height:1.5;cursor:pointer;margin-top:7px;color:var(--gray-600)"><input type="checkbox" id="tvc-research" style="margin-top:3px;accent-color:#E05CFF;width:14px;height:14px;flex-shrink:0"><span><b>[선택]</b> 연구·통계 활용 동의 — 이름·연락처를 제거한 비식별 데이터로 발성심리 연구와 서비스 개선에 활용</span></label>
+        <label style="display:flex;gap:9px;align-items:flex-start;font-size:11.5px;line-height:1.5;cursor:pointer;margin-top:5px;color:var(--gray-600)"><input type="checkbox" id="tvc-marketing" style="margin-top:3px;accent-color:#E05CFF;width:14px;height:14px;flex-shrink:0"><span><b>[선택]</b> 마케팅 정보 수신 동의 — 터칭보이스 소식·이벤트 문자 수신(언제든 철회 가능)</span></label>
+        <div style="font-size:10.5px;color:var(--gray-400);margin-top:8px">개인정보 처리 책임: ㈜터칭보이스 (chun3682@gmail.com) · 동의 내용은 결과 기록과 함께 저장됩니다.</div>
+      </div>
       <!-- ── 부스 녹음 패널 (TV_BOOTH_RECORDER) ── -->
       <div class="ed-label">🎛 부스 녹음 — 오디오 인터페이스로 직접 녹음 <span style="font-weight:400;color:var(--gray-400);font-size:11px">— 컴프·리버브는 헤드폰 모니터에만 걸리고, 저장·분석은 원음(드라이)</span></div>
       <div class="tvr" id="tvr">
@@ -950,7 +996,7 @@ function buildIdentity(big5, q, f, rows){
 }
 
 /* ── 렌더 ──────────────────────────────────────────────────────── */
-function clearInputs(){ document.querySelectorAll('#editor input:not(.tvr-ctl)').forEach(e=>e.value=''); document.getElementById('editor').classList.add('open'); render(); document.getElementById('i-name')?.focus(); }
+function clearInputs(){ document.querySelectorAll('#editor input:not(.tvr-ctl)').forEach(e=>e.value=''); document.querySelectorAll('#tvc input[type=checkbox]').forEach(c=>c.checked=false); document.getElementById('editor').classList.add('open'); render(); document.getElementById('i-name')?.focus(); }
 
 /* ════ PART 3 · BIG5 성격 종합 해석 (업로드 문서 방법론 반영) ════
    · 표준 T-밴드: ≥60 상위16%('높음') / ≤40 하위16%('낮음') / 극단 ≥70·≤30 케어
@@ -3487,6 +3533,7 @@ function tvrStart(){
   if(!TVR.armed||TVR.rec||TVR.busy) return;
   const name=($g('i-name').value||'').trim();
   if(!name){ alert('이름을 먼저 입력해 주세요.'); $g('i-name').focus(); return; }
+  if(!($g('tvc-req')&&$g('tvc-req').checked)){ alert('[필수] 개인정보·음성 수집 동의에 체크해야 녹음을 시작할 수 있습니다.'); try{ $g('tvc').scrollIntoView({behavior:'smooth',block:'center'}); }catch(_){} return; }
   if(TVR.ac.state==='suspended') TVR.ac.resume();
   TVR.pcm=[]; TVR.len=0; TVR.blob=null; TVR.rec=true; TVR.sec=0;
   ['save','ana','rep','sheet','sms'].forEach(k=>tvrStep(k,''));
@@ -3545,7 +3592,7 @@ async function tvSaveSheet(voiceUrl, reportUrl){
     freqBands:r.bandEnergy||[],harmonic:'',articulation:'',balance:'',
     F0:v('i-F0'),F1:v('i-F1'),F2:v('i-F2'),F3:v('i-F3'),F4:v('i-F4'),F5:v('i-F5'),
     rms:v('i-RMS'),dr:v('i-DR'),hnr:v('i-HNR'),jitter:v('i-JIT'),shimmer:v('i-SHI'),freqPct:r.freqPct||{},
-    voiceBig5:null,gaps:null,matchScore:'',consent:true,timestamp:new Date().toISOString(),reportUrl:reportUrl||'',source:'analyzer_booth'};
+    voiceBig5:null,gaps:null,matchScore:'',consent:!!($g('tvc-req')&&$g('tvc-req').checked),consentDetail:'개인정보:'+(($g('tvc-req')||{}).checked?'Y':'N')+'/연구:'+(($g('tvc-research')||{}).checked?'Y':'N')+'/마케팅:'+(($g('tvc-marketing')||{}).checked?'Y':'N'),timestamp:new Date().toISOString(),reportUrl:reportUrl||'',source:'analyzer_booth'};
   const j=await tvPost(payload,30000);
   if(!j.success) throw new Error(j.error||'sheet failed');
   return true;
