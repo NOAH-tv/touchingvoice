@@ -317,6 +317,121 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--blac
 .rec-card .rc-del:hover{background:#FEE2E2;color:#991B1B}
 .rp-empty{grid-column:1/-1;text-align:center;padding:30px;color:var(--gray-400);font-size:12.5px;line-height:1.7}
 @media print{ .records-bar,.records-panel{display:none !important} }
+
+/* ── 부스 녹음 패널 (TV_BOOTH_RECORDER) ── */
+.tvr{border:1.5px solid var(--accent);border-radius:12px;background:linear-gradient(180deg,#F8F7FF,#fff);padding:14px 16px;margin-bottom:14px}
+.tvr-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.tvr-head h3{font-size:13px;font-weight:800;display:flex;align-items:center;gap:8px}
+.tvr-head .tvr-state{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--gray-600);background:var(--gray-100);padding:3px 8px;border-radius:6px}
+.tvr-head .tvr-state.on{color:#fff;background:var(--t-N)}
+.tvr-head .tvr-state.armed{color:var(--accent);background:var(--accent-light)}
+.tvr-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:14px}
+@media(max-width:700px){.tvr-grid{grid-template-columns:1fr}}
+.tvr-dev{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.tvr-dev select{width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-family:inherit;font-size:11.5px;background:var(--gray-100)}
+.tvr-meter{position:relative;height:64px;border-radius:8px;background:#141320;overflow:hidden;margin-bottom:8px}
+.tvr-meter canvas{width:100%;height:100%;display:block}
+.tvr-meter .tvr-db{position:absolute;right:8px;top:6px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#C9C6E8}
+.tvr-meter .tvr-clip{position:absolute;left:8px;top:6px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#FF5B5B;display:none;font-weight:700}
+.tvr-transport{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tvr-btn{font-family:inherit;font-size:13px;font-weight:700;padding:10px 16px;border-radius:9px;border:1px solid var(--border);background:var(--white);cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all .15s}
+.tvr-btn:hover{background:var(--gray-100)}
+.tvr-btn:disabled{opacity:.45;cursor:default}
+.tvr-btn.rec{background:var(--t-N);color:#fff;border-color:var(--t-N);font-size:14px;padding:11px 20px}
+.tvr-btn.rec.stop{background:#111;border-color:#111}
+.tvr-btn.arm{background:var(--accent);color:#fff;border-color:var(--accent)}
+.tvr-timer{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;letter-spacing:.04em;min-width:70px;color:var(--black)}
+.tvr-fx{display:grid;gap:8px}
+.tvr-fx .row{display:grid;grid-template-columns:78px 1fr 44px;align-items:center;gap:8px;font-size:11px}
+.tvr-fx .row label{font-weight:700;color:var(--gray-800);display:flex;align-items:center;gap:5px}
+.tvr-fx .row input[type=range]{width:100%;accent-color:var(--accent)}
+.tvr-fx .row .val{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--gray-600);text-align:right}
+.tvr-fx .row input[type=checkbox]{accent-color:var(--accent);width:14px;height:14px}
+.tvr-opts{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:11.5px;color:var(--gray-800)}
+.tvr-opts label{display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+.tvr-opts input[type=checkbox]{accent-color:var(--accent)}
+.tvr-flow{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.tvr-step{font-size:11px;padding:5px 10px;border-radius:999px;border:1px solid var(--border);background:var(--gray-100);color:var(--gray-600);display:inline-flex;align-items:center;gap:5px}
+.tvr-step.run{border-color:var(--accent);background:var(--accent-light);color:var(--accent);font-weight:700}
+.tvr-step.ok{border-color:var(--t-C);background:#F0FBF6;color:var(--t-C);font-weight:700}
+.tvr-step.err{border-color:var(--t-N);background:#FEF2F2;color:var(--t-N);font-weight:700}
+.tvr-log{margin-top:8px;font-size:11px;color:var(--gray-600);font-family:'JetBrains Mono',monospace;line-height:1.6;max-height:96px;overflow:auto;white-space:pre-wrap}
+.tvr-play{margin-top:8px;display:none;align-items:center;gap:8px;flex-wrap:wrap}
+.tvr-play audio{height:32px;flex:1;min-width:200px}
+/* 리포트 오버레이 */
+.tvo{position:fixed;inset:0;z-index:9999;background:rgba(20,18,30,.72);display:none;flex-direction:column}
+.tvo.on{display:flex}
+.tvo-bar{display:flex;align-items:center;gap:8px;padding:10px 14px;background:#1b1830;color:#fff;flex-wrap:wrap}
+.tvo-bar .t{font-weight:800;font-size:13px;margin-right:auto}
+.tvo-bar button{font-family:inherit;font-size:12.5px;font-weight:700;padding:8px 14px;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.1);color:#fff;cursor:pointer}
+.tvo-bar button:hover{background:rgba(255,255,255,.2)}
+.tvo-bar button.gold{background:#A8925A;border-color:#A8925A;color:#1b1830}
+.tvo-bar button.red{background:var(--t-N);border-color:var(--t-N)}
+.tvo iframe{flex:1;border:none;background:#fff;width:100%}
+.tvo-note{font-size:11px;color:#D9D4F0;padding:6px 14px;background:#141224;font-family:'JetBrains Mono',monospace;word-break:break-all}
+html.tv-report-view body{padding:0}
+@media print{.tvr,.tvo{display:none!important}}
+
+/* ── DAW 전체화면 (TV_BOOTH_DAW) ── */
+.tvd{position:fixed;inset:0;z-index:9990;background:#0f0e17;color:#E8E6F5;display:none;flex-direction:column;font-family:'Noto Sans KR',sans-serif;font-size:12px}
+.tvd.on{display:flex}
+.tvd *{box-sizing:border-box}
+.tvd-top{display:flex;align-items:center;gap:14px;padding:10px 16px;background:#17162a;border-bottom:1px solid #2a2842;flex-wrap:wrap}
+.tvd-brand{font-weight:900;letter-spacing:.22em;font-size:11px;color:#A8925A}
+.tvd-brand small{display:block;letter-spacing:.05em;font-weight:500;color:#7F7AA8;font-size:9.5px}
+.tvd-who{font-size:14px;font-weight:700;padding:6px 12px;background:#23213a;border-radius:8px;border:1px solid #3a3757}
+.tvd-who span{font-weight:400;color:#9C97C8;font-size:11px;margin-left:8px}
+.tvd-state{font-family:'JetBrains Mono',monospace;font-size:11px;color:#9C97C8}
+.tvd-state.on{color:#FF6B6B;font-weight:700}
+.tvd-transport{display:flex;align-items:center;gap:8px;margin-left:auto}
+.tvd-tb{min-width:56px;height:46px;padding:0 14px;border-radius:10px;border:1px solid #3a3757;background:#23213a;color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit}
+.tvd-tb:hover{background:#2e2c48}
+.tvd-tb:disabled{opacity:.35;cursor:default}
+.tvd-tb.rec{background:#D05B57;border-color:#D05B57}
+.tvd-tb.rec.live{background:#111;border-color:#FF6B6B;animation:tvdBlink 1s infinite}
+.tvd-tb.arm{background:#534AB7;border-color:#534AB7}
+@keyframes tvdBlink{50%{box-shadow:0 0 0 3px rgba(255,107,107,.45)}}
+.tvd-time{font-family:'JetBrains Mono',monospace;font-size:30px;font-weight:700;min-width:120px;text-align:center;color:#fff;letter-spacing:.04em}
+.tvd-main{flex:1;display:grid;grid-template-columns:270px 1fr 300px;min-height:0}
+@media(max-width:1000px){.tvd-main{grid-template-columns:1fr;overflow:auto}.tvd-lane{min-height:220px}}
+.tvd-strip,.tvd-side{background:#141326;padding:12px;display:flex;flex-direction:column;gap:10px;overflow:auto}
+.tvd-strip{border-right:1px solid #2a2842}.tvd-side{border-left:1px solid #2a2842}
+.tvd-mod{background:#1c1b30;border:1px solid #2f2d4a;border-radius:10px;padding:10px 12px}
+.tvd-mod h4{font-size:10px;letter-spacing:.15em;color:#9C97C8;margin:0 0 8px;display:flex;justify-content:space-between;align-items:center;font-weight:700}
+.tvd-mod h4 label{font-size:10px;color:#C9C6E8;display:inline-flex;gap:4px;align-items:center;cursor:pointer;letter-spacing:0}
+.tvd-mod select{width:100%;background:#0f0e17;color:#E8E6F5;border:1px solid #3a3757;border-radius:6px;padding:6px;font-size:11px;font-family:inherit;margin-bottom:6px}
+.tvd-mod input[type=range]{width:100%;accent-color:#A8925A;margin:4px 0}
+.tvd-mod input[type=checkbox]{accent-color:#A8925A}
+.tvd-kv{display:flex;justify-content:space-between;font-size:11px;font-family:'JetBrains Mono',monospace;color:#C9C6E8}
+.tvd-kv b{color:#fff}
+.tvd-gr{height:6px;background:#0f0e17;border-radius:3px;overflow:hidden;margin-top:6px}
+.tvd-gr i{display:block;height:100%;width:0;background:#E6C25A}
+.tvd-lane{position:relative;background:#0b0a14;display:flex;flex-direction:column;min-height:0}
+.tvd-lane .hdr{padding:8px 14px;font-size:11px;color:#9C97C8;display:flex;gap:14px;align-items:center;border-bottom:1px solid #2a2842;flex-wrap:wrap}
+.tvd-lane .hdr b{color:#fff}
+.tvd-lane canvas{width:100%;height:100%;flex:1;display:block}
+.tvd-lane .ovl{position:absolute;left:14px;bottom:10px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#9C97C8}
+.tvd-meters{display:flex;gap:10px;align-items:stretch;height:150px}
+.tvd-mbar{flex:1;background:#0f0e17;border-radius:6px;position:relative;overflow:hidden;border:1px solid #2f2d4a}
+.tvd-mbar i{position:absolute;left:0;right:0;bottom:0;height:0;background:linear-gradient(180deg,#FF5B5B 0,#E6C25A 18%,#5AD08A 40%,#2E9E6B 100%)}
+.tvd-mbar em{position:absolute;left:0;right:0;height:2px;background:#fff;bottom:0}
+.tvd-mbar s{position:absolute;left:4px;top:4px;font-size:9px;color:#7F7AA8;text-decoration:none;font-family:'JetBrains Mono',monospace}
+.tvd-mlab{font-family:'JetBrains Mono',monospace;font-size:11px;color:#C9C6E8;display:flex;justify-content:space-between;margin-top:6px}
+.tvd-mr{display:flex;gap:6px}
+.tvd-mr input{flex:1;background:#0f0e17;color:#fff;border:1px solid #3a3757;border-radius:6px;padding:7px 9px;font-size:12px;font-family:inherit}
+.tvd-mr button{background:#A8925A;color:#1b1830;border:none;border-radius:6px;padding:7px 12px;font-weight:700;cursor:pointer;font-family:inherit}
+.tvd-steps{display:flex;flex-direction:column;gap:5px}
+.tvd-steps .st{display:flex;align-items:center;gap:8px;font-size:11.5px;padding:6px 9px;border-radius:7px;background:#1c1b30;border:1px solid #2f2d4a;color:#9C97C8}
+.tvd-steps .st.run{border-color:#A8925A;color:#E6C98A}
+.tvd-steps .st.ok{border-color:#2E9E6B;color:#7EDBA8}
+.tvd-steps .st.err{border-color:#D05B57;color:#FF9A97}
+.tvd-log{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#9C97C8;line-height:1.6;max-height:110px;overflow:auto;white-space:pre-wrap;background:#0f0e17;border-radius:8px;padding:8px}
+.tvd-btns{display:flex;gap:6px;flex-wrap:wrap}
+.tvd-btns button{flex:1;min-width:90px;background:#23213a;color:#fff;border:1px solid #3a3757;border-radius:8px;padding:9px 10px;font-weight:700;cursor:pointer;font-family:inherit;font-size:12px}
+.tvd-btns button:hover{background:#2e2c48}
+.tvd-btns button.gold{background:#A8925A;border-color:#A8925A;color:#1b1830}
+.tvd-btns button:disabled{opacity:.35;cursor:default}
+.tvd-hint{font-size:10.5px;color:#7F7AA8;line-height:1.5}
 </style>
 </head>
 <body>
@@ -326,7 +441,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--blac
     <!-- ★ 배포 시 href를 실제 보이스매트릭스 페이지 URL로 수정하세요 (예: /voice-matrix, ../voice-matrix, https://touchingvoice.app/voice-matrix) -->
     <a class="sb-back" href="../voice-matrix">← 보이스매트릭스로</a>
     <nav class="sb-crumb" aria-label="breadcrumb"><b>TouchingVoice</b> <span class="sb-sep">›</span> 보이스매트릭스 <span class="sb-sep">›</span> <span class="sb-cur">음성 분석 도구</span></nav>
-    <div class="sb-privacy" title="API 호출 없음 — 음성·이미지는 모두 브라우저에서 처리">🔒 모든 분석은 브라우저에서 처리 · 외부 전송 없음</div>
+    <div class="sb-privacy" title="분석은 브라우저에서 처리 · 부스 녹음 파일과 측정값만 터칭보이스 드라이브·시트에 저장">🔒 분석은 브라우저에서 처리 · 녹음 원본은 터칭보이스 드라이브에 저장</div>
   </div>
 </header>
 <script>
@@ -367,6 +482,12 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--blac
         <div class="fld"><label>곡 / 구간</label><input id="i-song" value="" placeholder="예: 곡명 · 구간"></div>
       </div>
 
+      <div class="ed-row c3">
+        <div class="fld"><label>📱 결과 문자 수신번호 <span class="lh">선택 · 리포트 링크 발송</span></label><input id="i-phone" inputmode="tel" value="" placeholder="010-0000-0000"></div>
+        <div class="fld"><label>진행 메모 <span class="lh">선택 · 시트에는 저장 안 됨</span></label><input id="i-note" value="" placeholder="예: 서리풀 부스 1일차"></div>
+        <div class="fld"></div>
+      </div>
+
       <div class="ed-label">BIG5 성격 검사 (0~100pt)</div>
       <div class="ed-row c6">
         <div class="fld"><label>외향성 E</label><input type="number" id="i-E" value="" placeholder="0–100"></div>
@@ -377,6 +498,55 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--blac
         <div class="fld"><label>보컬특성 V</label><input type="number" id="i-V" value="" placeholder="0–100"></div>
       </div>
 
+
+      <!-- ── 부스 녹음 패널 (TV_BOOTH_RECORDER) ── -->
+      <div class="ed-label">🎛 부스 녹음 — 오디오 인터페이스로 직접 녹음 <span style="font-weight:400;color:var(--gray-400);font-size:11px">— 컴프·리버브는 헤드폰 모니터에만 걸리고, 저장·분석은 원음(드라이)</span></div>
+      <div class="tvr" id="tvr">
+        <div class="tvr-head">
+          <h3>🎙 녹음기 <span class="tvr-state" id="tvr-state">장치 미연결</span></h3>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <button class="tvr-btn arm" id="tvr-arm" onclick="tvrArm()">🔌 장치 연결 · 모니터 켜기</button>
+            <button class="tvr-btn" id="tvr-refresh" onclick="tvrRefreshDevices()" title="장치 목록 새로고침">↻</button>
+            <button class="tvr-btn" onclick="tvdOpen()" style="background:#1b1830;color:#E6C98A;border-color:#1b1830">🎚 DAW 화면</button>
+          </div>
+        </div>
+        <div class="tvr-grid">
+          <div>
+            <div class="tvr-dev">
+              <div><label style="font-size:10px;color:var(--gray-600);font-weight:700">입력 (마이크·인터페이스)</label><select id="tvr-in" class="tvr-ctl" onchange="tvrDeviceChanged()"><option value="">— 장치 연결 후 선택 —</option></select></div>
+              <div><label style="font-size:10px;color:var(--gray-600);font-weight:700">출력 (헤드폰 모니터)</label><select id="tvr-out" class="tvr-ctl" onchange="tvrOutChanged()"><option value="">시스템 기본 출력</option></select></div>
+            </div>
+            <div class="tvr-meter"><canvas id="tvr-canvas" width="600" height="64"></canvas><span class="tvr-clip" id="tvr-clip">CLIP</span><span class="tvr-db" id="tvr-db">-∞ dB</span></div>
+            <div class="tvr-transport">
+              <button class="tvr-btn rec" id="tvr-rec" onclick="tvrToggleRec()" disabled>● 녹음 시작</button>
+              <span class="tvr-timer" id="tvr-timer">00:00</span>
+              <button class="tvr-btn" id="tvr-redo" onclick="tvrRedo()" disabled>↺ 다시</button>
+              <button class="tvr-btn" id="tvr-dl" onclick="tvrDownload()" disabled>⤓ WAV</button>
+            </div>
+            <div class="tvr-play" id="tvr-play"><audio id="tvr-audio" controls></audio></div>
+          </div>
+          <div class="tvr-fx">
+            <div class="row"><label>입력 게인</label><input type="range" class="tvr-ctl" id="tvr-gain" min="0" max="2" step="0.01" value="1" oninput="tvrFx()"><span class="val" id="tvr-gain-v">0 dB</span></div>
+            <div class="row"><label><input type="checkbox" class="tvr-ctl" id="tvr-comp-on" checked onchange="tvrFx()">컴프</label><input type="range" class="tvr-ctl" id="tvr-comp" min="-40" max="0" step="1" value="-20" oninput="tvrFx()"><span class="val" id="tvr-comp-v">-20</span></div>
+            <div class="row"><label><input type="checkbox" class="tvr-ctl" id="tvr-rev-on" checked onchange="tvrFx()">리버브</label><input type="range" class="tvr-ctl" id="tvr-rev" min="0" max="0.7" step="0.01" value="0.25" oninput="tvrFx()"><span class="val" id="tvr-rev-v">25%</span></div>
+            <div class="row"><label>리버브 길이</label><input type="range" class="tvr-ctl" id="tvr-revlen" min="2" max="8" step="0.5" value="4.5" oninput="tvrFx()"><span class="val" id="tvr-revlen-v">4.5s</span></div>
+            <div class="row"><label><input type="checkbox" class="tvr-ctl" id="tvr-mon-on" checked onchange="tvrFx()">모니터</label><input type="range" class="tvr-ctl" id="tvr-mon" min="0" max="1.5" step="0.01" value="0.9" oninput="tvrFx()"><span class="val" id="tvr-mon-v">90%</span></div>
+            <div style="font-size:10.5px;color:var(--gray-400);line-height:1.5;margin-top:2px">반주(MR)는 유튜브 등으로 따로 틀고 헤드폰으로 들으세요. 마이크에는 목소리만 들어갑니다. 모니터가 울리면(하울링) 모니터 볼륨을 내리거나 스피커를 끄세요.</div>
+          </div>
+        </div>
+        <div class="tvr-opts">
+          <label><input type="checkbox" class="tvr-ctl" id="tvr-auto" checked> 정지하면 자동 진행: 드라이브 저장 → 분석 → 리포트</label>
+          <label><input type="checkbox" class="tvr-ctl" id="tvr-auto-sms" checked> 번호가 있으면 문자 자동 발송 <span id="tvr-bridge" style="color:var(--gray-400)">(문자 브리지 확인 중…)</span></label>
+        </div>
+        <div class="tvr-flow">
+          <span class="tvr-step" id="tvr-s-save">☁️ 드라이브 저장</span>
+          <span class="tvr-step" id="tvr-s-ana">🔬 음성 분석</span>
+          <span class="tvr-step" id="tvr-s-rep">📄 리포트</span>
+          <span class="tvr-step" id="tvr-s-sheet">📊 시트 기록</span>
+          <span class="tvr-step" id="tvr-s-sms">📱 문자</span>
+        </div>
+        <div class="tvr-log" id="tvr-log"></div>
+      </div>
       <div class="ed-label">🎙 음성 분석 — 웨이브 파일 업로드 시 아래 값 자동 측정</div>
       <div class="uz" id="zone-audio" onclick="document.getElementById('file-audio').click()" style="margin-bottom:6px">
         <span class="uz-ico">🎙</span>
@@ -629,7 +799,7 @@ function buildIdentity(big5, q, f, rows){
 }
 
 /* ── 렌더 ──────────────────────────────────────────────────────── */
-function clearInputs(){ document.querySelectorAll('#editor input').forEach(e=>e.value=''); document.getElementById('editor').classList.add('open'); render(); document.getElementById('i-name')?.focus(); }
+function clearInputs(){ document.querySelectorAll('#editor input:not(.tvr-ctl)').forEach(e=>e.value=''); document.getElementById('editor').classList.add('open'); render(); document.getElementById('i-name')?.focus(); }
 
 /* ════ PART 3 · BIG5 성격 종합 해석 (업로드 문서 방법론 반영) ════
    · 표준 T-밴드: ≥60 상위16%('높음') / ≤40 하위16%('낮음') / 극단 ≥70·≤30 케어
@@ -2777,7 +2947,7 @@ h1{font-weight:800;font-size:24px;letter-spacing:-.4px;margin:5px 0 3px;}
     const arcHTML = text.arc.map(a=>`<span class="st">${a}</span>`).join('');
     const rxHTML = text.rx.map((r,i)=>`<div class="rxrow"><span class="rn">${String(i+1).padStart(2,'0')}</span><span>${r}</span></div>`).join('');
 
-    return `<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><title>${name} · TouchingVoice 발성심리 통합 리포트</title><style>${CSS}</style></head><body>
+    return `<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${name} · TouchingVoice 발성심리 통합 리포트</title><style>${CSS}</style></head><body>
 <div class="kick">TouchingVoice · 발성심리 통합 리포트</div>
 <h1>${name} — 이 목소리의 초상</h1>
 <div class="meta">${meta}</div>
@@ -2871,7 +3041,40 @@ h1{font-weight:800;font-size:24px;letter-spacing:-.4px;margin:5px 0 3px;}
   }
 
   // ────────── 메인 진입점 ──────────
+  // 입력칸 → 리포트 데이터 (부스 자동 흐름·링크 생성에서 재사용)
+  window.tvGatherReportData = function(){
+    const big5 = {E:_v('i-E'), C:_v('i-C'), A:_v('i-A'), N:_v('i-N'), O:_v('i-O'), V:_v('i-V')};
+    const f = {F0:_v('i-F0'), F1:_v('i-F1'), F2:_v('i-F2'), F3:_v('i-F3'), F4:_v('i-F4'), F5:_v('i-F5'),
+               RMS:_v('i-RMS'), DR:_v('i-DR'), HNR:_v('i-HNR'), JIT:_v('i-JIT'), SHI:_v('i-SHI')};
+    const q = {b100:_v('i-b100'), b300:_v('i-b300'), b600:_v('i-b600'), b1200:_v('i-b1200'), b2500:_v('i-b2500'),
+               b4000:_v('i-b4000'), b5500:_v('i-b5500'), b7000:_v('i-b7000'), b8000:_v('i-b8000')};
+    const adv = (typeof audioAnalysisResult !== 'undefined' && audioAnalysisResult && audioAnalysisResult.advanced) ? audioAnalysisResult.advanced : null;
+    return {name:_t('i-name'), meta:_t('i-meta'), song:_t('i-song'), big5, f, q, adv};
+  };
+  // 리포트 데이터 → 완성 HTML
+  window.tvBuildReportHTML = function(d){
+    const big5 = Object.assign({}, d.big5||{});
+    const f = Object.assign({}, d.f||{}), q = Object.assign({}, d.q||{});
+    const name = d.name || '대상자';
+    const song = d.song || '응급실';
+    let meta = d.meta || '';
+    if(!meta) meta = `측정 구간 ${song}(1절) · ${new Date().getFullYear()}.${String(new Date().getMonth()+1).padStart(2,'0')}`;
+    ['E','C','A','N','O'].forEach(k=>{ if(big5[k]==null) big5[k]=50; });
+    const voice = projectVoice(big5, f, q);
+    const gauges = computeGauges(big5, voice, f, q, d.adv||null);
+    const text = composeNarrative(big5, voice, f, q, gauges, name);
+    text.traitInterps = composeTraitInterpretations(big5, voice, f, q);
+    text.compInterps = composeCompetencyInterpretations(big5, voice, f, q);
+    return buildReportHTML({name, meta, song, big5, voice, f, q, gauges, text});
+  };
   window.renderTVReport5Page = function(){
+    const html = window.tvBuildReportHTML(window.tvGatherReportData());
+    const w = window.open('', '_blank', 'width=920,height=1100');
+    if(!w){ alert('팝업이 차단되었습니다. 팝업 차단을 해제하고 다시 시도해주세요.'); return; }
+    w.document.write(html);
+    w.document.close();
+  };
+  window.__tvLegacyRender = function(){
     const big5 = {E:_v('i-E'), C:_v('i-C'), A:_v('i-A'), N:_v('i-N'), O:_v('i-O'), V:_v('i-V')};
     const f = {F0:_v('i-F0'), F1:_v('i-F1'), F2:_v('i-F2'), F3:_v('i-F3'),
                F4:_v('i-F4'), F5:_v('i-F5'),
@@ -2905,6 +3108,515 @@ h1{font-weight:800;font-size:24px;letter-spacing:-.4px;margin:5px 0 3px;}
   };
 })();
 
+</script>
+
+
+<!-- ── DAW 전체화면 (TV_BOOTH_DAW) — 녹음 엔진은 TV_BOOTH_RECORDER 공유 ── -->
+<div class="tvd" id="tvd">
+  <div class="tvd-top">
+    <div class="tvd-brand">TOUCHINGVOICE<small>BOOTH RECORDER</small></div>
+    <div class="tvd-who" id="tvd-who">참가자 —<span></span></div>
+    <div class="tvd-state" id="tvd-state">장치 미연결</div>
+    <div class="tvd-transport">
+      <button class="tvd-tb arm" id="tvd-arm" onclick="tvrArm()">🔌 연결</button>
+      <button class="tvd-tb rec" id="tvd-rec" onclick="tvrToggleRec()" disabled>● REC</button>
+      <button class="tvd-tb" id="tvd-play" onclick="tvdPlay()" disabled>▶</button>
+      <div class="tvd-time" id="tvd-time">00:00</div>
+      <button class="tvd-tb" onclick="tvdClose()" title="입력 화면으로">✕</button>
+    </div>
+  </div>
+  <div class="tvd-main">
+    <div class="tvd-strip">
+      <div class="tvd-mod"><h4>INPUT · 보컬 마이크</h4>
+        <select id="tvd-in" onchange="document.getElementById('tvr-in').value=this.value;tvrDeviceChanged()"></select>
+        <div class="tvd-kv"><span>입력 게인</span><b id="tvd-gain-v">0.0 dB</b></div>
+        <input type="range" id="tvd-gain" min="0" max="2" step="0.01" value="1" oninput="tvdSet('gain',this.value)">
+      </div>
+      <div class="tvd-mod"><h4>COMP · 컴프레서 <label><input type="checkbox" id="tvd-comp-on" checked onchange="tvdSet('comp-on',this.checked)">ON</label></h4>
+        <div class="tvd-kv"><span>스레숄드</span><b id="tvd-comp-v">-20 dB</b></div>
+        <input type="range" id="tvd-comp" min="-40" max="0" step="1" value="-20" oninput="tvdSet('comp',this.value)">
+        <div class="tvd-kv"><span>게인 리덕션</span><b id="tvd-gr-v">0.0 dB</b></div>
+        <div class="tvd-gr"><i id="tvd-gr"></i></div>
+        <div class="tvd-kv" style="margin-top:6px;color:#7F7AA8"><span>ratio 4:1 · attack 3ms · release 250ms</span></div>
+      </div>
+      <div class="tvd-mod"><h4>REVERB · 리버브 <label><input type="checkbox" id="tvd-rev-on" checked onchange="tvdSet('rev-on',this.checked)">ON</label></h4>
+        <div class="tvd-kv"><span>믹스</span><b id="tvd-rev-v">25%</b></div>
+        <input type="range" id="tvd-rev" min="0" max="0.7" step="0.01" value="0.25" oninput="tvdSet('rev',this.value)">
+        <div class="tvd-kv"><span>길이 (RT60)</span><b id="tvd-revlen-v">4.5s</b></div>
+        <input type="range" id="tvd-revlen" min="2" max="8" step="0.5" value="4.5" oninput="tvdSet('revlen',this.value)">
+        <div class="tvd-kv" style="color:#7F7AA8"><span>large hall · 프리딜레이 24ms · 고역 감쇠 · 모니터 전용</span></div>
+      </div>
+      <div class="tvd-mod"><h4>MONITOR · 헤드폰 <label><input type="checkbox" id="tvd-mon-on" checked onchange="tvdSet('mon-on',this.checked)">ON</label></h4>
+        <select id="tvd-out" onchange="document.getElementById('tvr-out').value=this.value;tvrOutChanged()"></select>
+        <div class="tvd-kv"><span>볼륨</span><b id="tvd-mon-v">90%</b></div>
+        <input type="range" id="tvd-mon" min="0" max="1.5" step="0.01" value="0.9" oninput="tvdSet('mon',this.value)">
+      </div>
+      <div class="tvd-hint">저장·분석되는 소리는 컴프·리버브가 걸리지 않은 원음입니다. 하울링이 나면 모니터를 끄거나 스피커를 끄세요.</div>
+    </div>
+    <div class="tvd-lane">
+      <div class="hdr"><b>VOCAL 1</b><span id="tvd-lane-info">녹음 대기</span><span style="margin-left:auto" id="tvd-lane-sr"></span></div>
+      <canvas id="tvd-lane-cv"></canvas>
+      <div class="ovl" id="tvd-lane-ovl"></div>
+    </div>
+    <div class="tvd-side">
+      <div class="tvd-mod"><h4>METER · 입력 레벨</h4>
+        <div class="tvd-meters">
+          <div class="tvd-mbar"><i id="tvd-m-rms"></i><em id="tvd-m-peak"></em><s>IN</s></div>
+          <div style="display:flex;flex-direction:column;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:9px;color:#7F7AA8;padding:2px 0"><span>0</span><span>-12</span><span>-24</span><span>-36</span><span>-48</span><span>-60</span></div>
+        </div>
+        <div class="tvd-mlab"><span id="tvd-db">-∞ dB</span><span id="tvd-clip" style="color:#FF5B5B;display:none;font-weight:700">CLIP</span></div>
+      </div>
+      <div class="tvd-mod"><h4>MR · 유튜브 반주</h4>
+        <div class="tvd-mr"><input id="tvd-mr" placeholder="곡명 가수" onkeydown="if(event.key==='Enter')tvdMR()"><button onclick="tvdMR()">검색</button></div>
+        <div class="tvd-hint" style="margin-top:6px">새 탭에서 MR을 재생하고 헤드폰으로 들으면서 부르세요. 마이크에는 목소리만 들어갑니다.</div>
+      </div>
+      <div class="tvd-mod"><h4>PIPELINE · 정지 후 자동 진행</h4>
+        <div class="tvd-steps">
+          <div class="st" id="tvd-s-save">☁️ 드라이브 저장</div>
+          <div class="st" id="tvd-s-ana">🔬 음성 분석</div>
+          <div class="st" id="tvd-s-rep">📄 리포트</div>
+          <div class="st" id="tvd-s-sheet">📊 시트 기록</div>
+          <div class="st" id="tvd-s-sms">📱 문자</div>
+        </div>
+      </div>
+      <div class="tvd-log" id="tvd-log"></div>
+      <div class="tvd-btns">
+        <button class="gold" id="tvd-report" onclick="tvdReport()" disabled>📄 리포트</button>
+        <button id="tvd-redo" onclick="tvrRedo()" disabled>↺ 다시</button>
+        <button id="tvd-dl" onclick="tvrDownload()" disabled>⤓ WAV</button>
+        <button onclick="tvdClose();document.getElementById('editor').classList.add('open');document.getElementById('i-name').focus()">👤 참가자 입력</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+/* ════════════════════════════════════════════════════════════════
+   TV_BOOTH_RECORDER — 부스 녹음(DAW-lite) · 드라이브 자동저장 · 리포트 링크 · 문자 발송
+   ─ 녹음: 오디오 인터페이스 입력 → 입력게인 → [원음 캡처(WAV)] → 컴프 → 리버브 → 모니터 볼륨 → 헤드폰
+   ─ 저장: 원음 WAV를 Apps Script(터칭보이스_목소리데이터)로 → Google Drive
+   ─ 리포트: 결과값을 URL(#r=…)에 담아 이 페이지가 직접 그린다 (드라이브 비공개라 링크로 못 씀)
+   ─ 문자: 맥 Messages 브리지(booth_sms_bridge.py, 127.0.0.1:7793) → 없으면 sms: 링크로 원탭 발송
+   ════════════════════════════════════════════════════════════════ */
+const TV_API = 'https://script.google.com/macros/s/AKfycbx7Pq9FujnDsGZRDD85C39ml6AlikH935lL0BB2n-RwXzm2O_kM059nV4eV87AgLo16dg/exec';
+const TV_TOKEN = 'tv-scy-72a3da7c2fd012ec05e4e9d67e3b0bf396d4ea58';
+const TV_SMS_BRIDGE = 'http://127.0.0.1:7793';
+const TV_REPORT_BASE = 'https://touchingvoice.app/touchingvoice_analyzer.html';
+const TVR = {ac:null,stream:null,src:null,inGain:null,comp:null,conv:null,dry:null,wet:null,mon:null,an:null,sp:null,
+             pcm:[],len:0,rec:false,sec:0,timer:null,raf:null,blob:null,armed:false,busy:false,bridge:false,
+             last:{fileUrl:'',reportUrl:'',smsText:'',phone:''}};
+const $g = id => document.getElementById(id);
+function tvrLog(msg){ const el=$g('tvr-log'); if(!el) return; const t=new Date().toTimeString().slice(0,8); el.textContent=(el.textContent?el.textContent+'\n':'')+t+'  '+msg; el.scrollTop=el.scrollHeight; }
+function tvrStep(id,state,label){ const el=$g('tvr-s-'+id); if(!el) return; el.className='tvr-step'+(state?' '+state:''); if(label) el.textContent=label; }
+function tvrState(txt,cls){ const el=$g('tvr-state'); if(!el) return; el.textContent=txt; el.className='tvr-state'+(cls?' '+cls:''); }
+
+/* ── 장치 ── */
+async function tvrRefreshDevices(){
+  try{
+    const devs = await navigator.mediaDevices.enumerateDevices();
+    const inSel=$g('tvr-in'), outSel=$g('tvr-out');
+    const curIn=inSel.value, curOut=outSel.value;
+    inSel.innerHTML=''; outSel.innerHTML='<option value="">시스템 기본 출력</option>';
+    let i=0,o=0;
+    devs.forEach(d=>{
+      if(d.kind==='audioinput'){ const op=document.createElement('option'); op.value=d.deviceId; op.textContent=d.label||('입력 장치 '+(++i)); inSel.appendChild(op); }
+      if(d.kind==='audiooutput'){ const op=document.createElement('option'); op.value=d.deviceId; op.textContent=d.label||('출력 장치 '+(++o)); outSel.appendChild(op); }
+    });
+    if(curIn && [...inSel.options].some(x=>x.value===curIn)) inSel.value=curIn;
+    if(curOut && [...outSel.options].some(x=>x.value===curOut)) outSel.value=curOut;
+    if(!('setSinkId' in AudioContext.prototype)) outSel.disabled=true;
+  }catch(e){ tvrLog('장치 목록 실패: '+e.message); }
+}
+function tvrMakeImpulse(ac, rt60){
+  // RT60초에 -60dB 도달하는 지수 감쇠 홀 IR. 프리딜레이 24ms, 초기반사 몇 개, 고역은 더 빨리 죽게 로우패스.
+  const rate=ac.sampleRate, pre=Math.floor(rate*0.024), len=Math.floor(rate*(rt60*1.15))+pre, buf=ac.createBuffer(2,len,rate);
+  const k=Math.log(1000)/(rt60*rate); // 진폭 e^{-k n} → RT60에서 1/1000(-60dB)
+  const er=[[0.011,0.55],[0.019,0.42],[0.031,0.36],[0.047,0.28],[0.063,0.2]];
+  for(let c=0;c<2;c++){
+    const ch=buf.getChannelData(c); let lp=0; const a=0.62+c*0.03; // 로우패스 계수(고역 감쇠)
+    for(let i=pre;i<len;i++){ const n=i-pre; const w=(Math.random()*2-1); lp=lp+a*(w-lp); ch[i]=lp*Math.exp(-k*n)*(1+0.15*Math.sin(n*0.0007+c)); }
+    er.forEach(([t,g],j)=>{ const p=pre+Math.floor(rate*t*(c?1.07:1)); if(p<len) ch[p]+=g*(j%2?-1:1); });
+  }
+  return buf;
+}
+function tvrSetReverb(sec){
+  if(!TVR.ac||!TVR.comp||!TVR.wet) return;
+  try{ if(TVR.conv) TVR.conv.disconnect(); }catch(_){}
+  const conv=TVR.ac.createConvolver(); conv.normalize=true; conv.buffer=tvrMakeImpulse(TVR.ac,sec);
+  TVR.comp.connect(conv); conv.connect(TVR.wet); TVR.conv=conv; TVR.revLen=sec;
+}
+async function tvrArm(){
+  if(TVR.rec) return;
+  try{
+    if(TVR.stream){ TVR.stream.getTracks().forEach(t=>t.stop()); }
+    if(TVR.ac && TVR.ac.state!=='closed'){ try{ await TVR.ac.close(); }catch(_){} }
+    const devId=$g('tvr-in').value;
+    const constraints={audio:{deviceId:devId?{exact:devId}:undefined, echoCancellation:false, noiseSuppression:false, autoGainControl:false, channelCount:1}, video:false};
+    const stream=await navigator.mediaDevices.getUserMedia(constraints);
+    TVR.stream=stream;
+    const ac=new (window.AudioContext||window.webkitAudioContext)({latencyHint:'interactive'});
+    TVR.ac=ac;
+    if(ac.state==='suspended') await ac.resume();
+    const src=ac.createMediaStreamSource(stream); TVR.src=src;
+    const inGain=ac.createGain(); TVR.inGain=inGain;
+    const an=ac.createAnalyser(); an.fftSize=2048; TVR.an=an;
+    const sp=ac.createScriptProcessor(4096,1,1); TVR.sp=sp;
+    sp.onaudioprocess=e=>{ if(!TVR.rec) return; const ch=e.inputBuffer.getChannelData(0); TVR.pcm.push(new Float32Array(ch)); TVR.len+=ch.length; };
+    const comp=ac.createDynamicsCompressor(); comp.attack.value=0.003; comp.release.value=0.25; comp.knee.value=6; TVR.comp=comp;
+    const conv=ac.createConvolver(); conv.normalize=true; conv.buffer=tvrMakeImpulse(ac,+($g('tvr-revlen')?$g('tvr-revlen').value:4.5)); TVR.conv=conv; TVR.revLen=+($g('tvr-revlen')?$g('tvr-revlen').value:4.5);
+    const dry=ac.createGain(), wet=ac.createGain(), mon=ac.createGain(); TVR.dry=dry; TVR.wet=wet; TVR.mon=mon;
+    const mute=ac.createGain(); mute.gain.value=0;
+    // 원음 경로: src → inGain → analyser / scriptProcessor(캡처, 무음 출력)
+    src.connect(inGain); inGain.connect(an); inGain.connect(sp); sp.connect(mute); mute.connect(ac.destination);
+    // 모니터 경로: inGain → comp → dry+wet(리버브) → mon → 출력
+    inGain.connect(comp); comp.connect(dry); comp.connect(conv); conv.connect(wet); dry.connect(mon); wet.connect(mon); mon.connect(ac.destination);
+    TVR.armed=true;
+    tvrFx(); await tvrOutChanged(); await tvrRefreshDevices();
+    const track=stream.getAudioTracks()[0];
+    tvrState('연결됨 · '+(track&&track.label?track.label.slice(0,28):'입력')+' · '+ac.sampleRate+'Hz','armed');
+    $g('tvr-rec').disabled=false; $g('tvr-arm').textContent='🔌 재연결';
+    tvrLog('장치 연결: '+(track?track.label:'?')+' / '+ac.sampleRate+'Hz');
+    tvrDraw();
+  }catch(e){
+    tvrState('연결 실패','');
+    tvrLog('마이크/인터페이스 연결 실패: '+e.message);
+    alert('오디오 입력을 열 수 없습니다.\n브라우저 주소창의 마이크 권한을 허용하고, 인터페이스가 연결돼 있는지 확인해 주세요.\n\n'+e.message);
+  }
+}
+async function tvrDeviceChanged(){ if(TVR.armed && !TVR.rec) await tvrArm(); }
+async function tvrOutChanged(){
+  const id=$g('tvr-out').value;
+  if(TVR.ac && typeof TVR.ac.setSinkId==='function'){ try{ await TVR.ac.setSinkId(id||''); }catch(e){ tvrLog('출력 장치 변경 실패: '+e.message); } }
+}
+function tvrFx(){
+  const g=+$g('tvr-gain').value, compOn=$g('tvr-comp-on').checked, th=+$g('tvr-comp').value,
+        revOn=$g('tvr-rev-on').checked, mix=+$g('tvr-rev').value, monOn=$g('tvr-mon-on').checked, mv=+$g('tvr-mon').value;
+  $g('tvr-gain-v').textContent=(g>0?(20*Math.log10(g)).toFixed(1):'-∞')+' dB';
+  $g('tvr-comp-v').textContent=th+' dB'; $g('tvr-rev-v').textContent=Math.round(mix*100)+'%'; $g('tvr-mon-v').textContent=Math.round(mv*100)+'%';
+  const rl=+$g('tvr-revlen').value; $g('tvr-revlen-v').textContent=rl.toFixed(1)+'s';
+  if(!TVR.ac) return;
+  if(TVR.revLen!==rl) tvrSetReverb(rl);
+  const t=TVR.ac.currentTime;
+  TVR.inGain.gain.setTargetAtTime(g,t,0.01);
+  TVR.comp.threshold.setTargetAtTime(compOn?th:0,t,0.01); TVR.comp.ratio.setTargetAtTime(compOn?4:1,t,0.01);
+  TVR.dry.gain.setTargetAtTime(revOn?1-mix*0.6:1,t,0.01); TVR.wet.gain.setTargetAtTime(revOn?mix:0,t,0.01);
+  TVR.mon.gain.setTargetAtTime(monOn?mv:0,t,0.01);
+}
+let _tvrPeakHold=0;
+function tvrDraw(){
+  if(!TVR.an) return;
+  const cv=$g('tvr-canvas'), ctx=cv.getContext('2d'), W=cv.width, H=cv.height;
+  const buf=new Float32Array(TVR.an.fftSize); TVR.an.getFloatTimeDomainData(buf);
+  let peak=0,sum=0; for(let i=0;i<buf.length;i++){ const a=Math.abs(buf[i]); if(a>peak) peak=a; sum+=buf[i]*buf[i]; }
+  const rms=Math.sqrt(sum/buf.length), db=rms>0?20*Math.log10(rms):-100;
+  _tvrPeakHold=Math.max(peak,_tvrPeakHold*0.96);
+  ctx.fillStyle='#141320'; ctx.fillRect(0,0,W,H);
+  // 파형
+  ctx.strokeStyle=TVR.rec?'#FF6B6B':'#8F86E8'; ctx.lineWidth=1.2; ctx.beginPath();
+  for(let i=0;i<W;i++){ const v=buf[Math.floor(i/W*buf.length)]; const y=H/2-v*(H/2-4); i?ctx.lineTo(i,y):ctx.moveTo(i,y); }
+  ctx.stroke();
+  // 레벨 바
+  const lvl=Math.min(1,(db+60)/60); ctx.fillStyle=db>-6?'#FF5B5B':(db>-18?'#E6C25A':'#5AD08A'); ctx.fillRect(0,H-5,W*lvl,5);
+  ctx.fillStyle='#fff'; ctx.fillRect(Math.min(W-2,W*Math.min(1,(20*Math.log10(_tvrPeakHold||1e-6)+60)/60)),H-5,2,5);
+  $g('tvr-db').textContent=(db<=-99?'-∞':db.toFixed(1))+' dB';
+  $g('tvr-clip').style.display=peak>=0.99?'':'none';
+  TVR.raf=requestAnimationFrame(tvrDraw);
+}
+/* ── 녹음 ── */
+function tvrEncodeWAV(chunks,totalLen,sampleRate){
+  const pcm=new Float32Array(totalLen); let off=0; for(const c of chunks){ pcm.set(c,off); off+=c.length; }
+  const dataLen=pcm.length*2, buffer=new ArrayBuffer(44+dataLen), v=new DataView(buffer);
+  const ws=(o,s)=>{ for(let i=0;i<s.length;i++) v.setUint8(o+i,s.charCodeAt(i)); };
+  ws(0,'RIFF'); v.setUint32(4,36+dataLen,true); ws(8,'WAVE'); ws(12,'fmt '); v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,1,true);
+  v.setUint32(24,sampleRate,true); v.setUint32(28,sampleRate*2,true); v.setUint16(32,2,true); v.setUint16(34,16,true); ws(36,'data'); v.setUint32(40,dataLen,true);
+  let o=44; for(let j=0;j<pcm.length;j++,o+=2){ const x=Math.max(-1,Math.min(1,pcm[j])); v.setInt16(o,x<0?x*0x8000:x*0x7FFF,true); }
+  return new Blob([v],{type:'audio/wav'});
+}
+function tvrToggleRec(){ TVR.rec?tvrStop():tvrStart(); }
+function tvrStart(){
+  if(!TVR.armed||TVR.rec||TVR.busy) return;
+  const name=($g('i-name').value||'').trim();
+  if(!name){ alert('이름을 먼저 입력해 주세요.'); $g('i-name').focus(); return; }
+  if(TVR.ac.state==='suspended') TVR.ac.resume();
+  TVR.pcm=[]; TVR.len=0; TVR.blob=null; TVR.rec=true; TVR.sec=0;
+  ['save','ana','rep','sheet','sms'].forEach(k=>tvrStep(k,''));
+  $g('tvr-play').style.display='none'; $g('tvr-redo').disabled=true; $g('tvr-dl').disabled=true;
+  const b=$g('tvr-rec'); b.textContent='■ 정지 (저장·분석 시작)'; b.classList.add('stop');
+  tvrState('● 녹음 중','on');
+  $g('tvr-timer').textContent='00:00';
+  TVR.timer=setInterval(()=>{ TVR.sec++; $g('tvr-timer').textContent=String(Math.floor(TVR.sec/60)).padStart(2,'0')+':'+String(TVR.sec%60).padStart(2,'0'); if(TVR.sec>=420) tvrStop(); },1000);
+  tvrLog('녹음 시작 — '+name);
+}
+function tvrStop(){
+  if(!TVR.rec) return;
+  TVR.rec=false; clearInterval(TVR.timer);
+  const b=$g('tvr-rec'); b.textContent='● 녹음 시작'; b.classList.remove('stop');
+  tvrState('녹음 완료 · '+TVR.sec+'초','armed');
+  try{
+    const blob=tvrEncodeWAV(TVR.pcm,TVR.len,TVR.ac.sampleRate); TVR.blob=blob;
+    const au=$g('tvr-audio'); au.src=URL.createObjectURL(blob); $g('tvr-play').style.display='flex';
+    $g('tvr-redo').disabled=false; $g('tvr-dl').disabled=false;
+    tvrLog('WAV 생성: '+(blob.size/1024/1024).toFixed(1)+'MB / '+TVR.ac.sampleRate+'Hz mono 16bit');
+    if(TVR.sec<3){ tvrLog('3초 미만 — 자동 진행 건너뜀'); return; }
+    if($g('tvr-auto').checked) tvrPipeline(blob);
+  }catch(e){ tvrLog('WAV 인코딩 실패: '+e.message); }
+}
+function tvrRedo(){ if(TVR.rec) return; TVR.blob=null; TVR.pcm=[]; TVR.len=0; $g('tvr-play').style.display='none'; $g('tvr-timer').textContent='00:00'; $g('tvr-redo').disabled=true; $g('tvr-dl').disabled=true; ['save','ana','rep','sheet','sms'].forEach(k=>tvrStep(k,'')); tvrState('연결됨 · 다시 녹음 가능','armed'); }
+function tvrFileName(ext){
+  const d=new Date(), date=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  const clean=s=>String(s||'').trim().replace(/[\\/:*?"<>|]+/g,'').replace(/\s+/g,'_').slice(0,40);
+  return date+'_'+(clean($g('i-name').value)||'무명')+'_'+(clean($g('i-song').value)||'녹음')+ext;
+}
+function tvrDownload(){ if(!TVR.blob) return; const a=document.createElement('a'); a.href=URL.createObjectURL(TVR.blob); a.download=tvrFileName('.wav'); document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove();},1000); }
+
+/* ── 저장 (Drive / Sheet) ── */
+function tvBlobToB64(blob){ return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(String(r.result).split(',')[1]); r.onerror=rej; r.readAsDataURL(blob); }); }
+function tvMeta(){ const m=($g('i-meta').value||''); const g=/여/.test(m)?'여':(/남/.test(m)?'남':''); const a=(m.match(/(\d{1,3})\s*세/)||[])[1]||''; return {gender:g,age:a}; }
+async function tvPost(payload, timeoutMs){
+  const ctl=new AbortController(); const t=setTimeout(()=>ctl.abort(),timeoutMs||60000);
+  try{
+    const r=await fetch(TV_API,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload),signal:ctl.signal});
+    const txt=await r.text(); try{ return JSON.parse(txt); }catch(_){ return {success:false,error:'bad response: '+txt.slice(0,80)}; }
+  }finally{ clearTimeout(t); }
+}
+async function tvUploadAudio(blob){
+  const {gender}=tvMeta();
+  const b64=await tvBlobToB64(blob);
+  const j=await tvPost({type:'audio',adminToken:TV_TOKEN,base64:b64,mimeType:'audio/wav',filename:tvrFileName('.wav'),category:'song',
+                        name:($g('i-name').value||'').trim(),gender,timestamp:new Date().toISOString()},180000);
+  if(!j.success) throw new Error(j.error||'upload failed');
+  return j.fileUrl||j.url||'';
+}
+async function tvSaveSheet(voiceUrl, reportUrl){
+  const r=(typeof audioAnalysisResult!=='undefined'&&audioAnalysisResult)?audioAnalysisResult:{};
+  const {gender,age}=tvMeta(); const v=id=>{ const x=($g(id)||{}).value; return x===''||x==null?'':+x; };
+  const payload={type:'sheet',adminToken:TV_TOKEN,name:($g('i-name').value||'').trim(),age,gender,song:($g('i-song').value||'').trim(),
+    scores:{E:v('i-E'),C:v('i-C'),A:v('i-A'),N:v('i-N'),O:v('i-O')}, voiceUrl:voiceUrl||'',
+    freqBands:r.bandEnergy||[],harmonic:'',articulation:'',balance:'',
+    F0:v('i-F0'),F1:v('i-F1'),F2:v('i-F2'),F3:v('i-F3'),F4:v('i-F4'),F5:v('i-F5'),
+    rms:v('i-RMS'),dr:v('i-DR'),hnr:v('i-HNR'),jitter:v('i-JIT'),shimmer:v('i-SHI'),freqPct:r.freqPct||{},
+    voiceBig5:null,gaps:null,matchScore:'',consent:true,timestamp:new Date().toISOString(),reportUrl:reportUrl||'',source:'analyzer_booth'};
+  const j=await tvPost(payload,30000);
+  if(!j.success) throw new Error(j.error||'sheet failed');
+  return true;
+}
+
+/* ── 리포트 링크 (#r=) ── */
+function tvB64uEnc(str){ const b=new TextEncoder().encode(str); let s=''; b.forEach(x=>s+=String.fromCharCode(x)); return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
+function tvB64uDec(s){ s=s.replace(/-/g,'+').replace(/_/g,'/'); while(s.length%4) s+='='; const bin=atob(s); const b=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) b[i]=bin.charCodeAt(i); return new TextDecoder().decode(b); }
+function tvPackReport(d){
+  const r1=x=>x==null||isNaN(x)?null:Math.round(x*100)/100;
+  const p={v:1,n:d.name||'',m:d.meta||'',s:d.song||'',
+    b:['E','C','A','N','O','V'].map(k=>r1(d.big5[k])),
+    f:['F0','F1','F2','F3','F4','F5','RMS','DR','HNR','JIT','SHI'].map(k=>k==='RMS'?(d.f[k]==null?null:Math.round(d.f[k]*10000)/10000):r1(d.f[k])),
+    q:['b100','b300','b600','b1200','b2500','b4000','b5500','b7000','b8000'].map(k=>r1(d.q[k]))};
+  if(d.adv) p.a=['subBass','singerCluster','VTL','F0_mean','F0_sd','F0_range_st','CPP'].map(k=>r1(d.adv[k]));
+  return tvB64uEnc(JSON.stringify(p));
+}
+function tvUnpackReport(s){
+  const p=JSON.parse(tvB64uDec(s)); const d={name:p.n,meta:p.m,song:p.s,big5:{},f:{},q:{},adv:null};
+  ['E','C','A','N','O','V'].forEach((k,i)=>d.big5[k]=p.b[i]);
+  ['F0','F1','F2','F3','F4','F5','RMS','DR','HNR','JIT','SHI'].forEach((k,i)=>d.f[k]=p.f[i]);
+  ['b100','b300','b600','b1200','b2500','b4000','b5500','b7000','b8000'].forEach((k,i)=>d.q[k]=p.q[i]);
+  if(p.a){ d.adv={}; ['subBass','singerCluster','VTL','F0_mean','F0_sd','F0_range_st','CPP'].forEach((k,i)=>d.adv[k]=p.a[i]); }
+  return d;
+}
+function tvReportLink(d){ return TV_REPORT_BASE+'#r='+tvPackReport(d); }
+function tvSmsText(name, link){ return '[터칭보이스] '+(name||'')+'님의 발성심리 리포트가 준비됐어요 🎤\n아래 링크를 열어 확인하세요.\n'+link; }
+
+/* ── 리포트 오버레이 ── */
+function tvShowReport(html, link, smsText, phone){
+  let ov=$g('tvo');
+  if(!ov){
+    ov=document.createElement('div'); ov.id='tvo'; ov.className='tvo';
+    ov.innerHTML='<div class="tvo-bar"><span class="t">📄 발성심리 리포트</span>'+
+      '<button onclick="tvoPrint()">🖨 인쇄 / PDF</button><button onclick="tvoCopyLink()">🔗 링크 복사</button>'+
+      '<button class="gold" id="tvo-sms" onclick="tvoSendSms()">📱 문자 발송</button><button onclick="tvoOpenNew()">↗ 새 창</button>'+
+      '<button class="red" onclick="document.getElementById(\'tvo\').classList.remove(\'on\')">✕ 닫기</button></div>'+
+      '<div class="tvo-note" id="tvo-note"></div><iframe id="tvo-frame"></iframe>';
+    document.body.appendChild(ov);
+  }
+  TVR.last.reportUrl=link||''; TVR.last.smsText=smsText||''; TVR.last.phone=phone||''; TVR.last.html=html;
+  $g('tvo-note').textContent=(link?('링크: '+link.slice(0,90)+(link.length>90?'…':'')):'')+(phone?('   ·  수신번호: '+phone):'');
+  $g('tvo-sms').style.display=phone?'':'none';
+  $g('tvo-frame').srcdoc=html; ov.classList.add('on');
+}
+function tvoPrint(){ const f=$g('tvo-frame'); try{ f.contentWindow.focus(); f.contentWindow.print(); }catch(e){ alert('인쇄 창을 열 수 없습니다: '+e.message); } }
+function tvoCopyLink(){ const l=TVR.last.reportUrl; if(!l) return; (navigator.clipboard?navigator.clipboard.writeText(l):Promise.reject()).then(()=>tvrLog('링크 복사됨'),()=>prompt('링크를 복사하세요',l)); }
+function tvoOpenNew(){ const w=window.open('','_blank'); if(!w){ alert('팝업이 차단되었습니다.'); return; } w.document.write(TVR.last.html||''); w.document.close(); }
+async function tvoSendSms(){ const ok=await tvSendSms(TVR.last.phone,TVR.last.smsText); if(ok) tvrStep('sms','ok','📱 문자 발송됨'); }
+
+/* ── 문자 발송: 브리지(맥 Messages) → 없으면 sms: 링크 ── */
+async function tvBridgePing(){
+  try{ const ctl=new AbortController(); setTimeout(()=>ctl.abort(),1500);
+    const r=await fetch(TV_SMS_BRIDGE+'/ping',{signal:ctl.signal}); const j=await r.json(); TVR.bridge=!!j.ok; }
+  catch(_){ TVR.bridge=false; }
+  const el=$g('tvr-bridge'); if(el){ el.textContent=TVR.bridge?'(맥 문자 브리지 연결됨 · 자동 발송 가능)':'(브리지 없음 · 발송 버튼을 누르면 문자 앱이 열립니다)'; el.style.color=TVR.bridge?'var(--t-C)':'var(--gray-400)'; }
+  return TVR.bridge;
+}
+function tvNormPhone(p){ let d=String(p||'').replace(/\D/g,''); if(d.startsWith('82')) d='0'+d.slice(2); return d; }
+async function tvSendSms(phone, text){
+  const ph=tvNormPhone(phone); if(!ph||ph.length<10){ tvrLog('문자: 수신번호가 없거나 형식이 틀립니다'); tvrStep('sms','err','📱 번호 없음'); return false; }
+  if(TVR.bridge || await tvBridgePing()){
+    try{
+      const r=await fetch(TV_SMS_BRIDGE+'/send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:ph,text})});
+      const j=await r.json(); if(j.ok){ tvrLog('문자 발송 접수(맥 Messages): '+ph); return true; }
+      throw new Error(j.error||'bridge error');
+    }catch(e){ tvrLog('브리지 발송 실패: '+e.message+' → 문자 앱으로 대체'); }
+  }
+  try{ await navigator.clipboard.writeText(text); }catch(_){}
+  window.location.href='sms:'+ph+'&body='+encodeURIComponent(text);
+  tvrLog('문자 앱 열림(본문은 클립보드에도 복사됨): '+ph);
+  tvrStep('sms','run','📱 문자 앱에서 전송 버튼');
+  return false;
+}
+
+/* ── 자동 파이프라인: 정지 → 드라이브 저장 ∥ 분석 → 리포트 → 시트 → 문자 ── */
+function tvWaitAnalysisApplied(maxMs){
+  return new Promise(res=>{ const t0=Date.now(); (function poll(){ const done=$g('audio-result')&&$g('audio-result').style.display!=='none'; const failed=/실패/.test(($g('audio-progress-title')||{}).textContent||''); if(done||failed||Date.now()-t0>maxMs) return res(done); setTimeout(poll,300); })(); });
+}
+async function tvrPipeline(blob){
+  if(TVR.busy) return; TVR.busy=true; $g('tvr-rec').disabled=true;
+  const name=($g('i-name').value||'').trim(), phone=($g('i-phone').value||'').trim();
+  // 1) 드라이브 업로드 (병렬)
+  tvrStep('save','run','☁️ 드라이브 저장 중…');
+  const upP=tvUploadAudio(blob).then(u=>{ TVR.last.fileUrl=u; tvrStep('save','ok','☁️ 드라이브 저장됨'); tvrLog('드라이브: '+u); return u; })
+    .catch(e=>{ tvrStep('save','err','☁️ 저장 실패 → WAV 내려받기'); tvrLog('드라이브 저장 실패: '+e.message+' — 로컬 WAV로 백업'); try{ tvrDownload(); }catch(_){} return ''; });
+  // 2) 분석 (기존 업로드 분석기 재사용)
+  tvrStep('ana','run','🔬 분석 중…');
+  let analyzed=false;
+  try{
+    const zone=$g('zone-audio'); if(zone){ zone.classList.add('has-img'); zone.innerHTML='<input type="file" id="file-audio" accept="audio/*" onchange="handleAudioUpload(this)" style="display:none"><div style="font-size:28px">🎙</div><div><div style="font-size:13px;font-weight:600;margin-bottom:3px">'+tvrFileName('.wav')+'</div><div style="font-size:11px;color:var(--gray-400)">부스 녹음 · '+(blob.size/1024/1024).toFixed(1)+'MB</div></div>'; }
+    $g('audio-progress-icon').textContent='⏳';
+    await analyzeAudioFile(new File([blob],tvrFileName('.wav'),{type:'audio/wav'}));
+    analyzed=await tvWaitAnalysisApplied(120000);
+  }catch(e){ tvrLog('분석 오류: '+e.message); }
+  if(!analyzed){ tvrStep('ana','err','🔬 분석 실패'); TVR.busy=false; $g('tvr-rec').disabled=false; await upP; return; }
+  tvrStep('ana','ok','🔬 분석 완료');
+  // 3) 리포트 + 링크
+  let link='', html='';
+  try{
+    const d=window.tvGatherReportData(); html=window.tvBuildReportHTML(d); link=tvReportLink(d);
+    TVR.last.reportUrl=link; tvrStep('rep','ok','📄 리포트 생성'); tvrLog('리포트 링크 '+link.length+'자');
+    try{ if(typeof saveCurrentRecord==='function') saveCurrentRecord(); }catch(_){}
+    tvShowReport(html, link, tvSmsText(name,link), phone);
+  }catch(e){ tvrStep('rep','err','📄 리포트 실패'); tvrLog('리포트 생성 실패: '+e.message); }
+  // 4) 시트 기록 (드라이브 링크 확보 후)
+  const voiceUrl=await upP;
+  tvrStep('sheet','run','📊 시트 기록 중…');
+  try{ await tvSaveSheet(voiceUrl, link); tvrStep('sheet','ok','📊 시트 기록됨'); }
+  catch(e){ tvrStep('sheet','err','📊 시트 실패'); tvrLog('시트 기록 실패: '+e.message); }
+  // 5) 문자
+  if(phone && link){
+    if($g('tvr-auto-sms').checked && TVR.bridge){ tvrStep('sms','run','📱 문자 발송 중…'); const ok=await tvSendSms(phone, tvSmsText(name,link)); tvrStep('sms',ok?'ok':'err',ok?'📱 문자 발송됨':'📱 문자 확인 필요'); }
+    else { tvrStep('sms','run','📱 리포트 창의 [문자 발송] 버튼'); }
+  } else { tvrStep('sms','', phone?'📱 문자':'📱 번호 없음 · 건너뜀'); }
+  TVR.busy=false; $g('tvr-rec').disabled=false;
+  tvrLog('완료 — 다음 참가자는 [입력 비우기] 후 이름 입력 → 녹음');
+}
+
+/* ── 링크로 열린 경우(#r=): 리포트만 그린다 ── */
+(function(){
+  const h=location.hash||'';
+  function boot(){
+    if(h.startsWith('#r=')){
+      try{
+        const d=tvUnpackReport(h.slice(3));
+        const html=window.tvBuildReportHTML(d);
+        document.open(); document.write(html); document.close();   // 파서가 끝난 뒤라 문서 전체가 리포트로 교체됨
+        return;
+      }catch(e){ console.error('report link decode failed',e); }
+    }
+    tvBridgePing(); if(navigator.mediaDevices) tvrRefreshDevices();
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else setTimeout(boot,0);
+})();
+
+/* ════ TV_BOOTH_DAW — DAW 전체화면. 컨트롤은 패널 입력을 거울처럼 조작하고, 엔진 함수를 래핑해 표시를 동기화 ════ */
+const TVD={open:false,peaks:[],wave:null,raf:null};
+function tvdOpen(){ $g('tvd').classList.add('on'); TVD.open=true; tvdSyncAll(); tvdResize(); if(!TVD.raf) tvdLoop(); document.addEventListener('keydown',tvdKey); }
+function tvdClose(){ $g('tvd').classList.remove('on'); TVD.open=false; document.removeEventListener('keydown',tvdKey); }
+function tvdKey(e){ if(e.code==='Space' && !/input|select|textarea/i.test((e.target||{}).tagName||'')){ e.preventDefault(); if(TVR.armed && !TVR.busy) tvrToggleRec(); } if(e.key==='Escape') tvdClose(); }
+function tvdSet(k,v){
+  const map={gain:'tvr-gain','comp-on':'tvr-comp-on',comp:'tvr-comp','rev-on':'tvr-rev-on',rev:'tvr-rev','mon-on':'tvr-mon-on',mon:'tvr-mon',revlen:'tvr-revlen'};
+  const el=$g(map[k]); if(!el) return; if(el.type==='checkbox') el.checked=!!v; else el.value=v; tvrFx(); if(TVD.open) tvdSyncAll();
+}
+function tvdSyncAll(){
+  // 참가자
+  const nm=($g('i-name').value||'').trim(), ph=($g('i-phone').value||'').trim(), sg=($g('i-song').value||'').trim();
+  $g('tvd-who').innerHTML='참가자 '+(nm?escHtml(nm):'—')+'<span>'+escHtml([sg,ph].filter(Boolean).join(' · '))+'</span>';
+  // 컨트롤 값
+  [['gain','tvr-gain'],['comp','tvr-comp'],['rev','tvr-rev'],['mon','tvr-mon'],['revlen','tvr-revlen']].forEach(([k,id])=>{ const d=$g('tvd-'+k); if(d&&document.activeElement!==d) d.value=$g(id).value; });
+  [['comp-on','tvr-comp-on'],['rev-on','tvr-rev-on'],['mon-on','tvr-mon-on']].forEach(([k,id])=>{ $g('tvd-'+k).checked=$g(id).checked; });
+  ['gain','comp','rev','mon','revlen'].forEach(k=>{ $g('tvd-'+k+'-v').textContent=$g('tvr-'+k+'-v').textContent; });
+  // 장치 목록
+  [['tvd-in','tvr-in'],['tvd-out','tvr-out']].forEach(([d,s])=>{ const D=$g(d),S=$g(s); if(D.innerHTML!==S.innerHTML){ D.innerHTML=S.innerHTML; } D.value=S.value; D.disabled=S.disabled; });
+  // 상태·버튼
+  const st=$g('tvr-state'); $g('tvd-state').textContent=st.textContent; $g('tvd-state').className='tvd-state'+(TVR.rec?' on':'');
+  const rb=$g('tvd-rec'); rb.disabled=$g('tvr-rec').disabled; rb.textContent=TVR.rec?'■ STOP':'● REC'; rb.classList.toggle('live',TVR.rec);
+  $g('tvd-arm').textContent=TVR.armed?'🔌 재연결':'🔌 연결';
+  $g('tvd-time').textContent=$g('tvr-timer').textContent;
+  $g('tvd-play').disabled=!TVR.blob; $g('tvd-redo').disabled=$g('tvr-redo').disabled; $g('tvd-dl').disabled=$g('tvr-dl').disabled;
+  $g('tvd-report').disabled=!(TVR.last&&TVR.last.html);
+  ['save','ana','rep','sheet','sms'].forEach(k=>{ const s=$g('tvr-s-'+k), d=$g('tvd-s-'+k); d.textContent=s.textContent; d.className='st'+(s.className.replace('tvr-step','')); });
+  const lg=$g('tvr-log'), dl=$g('tvd-log'); if(dl.textContent!==lg.textContent){ dl.textContent=lg.textContent; dl.scrollTop=dl.scrollHeight; }
+  $g('tvd-lane-sr').textContent=TVR.ac&&TVR.ac.sampleRate?(TVR.ac.sampleRate/1000)+' kHz · 16bit · mono':'';
+  const gr=TVR.comp?Math.abs(TVR.comp.reduction||0):0; $g('tvd-gr-v').textContent='-'+gr.toFixed(1)+' dB'; $g('tvd-gr').style.width=Math.min(100,gr/20*100)+'%';
+}
+function tvdMR(){ const q=($g('tvd-mr').value||'').trim(); if(!q) return; window.open('https://www.youtube.com/results?search_query='+encodeURIComponent(q+' MR'),'_blank'); if(!$g('i-song').value) $g('i-song').value=q; }
+function tvdPlay(){ const au=$g('tvr-audio'); if(!au.src) return; if(au.paused){ au.play(); $g('tvd-play').textContent='❚❚'; } else { au.pause(); $g('tvd-play').textContent='▶'; } }
+function tvdReport(){ if(TVR.last&&TVR.last.html) tvShowReport(TVR.last.html, TVR.last.reportUrl, TVR.last.smsText, TVR.last.phone); }
+function tvdResize(){ const cv=$g('tvd-lane-cv'); const r=cv.getBoundingClientRect(); if(r.width&&r.height){ cv.width=Math.floor(r.width*devicePixelRatio); cv.height=Math.floor(r.height*devicePixelRatio); } }
+window.addEventListener('resize',()=>{ if(TVD.open) tvdResize(); });
+function tvdLoop(){
+  TVD.raf=requestAnimationFrame(tvdLoop);
+  if(!TVD.open) return;
+  tvdSyncAll();
+  // 미터
+  if(TVR.an){
+    const buf=new Float32Array(TVR.an.fftSize); TVR.an.getFloatTimeDomainData(buf);
+    let peak=0,sum=0; for(let i=0;i<buf.length;i++){ const a=Math.abs(buf[i]); if(a>peak) peak=a; sum+=buf[i]*buf[i]; }
+    const rms=Math.sqrt(sum/buf.length), db=rms>0?20*Math.log10(rms):-100, pdb=peak>0?20*Math.log10(peak):-100;
+    $g('tvd-m-rms').style.height=Math.max(0,Math.min(100,(db+60)/60*100))+'%';
+    $g('tvd-m-peak').style.bottom=Math.max(0,Math.min(100,(pdb+60)/60*100))+'%';
+    $g('tvd-db').textContent=(db<=-99?'-∞':db.toFixed(1))+' dB';
+    $g('tvd-clip').style.display=peak>=0.99?'':'none';
+  }
+  tvdDrawLane();
+}
+function tvdDrawLane(){
+  const cv=$g('tvd-lane-cv'), ctx=cv.getContext('2d'), W=cv.width, H=cv.height; if(!W||!H) return;
+  ctx.fillStyle='#0b0a14'; ctx.fillRect(0,0,W,H);
+  // 그리드
+  ctx.strokeStyle='#1e1c33'; ctx.lineWidth=1; for(let x=0;x<W;x+=W/16){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+  ctx.strokeStyle='#2a2842'; ctx.beginPath(); ctx.moveTo(0,H/2); ctx.lineTo(W,H/2); ctx.stroke();
+  const mid=H/2, amp=H*0.45;
+  if(TVR.rec){
+    // 녹음 중: 최근 파형이 오른쪽에서 왼쪽으로 흐름 (창 = 최소 30초)
+    const pk=TVD.peaks, chunkSec=4096/(TVR.ac?TVR.ac.sampleRate:48000), win=Math.max(30, pk.length*chunkSec), cols=Math.floor(win/chunkSec), px=W/cols;
+    ctx.fillStyle='#FF6B6B';
+    for(let i=0;i<pk.length;i++){ const x=W-(pk.length-i)*px; if(x<0) continue; const h=Math.max(1,pk[i]*amp); ctx.fillRect(x,mid-h,Math.max(1,px-0.5),h*2); }
+    $g('tvd-lane-info').textContent='● 녹음 중 · '+$g('tvr-timer').textContent; $g('tvd-lane-ovl').textContent='창 '+Math.round(win)+'초';
+  } else if(TVD.wave){
+    ctx.fillStyle='#8F86E8'; const px=W/TVD.wave.length;
+    for(let i=0;i<TVD.wave.length;i++){ const h=Math.max(1,TVD.wave[i]*amp); ctx.fillRect(i*px,mid-h,Math.max(1,px-0.3),h*2); }
+    const au=$g('tvr-audio'); if(au&&au.duration&&!au.paused){ const x=au.currentTime/au.duration*W; ctx.fillStyle='#E6C98A'; ctx.fillRect(x-1,0,2,H); }
+    if(au&&au.paused) $g('tvd-play').textContent='▶';
+    $g('tvd-lane-info').textContent='녹음 완료 · '+TVR.sec+'초'+(TVR.blob?' · '+(TVR.blob.size/1024/1024).toFixed(1)+'MB':''); $g('tvd-lane-ovl').textContent=au&&au.duration?('▶ '+au.currentTime.toFixed(1)+' / '+au.duration.toFixed(1)+'s'):'';
+  } else {
+    $g('tvd-lane-info').textContent=TVR.armed?'녹음 대기 · REC 또는 스페이스바':'장치를 먼저 연결하세요'; $g('tvd-lane-ovl').textContent='';
+  }
+}
+/* 엔진 래핑: 피크 수집·완료 파형·화면 동기화 */
+(function(){
+  const _arm=tvrArm;
+  tvrArm=async function(){ await _arm(); if(TVR.sp){ const orig=TVR.sp.onaudioprocess; TVR.sp.onaudioprocess=function(e){ orig(e); if(!TVR.rec) return; const ch=e.inputBuffer.getChannelData(0); let p=0; for(let i=0;i<ch.length;i+=4){ const a=Math.abs(ch[i]); if(a>p) p=a; } TVD.peaks.push(p); }; } };
+  const _start=tvrStart;
+  tvrStart=function(){ const was=TVR.rec; _start(); if(!was&&TVR.rec){ TVD.peaks=[]; TVD.wave=null; } };
+  const _stop=tvrStop;
+  tvrStop=function(){ _stop(); if(TVR.pcm&&TVR.len){ const cols=1400, per=Math.max(1,Math.floor(TVR.len/cols)), out=new Float32Array(cols); let ci=0,cnt=0,mx=0,k=0; for(const c of TVR.pcm){ for(let i=0;i<c.length;i++){ const a=Math.abs(c[i]); if(a>mx) mx=a; if(++cnt>=per){ if(k<cols) out[k++]=mx; mx=0; cnt=0; } } } TVD.wave=out; } };
+  const _redo=tvrRedo;
+  tvrRedo=function(){ _redo(); TVD.peaks=[]; TVD.wave=null; };
+})();
 </script>
 </body>
 </html>
