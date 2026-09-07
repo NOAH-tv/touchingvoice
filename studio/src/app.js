@@ -1,5 +1,5 @@
 import {config as franchiseConfig} from '../../config.js';
-import {readProtectedAsset} from '../protected-assets.js';
+import {readProtectedAsset,clearProtectedAssetCache} from '../protected-assets.js';
 import { getContext } from '../context.js';
 const franchiseContext=getContext();
 import { AnatomyView } from './anatomy.js?v=nasal-smooth-20260906';
@@ -39,8 +39,9 @@ let capture = null, suggestion = null, lastPaint = 0, toastTimer, busy = false, 
 let coreRun = null, coreStarting = false, coreFinishing = false, coreGeneration = 0, coreTimer = null, recordingSavePromise = null, currentResult = null, replayProfile = null;
 let selectedStructure = null, freeVoiceAccumulator = null, studioTools = null, fileAnalyzer = null, fileAnalysisView = null, loadedAnalysisSource = null;
 let participantIntake=null, memberHistory=null, driveBackup=null, driveConnection=null, lastDriveStatusPaint=0;
+let studioSuspended=false,studioInputEpoch=0,modelLoad=null;
 const proHistory = [];
-const sessionLocked = () => Boolean(coreRun || coreStarting || coreFinishing || audioState.recording || studioTools?.trainingActive);
+const sessionLocked = () => Boolean(studioSuspended || coreRun || coreStarting || coreFinishing || audioState.recording || studioTools?.trainingActive);
 const effectiveProfile = () => replayProfile || (comparing ? saved : profile);
 const history = Object.fromEntries(LAYER_KEYS.map(k => [k, {before:[],after:[]}]));
 hydrateIcons();
@@ -58,6 +59,7 @@ function setTab(next){
   if(next==='booth')next='analyzer';
   if(coreRun||coreStarting||coreFinishing){toast('진행 중인 발성 기록을 마친 뒤 이동할 수 있어요.');return;}
   studioTools?.beforeTabChange(next);tab=next;document.body.dataset.tab=next;
+  if(next==='studio')void ensureAnatomyLoaded();
   document.querySelectorAll('button[data-tab]').forEach(e=>{e.classList.toggle('active',e.dataset.tab===next);if(e.dataset.tab===next)e.setAttribute('aria-current','page');else e.removeAttribute('aria-current');});
   ['studio','analyzer','training','tuning','sessions'].forEach(k=>$(k+'Panel').hidden=k!==next);
   const titles={studio:'3D 발성체크',analyzer:'음성 검사',training:'훈련 스튜디오',tuning:'설정 · 백업',sessions:'회원 · 기록'};
@@ -68,19 +70,26 @@ function setTab(next){
 
 const anatomy = new AnatomyView($('anatomyViewport'),{
   onReady(meta){$('modelLoading').hidden=true;$('modelBadge').textContent='3D MODEL · READY';$('modelBadge').title=`원본 ${meta.meshCount}개 메시 · 표시 ${meta.renderedMeshes}개 · 상태 보간 ${meta.morphPairs}개`;window.__tvModelMetadata=meta;renderStructures();},
-  onError(error){$('modelLoading').replaceChildren(document.createTextNode('모델을 불러오지 못했습니다. 앱을 다시 열어 주세요.'));toast(error?.message || '3D 모델을 불러오지 못했습니다.',true);},
+  onError(){},
   onSelect(key,mesh,structureId){if(META[key]){if(tab!=='studio'&&!sessionLocked())setTab('studio');if(structureId){if(selectedFocus!==key)selectLayer(key);focusStructure(structureId);}else selectLayer(key,true);}},
 });
-safe(async()=>{
-  if(franchiseConfig.preview)return anatomy.load('./assets/Vocal_01.glb');
-  const bytes=await readProtectedAsset('model-vocal-01');
-  const url=URL.createObjectURL(new Blob([bytes],{type:'model/gltf-binary'}));
-  try{await anatomy.load(url);}finally{URL.revokeObjectURL(url);}
-});
+function ensureAnatomyLoaded(){
+  if(modelLoad)return modelLoad;
+  const loader=$('modelLoading'),spinner=document.createElement('span'),label=document.createElement('span');spinner.className='spinner';loader.hidden=false;loader.replaceChildren(spinner,label);
+  const started=performance.now(),paintLoading=()=>{label.textContent='3D 발성기관 준비 중 · '+Math.floor((performance.now()-started)/1000)+'초';};paintLoading();
+  const timer=setInterval(paintLoading,1000);
+  modelLoad=(async()=>{
+    if(franchiseConfig.preview)return anatomy.load('./assets/Vocal_01.glb');
+    const bytes=await readProtectedAsset('model-vocal-01');
+    const url=URL.createObjectURL(new Blob([bytes],{type:'model/gltf-binary'}));
+    try{await anatomy.load(url);}finally{URL.revokeObjectURL(url);}
+  })().catch(error=>{modelLoad=null;const retry=document.createElement('button');retry.className='button primary';retry.textContent='3D 모델 다시 연결';retry.onclick=()=>void ensureAnatomyLoaded();loader.replaceChildren(document.createTextNode(error?.message||'3D 모델 연결을 다시 시도해 주세요.'),retry);}).finally(()=>clearInterval(timer));
+  return modelLoad;
+}
 
 const engine = new AudioEngine({
   onFrame(frame){studioTools?.onFrame(frame);lastFrame=frame;const frameNow=performance.now()/1000;proHistory.push({t:frameNow,f0:frame.features.valid?frame.features.f0:null});while(proHistory.length&&proHistory[0].t<frameNow-10)proHistory.shift();if(freeVoiceAccumulator&&audioState.recording&&!coreRun)freeVoiceAccumulator.add(frame);if(coreRun){const now=performance.now()/1000;const mapped=processLayers(frame.features,coreRun.snapshot.profile,coreRun.levels,Math.min(200,(now-coreRun.lastFrameTime)*1000));coreRun.levels=mapped.levels;coreRun.lastFrameTime=now;coreRun.accumulator.add({...frame,time:now},mapped.levels);coreRun.voiceAccumulator.add(frame);}if(capture){capture.frames.push({...frame.features});if(performance.now()-capture.start>=5000)finishCapture();}},
-  onState(state){if(state.mode!==audioState.mode||state.fileName!==audioState.fileName)clearAnalysisHistory();audioState=state;renderTransport();updateLocks();if(!state.playing){lastFrame=null;cancelCapture('입력이 중지되어 수집을 취소했습니다. 다시 재생한 뒤 수집하세요.');}if(coreRun&&(!state.playing||(coreRun.source==='mic'&&!state.recording))){const reached=coreRun.source==='file'&&state.mode==='file'&&state.currentTime>=CORE_MODES[coreRun.kind].duration-.1;safe(()=>finishCore(reached));}if(loopPlayback&&!coreRun&&!coreStarting&&!coreFinishing&&!busy&&!document.hidden&&state.mode==='file'&&!state.playing&&state.duration>0&&state.currentTime>=state.duration-.01)safe(()=>engine.play());},
+  onState(state){if(state.mode!==audioState.mode||state.fileName!==audioState.fileName)clearAnalysisHistory();audioState=state;renderTransport();updateLocks();if(!state.playing){lastFrame=null;cancelCapture('입력이 중지되어 수집을 취소했습니다. 다시 재생한 뒤 수집하세요.');}if(coreRun&&(!state.playing||(coreRun.source==='mic'&&!state.recording))){const reached=coreRun.source==='file'&&state.mode==='file'&&state.currentTime>=CORE_MODES[coreRun.kind].duration-.1;safe(()=>finishCore(reached));}if(loopPlayback&&!coreRun&&!coreStarting&&!coreFinishing&&!busy&&!studioSuspended&&!document.hidden&&state.mode==='file'&&!state.playing&&state.duration>0&&state.currentTime>=state.duration-.01)safe(()=>engine.play());},
   onError(error){toast(error.message,true);},
   onRecording(recording){recordingSavePromise=safe(()=>saveRecording(recording));},
 });
@@ -133,7 +142,7 @@ function renderTransport(){
   if(coreRun||coreStarting||coreFinishing||studioTools?.trainingActive){for(const id of ['micBtn','fileBtn','playBtn','recordBtn','demoBtn','referenceBtn','referencePlayBtn','loopBtn','seekBar'])$(id).disabled=true;}
 
 }
-async function withAudio(fn){if(busy)throw new Error('음성을 준비 중입니다. 잠시 후 다시 시도해 주세요.');busy=true;renderTransport();try{cancelCapture();stopDemo();return await fn();}finally{busy=false;renderTransport();}}
+async function withAudio(fn){if(studioSuspended)throw new Error('코칭 화면을 다시 열어 주세요.');if(busy)throw new Error('음성을 준비 중입니다. 잠시 후 다시 시도해 주세요.');busy=true;renderTransport();try{cancelCapture();stopDemo();return await fn();}finally{busy=false;renderTransport();}}
 async function toggleMicrophone(){
   if(busy||microphoneAction||coreRun||coreStarting||coreFinishing||studioTools?.trainingActive)return false;
   microphoneAction=audioState.recording?'saving':audioState.mode==='mic'&&audioState.playing?'stopping':'starting';
@@ -149,7 +158,7 @@ async function toggleMicrophone(){
     await engine.startMic();return audioState.mode==='mic'&&audioState.playing;
   });}finally{microphoneAction=null;renderTransport();updateLocks();}
 }
-async function loadAudio(file,autoplay=true){if(sessionLocked())throw new Error('현재 발성 기록을 마친 뒤 음성을 바꿔 주세요.');const entryId=profileId;replayProfile=null;return await withAudio(async()=>{const loaded=await engine.loadFile(file);if(!loaded||profileId!==entryId)return false;loadedAnalysisSource={file,profileId:entryId};if(autoplay)await engine.play();return profileId===entryId;});}
+async function loadAudio(file,autoplay=true){if(sessionLocked())throw new Error('현재 발성 기록을 마친 뒤 음성을 바꿔 주세요.');const entryId=profileId,inputEpoch=studioInputEpoch;replayProfile=null;return await withAudio(async()=>{const loaded=await engine.loadFile(file);if(!loaded||profileId!==entryId||studioSuspended||inputEpoch!==studioInputEpoch)return false;loadedAnalysisSource={file,profileId:entryId};if(autoplay)await engine.play();return profileId===entryId;});}
 function setComparing(value){comparing=value;renderTuning();}
 
 function currentParticipantSnapshot(){const snapshot=participantIntake?.readSnapshot();return snapshot?copy({participant:snapshot.participant,examination:snapshot.examination}):{};}
@@ -173,12 +182,14 @@ async function commitParticipant(data){
 async function startAnalyzerRecording(){
   if(audioState.recording){await withAudio(async()=>{await engine.stopRecording();if(recordingSavePromise)await recordingSavePromise;});fileAnalysisView?.setMode('batch');return;}
   if(sessionLocked()||busy)throw new Error('진행 중인 음성 작업을 마친 뒤 녹음을 시작해 주세요.');
+  const inputEpoch=studioInputEpoch;
   const intake=participantIntake?await participantIntake.prepare():null;
+  if(studioSuspended||inputEpoch!==studioInputEpoch)return;
   if(intake&&intake.profileId!==profileId)throw new Error('검사 대상자가 바뀌었습니다. 대상자를 다시 확인해 주세요.');
   const effective=copy(effectiveProfile()),snapshot={profile:effective,profileId,name:effective.name,refs:copy(refs),annotation:analysisAnnotation(),...(intake?copy({participant:intake.participant,examination:intake.examination}):currentParticipantSnapshot())};
   await withAudio(async()=>{
     if(audioState.mode!=='mic'||!audioState.playing)await engine.startMic($('boothInputSelect')?.value||undefined);
-    if(profileId!==snapshot.profileId||audioState.mode!=='mic'||!audioState.playing){engine.stop();throw new Error('대상자 또는 마이크 상태가 바뀌었습니다. 다시 녹음을 시작해 주세요.');}
+    if(studioSuspended||inputEpoch!==studioInputEpoch||profileId!==snapshot.profileId||audioState.mode!=='mic'||!audioState.playing){engine.stop();throw new Error('대상자 또는 마이크 상태가 바뀌었습니다. 다시 녹음을 시작해 주세요.');}
     replayProfile=null;recordingSnapshot={...snapshot,captureSettings:engine.stream?.getAudioTracks()[0]?.getSettings()||null};
     freeVoiceAccumulator=createVoiceMetricsAccumulator({profile:effective,profileId:snapshot.profileId});recordingStarted=performance.now();
     try{await engine.startRecording();fileAnalysisView?.setMode('batch');}catch(error){recordingSnapshot=null;freeVoiceAccumulator=null;throw error;}
@@ -360,9 +371,9 @@ async function startCore(kind){
   coreStarting=true;loopPlayback=false;renderTransport();updateLocks();renderCore();
   let buffer=null;
   try{
-    if(source==='file'){buffer=engine.buffer;engine.pause();await engine.seek(0);await engine.play();}
-    else{if(audioState.mode!=='mic'||!audioState.playing)await engine.startMic();if(generation!==coreGeneration||document.hidden){engine.stop();return;}snapshot.captureSettings=engine.stream?.getAudioTracks()[0]?.getSettings()||null;recordingSnapshot=snapshot;recordingStarted=performance.now();await engine.startRecording();}
-    if(generation!==coreGeneration||document.hidden){engine.stop();return;}
+    if(source==='file'){buffer=engine.buffer;engine.pause();await engine.seek(0);if(generation!==coreGeneration||studioSuspended||document.hidden)return;await engine.play();}
+    else{if(audioState.mode!=='mic'||!audioState.playing)await engine.startMic();if(generation!==coreGeneration||studioSuspended||document.hidden){engine.stop();return;}snapshot.captureSettings=engine.stream?.getAudioTracks()[0]?.getSettings()||null;recordingSnapshot=snapshot;recordingStarted=performance.now();await engine.startRecording();}
+    if(generation!==coreGeneration||studioSuspended||document.hidden){engine.stop();return;}
     if(!audioState.playing||(source==='mic'&&!audioState.recording))throw new Error('음성 입력을 시작하지 못했습니다. 다시 시도해 주세요.');
     const now=performance.now();coreRun={kind,source,start:now,snapshot,buffer,levels:{},lastFrameTime:now/1000,voiceAccumulator:createVoiceMetricsAccumulator({profile:snapshot.profile,profileId:snapshot.profileId}),accumulator:createSessionAccumulator({kind,source,profile:snapshot.profile})};
     coreTimer=setTimeout(()=>safe(()=>finishCore(true)),CORE_MODES[kind].duration*1000);
@@ -422,7 +433,7 @@ function canvasContext(id){const c=$(id),r=c.getBoundingClientRect(),dpr=Math.mi
 function drawWave(wave){const c=canvasContext('mainWave');if(!c)return;const {ctx,w,h}=c;ctx.strokeStyle='#36274c';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,h/2);ctx.lineTo(w,h/2);ctx.stroke();for(let x=0;x<w;x+=36){ctx.beginPath();ctx.moveTo(x,8);ctx.lineTo(x,h-8);ctx.strokeStyle='#21182f';ctx.stroke();}if(!wave)return;const grad=ctx.createLinearGradient(0,0,w,0);grad.addColorStop(0,'#604c92');grad.addColorStop(.45,'#c1a0ff');grad.addColorStop(1,'#604c92');ctx.strokeStyle=grad;ctx.lineWidth=1.5;ctx.beginPath();const step=Math.max(1,Math.floor(wave.length/w));for(let x=0,i=0;i<wave.length;i+=step,x++){const y=h/2-Math.max(-1,Math.min(1,wave[i]*2.5))*h*.4;x?ctx.lineTo(x,y):ctx.moveTo(x,y);}ctx.stroke();}
 function drawReference(){const c=canvasContext('referenceWave');if(!c)return;const {ctx,w,h}=c,arr=refs[selectedLayer]?.preview||[];ctx.strokeStyle='#c3adcf';ctx.lineWidth=2;ctx.lineCap='round';arr.forEach((v,i)=>{const hh=Math.max(1,Math.min(h*.8,v*h*3));const x=(i+.5)*w/100;ctx.beginPath();ctx.moveTo(x,(h-hh)/2);ctx.lineTo(x,(h+hh)/2);ctx.stroke();});}
 function drawLayerHistory(){const c=canvasContext('layerWave');if(!c)return;const {ctx,w,h}=c,d=history[selectedLayer];for(const [key,color,width] of [['before','#cec4d8',1],['after',META[selectedLayer].color,2]]){const arr=d[key];ctx.strokeStyle=color;ctx.lineWidth=width;ctx.beginPath();arr.forEach((v,i)=>{const x=w-(arr.length-1-i)*w/150,y=h-4-v*(h-8);i?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.stroke();}}
-function paint(now){requestAnimationFrame(paint);if(now-lastPaint<32)return;const dt=Math.min(now-lastPaint||33,200);lastPaint=now;
+function paint(now){requestAnimationFrame(paint);if(studioSuspended||document.hidden||now-lastPaint<32)return;const dt=Math.min(now-lastPaint||33,200);lastPaint=now;
   let f=lastFrame?.features || EMPTY,wave=lastFrame?.waveform;
   if(demo){const t=now/1000;f={valid:true,level:-24,f0:220,rms:.06,clarity:.95};for(const [i,key] of LAYER_KEYS.entries()){const l=DEFAULT_PROFILE.layers[key];f[l.feature]=l.inputMin+(l.inputMax-l.inputMin)*(.5+.4*Math.sin(t*1.4+i*1.2));}wave=Float32Array.from({length:512},(_,i)=>.12*Math.sin(i*.25+t*2)*Math.sin(i*.013));}
   const activeProfile=coreRun?.snapshot.profile||(audioState.recording&&recordingSnapshot?recordingSnapshot.profile:effectiveProfile());const result=processLayers(f,activeProfile,levels,dt);levels=result.levels;const baseline=processLayers(f,DEFAULT_PROFILE,originalLevels,dt);originalLevels=baseline.levels;anatomy.setLevels(levels);
@@ -551,7 +562,7 @@ window.addEventListener('beforeunload',e=>{if(dirty||sessionLocked()||fileAnalyz
 studioTools=mountStudioTools({
   getTrainingAsset:franchiseConfig.preview?null:readProtectedAsset,
   engine,getProfile:()=>({profileId,profileName:profile.name,profile:copy(profile),refs:copy(refs)}),getTab:()=>tab,
-  isBusy:()=>busy,isRecordLocked:()=>Boolean(coreRun||coreStarting||coreFinishing||audioState.recording),
+  isBusy:()=>busy||studioSuspended,isRecordLocked:()=>Boolean(coreRun||coreStarting||coreFinishing||audioState.recording),
   getRecordElapsed:()=>audioState.recording?(performance.now()-recordingStarted)/1000:0,
   stopHostInput:async()=>{scaleTrainer.stop();loopPlayback=false;stopDemo();cancelCapture();replayProfile=null;engine.clearInput();clearAnalysisHistory();},
   onLocks:()=>{updateLocks();renderTransport();},setTab,toast,recordToggle:()=>safe(startAnalyzerRecording),
@@ -581,7 +592,20 @@ await (async()=>{
   renderProfileSelect();renderTuning();renderSessions();renderTraining();
   for(const s of sessions)if(s.blob?.size&&['queued','decoding','analyzing','saving'].includes(s.analysisStatus))queueFullAnalysis(s);
 })();
+export async function suspendStudio(){
+  studioSuspended=true;studioInputEpoch++;coreGeneration++;loopPlayback=false;document.body.dataset.suspended='true';
+  stopDemo();scaleTrainer.stop();studioTools?.stopRhythm();cancelCapture();
+  if(coreRun||coreStarting)await safe(()=>finishCore(false));
+  await engine.stopRecording();engine.stop();
+  if(recordingSavePromise)await recordingSavePromise;
+}
+export function resumeStudio(){
+  studioSuspended=false;document.body.dataset.suspended='false';anatomy.resize();
+  if(tab==='studio')void ensureAnatomyLoaded();
+  studioTools?.resume();studioTools?.paint();
+}
 export async function shutdownStudio(){
+  studioSuspended=true;studioInputEpoch++;coreGeneration++;clearProtectedAssetCache();anatomy.dispose();
   stopDemo();scaleTrainer.stop();studioTools?.stopRhythm();
   await engine.destroy();if(recordingSavePromise)await recordingSavePromise;
   for(const job of fileAnalyzer?.jobs||[])fileAnalyzer.cancel(job.id);
