@@ -167,9 +167,22 @@ body::before{content:""; position:fixed; inset:0; pointer-events:none; z-index:0
 .video-slot .vi{font-size:1.4rem; opacity:.5} .video-slot .vt{font-size:.8rem; color:var(--ink-soft); margin-top:.3rem}
 .video-slot .vhint{font-size:.7rem; color:var(--plum-soft); margin-top:.15rem}
 .video-slot iframe{width:100%; aspect-ratio:16/9; border:0; border-radius:8px}
-.video-slot .vwrap{position:relative; width:100%; aspect-ratio:16/9; border-radius:8px; overflow:hidden; background:#000}
-.video-slot .vwrap iframe{position:absolute; inset:0; width:100%; height:100%; aspect-ratio:auto; border-radius:0}
-.video-slot .vmask{position:absolute; top:0; left:0; right:0; height:64px; background:transparent}
+.tvp{border-radius:10px; overflow:hidden; background:#000; box-shadow:0 6px 24px rgba(59,30,110,.18)}
+.tvp-stage{position:relative; width:100%; aspect-ratio:16/9; background:#000}
+.tvp-yt,.tvp-yt iframe{position:absolute; inset:0; width:100%; height:100%; border:0}
+.tvp-shield{position:absolute; inset:0; cursor:pointer; background:transparent}
+.tvp-big{position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:64px; height:64px; border:0; border-radius:50%;
+  background:rgba(59,30,110,.82); color:#fff; font-size:1.5rem; cursor:pointer; display:grid; place-items:center; transition:opacity .2s, transform .15s}
+.tvp-big:hover{transform:translate(-50%,-50%) scale(1.06)}
+.tvp.playing .tvp-big{opacity:0; pointer-events:none}
+.tvp-bar{display:flex; align-items:center; gap:.6rem; padding:.55rem .75rem; background:#241A3A}
+.tvp-bar button{border:0; background:transparent; color:#F4ECD8; font-size:.95rem; cursor:pointer; padding:.15rem .3rem; line-height:1}
+.tvp-bar button:hover{color:#B8862A}
+.tvp-track{flex:1; height:6px; border-radius:3px; background:rgba(244,236,216,.22); cursor:pointer; position:relative}
+.tvp-fill{position:absolute; left:0; top:0; bottom:0; width:0; border-radius:3px; background:#B8862A}
+.tvp-time{color:rgba(244,236,216,.75); font-size:.72rem; font-variant-numeric:tabular-nums; white-space:nowrap}
+.tvp:fullscreen{background:#000; display:flex; flex-direction:column; justify-content:center}
+.tvp:fullscreen .tvp-stage{flex:1; aspect-ratio:auto}
 .no-script{margin-top:.6rem; padding:1rem; background:rgba(255,255,255,.4); border:1px dashed var(--line); border-radius:10px; font-size:.84rem; color:var(--ink-soft); text-align:center}
 
 .imm{background:linear-gradient(155deg,rgba(184,134,42,.10),rgba(126,91,176,.08)); border:1px solid rgba(184,134,42,.3); border-radius:18px; padding:1.8rem; margin:1.2rem 0}
@@ -712,7 +725,13 @@ function lessonHtml(prog, wk){
     '<div class="guide"><span class="guide-label">진행 가이드</span><ul>'+b.guide.map(function(g){return '<li>'+g+'</li>';}).join('')+'</ul></div>'+
     '</div></div>';
   }).join('');
-  var vid = wk.video ? '<div class="video-slot"><div class="vwrap"><iframe src="'+wk.video+'" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe><div class="vmask" aria-hidden="true"></div></div></div>'
+  var vid = wk.video ? '<div class="video-slot"><div class="tvp" data-vid="'+tvpId(wk.video)+'">'+
+      '<div class="tvp-stage"><div class="tvp-yt"></div><div class="tvp-shield"></div>'+
+      '<button class="tvp-big" type="button" aria-label="재생">\u25B6</button></div>'+
+      '<div class="tvp-bar"><button class="tvp-play" type="button" aria-label="재생/일시정지">\u25B6</button>'+
+      '<div class="tvp-track"><div class="tvp-fill"></div></div>'+
+      '<span class="tvp-time">0:00 / 0:00</span>'+
+      '<button class="tvp-fs" type="button" aria-label="전체화면">\u26F6</button></div></div></div>'
     : '<div class="video-slot"><div class="vi">\u25B6</div><div class="vt">강의 영상 준비 중</div><div class="vhint">데이터의 video 필드에 URL을 넣으면 자동 임베드</div></div>';
   var refChips = (sc.ref && sc.ref.length)
     ? '<div class="ref-chips"><span class="rc-label">참고문헌</span>'+sc.ref.map(function(n){return '<span class="rc" title="아래 참고문헌 '+n+'번">['+n+']</span>';}).join('')+'</div>'
@@ -1480,6 +1499,92 @@ function submitMock(){
     if(first != null && typeof openRoom === 'function'){ try{ openRoom(first); }catch(e){} }
   }
 })();
+
+/* ─── 터칭보이스 커스텀 플레이어 (유튜브 컨트롤 전면 차단) ─── */
+function tvpId(u){ var m=String(u||'').match(/embed\/([A-Za-z0-9_-]{6,})/); return m?m[1]:String(u||''); }
+(function(){
+  var players=[], apiReady=false, pending=[];
+  function fmt(t){ t=Math.max(0,Math.floor(t||0)); var m=Math.floor(t/60), s=t%60; return m+':'+(s<10?'0':'')+s; }
+
+  function build(box){
+    if(box.dataset.tvpInit) return; box.dataset.tvpInit='1';
+    var vid=box.dataset.vid; if(!vid) return;
+    var stage=box.querySelector('.tvp-yt'),
+        shield=box.querySelector('.tvp-shield'),
+        big=box.querySelector('.tvp-big'),
+        play=box.querySelector('.tvp-play'),
+        track=box.querySelector('.tvp-track'),
+        fill=box.querySelector('.tvp-fill'),
+        time=box.querySelector('.tvp-time'),
+        fsBtn=box.querySelector('.tvp-fs'),
+        timer=null, yt=null;
+
+    yt = new YT.Player(stage, {
+      videoId: vid,
+      host: 'https://www.youtube-nocookie.com',
+      playerVars: { controls:0, disablekb:1, rel:0, modestbranding:1, playsinline:1,
+                    fs:0, iv_load_policy:3, cc_load_policy:0, showinfo:0 },
+      events: {
+        onReady: function(){ time.textContent = '0:00 / ' + fmt(yt.getDuration()); },
+        onStateChange: function(e){
+          var playing = (e.data === YT.PlayerState.PLAYING);
+          box.classList.toggle('playing', playing);
+          play.textContent = playing ? '‖' : '▶';
+          if(playing){ if(!timer) timer=setInterval(tick, 250); }
+          else { clearInterval(timer); timer=null; tick(); }
+        }
+      }
+    });
+
+    function tick(){
+      if(!yt || !yt.getDuration) return;
+      var d=yt.getDuration()||0, c=yt.getCurrentTime()||0;
+      fill.style.width = d ? (c/d*100)+'%' : '0';
+      time.textContent = fmt(c)+' / '+fmt(d);
+    }
+    function toggle(){
+      if(!yt || !yt.getPlayerState) return;
+      var st=yt.getPlayerState();
+      if(st===YT.PlayerState.PLAYING) yt.pauseVideo(); else yt.playVideo();
+    }
+    shield.addEventListener('click', toggle);
+    big.addEventListener('click', function(e){ e.stopPropagation(); toggle(); });
+    play.addEventListener('click', toggle);
+    track.addEventListener('click', function(e){
+      if(!yt || !yt.getDuration) return;
+      var r=track.getBoundingClientRect();
+      yt.seekTo(((e.clientX-r.left)/r.width)*(yt.getDuration()||0), true);
+    });
+    fsBtn.addEventListener('click', function(){
+      if(document.fullscreenElement) { document.exitFullscreen(); return; }
+      (box.requestFullscreen || box.webkitRequestFullscreen || function(){}).call(box);
+    });
+    players.push(yt);
+  }
+
+  function scan(){
+    var list=document.querySelectorAll('.tvp[data-vid]');
+    if(!list.length) return;
+    if(!apiReady){ pending.push(1); loadApi(); return; }
+    list.forEach(build);
+  }
+  function loadApi(){
+    if(window.YT && window.YT.Player){ apiReady=true; scan(); return; }
+    if(document.getElementById('tvp-yt-api')) return;
+    var t=document.createElement('script');
+    t.id='tvp-yt-api'; t.src='https://www.youtube.com/iframe_api';
+    document.head.appendChild(t);
+  }
+  window.onYouTubeIframeAPIReady=function(){ apiReady=true; scan(); };
+
+  window.tvpScan = scan;
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', scan);
+  else scan();
+  // 아코디언 등으로 나중에 DOM이 붙는 경우 대비
+  new MutationObserver(function(){ if(apiReady) document.querySelectorAll('.tvp[data-vid]').forEach(build); })
+    .observe(document.documentElement, {childList:true, subtree:true});
+})();
+
 </script>
 </body>
 </html>
