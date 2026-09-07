@@ -714,6 +714,7 @@ var roomTabs = document.getElementById('room-tabs');
 var roomBody = document.getElementById('room-body');
 roomTabs.innerHTML = DATA.programs.map(function(p,i){return '<div class="rtab '+p.color+'" data-i="'+i+'">'+p.badge+'<span class="d">'+p.duration+'</span></div>';}).join('');
 
+function tvpId(u){ var m=String(u||'').match(/embed\/([A-Za-z0-9_-]{6,})/); return m?m[1]:String(u||''); }
 function lessonHtml(prog, wk){
   var sc = SCRIPTS[prog.id] && SCRIPTS[prog.id][wk.w];
   if(!sc) return '<div class="no-script">이 주차의 60분 상세 스크립트는 준비 중입니다.<br><span style="font-size:.76rem;color:var(--plum-soft)">2급 전체와 1급 1단계가 완성되었습니다. 나머지는 순차 업데이트됩니다.</span></div>';
@@ -1501,7 +1502,6 @@ function submitMock(){
 })();
 
 /* ─── 터칭보이스 커스텀 플레이어 (유튜브 컨트롤 전면 차단) ─── */
-function tvpId(u){ var m=String(u||'').match(/embed\/([A-Za-z0-9_-]{6,})/); return m?m[1]:String(u||''); }
 (function(){
   var players=[], apiReady=false, pending=[];
   function fmt(t){ t=Math.max(0,Math.floor(t||0)); var m=Math.floor(t/60), s=t%60; return m+':'+(s<10?'0':'')+s; }
