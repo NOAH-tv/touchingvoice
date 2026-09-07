@@ -254,7 +254,7 @@ function queueFullAnalysis(entry){
   if(!entry.blob?.size||!fileAnalyzer)return;
   if(fileAnalyzer.jobs?.some(j=>j.entry.id===entry.id&&['queued','decoding','analyzing','saving'].includes(j.status)))return;
   entry.analysisStatus='queued';
-  void fileAnalyzer.enqueue(entry).then(result=>{renderSessions();renderTraining();if(result){$('localSaveStatus').textContent='원음 · 전체 지표 · 프레임 데이터 자동 저장 완료';if(result.profileId===profileId)toast('PC 분석 저장 완료 · 프랜차이즈 기록에 저장 버튼으로 서버에 보관하세요.');if(driveBackup)void driveBackup.enqueue(result).catch(e=>toast(e.message,true));}else if(entry.analysisStatus==='error')toast('원음 기록은 유지됩니다. '+entry.analysisError,true);});
+  void fileAnalyzer.enqueue(entry).then(result=>{renderSessions();renderTraining();if(result){$('localSaveStatus').textContent='원음 · 전체 지표 · 프레임 데이터 자동 저장 완료';if(result.profileId===profileId)toast('PC 분석 완료 · 원음과 분석 데이터를 서버에 자동 저장합니다.');if(driveBackup)void driveBackup.enqueue(result).catch(e=>toast(e.message,true));}else if(entry.analysisStatus==='error')toast('원음 기록은 유지됩니다. '+entry.analysisError,true);});
 }
 async function importAnalysisFiles(files,preparedOwner=null){
   if(sessionLocked()||busy)throw new Error('진행 중인 녹음을 마친 뒤 파일을 추가해 주세요.');
