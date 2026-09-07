@@ -1,31 +1,55 @@
 <!doctype html>
 <html lang="ko">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#160c29">
-<meta name="robots" content="noindex,nofollow">
-<meta name="referrer" content="strict-origin-when-cross-origin">
-<title>터칭보이스 · 직원 로그인</title>
-<style>
-@font-face{font-family:Paperlogy;src:url('/Paperlogy-4Regular.ttf') format('truetype');font-weight:400;font-display:swap}@font-face{font-family:Paperlogy;src:url('/Paperlogy-6SemiBold.ttf') format('truetype');font-weight:600;font-display:swap}
-*{box-sizing:border-box}body{margin:0;min-height:100svh;background:radial-gradient(ellipse at 50% 12%,#43227d66,transparent 65%),linear-gradient(135deg,#211039,#160c29 70%);color:#f5eee0;font:14px/1.75 Paperlogy,sans-serif}a{color:inherit;text-decoration:none}a:focus-visible{outline:2px solid #dfbf86;outline-offset:5px;border-radius:5px}header{max-width:1160px;margin:auto;padding:26px 32px}header a{display:inline-flex;align-items:center;gap:10px;min-height:44px;color:#ded1ef;font-size:12px}header a:hover,.links a:hover{color:#fff7eb;text-decoration:underline;text-underline-offset:5px}main{width:min(470px,calc(100% - 40px));margin:34px auto 70px;padding:42px 38px;border:1px solid #b491d13b;border-radius:24px;background:linear-gradient(145deg,#351a50e8,#211032f5);box-shadow:inset 0 1px 0 #e1c8ef29,0 24px 70px #0a041b55}.logo{display:block;width:186px;max-width:100%;height:auto;margin-bottom:30px}.eyebrow{margin:0;color:#dfbf86;font-size:10px;letter-spacing:2px}h1{margin:10px 0 12px;font-size:30px;line-height:1.4;font-weight:600;letter-spacing:-1px}p{word-break:keep-all;overflow-wrap:anywhere}.description{margin:0;color:#ded1ef;font-size:13px}.status{margin:26px 0 22px;padding:17px 18px;border:1px solid #d0b47e50;border-radius:12px;background:#d0b47e0c}.status strong{display:flex;align-items:center;gap:9px;color:#e7c997;font-size:12px;font-weight:600}.status strong:before{content:'';width:6px;height:6px;border-radius:50%;background:#d0b47e}.status p{margin:8px 0 0;color:#eadceb;font-size:12px}.providers{display:grid;gap:10px}button{display:flex;justify-content:space-between;align-items:center;gap:15px;width:100%;min-height:52px;padding:13px 17px;border:1px solid #b89ac43b;border-radius:10px;background:#160b2570;color:#c7b5de;font:400 13px Paperlogy,sans-serif;cursor:not-allowed}button small{font:400 10px Paperlogy,sans-serif;color:#c7b5de}.links{display:flex;flex-wrap:wrap;gap:10px 20px;margin-top:25px;padding-top:20px;border-top:1px solid #c4a3d629;font-size:11px;color:#ded1ef}.links a{display:inline-flex;align-items:center;min-height:36px}.copyright{margin:23px 0 0;color:#bfa6cd;font-size:8px;letter-spacing:.8px}@media(max-width:520px){header{padding:15px 20px}main{margin:16px auto 40px;padding:32px 25px}.logo{width:167px}h1{font-size:27px}}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#120a22">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta name="robots" content="noindex, nofollow">
+  <title>터칭보이스 · 로그인</title>
+  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="./notifications.css">
 </head>
 <body>
-<header><a href="/" aria-label="터칭보이스 홈페이지로 돌아가기"><span aria-hidden="true">←</span> 터칭보이스 홈페이지</a></header>
-<main aria-labelledby="login-title">
-<img class="logo" src="/tv_logo_beige.png" alt="TouchingVoice" width="186" height="59">
-<p class="eyebrow">STAFF ACCESS</p>
-<h1 id="login-title">로그인</h1>
-<p class="description">본사에서 승인한 지도사·지점 계정을 위한 운영 공간입니다.</p>
-<div class="status" role="status"><strong>로그인 연결 준비 중</strong><p>직원 로그인 연결을 준비하고 있습니다. 본사 관리자에게 문의해 주세요.</p></div>
-<div class="providers" aria-label="직원 로그인 연결 상태">
-<button type="button" disabled title="Google 로그인 연결을 준비하고 있습니다."><span>Google로 계속하기</span><small>준비 중</small></button>
-<button type="button" disabled title="Apple 로그인 연결을 준비하고 있습니다."><span>Apple로 계속하기</span><small>준비 중</small></button>
-</div>
-<nav class="links" aria-label="문의 및 관련 홈페이지"><a href="mailto:lubere12@touchingvoice.app">본사에 문의하기</a><a href="https://touchingvoice.app/association.html#home" target="_blank" rel="noopener noreferrer">발성심리지도사 협회 <span aria-hidden="true">↗</span></a></nav>
-<p class="copyright">© TOUCHINGVOICE. ALL RIGHTS RESERVED.</p>
-</main>
+  <div id="bootState" class="boot-state" role="status"><img class="brand-logo boot-logo" src="/tv_logo_beige.png" alt="터칭보이스" width="180" height="57"><p>안전하게 연결하고 있습니다.</p><span class="loading-line"></span></div>
+  <section id="loginScreen" class="login-screen" hidden aria-labelledby="loginTitle">
+    <div class="login-grid" aria-hidden="true"></div>
+    <div class="login-card">
+      <div class="wordmark"><img class="brand-logo login-logo" src="/tv_logo_beige.png" alt="터칭보이스" width="220" height="70"></div>
+      <div class="login-divider"></div><p class="eyebrow">STAFF ACCESS</p>
+      <h1 id="loginTitle">로그인</h1><p class="login-description">승인된 계정으로 로그인해 주세요.</p>
+      <div class="social-actions">
+        <button class="social-button" data-provider="google"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M21.6 12.2c0-.7-.1-1.4-.2-2H12V14h5.4a4.6 4.6 0 0 1-2 3v2.5h3.2c1.9-1.8 3-4.3 3-7.3z"/><path fill="#34A853" d="M12 22c2.7 0 4.9-.9 6.6-2.4l-3.2-2.5c-.9.6-2 1-3.4 1a6 6 0 0 1-5.6-4.2H3.1v2.6A10 10 0 0 0 12 22z"/><path fill="#FBBC05" d="M6.4 13.9a6 6 0 0 1 0-3.8V7.5H3.1a10 10 0 0 0 0 9z"/><path fill="#EA4335" d="M12 5.9c1.5 0 2.8.5 3.8 1.5l2.9-2.8A9.6 9.6 0 0 0 12 2a10 10 0 0 0-8.9 5.5l3.3 2.6A6 6 0 0 1 12 5.9z"/></svg>Google로 계속하기</button>
+        <button class="social-button" data-provider="apple"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.7 1.5c.1 1.3-.5 2.6-1.3 3.5-.9 1-2.2 1.6-3.4 1.5-.2-1.3.4-2.5 1.3-3.4.9-.9 2.2-1.6 3.4-1.6ZM20.3 17.3c-.5 1.1-.8 1.6-1.5 2.6-.9 1.3-2.1 3-3.7 3-1.4 0-1.8-.9-3.7-.9s-2.4.9-3.8.9c-1.5 0-2.7-1.5-3.6-2.8C1.4 16.5.8 11.3 2.4 8.6a5.5 5.5 0 0 1 4.5-2.8c1.7 0 2.8.9 4.2.9 1.3 0 2.2-.9 4.2-.9 1.5 0 3 .8 4 2.1-3.5 1.9-2.9 6.9 1 8.4Z"/></svg>Apple로 계속하기</button>
+      </div>
+      <button id="previewApplicant" class="button ghost full" hidden>미승인 지점 가입 신청 보기</button>
+      <p id="loginError" class="inline-error" role="alert" hidden></p>
+      <p class="login-note">처음 방문하셨나요?<br>관리자에게 받은 초대 코드는 로그인 후 입력할 수 있습니다.</p>
+      <a class="home-link" href="./">← 터칭보이스 홈페이지</a>
+      <div class="secure-label"><span aria-hidden="true">◈</span> 승인된 사용자만 접근할 수 있습니다</div>
+    </div><p class="login-copyright">© TOUCHINGVOICE. ALL RIGHTS RESERVED.</p>
+  </section>
+  <section id="pendingScreen" class="login-screen" hidden aria-labelledby="pendingTitle">
+    <div class="login-card pending-card"><p id="pendingPreviewNotice" class="pending-preview-label" hidden>운영 흐름 미리보기 · 실제 가입 신청 아님</p><p class="eyebrow">ACCOUNT VERIFICATION</p><h1 id="pendingTitle">접근 권한 확인</h1><p id="pendingEmail" class="login-description"></p><p id="pendingMessage" class="help">본사의 승인이 완료된 계정만 이용할 수 있습니다.</p>
+      <div class="segmented pending-tabs"><button type="button" data-pending-mode="staff" class="active">강사 계정 신청</button><button type="button" data-pending-mode="branch">지점 가입 신청</button></div>
+      <form id="applyForm"><label for="applicantName">가입 신청자 이름</label><input id="applicantName" name="name" required maxlength="80" placeholder="강사 또는 지점 관리자 이름"><button class="button primary full" type="submit">본사에 계정 승인 요청</button></form>
+      <form id="branchApplyForm" hidden><div class="form-grid"><div class="span-2"><label for="applyBranchName">지점 이름</label><input id="applyBranchName" name="name" required maxlength="80" placeholder="신청할 지점 이름"></div><div class="span-2"><label for="applyBranchAddress">지점 주소</label><input id="applyBranchAddress" name="address" required maxlength="240" autocomplete="street-address" placeholder="도로명 주소와 상세 주소"></div><div><label for="applyContactName">담당자 이름</label><input id="applyContactName" name="contactName" required maxlength="80" autocomplete="name"></div><div><label for="applyContactPhone">담당자 연락처</label><input id="applyContactPhone" name="contactPhone" type="tel" required maxlength="30" autocomplete="tel" placeholder="010-0000-0000"></div><div class="span-2"><label for="applyBranchApplicant">계정 신청자 이름</label><input id="applyBranchApplicant" name="applicantName" required maxlength="80" placeholder="지점 관리자 계정으로 승인받을 이름"></div></div><p class="form-note">본사가 지점 정보와 담당자를 확인한 후 지점 관리자 계정을 승인합니다. 신청만으로 접근 권한이 생기지 않습니다.</p><p class="form-note">입력한 이름·지점 주소·연락처가 지점 가입 심사와 운영 연락을 위해 본사에 저장됩니다.</p><button class="button primary full" type="submit">정보 저장·지점 신청</button></form>
+      <div id="branchApplicationStatus"></div><details class="invitation-details"><summary>이미 초대 코드를 받았나요?</summary><form id="claimForm"><label for="inviteCode">초대 코드</label><input id="inviteCode" name="code" autocomplete="off" required maxlength="160" placeholder="본사가 발급한 초대 코드"><button class="button secondary full" type="submit">초대 수락</button></form></details><p id="pendingError" class="inline-error" role="alert" hidden></p><button id="pendingRetry" class="button ghost full">승인 상태 다시 확인</button><button class="button text full" data-action="logout">다른 계정으로 로그인</button><a class="home-link" href="./">← 터칭보이스 홈페이지</a><button id="pendingPreviewBack" class="button secondary full" hidden>본사 시안으로 돌아가기</button>
+    </div>
+  </section>
+  <div id="portal" class="portal" hidden>
+    <aside class="sidebar">
+      <a class="wordmark" href="#today" aria-label="터칭보이스 운영 화면"><img class="brand-logo sidebar-logo" src="/tv_logo_beige.png" alt="터칭보이스" width="180" height="57"></a>
+      <label class="branch-label" for="branchSelect">WORKSPACE</label><select id="branchSelect" class="branch-select" aria-label="운영 지점"></select>
+      <nav id="mainNav" aria-label="주 메뉴"></nav>
+      <div class="sidebar-bottom"><span class="workspace-signal"><i></i><span id="workspaceStatus">접근 권한 확인됨</span></span><button data-page="settings" class="sidebar-settings" id="settingsNav"></button><div class="staff-card"><span id="staffAvatar" class="avatar"></span><span><strong id="staffName"></strong><small id="staffRole"></small></span><button data-action="logout" class="icon-button" title="로그아웃" aria-label="로그아웃">↗</button></div></div>
+    </aside>
+    <div class="portal-body"><div id="previewNotice" class="preview-notice" hidden><span>운영 흐름 미리보기 · 실제 로그인·발송 아님</span><label for="previewRole">화면 역할</label><select id="previewRole"><option value="owner">본사 관리자</option><option value="manager">지점 관리자</option><option value="instructor">강사</option><option value="applicant">지점 가입 신청자</option></select></div><header class="topbar"><div class="breadcrumb">PARTNER WORKSPACE <span>/</span> <strong id="breadcrumbLabel">오늘의 운영</strong></div><div class="topbar-right"><span id="todayDate"></span><button id="refreshButton" class="icon-button" title="최신 정보 불러오기" aria-label="최신 정보 불러오기"></button><span class="topbar-divider"></span><span class="secure-chip">접근 승인됨</span></div></header><main id="mainContent" tabindex="-1"></main><section id="studioView" hidden><div class="studio-toolbar"><button class="button secondary" id="studioBack" data-action="studio-back">← 이전 화면</button><label for="studioStudent">검사 학생</label><select id="studioStudent"></select><button class="button primary" id="studioLaunch">스튜디오 열기</button></div><div id="studioMount"><div class="empty-state"><p>학생을 선택하고 스튜디오를 열어 주세요.</p><small>검사 기록은 선택한 학생과 지점에 연결됩니다.</small></div></div></section><footer class="workspace-footer"><span>TOUCHINGVOICE PARTNER</span><span id="lastSynced">서버 연결 중</span></footer></div>
+  </div>
+  <dialog id="modal" aria-labelledby="modalTitle"><div class="modal-head"><div class="modal-heading"><button id="modalBack" class="button small ghost" type="button" hidden>← 이전 단계</button><div><p id="modalEyebrow" class="eyebrow"></p><h2 id="modalTitle"></h2></div></div><button id="modalClose" class="icon-button" aria-label="창 닫기">✕</button></div><div id="modalBody" class="modal-body"></div></dialog>
+  <div id="toast" class="toast" role="status" hidden></div>
+  <script type="module" src="./app.js"></script>
+  <script type="module" src="./studio-host.js"></script>
+  <script type="module" src="./notifications-host.js"></script>
 </body>
 </html>
