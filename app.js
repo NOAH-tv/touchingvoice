@@ -118,7 +118,7 @@ async function refresh({ quiet = false } = {}) {
   } finally { if (epoch === S.requestEpoch) $('#refreshButton').disabled = false; }
 }
 function renderNav() {
-  const branchOrder = ['today','calendar','students','attendance','payments','notifications','revenue','studio','team','issues'];
+  const branchOrder = ['studio','today','calendar','students','attendance','payments','notifications','revenue','team','issues'];
   const orderedPages = owner() ? pages : pages.slice().sort((a, b) => branchOrder.indexOf(a[0]) - branchOrder.indexOf(b[0]));
   $('#mainNav').innerHTML = orderedPages.filter(([id]) => (!['team','notifications'].includes(id) || admin()) && (!hqPages.some(([key]) => key === id) || owner() || id === 'issues' || (id === 'revenue' && admin()))).map(([id, title]) => { const label = id === 'revenue' && !owner() ? '지점 매출' : title; return `${id === 'hq' ? '<p class="nav-section">HEADQUARTERS</p>' : id === 'today' && owner() ? '<p class="nav-section">BRANCH OPERATIONS</p>' : ''}<button class="nav-button ${S.page === id ? 'active' : ''}" data-page="${id}" title="${label}" ${S.page === id ? 'aria-current="page"' : ''}>${icon(id)}<span>${label}</span>${id === 'payments' && openPayments().length ? `<span class="nav-count">${openPayments().length}</span>` : id === 'approvals' && pendingApprovalCount() ? `<span class="nav-count">${pendingApprovalCount()}</span>` : ''}</button>`; }).join('');
   $('#settingsNav').innerHTML = `${icon('settings')}<span>설정</span>`; $('#settingsNav').classList.toggle('active', S.page === 'settings');
@@ -127,13 +127,18 @@ const viewKeys = ['search','instructorFilter','calendarDate','calendarMode','cal
 function saveView() { S.pageState[S.page] = { ...Object.fromEntries(viewKeys.map(key => [key, S[key]])), scrollY: window.scrollY }; }
 function restoreView(page) { const saved = S.pageState[page]; if (saved) { for (const key of viewKeys) if (key in saved) S[key] = saved[key]; } else { S.search = ''; S.instructorFilter = ''; } return saved?.scrollY || 0; }
 function resetHistory() { clearCalendarDrag(); S.pageState = {}; S.studioReturn = null; S.databaseBranch = ''; S.databaseInstructor = ''; S.coachBranch = ''; S.coachSearch = ''; S.calendarTrail = []; closeModal(); }
-function navigate(page) {
+function navigate(page, { openStudio = true } = {}) {
   clearCalendarDrag();
   if (['team','notifications'].includes(page) && !admin()) return;
   if (hqPages.some(([key]) => key === page) && !owner() && page !== 'issues' && !(page === 'revenue' && admin())) return;
-  saveView(); S.page = [...pages.map(([id]) => id), 'settings'].includes(page) ? page : 'today'; const scrollY = restoreView(S.page); renderNav(); render();
+  saveView();
+  if (page === 'studio' && S.page !== 'studio' && openStudio) S.studioReturn = { page: S.page, branchId: S.branchId, showDetail: false, views: structuredClone(S.pageState) };
+  S.page = [...pages.map(([id]) => id), 'settings'].includes(page) ? page : 'today'; const scrollY = restoreView(S.page); renderNav(); render();
   window.dispatchEvent(new CustomEvent('tv:navigate', { detail: { page: S.page, branchId: S.branchId } }));
-  $('#mainContent').focus({ preventScroll: true }); requestAnimationFrame(() => window.scrollTo({ top: scrollY, behavior: 'instant' }));
+  if (S.page === 'studio') {
+    $('#studioStudent').focus({ preventScroll: true });
+    if (openStudio && $('#studioStudent').value) void launchStudio($('#studioStudent').value).catch(error => toast(errorMessage(error), true));
+  } else { $('#mainContent').focus({ preventScroll: true }); requestAnimationFrame(() => window.scrollTo({ top: scrollY, behavior: 'instant' })); }
 }
 function render() {
   clearCalendarDrag();
@@ -360,17 +365,24 @@ function auditLabel(action) { return ({ 'student.create': '학생 등록', 'stud
 function renderSettings() {
   return `${heading('WORKSPACE SETTINGS', '설정', '계정 권한과 서비스 연결 상태를 확인합니다.')}<div class="settings-grid"><section class="panel"><div class="panel-header"><h2>내 계정</h2>${icon('lock')}</div><div class="panel-body"><div class="detail-grid">${detailItem('이름', S.session.staff.name)}${detailItem('역할', roles[S.session.staff.role])}${detailItem('로그인 이메일', S.session.staff.email)}${detailItem('현재 지점', S.data.branch?.name)}</div><div class="card-actions">${button('로그아웃', 'logout', '', 'secondary')}</div></div></section><section class="panel"><div class="panel-header"><h2>연결 상태</h2></div><div class="panel-body"><div class="setting-row"><div><strong>운영 데이터 서버</strong><p>지점별 권한으로 학생과 수업을 불러옵니다.</p></div>${badge(preview ? '로컬 미리보기' : '연결됨', preview ? 'amber' : 'green')}</div><div class="setting-row"><div><strong>Google 로그인</strong><p>승인된 초대 계정만 서비스에 접근합니다.</p></div>${badge(config.providers?.google === false ? '연결 준비' : '사용 가능', config.providers?.google === false ? 'amber' : 'green')}</div><div class="setting-row"><div><strong>Apple 로그인</strong><p>Apple 계정 연결 설정이 필요합니다.</p></div>${badge(config.providers?.apple ? '사용 가능' : '연결 준비', config.providers?.apple ? 'green' : 'amber')}</div><div class="setting-row"><div><strong>FirstPay 결제·알림</strong><p>요청별 발송 상태와 실제 납부 상태를 구분합니다.</p></div>${badge('결제 요청에서 확인', 'purple')}</div></div></section><section class="panel"><div class="panel-header"><h2>학생 정보와 동의</h2></div><div class="panel-body"><div class="setting-row"><div><strong>학생별 이용 동의</strong><p>서비스 이용, 음성 활용, 알림, 보호자 동의를 구분해 기록합니다.</p></div></div><div class="setting-row"><div><strong>기록 연결</strong><p>동명이인은 별도 학생으로 관리합니다. 검사 전에 선택한 학생을 확인해 주세요.</p></div></div><div class="setting-row"><div><strong>권한 분리</strong><p>강사는 담당 학생과 수업을 관리하며, 지점 관리자는 배정된 지점을 관리합니다.</p></div></div></div></section><section class="panel"><div class="panel-header"><h2>수업과 결제 운영 기준</h2></div><div class="panel-body"><ul class="plain-list"><li>QR 출석 확인<small>횟수 차감 없음</small></li><li>강사의 수업 완료<small>수강권 1회 차감</small></li><li>4회 수업 완료<small>다음 결제 요청 생성</small></li><li>실제 납부 확인<small>다음 4회권 발급</small></li></ul></div></section></div>`;
 }
-function renderStudio() { const previous = $('#studioStudent').value; $('#studioStudent').innerHTML = studentOptions(previous); }
-async function launchStudio(studentId) {
+function renderStudio() {
+  const available = students().filter(student => student.active !== false && student.consent?.service === true && student.consent?.voice === true);
+  const previous = $('#studioStudent').value;
+  const selected = available.some(student => student.id === previous) ? previous : available.length === 1 ? available[0].id : '';
+  $('#studioStudent').innerHTML = studentOptions(selected); $('#studioStudent').value = selected;
+  $('#studioBack').textContent = '← 운영 화면으로'; $('#studioStudent').setAttribute('aria-label', '코칭할 학생 선택');
+  $('#studioLaunch').textContent = '스튜디오 열기';
+}
+async function launchStudio(studentId, { reload = false } = {}) {
   const student = studentBy(studentId); if (!student) return toast('먼저 검사할 학생을 선택해 주세요.', true);
-  if (!student.consent?.voice) return toast('학생 정보에서 음성 녹음·분석 활용 동의를 먼저 확인해 주세요.', true);
+  if (student.active === false || student.consent?.service !== true || student.consent?.voice !== true) return toast('활성 학생의 개인정보·음성 녹음 동의를 먼저 확인해 주세요.', true);
   if (S.page !== 'studio') {
     saveView(); const returnTo = { page: S.page, branchId: S.branchId, studentId, showDetail: $('#modal').open, hqStudent: S.modalRoute?.type === 'hq-student', views: structuredClone(S.pageState) };
     closeModal(); if (student.branchId && student.branchId !== S.branchId) await changeBranch(student.branchId);
     S.studioReturn = returnTo;
   }
-  navigate('studio'); $('#studioStudent').value = student.id;
-  window.dispatchEvent(new CustomEvent('tv:open-studio', { detail: { student, branchId: student.branchId || S.branchId } }));
+  navigate('studio', { openStudio: false }); $('#studioStudent').value = student.id;
+  window.dispatchEvent(new CustomEvent('tv:open-studio', { detail: { student, branchId: student.branchId || S.branchId, reload } }));
 }
 async function returnFromStudio() {
   const previous = S.studioReturn; if (!previous) return navigate('today');
@@ -644,7 +656,8 @@ function setPendingMode(mode) { document.querySelectorAll('[data-pending-mode]')
 document.querySelectorAll('[data-pending-mode]').forEach(button => button.addEventListener('click', () => setPendingMode(button.dataset.pendingMode)));
 $('#previewApplicant').addEventListener('click', async () => { if (!preview) return; setPendingMode('branch'); const { setPreviewRole } = await import('./auth.js'); await setPreviewRole('applicant'); });
 $('#pendingPreviewBack').addEventListener('click', async () => { if (!preview) return; const { setPreviewRole } = await import('./auth.js'); await setPreviewRole('owner'); });
-$('#studioLaunch').addEventListener('click', () => launchStudio($('#studioStudent').value).catch(error => toast(errorMessage(error), true)));
+$('#studioLaunch').addEventListener('click', () => launchStudio($('#studioStudent').value, { reload: true }).catch(error => toast(errorMessage(error), true)));
+window.addEventListener('tv:studio-select', event => { if (event.detail?.studentId) void launchStudio(event.detail.studentId).catch(error => toast(errorMessage(error), true)); });
 window.addEventListener('tv:data-refresh', () => { if (S.session) refresh({ quiet: true }); });
 $('#mainContent').addEventListener('dragstart', handleCalendarDragStart);
 $('#mainContent').addEventListener('dragover', handleCalendarDragOver);
