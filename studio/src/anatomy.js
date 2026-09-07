@@ -445,6 +445,9 @@ export class AnatomyView {
 
   frame(now) {
     if (this.disposed) return;
+    if(document.hidden||document.body.dataset.suspended==='true'||document.body.dataset.tab!=='studio'){
+      this.lastFrame=now;this.frameId=requestAnimationFrame(this.frame);return;
+    }
     const dt = Math.min(.06, Math.max(0, (now - this.lastFrame) / 1000));
     this.lastFrame = now;
     const smooth = 1 - Math.exp(-dt * 15);
