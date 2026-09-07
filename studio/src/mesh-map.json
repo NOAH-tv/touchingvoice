@@ -1,0 +1,399 @@
+{
+  "source": "assets/Vocal_01.glb",
+  "sourceSHA256": "7fe03334bb3586591166e4701d456ca1d4d783e83c87ca7dc239315ae2add6b2",
+  "note": "발성기관 활동의 실측값이 아닌 개인 튜닝 기반 시각 반응입니다. 동일 topology 상태만 보간합니다. 결합 점막의 영역 분할은 UI 표현 기준입니다.",
+  "meshCount": 91,
+  "sceneMeshes": 45,
+  "renderedMeshes": 46,
+  "morphPairs": 33,
+  "compatibleStates": 35,
+  "layers": {
+    "nas": 8,
+    "oro": 5,
+    "aes": 9,
+    "src": 24
+  },
+  "meshMapping": [
+    {
+      "name": "Arytenoid_Cartilage_L_Orig",
+      "layer": "src",
+      "structureId": "arytenoid-cartilage",
+      "response": "color highlight only",
+      "state": null
+    },
+    {
+      "name": "Arytenoid_Cartilage_R_Orig",
+      "layer": "src",
+      "structureId": "arytenoid-cartilage",
+      "response": "authored-state morph",
+      "state": "Arytenoid_Cartilage_R1"
+    },
+    {
+      "name": "Conus_Elasticus_L_Static",
+      "layer": "src",
+      "structureId": "conus-elasticus",
+      "response": "color highlight only",
+      "state": null
+    },
+    {
+      "name": "Conus_Elasticus_R_Static",
+      "layer": "src",
+      "structureId": "conus-elasticus",
+      "response": "color highlight only",
+      "state": null
+    },
+    {
+      "name": "Cricoid_Cartilage_Orig",
+      "layer": "src",
+      "structureId": "cricoid-cartilage",
+      "response": "authored-state morph",
+      "state": "Cricoid_Cartilage_1"
+    },
+    {
+      "name": "Epiglottic_Cartilage_Static",
+      "layer": "aes",
+      "structureId": "epiglottic-cartilage",
+      "response": "color highlight only",
+      "state": null
+    },
+    {
+      "name": "LateralCricoarytenoid_Muscle_L_Orig",
+      "layer": "src",
+      "structureId": "lateral-cricoarytenoid",
+      "response": "authored-state morph",
+      "state": "LateralCricoarytenoid_Muscle_L1"
+    },
+    {
+      "name": "LateralCricoarytenoid_Muscle_R_Orig",
+      "layer": "src",
+      "structureId": "lateral-cricoarytenoid",
+      "response": "authored-state morph",
+      "state": "LateralCricoarytenoid_Muscle_R1"
+    },
+    {
+      "name": "LateralWallOfNasalCavity_Static",
+      "layer": "nas",
+      "structureId": "nasal-wall",
+      "response": "color highlight only",
+      "state": null
+    },
+    {
+      "name": "LevatorVeliPalatini_L_Orig",
+      "layer": "nas",
+      "structureId": "levator-veli-palatini",
+      "response": "authored-state morph",
+      "state": "LevatorVeliPalatini_L1"
+    },
+    {
+      "name": "LevatorVeliPalatini_R_Orig",
+      "layer": "nas",
+      "structureId": "levator-veli-palatini",
+      "response": "authored-state morph",
+      "state": "LevatorVeliPalatini_R1"
+    },
+    {
+      "name": "MedianCricothyroid_Ligament_Static",
+      "layer": "src",
+      "structureId": "median-cricothyroid-ligament",
+      "response": "color highlight only",
+      "state": null
+    },
+    {
+      "name": "MiddlePharyngealConstrictor_L_Orig",
+      "layer": "oro",
+      "structureId": "middle-constrictor",
+      "response": "authored-state morph",
+      "state": "MiddlePharyngealConstrictor_L1"
+    },
+    {
+      "name": "MiddlePharyngealConstrictor_R_Orig",
+      "layer": "oro",
+      "structureId": "middle-constrictor",
+      "response": "authored-state morph",
+      "state": "MiddlePharyngealConstrictor_R1"
+    },
+    {
+      "name": "MuscosaOfLaryngopharynx_Back_Orig",
+      "layer": "aes",
+      "structureId": "laryngopharyngeal-mucosa",
+      "response": "authored-state morph",
+      "state": "MuscosaOfLaryngopharynx_Back1"
+    },
+    {
+      "name": "MuscosaOfLaryngopharynx_Front_Orig",
+      "layer": "aes",
+      "structureId": "laryngopharyngeal-mucosa",
+      "response": "color highlight only",
+      "state": null
+    },
+    {
+      "name": "MuscosaOfNasopharynxAndOropharynx_Orig_nas",
+      "layer": "nas",
+      "structureId": "nas-mucosa",
+      "response": "authored-state morph",
+      "state": "MuscosaOfNasopharynxAndOropharynx1"
+    },
+    {
+      "name": "MuscosaOfNasopharynxAndOropharynx_Orig_oro",
+      "layer": "oro",
+      "structureId": "oro-mucosa",
+      "response": "authored-state morph",
+      "state": "MuscosaOfNasopharynxAndOropharynx2"
+    },
+    {
+      "name": "ObliqueArytenoid_Muscle_L_Orig",
+      "layer": "src",
+      "structureId": "oblique-arytenoid",
+      "response": "authored-state morph",
+      "state": "ObliqueArytenoid_Muscle_L1"
+    },
+    {
+      "name": "ObliqueArytenoid_Muscle_R_Orig",
+      "layer": "src",
+      "structureId": "oblique-arytenoid",
+      "response": "authored-state morph",
+      "state": "ObliqueArytenoid_Muscle_R1"
+    },
+    {
+      "name": "ObliquePartOfCricothyroid_Muscle_L_Orig",
+      "layer": "src",
+      "structureId": "oblique-cricothyroid",
+      "response": "authored-state morph",
+      "state": "ObliquePartOfCricothyroid_Muscle_L1"
+    },
+    {
+      "name": "ObliquePartOfCricothyroid_Muscle_R_Orig",
+      "layer": "src",
+      "structureId": "oblique-cricothyroid",
+      "response": "color highlight only",
+      "state": null
+    },
+    {
+      "name": "Palatopharyngeus_Muscle_L_Orig",
+      "layer": "oro",
+      "structureId": "palatopharyngeus",
+      "response": "authored-state morph",
+      "state": "Palatopharyngeus_Muscle_L2"
+    },
+    {
+      "name": "Palatopharyngeus_Muscle_R_Orig",
+      "layer": "oro",
+      "structureId": "palatopharyngeus",
+      "response": "authored-state morph",
+      "state": "Palatopharyngeus_Muscle_R1"
+    },
+    {
+      "name": "Posterior_Cricoarytenoid_Muscle_L_Orig",
+      "layer": "src",
+      "structureId": "posterior-cricoarytenoid",
+      "response": "authored-state morph",
+      "state": "Posterior_Cricoarytenoid_Muscle_L1"
+    },
+    {
+      "name": "Posterior_Cricoarytenoid_Muscle_R_Orig",
+      "layer": "src",
+      "structureId": "posterior-cricoarytenoid",
+      "response": "authored-state morph",
+      "state": "Posterior_Cricoarytenoid_Muscle_R1"
+    },
+    {
+      "name": "StraightPartOfCricothyroid_Muscle_L_Orig",
+      "layer": "src",
+      "structureId": "straight-cricothyroid",
+      "response": "authored-state morph",
+      "state": "StraightPartOfCricothyroid_Muscle_L1"
+    },
+    {
+      "name": "StraightPartOfCricothyroid_Muscle_R_Orig",
+      "layer": "src",
+      "structureId": "straight-cricothyroid",
+      "response": "color highlight only",
+      "state": null
+    },
+    {
+      "name": "SuperiorPharyngealConstrictor_L_Orig",
+      "layer": "nas",
+      "structureId": "superior-constrictor",
+      "response": "authored-state morph",
+      "state": "SuperiorPharyngealConstrictor_L1"
+    },
+    {
+      "name": "SuperiorPharyngealConstrictor_R_Orig",
+      "layer": "nas",
+      "structureId": "superior-constrictor",
+      "response": "authored-state morph",
+      "state": "SuperiorPharyngealConstrictor_R1"
+    },
+    {
+      "name": "TensorVeliPalatini_L_Orig",
+      "layer": "nas",
+      "structureId": "tensor-veli-palatini",
+      "response": "authored-state morph",
+      "state": "TensorVeliPalatini_L1"
+    },
+    {
+      "name": "TensorVeliPalatini_R_Orig",
+      "layer": "nas",
+      "structureId": "tensor-veli-palatini",
+      "response": "authored-state morph",
+      "state": "TensorVeliPalatini_R1"
+    },
+    {
+      "name": "Thyroarytenoid_Muscle_L_Orig",
+      "layer": "src",
+      "structureId": "thyroarytenoid",
+      "response": "authored-state morph",
+      "state": "Thyroarytenoid_Muscle_L1"
+    },
+    {
+      "name": "Thyroarytenoid_Muscle_R_Orig",
+      "layer": "src",
+      "structureId": "thyroarytenoid",
+      "response": "authored-state morph",
+      "state": "Thyroarytenoid_Muscle_R1"
+    },
+    {
+      "name": "ThyroepiglotticPartOfThyroarytenoid_Muscle_L_Orig",
+      "layer": "aes",
+      "structureId": "thyroepiglottic",
+      "response": "color highlight only",
+      "state": null
+    },
+    {
+      "name": "ThyroepiglotticPartOfThyroarytenoid_Muscle_R_Orig",
+      "layer": "aes",
+      "structureId": "thyroepiglottic",
+      "response": "authored-state morph",
+      "state": "ThyroepiglotticPartOfThyroarytenoid_Muscle_R1"
+    },
+    {
+      "name": "Thyroid_Cartilage_Orig",
+      "layer": "src",
+      "structureId": "thyroid-cartilage",
+      "response": "authored-state morph",
+      "state": "Thyroid_Cartilage_1"
+    },
+    {
+      "name": "ThyropharyngealConstrictor_L_Orig",
+      "layer": "aes",
+      "structureId": "thyropharyngeal",
+      "response": "authored-state morph",
+      "state": "ThyropharyngealConstrictor_L1"
+    },
+    {
+      "name": "ThyropharyngealConstrictor_R_Orig",
+      "layer": "aes",
+      "structureId": "thyropharyngeal",
+      "response": "color highlight only",
+      "state": null
+    },
+    {
+      "name": "TransverseArytenoid_Muscle_Orig",
+      "layer": "src",
+      "structureId": "transverse-arytenoid",
+      "response": "authored-state morph",
+      "state": "TransverseArytenoid_Muscle1"
+    },
+    {
+      "name": "Vestibular_Ligament_L_Orig",
+      "layer": "aes",
+      "structureId": "vestibular-ligament",
+      "response": "color highlight only",
+      "state": null
+    },
+    {
+      "name": "Vestibular_Ligament_R_Orig",
+      "layer": "aes",
+      "structureId": "vestibular-ligament",
+      "response": "authored-state morph",
+      "state": "Vestibular_Ligament_R1"
+    },
+    {
+      "name": "Vocal_Ligament_L_Orig",
+      "layer": "src",
+      "structureId": "vocal-ligament",
+      "response": "color highlight only",
+      "state": null
+    },
+    {
+      "name": "Vocal_Ligament_R_Orig",
+      "layer": "src",
+      "structureId": "vocal-ligament",
+      "response": "authored-state morph",
+      "state": "Vocal_Ligament_R1"
+    },
+    {
+      "name": "Vocalis_Muscle_L_Orig",
+      "layer": "src",
+      "structureId": "vocalis",
+      "response": "authored-state morph",
+      "state": "Vocalis_Muscle_L1"
+    },
+    {
+      "name": "Vocalis_Muscle_R_Orig",
+      "layer": "src",
+      "structureId": "vocalis",
+      "response": "authored-state morph",
+      "state": "Vocalis_Muscle_R1"
+    }
+  ],
+  "excludedStates": [
+    {
+      "original": "Arytenoid_Cartilage_L_Orig",
+      "state": "Arytenoid_Cartilage_L1",
+      "reason": "Different vertex/index topology; not morphed"
+    },
+    {
+      "original": "MuscosaOfLaryngopharynx_Front_Orig",
+      "state": "MuscosaOfLaryngopharynx_Front1",
+      "reason": "Different vertex/index topology; not morphed"
+    },
+    {
+      "original": "MuscosaOfLaryngopharynx_Front_Orig",
+      "state": "MuscosaOfLaryngopharynx_Front2",
+      "reason": "Different vertex/index topology; not morphed"
+    },
+    {
+      "original": "MuscosaOfLaryngopharynx_Front_Orig",
+      "state": "MuscosaOfLaryngopharynx_Front3",
+      "reason": "Different vertex/index topology; not morphed"
+    },
+    {
+      "original": "ObliquePartOfCricothyroid_Muscle_R_Orig",
+      "state": "ObliquePartOfCricothyroid_Muscle_R1",
+      "reason": "Different vertex/index topology; not morphed"
+    },
+    {
+      "original": "Palatopharyngeus_Muscle_L_Orig",
+      "state": "Palatopharyngeus_Muscle_L1",
+      "reason": "Different vertex/index topology; not morphed"
+    },
+    {
+      "original": "StraightPartOfCricothyroid_Muscle_R_Orig",
+      "state": "StraightPartOfCricothyroid_Muscle_R1",
+      "reason": "Different vertex/index topology; not morphed"
+    },
+    {
+      "original": "ThyroepiglotticPartOfThyroarytenoid_Muscle_L_Orig",
+      "state": "ThyroepiglotticPartOfThyroarytenoid_Muscle_L1",
+      "reason": "Different vertex/index topology; not morphed"
+    },
+    {
+      "original": "ThyropharyngealConstrictor_R_Orig",
+      "state": "ThyropharyngealConstrictor_R1",
+      "reason": "Different vertex/index topology; not morphed"
+    },
+    {
+      "original": "Vestibular_Ligament_L_Orig",
+      "state": "Vestibular_Ligament_L1",
+      "reason": "Different vertex/index topology; not morphed"
+    },
+    {
+      "original": "Vocal_Ligament_L_Orig",
+      "state": "Vocal_Ligament_L1",
+      "reason": "Different vertex/index topology; not morphed"
+    }
+  ],
+  "mapping": "Artist-calibrated visual response; authored shape interpolation, not direct physiological measurement",
+  "regionSplit": "Combined naso/oropharynx display partition at original local Z = -15.5"
+}

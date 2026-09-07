@@ -1,0 +1,127 @@
+{
+  "version": 1,
+  "updated": "2026-09-04",
+  "base": "트랙/",
+  "tracks": [
+    {
+      "id": "scale-5tone-ascending",
+      "category": "보컬 트레이닝",
+      "path": "scale_5tone_ascending",
+      "info": "트랙정보.json",
+      "midi": "scale_5tone_ascending.mid",
+      "audio": ["scale_5tone_ascending.mp3"]
+    },
+    {
+      "id": "scale-5tone-descending-male",
+      "category": "보컬 트레이닝",
+      "path": "scale_5tone_descending_male",
+      "info": "트랙정보.json",
+      "midi": "scale_5tone_descending_male.mid",
+      "audio": ["scale_5tone_descending_male.mp3"]
+    },
+    {
+      "id": "scale-1358-short-male",
+      "category": "보컬 트레이닝",
+      "path": "scale_1358_short_male",
+      "info": "트랙정보.json",
+      "midi": "scale_1358_short_male.mid",
+      "audio": ["scale_1358_short_male.mp3"]
+    },
+    {
+      "id": "scale-1358-long-male",
+      "category": "보컬 트레이닝",
+      "path": "scale_1358_long_male",
+      "info": "트랙정보.json",
+      "midi": "scale_1358_long_male.mid",
+      "audio": ["scale_1358_long_male.mp3"]
+    },
+    {
+      "id": "vocal-chord-step-up-male",
+      "category": "보컬 트레이닝",
+      "path": "vocal_chord_step_up_male",
+      "info": "트랙정보.json",
+      "midi": "vocal_chord_step_up_male.mid",
+      "audio": ["vocal_chord_step_up_male.mp3"]
+    },
+    {
+      "id": "breath-foundation-basic",
+      "category": "보컬 트레이닝",
+      "path": "breath foundation_basic",
+      "info": "트랙정보.json",
+      "midi": "breath foundation_basic.mid",
+      "audio": ["breath foundation_basic.mp3"]
+    },
+    {
+      "id": "breath-foundation-hold",
+      "category": "보컬 트레이닝",
+      "path": "breath foundation_hold",
+      "info": "트랙정보.json",
+      "midi": "breath foundation_hold.mid",
+      "audio": ["breath foundation_hold.mp3"]
+    },
+    {
+      "id": "stage-01-dorian",
+      "category": "Stage Mission",
+      "path": "Stage Mission/01 Dorian",
+      "info": "트랙정보.json",
+      "midi": "Dorian Scale.mid",
+      "audio": ["Dorian Track.mp3"]
+    },
+    {
+      "id": "stage-02-mixo-lydian",
+      "category": "Stage Mission",
+      "path": "Stage Mission/02 Mixo-Lydian",
+      "info": "트랙정보.json",
+      "midi": "Mixo-Lydian scale.mid",
+      "audio": ["Mixo-Lydian Track.mp3"]
+    },
+    {
+      "id": "stage-04-lydian",
+      "category": "Stage Mission",
+      "path": "Stage Mission/04 Lydian",
+      "info": "트랙정보.json",
+      "midi": "Lydian Scale.mid",
+      "audio": ["Lydian Track.mp3"]
+    },
+    {
+      "id": "stage-05-aeolian",
+      "category": "Stage Mission",
+      "path": "Stage Mission/05 Aeolian",
+      "info": "트랙정보.json",
+      "midi": "Aeolian Scale.mid",
+      "audio": ["Aeolian Track.mp3"]
+    },
+    {
+      "id": "stage-06-phrygian",
+      "category": "Stage Mission",
+      "path": "Stage Mission/06 Flygian",
+      "info": "트랙정보.json",
+      "midi": "flygian Scale.mid",
+      "audio": ["flygian Track.mp3"]
+    },
+    {
+      "id": "stage-07-locrian",
+      "category": "Stage Mission",
+      "path": "Stage Mission/07 Locrian",
+      "info": "트랙정보.json",
+      "midi": "Locrian Scale.mid",
+      "audio": ["Locrian Track.mp3"]
+    },
+    {
+      "id": "stage-08-pentatonic",
+      "category": "Stage Mission",
+      "path": "Stage Mission/08 Pentatonic",
+      "info": "트랙정보.json",
+      "midi": "Pentatonic Scale.mid",
+      "audio": ["Pentatonic Track.mp3"]
+    },
+    {
+      "id": "stage-09-blues",
+      "category": "Stage Mission",
+      "path": "Stage Mission/09 Bluse",
+      "info": "트랙정보.json",
+      "midi": "Bluse Scale.mid",
+      "audio": ["Bluse Track.mp3"]
+    }
+  ]
+}

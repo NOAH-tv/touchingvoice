@@ -1,0 +1,32 @@
+import { uid } from './storage.js';
+/** Sequential full-file jobs keep immutable member ownership and preserve source files. */
+export class FileAnalysisService {
+  constructor({persist,onChange=()=>{},workerFactory=()=>new Worker(new URL('./file-analysis-worker.js',import.meta.url),{type:'module'}),decode=decodeFile}={}){this.persist=persist;this.onChange=onChange;this.workerFactory=workerFactory;this.decode=decode;this.jobs=[];this.running=false;}
+  enqueue(entry){const same=this.jobs.find(j=>j.entry.id===entry.id&&['queued','decoding','analyzing','saving'].includes(j.status));if(same)return same.promise;let resolve;const job={id:uid(),entry,owner:structuredClone({profileId:entry.profileId,profile:entry.profile,refs:entry.refs}),status:'queued',progress:0,cancelled:false,promise:new Promise(r=>{resolve=r;}),resolve:null};job.resolve=resolve;this.jobs.push(job);this.changed();void this.pump();return job.promise;}
+  changed(){this.onChange(this.jobs);}
+  cancel(id){const job=this.jobs.find(j=>j.id===id);if(!job||['complete','error','cancelled','saving'].includes(job.status))return;job.cancelled=true;job.abort?.();this.changed();}
+  async pump(){if(this.running)return;this.running=true;try{for(const job of this.jobs){if(job.status!=='queued')continue;try{
+    if(job.cancelled)throw new Error('분석을 취소했습니다.');job.status='decoding';this.changed();const decoded=await this.decode(job.entry.blob);if(job.cancelled)throw new Error('분석을 취소했습니다.');
+    job.status='analyzing';this.changed();const result=await this.compute(job,decoded);
+    if(job.cancelled)throw new Error('분석을 취소했습니다.');job.status='saving';job.progress=1;this.changed();
+    const dataset=result.dataset;const datasetBlob=new Blob([dataset.values],{type:'application/octet-stream'});const {values,...datasetMeta}=dataset;
+    const analysisVersion=result.dataset.analysisVersion??result.version;
+    const report={...result,analysisVersion,dataset:{...datasetMeta,encoding:'float32-le',missingValue:'NaN',byteLength:datasetBlob.size},source:{fileName:job.entry.sourceFileName||job.entry.name,mimeType:job.entry.blob.type,size:job.entry.blob.size,sha256:decoded.sha256},channelPolicy:decoded.channelPolicy,decodedChannels:decoded.channels,analyzedAt:new Date().toISOString()};
+    const prior=job.entry.voiceMetrics;Object.assign(job.entry,{duration:result.duration,profile:job.owner.profile,profileId:job.owner.profileId,refs:job.owner.refs,liveVoiceMetrics:job.entry.liveVoiceMetrics||prior,voiceMetrics:{...result.voiceMetrics,analysisMethod:`offline-full-file-v${analysisVersion}`},fileAnalysis:report,datasetBlob,analysisStatus:'complete',analysisError:null,saving:true});
+    await this.persist({...job.entry,saving:false,unsaved:false});job.entry.saving=false;job.entry.unsaved=false;job.status='complete';job.resolve(job.entry);
+  }catch(error){job.status=job.cancelled?'cancelled':'error';job.error=error?.message||'분석하지 못했습니다.';Object.assign(job.entry,structuredClone(job.owner));job.entry.saving=false;job.entry.analysisStatus=job.status;job.entry.analysisError=job.error;try{await this.persist({...job.entry,unsaved:false});job.entry.unsaved=false;}catch{job.entry.unsaved=true;}job.resolve(null);}finally{job.worker?.terminate();job.worker=null;job.abort=null;this.changed();}}}finally{this.running=false;}}
+  compute(job,decoded){return new Promise((resolve,reject)=>{const worker=this.workerFactory();job.worker=worker;job.abort=()=>{worker.terminate();reject(new Error('분석을 취소했습니다.'));};worker.onerror=e=>reject(new Error(e.message||'파일 분석 엔진을 실행하지 못했습니다.'));worker.onmessage=e=>{const m=e.data;if(m?.id!==job.id)return;if(m.type==='progress'){job.progress=m.progress;this.changed();}if(m.type==='error')reject(new Error(m.message||m.error||'파일 분석에 실패했습니다.'));if(m.type==='result')resolve(m.result);};worker.postMessage({type:'analyze',id:job.id,pcm:decoded.pcm,sampleRate:decoded.sampleRate,profile:job.owner.profile,profileId:job.owner.profileId},[decoded.pcm.buffer]);});}
+  get active(){return this.jobs.some(j=>['queued','decoding','analyzing','saving'].includes(j.status));}
+}
+export async function decodeFile(blob){
+  if(!blob?.size)throw new Error('분석할 음성 파일이 비어 있습니다.');if(blob.size>150*1024*1024)throw new Error('150 MB 이하의 음성 파일을 선택해 주세요.');
+  const bytes=await blob.arrayBuffer(),hash=globalThis.crypto?.subtle?await crypto.subtle.digest('SHA-256',bytes):null;
+  const Ctor=globalThis.OfflineAudioContext||globalThis.webkitOfflineAudioContext;if(!Ctor)throw new Error('이 브라우저는 파일 일괄 분석을 지원하지 않습니다.');
+  // Decode without speakers, microphone permission or a realtime playback clock.
+  const context=new Ctor(1,1,48000);let buffer;try{buffer=await context.decodeAudioData(bytes);}catch{throw new Error('음성 파일을 읽지 못했습니다. WAV·MP3·M4A 등 지원되는 파일을 선택해 주세요.');}
+  const channels=buffer.numberOfChannels,length=buffer.length;if(!length)throw new Error('재생 가능한 음성이 없습니다.');const pcm=new Float32Array(length);
+  for(let ch=0;ch<channels;ch++){const data=buffer.getChannelData(ch);for(let i=0;i<length;i++)pcm[i]+=data[i]/channels;}
+  return {pcm,sampleRate:buffer.sampleRate,channels,channelPolicy:channels===1?'mono':'arithmetic-average-downmix',sha256:hash?[...new Uint8Array(hash)].map(v=>v.toString(16).padStart(2,'0')).join(''):null};
+}
+export function analysisJson(entry){const {datasetBlob,blob,saving,unsaved,...metadata}=entry;return {format:'touchingvoice-analysis-dataset',version:1,...metadata,sourceAudio:{fileName:entry.sourceFileName||entry.name,mimeType:blob?.type,bytes:blob?.size},frameDataFile:`analysis-${entry.id}-frames.csv`};}
+export async function datasetCsv(entry){const meta=entry.fileAnalysis?.dataset;if(!meta||!entry.datasetBlob)throw new Error('저장된 프레임 데이터가 없습니다.');const values=new Float32Array(await entry.datasetBlob.arrayBuffer()),columns=meta.columns.map(c=>typeof c==='string'?c:c.key),width=columns.length;const escaped=v=>'"'+String(v??'').replaceAll('"','""')+'"';const prefix=['session_id','profile_id','source_sha256','analysis_version'];const identity=[entry.id,entry.profileId,entry.fileAnalysis.source.sha256,`offline-full-file-v${entry.fileAnalysis.analysisVersion??entry.fileAnalysis.dataset.analysisVersion}`].map(escaped).join(',');const chunks=[prefix.concat(columns).map(escaped).join(',')+'\n'];for(let row=0;row<meta.rowCount;row++){const cells=[];for(let c=0;c<width;c++){const value=values[row*width+c];cells.push(Number.isFinite(value)?Number(value.toPrecision(8)).toString():'');}chunks.push(identity+','+cells.join(',')+'\n');}return new Blob(chunks,{type:'text/csv;charset=utf-8'});}

@@ -1,0 +1,173 @@
+/* The 3D tab is one continuous stage. Its controls float above the canvas. */
+body[data-tab=studio]{height:100dvh;overflow:hidden}
+body[data-tab=studio] .app-shell{height:100dvh;display:block;overflow:hidden}
+body[data-tab=studio] .topbar,body[data-tab=studio] #audioDock,body[data-tab=studio] .page-footer{display:none!important}
+body[data-tab=studio] main{position:relative;width:100%;height:100%;max-width:none;margin:0;padding:0;display:block;overflow:hidden}
+body[data-tab=studio] .workspace,body[data-tab=studio] .visual-column{display:block;width:100%;height:100%;min-height:0;overflow:hidden}
+body[data-tab=studio] .anatomy-card{width:100%;height:100%;min-height:0;margin:0;border:0;border-radius:0;background:radial-gradient(ellipse at 55% 46%,#41216155,transparent 65%),linear-gradient(#ad81ef07 1px,transparent 1px),linear-gradient(90deg,#ad81ef07 1px,transparent 1px),#0b0714;background-size:auto,64px 64px,64px 64px,auto}
+body[data-tab=studio] #anatomyViewport,body[data-tab=studio][data-structure-open=true] #anatomyViewport{inset:0;min-height:0}
+body[data-tab=studio] .model-loading{inset:0}
+body[data-tab=studio] .page-heading{position:absolute;top:24px;right:28px;left:auto;bottom:auto;width:auto;height:auto;z-index:12;margin:0;display:block;pointer-events:none}
+body[data-tab=studio] .page-heading>div:first-child{display:none}
+body[data-tab=studio] .profile-picker{pointer-events:auto;width:260px;min-width:0;max-width:260px;min-height:52px;margin:0;padding:9px 14px;border:1px solid #b995ff30;border-radius:10px;background:#160d23bd;backdrop-filter:blur(16px)}
+body[data-tab=studio] .profile-picker .profile-avatar,body[data-tab=studio] #headerNewClientBtn,body[data-tab=studio] #saveProfileBtn{display:none}
+body[data-tab=studio] .profile-picker label{min-width:0;width:100%}
+body[data-tab=studio] .profile-picker label>span{font-size:10px;color:#a98bc0}
+body[data-tab=studio] .profile-picker select{width:100%;max-width:100%;font-size:13px;min-height:24px}
+body[data-tab=studio] .stage-top{top:28px;left:28px;right:auto;max-width:calc(100% - 340px);z-index:5;pointer-events:none}
+body[data-tab=studio] .stage-top .section-overline{display:block;font-size:9px;letter-spacing:2.3px;color:#a585bc;margin-bottom:8px}
+body[data-tab=studio] .stage-top h2{font-size:23px;font-weight:500;line-height:1.35;color:#ead7fa;letter-spacing:-.7px}
+body[data-tab=studio] #modelBadge{display:none}
+body[data-tab=studio] .stage-footnote{left:28px;right:auto;top:99px;bottom:auto;max-width:calc(100% - 50px);font-size:10px;color:#9c83b0}
+body[data-tab=studio] .stage-footnote span{display:none}
+body[data-tab=studio] .stage-legend{top:143px;left:28px;right:auto;bottom:auto;width:166px;gap:10px}
+body[data-tab=studio] .stage-legend button{width:100%;min-height:60px;background:#160e23b3;backdrop-filter:blur(16px);border-color:#b995ff30;border-radius:10px;padding:12px;gap:8px}
+body[data-tab=studio] .stage-legend button:hover,body[data-tab=studio] .stage-legend button.selected{border-color:color-mix(in srgb,var(--region) 70%,transparent);background:color-mix(in srgb,var(--region) 12%,#110a1ddb)}
+body[data-tab=studio] .stage-legend .region-row strong{font-size:13px;font-weight:500}
+/* Scope the fill separately from legacy legend dots, which use --c. */
+.stage-legend button .hud-meter{display:block;position:relative;flex:0 0 100%;width:100%;height:7px;padding:0;gap:0;overflow:hidden;border-radius:4px;background:#b995ff20}
+.stage-legend button .hud-meter>i{display:block;width:0;height:100%;min-width:0;max-width:100%;border-radius:inherit;background:var(--layer,var(--region));box-shadow:0 0 10px color-mix(in srgb,var(--layer,var(--region)) 55%,transparent);transition:width .08s linear}
+.stage-legend .region-arrow{transition:transform .18s}
+.stage-legend button[aria-expanded=true] .region-arrow{transform:rotate(90deg)}
+.structure-item>b::after{content:'+';float:right;margin-left:8px;color:#ba94da;font-size:15px;font-weight:400}
+.structure-item[aria-expanded=true]>b::after{content:'−'}
+.structure-item .structure-details{margin-top:8px}
+.region-control{position:relative;width:100%;min-width:0}
+.stage-legend .region-control>.visibility-button{position:absolute;left:calc(100% + 6px);top:50%;transform:translateY(-50%);display:flex;align-items:center;justify-content:center;width:30px;min-width:30px;height:36px;min-height:36px;padding:6px;gap:0;border-radius:8px;border:1px solid #b995ff28;background:#160e23de;color:#c4a3e0;box-shadow:none;cursor:pointer}
+.visibility-button svg{width:18px;height:18px;pointer-events:none}
+.stage-legend .region-control>.visibility-button[data-visibility=hidden]{color:#8e789f;background:#100b19;border-style:dashed}
+.stage-legend .region-control>.visibility-button[data-visibility=partial]{color:#f2c46e}
+.stage-legend .region-control>.visibility-button:hover{color:#eedbff;border-color:#c49cee;background:#382047}
+.visibility-button:focus-visible,.visibility-reset button:focus-visible{outline:2px solid #d3abff;outline-offset:3px}
+.region-control[data-visibility=hidden]>[data-region]{border-style:dashed}
+.region-control[data-visibility=hidden] .region-row strong{color:#917ba4}
+.stage-legend .visibility-reset{display:flex;flex-direction:column;gap:6px;align-items:stretch;padding-top:2px}
+.stage-legend .visibility-reset>button#showAllPartsBtn{display:block;width:100%;min-height:34px;padding:8px;font-size:11px;text-align:center;border-radius:8px;border:1px solid #b995ff38;background:#2e193f;color:#d9c1ed;cursor:pointer}
+.stage-legend .visibility-reset>button:disabled{opacity:.4;cursor:default}
+.stage-legend .visibility-reset>small{display:block;font-size:9px;line-height:1.5;text-align:center;color:#a88bbd}
+.structure-row{position:relative;flex:none;min-width:0}
+.structure-row>.structure-item{width:100%;padding-right:49px;min-height:62px}
+.structure-row>.visibility-button{position:absolute;right:9px;top:11px;display:flex;align-items:center;justify-content:center;width:31px;height:34px;padding:6px;border-radius:7px;border:1px solid #b995ff30;background:#1a1025;color:#c4a3e0;cursor:pointer}
+.structure-row[data-visibility=hidden]>.structure-item{border-style:dashed;background:#100b18}
+.structure-row[data-visibility=hidden]>.structure-item>b{color:#94829f}
+.structure-row>.visibility-button[data-visibility=hidden]{color:#8e789f;border-style:dashed}
+.structure-row>.visibility-button:hover{color:#eedbff;border-color:#c49cee;background:#382047}
+.structure-row>.structure-item .structure-details{margin-right:-35px}
+body[data-tab=studio] .anatomy-card #structurePanel{top:110px;bottom:104px;right:28px;left:auto;width:300px;max-width:calc(100% - 56px);max-height:none;background:#180e27e8;backdrop-filter:blur(18px);border:1px solid #b995ff38;border-radius:12px}
+.stage-mic{position:absolute;left:28px;bottom:30px;z-index:8;display:flex;flex-direction:column;align-items:flex-start;gap:9px}
+.stage-mic-button{display:inline-flex;align-items:center;justify-content:center;gap:11px;min-height:52px;min-width:176px;padding:13px 23px;border:1px solid #b892ff7a;border-radius:13px;background:linear-gradient(135deg,#7942bd,#4c2686);color:#f3e8ff;box-shadow:0 0 30px #a35eef23,inset 0 1px 0 #e5caff20;font:500 14px Paperlogy,sans-serif;cursor:pointer}
+.stage-mic-button svg{width:20px;height:20px;flex:none}
+.stage-mic-button:hover{border-color:#dfbeff;background:linear-gradient(135deg,#9158cc,#5b2f99);box-shadow:0 0 35px #b282ff38}
+.stage-mic-button[aria-pressed=true]{background:linear-gradient(135deg,#512473,#371652);border-color:#d6a5ee;color:#f0d5ff;box-shadow:0 0 30px #ac62de2b}
+.stage-mic-button:focus-visible{outline:2px solid #ead8ff;outline-offset:5px}
+.stage-mic-button:disabled{cursor:wait;opacity:.65}
+#stageMicState{font-size:11px;line-height:1.5;color:#a38ab8;margin-left:2px;max-width:280px}
+body[data-tab=studio] .stage-controls{left:auto;right:28px;bottom:47px;top:auto;transform:none;gap:8px}
+body[data-tab=studio] .stage-controls .segmented,body[data-tab=studio] .stage-controls>.button,body[data-tab=studio] .stage-controls>.icon-button{background:#160d23c7;backdrop-filter:blur(14px);border-color:#b995ff30}
+body[data-tab=studio] .core-bar{display:none!important}
+body[data-tab=studio][data-core-active=true] .stage-mic{display:none}
+body[data-tab=studio][data-core-active=true] .anatomy-card .core-bar{display:flex!important;left:28px;bottom:42px;max-width:calc(100% - 395px);padding:12px 15px;border:1px solid #c795e74d;border-radius:12px;background:#1d102ade}
+body[data-tab=studio] .core-hud{top:130px;left:28px;right:auto;transform:none;z-index:7}
+body[data-tab=studio][data-core-active=true] .stage-legend{top:191px}
+body[data-tab=studio] #toast{bottom:116px}
+@media(min-width:1000px) and (max-width:1200px){
+  body[data-tab=studio] .stage-controls{right:22px;gap:5px}
+  body[data-tab=studio] .stage-legend{width:145px;left:22px}
+  body[data-tab=studio] .anatomy-card #structurePanel{right:22px;width:270px}
+  body[data-tab=studio] .stage-mic{left:22px}
+  body[data-tab=studio] .stage-top{left:22px}
+}
+@media(max-width:999px){
+  body[data-tab=studio] .app-shell{height:calc(100dvh - 72px - env(safe-area-inset-bottom))}
+  body[data-tab=studio] .page-heading{top:22px;right:20px}
+  body[data-tab=studio] .profile-picker{width:220px;max-width:220px;min-height:48px;padding:8px 11px}
+  body[data-tab=studio] .profile-picker select{font-size:13px}
+  body[data-tab=studio] .stage-top{top:26px;left:20px;max-width:calc(100% - 270px)}
+  body[data-tab=studio] .stage-top h2{font-size:21px}
+  body[data-tab=studio] .stage-footnote{left:20px;top:93px}
+  body[data-tab=studio] .stage-legend{left:20px;top:132px;width:128px;gap:8px}
+  body[data-tab=studio] .stage-legend button{min-height:55px;padding:10px}
+  body[data-tab=studio] .anatomy-card #structurePanel{top:100px;bottom:143px;right:20px;width:270px;padding:15px;display:flex;flex-direction:column;overflow:hidden}
+  body[data-tab=studio] #structureList{flex:1;min-height:0;max-height:none;overflow-y:auto;overscroll-behavior:contain}
+  body[data-tab=studio] .stage-mic{left:20px;bottom:22px}
+  body[data-tab=studio] .stage-mic-button{min-height:48px;min-width:156px;font-size:13px;padding:12px 16px}
+  body[data-tab=studio] .stage-controls{right:20px;bottom:45px;gap:5px}
+  body[data-tab=studio] .stage-controls button{font-size:11px;min-height:36px}
+  body[data-tab=studio] .stage-controls .icon-button{width:36px;height:36px}
+  body[data-tab=studio] .core-hud{top:108px;left:20px}
+  body[data-tab=studio][data-core-active=true] .stage-legend{top:162px}
+  body[data-tab=studio][data-core-active=true] .anatomy-card .core-bar{left:20px;right:20px;bottom:98px;max-width:none}
+}
+@media(max-width:620px){
+  body[data-tab=studio] .page-heading{left:16px;right:16px;top:82px}
+  body[data-tab=studio] .profile-picker{width:100%;max-width:none;min-height:42px;padding:7px 12px}
+  body[data-tab=studio] .profile-picker label{display:flex;align-items:center;gap:12px}
+  body[data-tab=studio] .profile-picker label>span{white-space:nowrap;flex:none;font-size:9px}
+  body[data-tab=studio] .profile-picker select{min-width:0;flex:1;font-size:12px}
+  body[data-tab=studio] .stage-top{top:22px;left:18px;max-width:calc(100% - 36px)}
+  body[data-tab=studio] .stage-top h2{font-size:21px}
+  body[data-tab=studio] .stage-footnote{display:none}
+  body[data-tab=studio] .stage-legend{top:151px;left:16px;width:105px;gap:7px}
+  body[data-tab=studio] .stage-legend button{min-height:51px;padding:9px;gap:7px}
+  body[data-tab=studio] .stage-legend .region-row{gap:4px}
+  body[data-tab=studio] .stage-legend .region-row strong{font-size:12px}
+  body[data-tab=studio] .stage-legend .region-row b{font-size:10px}
+  body[data-tab=studio] .stage-legend .region-arrow{display:none}
+  body[data-tab=studio] .stage-mic{left:50%;bottom:70px;transform:translateX(-50%);align-items:center;gap:5px;width:max-content;max-width:calc(100% - 32px)}
+  body[data-tab=studio] .stage-mic-button{min-height:46px;min-width:174px;max-width:100%;font-size:12px}
+  body[data-tab=studio] #stageMicState{font-size:10px;margin:0}
+  body[data-tab=studio] .stage-controls{left:50%;right:auto;bottom:14px;transform:translateX(-50%);gap:6px;white-space:nowrap}
+  body[data-tab=studio] .stage-controls .segmented button{min-width:40px;padding:6px 8px}
+  body[data-tab=studio] .anatomy-card #structurePanel{left:16px;right:16px;top:146px;bottom:151px;width:auto;max-width:none;border-color:#c6a1f166;background:#190d2af5}
+  body[data-tab=studio] .core-hud{left:auto;right:16px;top:151px}
+  body[data-tab=studio][data-core-active=true] .stage-legend{top:151px}
+  body[data-tab=studio][data-core-active=true] .anatomy-card .core-bar{left:16px;right:16px;bottom:73px;max-width:none;padding:10px;gap:10px}
+  body[data-tab=studio] .core-copy{max-width:none}
+  body[data-tab=studio] #toast{bottom:206px}
+}
+
+/* Everyday controls follow left / centre / right positions. */
+.settings-nav{position:fixed;top:12px;right:24px;z-index:35;min-height:40px;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:9px 14px;border:1px solid #b995ff38;border-radius:10px;background:#1a0f28e8;color:#d8c3ea;font:500 12px Paperlogy,sans-serif;backdrop-filter:blur(16px);cursor:pointer}
+.settings-nav svg{display:block;width:19px;height:19px}
+.settings-nav:hover,.settings-nav[aria-current=page]{background:#59328c65;border-color:#c79af28c;color:#f0ddff}
+.settings-nav:focus-visible{outline:2px solid #dcb5ff;outline-offset:3px}
+.settings-nav:disabled{opacity:.45;cursor:default}
+body:not([data-tab=studio]) .topbar{padding-right:128px}
+body[data-tab=studio] .settings-nav{top:28px;right:28px;min-height:46px;padding:11px 15px}
+body[data-tab=studio] .page-heading{right:136px}
+body[data-tab=studio] .stage-top{max-width:calc(100% - 455px)}
+body[data-tab=studio] .stage-mic{left:auto;right:28px;bottom:40px;transform:none;align-items:flex-end;width:auto;max-width:calc(40% - 28px);gap:0}
+body[data-tab=studio] #stageMicState{position:absolute;top:calc(100% + 9px);right:0;width:max-content;max-width:min(290px,75vw);margin:0;text-align:right;font-size:10px;line-height:1.5}
+body[data-tab=studio] .stage-controls{left:50%;right:auto;bottom:40px;transform:translateX(-50%);gap:0}
+body[data-tab=studio] .stage-controls .segmented button{min-width:52px;min-height:42px;padding:8px 13px}
+.stage-tools{position:absolute;left:28px;bottom:40px;z-index:8;display:flex;align-items:center;gap:8px}
+.stage-tools .button,.stage-tools .icon-button{background:#160d23c7;border:1px solid #b995ff30;backdrop-filter:blur(14px);color:#cdb8e0;min-height:50px;border-radius:10px;font-size:12px}
+.stage-tools .button{padding:12px 16px;gap:8px}.stage-tools svg{width:18px;height:18px}.stage-tools .icon-button{width:48px;height:50px;padding:12px}
+.stage-tools .button:hover,.stage-tools .icon-button:hover{border-color:#c39aee99;background:#45265d80}.stage-tools .button[aria-pressed=true]{background:#734aab44;border-color:#bd92ec}
+body[data-tab=studio][data-core-active=true] .anatomy-card .core-bar{left:auto;right:28px;bottom:34px;max-width:calc(45% - 28px)}
+@media(max-width:999px){
+  .settings-nav{top:9px;right:16px;min-height:40px;padding:9px 12px}
+  body:not([data-tab=studio]) .topbar{padding-right:114px}
+  body[data-tab=studio] .settings-nav{top:24px;right:20px;min-height:44px}
+  body[data-tab=studio] .page-heading{right:123px}
+  body[data-tab=studio] .stage-top{max-width:calc(100% - 375px)}
+  body[data-tab=studio] .stage-mic{right:20px;bottom:38px;max-width:calc(36% - 20px)}
+  body[data-tab=studio] .stage-controls{left:50%;right:auto;bottom:38px;transform:translateX(-50%)}
+  body[data-tab=studio] .stage-controls .segmented button{min-width:44px;min-height:40px;font-size:12px;padding:7px 10px}
+  .stage-tools{left:20px;bottom:38px;gap:6px}.stage-tools .button{min-height:48px;padding:10px 12px;font-size:12px}.stage-tools .icon-button{width:40px;height:48px;min-height:48px;padding:9px}
+  body[data-tab=studio][data-core-active=true] .anatomy-card .core-bar{left:20px;right:20px;bottom:103px;max-width:none}
+}
+@media(max-width:620px){
+  body[data-tab=studio] .settings-nav{top:24px;right:16px;min-height:40px;padding:9px 11px;font-size:11px;gap:6px}
+  body[data-tab=studio] .page-heading{top:82px;left:16px;right:16px}
+  body[data-tab=studio] .stage-top{max-width:calc(100% - 135px)}
+  body[data-tab=studio] .stage-mic{left:auto;right:12px;bottom:36px;transform:none;max-width:32%;align-items:flex-end}
+  body[data-tab=studio] .stage-mic-button{min-width:0;min-height:44px;width:auto;max-width:100%;padding:10px 11px;font-size:11px;gap:6px;border-radius:10px;line-height:1.4}
+  body[data-tab=studio] .stage-mic-button svg{width:16px;height:16px}
+  body[data-tab=studio] #stageMicState{font-size:9px;top:calc(100% + 8px);max-width:calc(100vw - 24px);white-space:nowrap}
+  body[data-tab=studio] .stage-controls{bottom:36px;left:50%;right:auto;transform:translateX(-50%)}
+  body[data-tab=studio] .stage-controls .segmented{padding:2px;border-radius:9px}
+  body[data-tab=studio] .stage-controls .segmented button{min-width:30px;min-height:38px;padding:6px;font-size:10px}
+  .stage-tools{left:12px;bottom:36px;gap:0}.stage-tools #resetViewBtn{display:none}.stage-tools .button{min-height:44px;padding:10px;font-size:10px;gap:5px}.stage-tools svg{width:15px;height:15px}
+  body[data-tab=studio][data-core-active=true] .anatomy-card .core-bar{left:16px;right:16px;bottom:102px;max-width:none}
+}

@@ -1,0 +1,73 @@
+/* The Studio provides identity and navigation; preserve v4's complete library and player. */
+:root{--plum:#43227D;--cream:#F5EEE0;--gold:#A8925A}
+html,body,#app{height:100%;min-height:0}
+#libraryScreen{padding:0;overflow:hidden;background:#120c1c}
+.library-shell{display:block;width:100%;height:100%;min-height:0;margin:0}
+.app-header,.app-nav{display:none}
+.library-console{display:grid;grid-template-columns:minmax(285px,1.06fr) minmax(285px,1fr);gap:24px;width:100%;height:100%;min-height:0;padding:20px 24px;border:0;border-radius:0;background:transparent}
+.library-column,.setup-column{display:flex;position:relative;height:100%;min-height:0;padding:0;overflow:hidden}
+.library-welcome{margin-bottom:13px}.library-welcome h2{font-size:23px;margin-top:6px}.library-welcome .eyebrow{font-size:8px}.library-date{display:none}
+.feature-banner{min-height:118px;max-height:118px;padding:16px 18px;border-radius:16px}.feature-copy strong{font-size:20px;margin-top:8px;line-height:1.2}.feature-caption{font-size:8px;margin-top:7px}.feature-label{font-size:7px}.feature-action{font-size:8px;bottom:16px;right:15px}
+.console-head{padding:17px 0 8px}.console-head h2{font-size:16px}.filter-row{min-height:36px;padding:0 0 8px}.filter-button{font-size:10px;padding:7px 10px}
+.track-list{flex:1;min-height:0;max-height:none;overflow:auto;gap:3px;padding:0 3px 4px 0}.track-item{min-height:61px;padding:7px 6px;grid-template-columns:42px minmax(0,1fr) 35px;gap:9px;border-radius:12px}.track-art{width:40px;height:40px}.track-title{font-size:12px}.track-desc{font-size:9px}.track-bpm{font-size:7px;min-width:30px}.track-bpm b{font-size:10px}.track-bpm small{font-size:8px}
+.host-profile{flex-shrink:0;min-height:26px;padding:8px 2px 3px;color:#c6b4dc;font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.folder-bar{padding:7px 0 0}.folder-connect{min-height:34px;font-size:10px}
+.detail-topline{height:14px;min-height:14px;margin-bottom:8px;font-size:7px}.detail-back{visibility:hidden}.setup-scroll{min-height:0;flex:1;overflow:auto;scrollbar-width:thin;scrollbar-color:#674885 transparent}
+.selected-visual{min-height:184px;padding:17px;border-radius:18px}.source-line{margin-top:52px;font-size:7px}.selected-visual h3{font-size:22px;margin-top:7px}.selected-description{font-size:9px}.cover-topline{font-size:7px}.meta-row{margin-top:11px;gap:7px}.meta-chip{font-size:8px}.load-state{margin:10px 1px 11px;min-height:21px}.load-state-top b{font-size:8px}
+.velocity-guide{margin:0 0 12px}.section-label{margin-bottom:8px;font-size:8px}.mode-button{min-height:62px;padding:10px 9px 10px 37px;border-radius:12px}.mode-button .mode-icon{left:12px;font-size:18px}.mode-button b{font-size:11px}.mode-button span{font-size:9px}.mode-button em{font-size:6px;right:8px;top:8px}.challenge-panel{padding:12px;margin-top:12px}.challenge-panel h4{font-size:13px}.camera-preview video{max-height:130px}
+.setup-bottom{flex-shrink:0;margin-top:0;padding:7px 0 0;background:#120c1c}.setup-bottom .advanced{background:transparent;margin:0 0 7px}.advanced summary{padding:8px 0;font-size:9px}.advanced-body{max-height:145px}.setting-row{font-size:9px}.setting-row small{font-size:8px}.setup-bottom .primary-button{min-height:45px;border-radius:12px;font-size:12px}.setup-note{font-size:8px;margin-top:7px}.setup-bottom #savedClipsButton:not([hidden]){display:block!important;min-height:30px;font-size:9px}
+#playScreen{padding:10px 12px}.game-hud{gap:10px}.song-copy h2{font-size:12px}.song-copy p{font-size:8px}.combo-number{font-size:35px}.next-note b{font-size:14px}.zone-hud{bottom:79px}.pitch-panel{padding:10px 14px}.result-card{max-height:calc(100dvh - 24px);padding:24px;border-radius:24px}#resultScreen{padding:12px}
+@media(max-width:650px){
+ .library-console{display:block;padding:14px 16px}.library-column{display:flex}.setup-column{display:none}.mobile-detail .library-column{display:none}.mobile-detail .setup-column{display:flex}.detail-back{visibility:visible}.detail-topline{height:23px;min-height:23px;justify-content:space-between}.selected-visual{min-height:177px}.source-line{margin-top:43px}.feature-banner{min-height:114px;max-height:114px}.track-item{min-height:63px}.setup-bottom{padding-bottom:2px}.song-copy h2{max-width:39vw}.combo-hud{top:79px}.score-block{min-width:70px}.time-block{display:none}
+}
+@media(min-width:651px){.mobile-detail .library-column{display:flex}.mobile-detail .setup-column{display:flex}}
+/* Typical laptop host leaves 380–520 px for Training Studio. Keep tracks visible. */
+@media(max-height:520px){
+ .library-console{padding:12px 18px;gap:20px}.library-welcome{margin-bottom:8px}.library-welcome h2{font-size:20px;margin-top:4px}.library-welcome .eyebrow{font-size:7px}.feature-banner{display:none}
+ .console-head{padding:5px 0 7px}.console-head h2{font-size:14px}.filter-row{min-height:32px;padding-bottom:5px}.filter-button{padding:6px 9px;font-size:9px}.track-list{min-height:140px}.track-item{min-height:54px;padding:5px 6px;grid-template-columns:36px minmax(0,1fr) 34px}.track-art{width:34px;height:34px}.track-title{font-size:11px}.track-desc{font-size:8px}.host-profile{min-height:23px;padding-top:6px;font-size:9px}.folder-bar{padding-top:5px}.folder-connect{min-height:31px;font-size:9px}
+ .detail-topline{height:12px;min-height:12px;margin-bottom:6px}.selected-visual{min-height:128px;padding:13px 14px}.source-line{margin-top:13px;font-size:6px}.selected-visual h3{font-size:20px;margin-top:5px}.selected-description{font-size:8px;margin-top:6px}.meta-row{margin-top:9px;gap:6px}.meta-chip{font-size:7px}.load-state{margin:8px 1px}.velocity-guide{margin-bottom:9px}.mode-button{min-height:55px}.setup-bottom{padding-top:4px}.setup-bottom .primary-button{min-height:39px}.setup-note{font-size:7px;margin-top:5px}.advanced summary{padding:6px 0}.advanced-body{max-height:100px}.setup-bottom #savedClipsButton:not([hidden]){min-height:26px;margin-top:5px!important}
+}
+
+/* Readable working labels take precedence over decorative microcopy. */
+.track-title{font-size:12px}.track-desc{font-size:10px}.filter-button{font-size:11px}.meta-chip{font-size:10px}.selected-description{font-size:10px}.load-state-top b,.section-label,.advanced summary,.setting-row,.host-profile,.folder-connect{font-size:10px}.setup-note{font-size:9px}.track-bpm b{font-size:11px}.track-bpm small{font-size:10px}.velocity-guide-chip b{font-size:10px}.velocity-guide-chip small{font-size:9px}.velocity-guide-title b{font-size:10px}.mode-button b{font-size:12px}.mode-button span{font-size:10px}.mode-button em{display:none}.cover-topline,.detail-topline>span{display:none}
+@media(max-height:520px){
+ .library-welcome .eyebrow{display:none}.library-welcome{margin-bottom:9px}.library-welcome h2{margin:0;font-size:21px}.selected-visual{min-height:132px}.source-line{margin-top:7px}.source-line>span{font-size:10px}.track-item{min-height:57px}.meta-row{gap:8px}.setup-bottom .setup-note{font-size:9px}.selected-visual h3{font-size:21px}.setting-row small{font-size:9px}.advanced-body{max-height:105px}
+ body:not(.glass-mode) #playScreen .game-hud{padding:6px 9px;height:64px;align-items:center;border-radius:15px}
+ body:not(.glass-mode) .song-copy .eyebrow{display:none}body:not(.glass-mode) .song-copy h2{font-size:13px;margin-top:0}body:not(.glass-mode) .song-copy p{font-size:10px}
+ body:not(.glass-mode) .combo-hud{display:grid;grid-template-columns:auto auto;gap:2px 6px;align-items:center;min-width:118px}
+ body:not(.glass-mode) .judge-text{grid-column:1/-1;height:16px;font-size:13px}body:not(.glass-mode) .combo-number{font-size:26px}body:not(.glass-mode) .combo-label{font-size:9px;margin:0}
+ body:not(.glass-mode) .next-note{top:84px;width:80%;line-height:1.15}body:not(.glass-mode) .next-note>span{display:none}body:not(.glass-mode) .next-note b{font-size:14px;margin-top:0}
+ body:not(.glass-mode) .time-block{font-size:11px}body:not(.glass-mode) .score-block span{font-size:10px}
+ .zone-segment b{font-size:10px}.zone-hud-top b{font-size:10px}.pitch-value span{font-size:10px}.pitch-value b{font-size:14px}
+}
+
+/* The outer Studio expands the same frame. Regular play uses its entire canvas. */
+html:fullscreen,html:fullscreen body,html:fullscreen #app{width:100%;height:100%;margin:0}
+body.rhythm-expanded{overflow:hidden}
+body.rhythm-expanded:not(.glass-mode) #playScreen{inset:0;width:100%;height:100%;max-width:none;padding:18px 24px}
+body:not(.glass-mode) #gameCanvas{left:0;top:0;transform:none;max-width:none;max-height:none;border-radius:0}
+.window-mode-button{flex-shrink:0;min-width:68px;height:40px;padding:0 10px;border:1px solid #bba2db50;border-radius:12px;background:#342046;color:#f5eee0;font-size:12px;cursor:pointer;white-space:nowrap}
+.window-mode-button:hover{background:#523069}.window-mode-button:focus-visible{outline:2px solid #e8c97a;outline-offset:3px}
+.glass-mode .window-mode-button{position:absolute;top:91px;left:4px;height:33px;font-size:10px}
+@media(min-width:761px){
+ body:not(.glass-mode) #playScreen .game-hud{min-height:78px;padding:12px 16px;align-items:center;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:20px}
+ body:not(.glass-mode) .song-hud{min-width:0;gap:12px}body:not(.glass-mode) .song-copy{min-width:0}
+ body:not(.glass-mode) .song-copy h2{max-width:36vw;font-size:clamp(15px,1.4vw,20px);line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ body:not(.glass-mode) .song-copy p{font-size:12px;line-height:1.5}body:not(.glass-mode) .song-copy .eyebrow{font-size:10px}
+ body:not(.glass-mode) .combo-hud{position:static;transform:none;min-width:106px;display:grid;grid-template-columns:auto auto;align-items:center;gap:0 6px}
+ body:not(.glass-mode) .judge-text{grid-column:1/-1;min-width:106px;height:20px;font-size:14px}
+ body:not(.glass-mode) .combo-number{font-size:34px}body:not(.glass-mode) .combo-label{font-size:10px;margin:0}
+ body:not(.glass-mode) .score-hud{gap:12px;min-width:0}body:not(.glass-mode) .time-block{font-size:12px;white-space:nowrap}
+ body:not(.glass-mode) .score-block b{font-size:20px}body:not(.glass-mode) .score-block span{font-size:10px}
+ body:not(.glass-mode) .zone-hud{bottom:82px;width:min(800px,calc(100% - 48px));padding:9px 14px}
+ body:not(.glass-mode) .zone-hud-top{font-size:10px}body:not(.glass-mode) .zone-hud-top b{font-size:12px}
+ body:not(.glass-mode) .zone-segment{padding:7px 10px}body:not(.glass-mode) .zone-segment b{font-size:13px}body:not(.glass-mode) .zone-segment small{font-size:10px}
+ body:not(.glass-mode) .voice-dock{bottom:18px}body:not(.glass-mode) .pitch-value span{font-size:10px}body:not(.glass-mode) .pitch-value b{font-size:15px}
+ body:not(.glass-mode) .demo-dock{font-size:11px;padding:13px 18px;bottom:22px}
+}
+@media(min-width:761px) and (max-width:1000px){body:not(.glass-mode) .time-block{display:none}body:not(.glass-mode) .score-hud{gap:7px}}
+@media(max-width:760px){
+ body.rhythm-expanded:not(.glass-mode) #playScreen{padding:10px 12px}
+ body:not(.glass-mode) .window-mode-button{height:36px;min-width:54px;padding:0 7px;font-size:10px}
+ body:not(.glass-mode) .score-hud #guideButton{display:none}
+ body:not(.glass-mode) .song-copy h2{max-width:32vw}
+}

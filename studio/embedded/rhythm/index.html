@@ -1,0 +1,1727 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#12091f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="터칭보이스">
+<title>터칭보이스 · 보컬트레이닝 시스템</title>
+<style>
+@font-face{font-family:Paperlogy;src:url('../../assets/Paperlogy-4Regular.ttf') format('truetype');font-weight:400;font-display:swap}
+@font-face{font-family:Paperlogy;src:url('../../assets/Paperlogy-5Medium.ttf') format('truetype');font-weight:500;font-display:swap}
+@font-face{font-family:Paperlogy;src:url('../../assets/Paperlogy-7Bold.ttf') format('truetype');font-weight:700;font-display:swap}
+:root{
+  --plum:#43227D;--plum-deep:#160921;--plum-black:#09050f;--cream:#F5EEE0;--gold:#A8925A;
+  --gold-bright:#E8C97A;--cyan:#75DAE8;--rose:#E88FA8;--violet:#9C7BF4;--ok:#7EE1B2;--bad:#FF778C;
+  --zone-upper:#A970FF;--zone-middle:#FF64B2;--zone-lower:#4DDFEA;--zone-friction:#E8C97A;
+  --glass:rgba(20,10,35,.72);--line:rgba(245,238,224,.14);--muted:rgba(245,238,224,.62);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;height:100dvh;overflow:hidden;background:var(--plum-black)}
+body{font-family:Paperlogy,'Apple SD Gothic Neo',sans-serif;color:var(--cream);font-weight:400}
+button,input,select{font:inherit}
+button{color:inherit}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--gold-bright);outline-offset:3px}
+button:disabled{cursor:not-allowed;opacity:.42;filter:saturate(.45)}
+#app{position:relative;width:100%;height:100%;isolation:isolate;background:#09050f}
+#gameCanvas{position:fixed;inset:0;width:100%;height:100%;z-index:-4;display:block}
+.stage-shade{position:fixed;inset:0;z-index:-3;pointer-events:none;background:
+  linear-gradient(90deg,rgba(7,3,13,.6),transparent 34%,transparent 66%,rgba(7,3,13,.6)),
+  radial-gradient(circle at 50% 48%,transparent 0 28%,rgba(7,3,13,.08) 52%,rgba(7,3,13,.7) 100%)}
+.grain{position:fixed;inset:0;z-index:20;pointer-events:none;opacity:.12;mix-blend-mode:soft-light;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.28'/%3E%3C/svg%3E")}
+.eyebrow{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-bright);font-weight:700}
+.screen{position:fixed;inset:0;display:none;opacity:0;pointer-events:none}
+.screen.on{display:flex;opacity:1;pointer-events:auto;animation:screenIn .55s cubic-bezier(.2,.75,.2,1)}
+@keyframes screenIn{from{opacity:0;transform:scale(1.012)}to{opacity:1;transform:none}}
+.brand-mark{display:flex;align-items:center;gap:11px;font-size:12px;letter-spacing:.14em;font-weight:700;text-transform:uppercase}
+.brand-glyph{position:relative;width:30px;height:30px;display:grid;place-items:center;border:1px solid rgba(232,201,122,.55);border-radius:10px;background:linear-gradient(145deg,rgba(232,201,122,.22),rgba(67,34,125,.2));box-shadow:inset 0 0 20px rgba(232,201,122,.08),0 0 28px rgba(67,34,125,.35)}
+.brand-glyph:before,.brand-glyph:after{content:"";position:absolute;width:4px;border-radius:99px;background:var(--gold-bright)}
+.brand-glyph:before{height:14px;transform:translateX(-4px)}.brand-glyph:after{height:9px;transform:translateX(4px)}
+.soft-button,.icon-button{border:1px solid var(--line);background:rgba(245,238,224,.065);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);cursor:pointer;transition:.2s ease}
+.soft-button:hover,.icon-button:hover{border-color:rgba(232,201,122,.55);background:rgba(232,201,122,.1);transform:translateY(-1px)}
+.icon-button{width:46px;height:46px;border-radius:15px;display:grid;place-items:center;font-size:18px}
+.primary-button{position:relative;width:100%;min-height:58px;border:0;border-radius:18px;padding:0 20px;cursor:pointer;overflow:hidden;background:linear-gradient(118deg,#C6A85F,#F0D384 48%,#A8925A);color:#231535;font-weight:700;font-size:15px;letter-spacing:.02em;box-shadow:0 15px 42px rgba(168,146,90,.22),inset 0 1px 0 rgba(255,255,255,.65);transition:.22s ease}
+.primary-button:before{content:"";position:absolute;inset:0;transform:translateX(-120%);background:linear-gradient(90deg,transparent,rgba(255,255,255,.38),transparent);transition:.6s ease}
+.primary-button:not(:disabled):hover{transform:translateY(-2px);box-shadow:0 20px 52px rgba(168,146,90,.3),inset 0 1px 0 rgba(255,255,255,.65)}
+.primary-button:not(:disabled):hover:before{transform:translateX(120%)}
+.primary-button .button-row{position:relative;display:flex;align-items:center;justify-content:space-between;gap:15px}
+.primary-button .arrow{font-size:20px}
+
+/* 라이브러리 */
+#libraryScreen{overflow:auto;padding:max(24px,env(safe-area-inset-top)) max(24px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(24px,env(safe-area-inset-left));background:radial-gradient(circle at 15% 20%,rgba(67,34,125,.36),transparent 34%),linear-gradient(90deg,rgba(9,5,15,.42),rgba(9,5,15,.08) 54%,rgba(9,5,15,.42))}
+.library-shell{width:min(1380px,100%);min-height:calc(100dvh - 48px);margin:auto;display:grid;grid-template-columns:minmax(300px,.75fr) minmax(650px,1.55fr);gap:clamp(28px,5vw,78px);align-items:center}
+.hero-copy{max-width:480px;padding:24px 0}
+.hero-copy .brand-mark{margin-bottom:clamp(60px,11vh,128px)}
+.hero-copy h1{font-size:clamp(46px,5vw,78px);line-height:.94;letter-spacing:-.065em;font-weight:700;text-wrap:balance;text-shadow:0 12px 60px rgba(0,0,0,.45)}
+.hero-copy h1 em{display:block;margin-top:.28em;color:var(--gold-bright);font-size:.58em;line-height:1.12;letter-spacing:-.04em;font-style:normal;font-weight:500}
+.hero-copy>p{max-width:420px;margin-top:26px;color:var(--muted);font-size:15px;line-height:1.8;word-break:keep-all}
+.signal-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:28px}
+.signal-chip{display:flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:999px;padding:8px 11px;background:rgba(9,5,15,.36);font-size:11px;color:rgba(245,238,224,.78);letter-spacing:.04em}
+.signal-chip i{width:6px;height:6px;border-radius:99px;background:var(--ok);box-shadow:0 0 10px var(--ok)}
+.library-console{display:grid;grid-template-columns:minmax(270px,.92fr) minmax(300px,1.08fr);height:min(760px,calc(100dvh - 64px));min-height:620px;border:1px solid rgba(245,238,224,.15);border-radius:30px;background:linear-gradient(145deg,rgba(28,15,46,.9),rgba(11,6,19,.78));box-shadow:0 45px 100px rgba(0,0,0,.48),inset 0 1px 0 rgba(255,255,255,.055);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);overflow:hidden}
+.library-column,.setup-column{min-height:0;display:flex;flex-direction:column}
+.library-column{border-right:1px solid var(--line);padding:25px 18px 18px}
+.console-head{padding:0 7px 18px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.console-head h2{font-size:22px;letter-spacing:-.04em;margin-top:7px}
+.count-badge{border:1px solid rgba(232,201,122,.25);border-radius:999px;padding:6px 9px;color:var(--gold-bright);background:rgba(232,201,122,.07);font-size:10px;white-space:nowrap}
+.filter-row{display:flex;gap:5px;padding:0 7px 14px;overflow-x:auto;scrollbar-width:none}.filter-row::-webkit-scrollbar{display:none}
+.filter-button{border:0;background:transparent;color:rgba(245,238,224,.46);padding:7px 9px;border-radius:9px;cursor:pointer;font-size:11px;white-space:nowrap;transition:.2s}
+.filter-button.active{color:var(--cream);background:rgba(245,238,224,.09)}
+.track-list{min-height:0;overflow:auto;padding:2px 5px 12px;display:flex;flex-direction:column;gap:7px;scrollbar-color:rgba(232,201,122,.25) transparent;scrollbar-width:thin}
+.track-item{width:100%;border:1px solid transparent;border-radius:15px;background:transparent;padding:12px 11px;display:grid;grid-template-columns:32px 1fr auto;gap:10px;align-items:center;text-align:left;cursor:pointer;transition:.2s ease}
+.track-item:hover{background:rgba(245,238,224,.055)}
+.track-item.selected{border-color:rgba(232,201,122,.34);background:linear-gradient(110deg,rgba(232,201,122,.13),rgba(67,34,125,.18));box-shadow:inset 3px 0 0 var(--gold-bright)}
+.track-index{width:30px;height:38px;display:grid;place-items:center;border-radius:10px;background:rgba(245,238,224,.06);font-size:10px;color:rgba(245,238,224,.48);font-variant-numeric:tabular-nums}
+.track-item.selected .track-index{color:#241434;background:var(--gold-bright)}
+.track-main{min-width:0}.track-title{display:block;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.track-desc{display:block;font-size:10px;color:rgba(245,238,224,.45);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.track-bpm{text-align:right;font-size:10px;color:rgba(245,238,224,.46);line-height:1.45}.track-bpm b{display:block;color:rgba(245,238,224,.82);font-size:12px}
+.folder-bar{margin-top:auto;padding:13px 7px 2px;border-top:1px solid var(--line)}
+.folder-connect{width:100%;min-height:44px;border-radius:13px;padding:0 12px;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:rgba(245,238,224,.78)}
+.folder-connect span:last-child{color:var(--gold-bright);font-size:16px}
+.setup-column{padding:28px}
+.selected-visual{position:relative;min-height:185px;border:1px solid rgba(245,238,224,.12);border-radius:22px;padding:21px;overflow:hidden;background:radial-gradient(circle at 78% 25%,rgba(232,201,122,.22),transparent 29%),radial-gradient(circle at 10% 90%,rgba(117,218,232,.12),transparent 38%),linear-gradient(145deg,rgba(67,34,125,.62),rgba(14,7,25,.65))}
+.selected-visual:before{content:"";position:absolute;inset:-40% -10%;background:repeating-radial-gradient(ellipse at 80% 50%,transparent 0 16px,rgba(232,201,122,.05) 17px 18px);transform:rotate(-16deg);pointer-events:none}
+.selected-number{position:absolute;right:17px;bottom:-24px;font-size:120px;line-height:1;font-weight:700;color:rgba(245,238,224,.035);letter-spacing:-.1em}
+.source-line{position:relative;display:flex;align-items:center;gap:7px;font-size:10px;color:var(--ok);letter-spacing:.08em;text-transform:uppercase}
+.source-line i{width:7px;height:7px;border-radius:50%;background:currentColor;box-shadow:0 0 10px currentColor}
+.selected-visual h3{position:relative;margin-top:25px;max-width:88%;font-size:clamp(23px,2.3vw,34px);line-height:1.08;letter-spacing:-.045em;text-wrap:balance}
+.selected-description{position:relative;margin-top:9px;font-size:11px;color:rgba(245,238,224,.58);min-height:16px}
+.meta-row{position:relative;display:flex;gap:7px;flex-wrap:wrap;margin-top:18px}
+.meta-chip{border:1px solid rgba(245,238,224,.13);border-radius:999px;background:rgba(9,5,15,.3);padding:6px 9px;font-size:9px;color:rgba(245,238,224,.72);letter-spacing:.04em}
+.load-state{margin:15px 2px 17px;min-height:35px}
+.load-state-top{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:10px;color:rgba(245,238,224,.5)}
+.load-state-top b{color:var(--cream);font-weight:500}
+.load-line{height:3px;background:rgba(245,238,224,.08);border-radius:99px;overflow:hidden;margin-top:9px}.load-line span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--plum),var(--gold-bright));border-radius:inherit;transition:width .45s ease}.load-line.loading span{width:66%;animation:loadingLine 1s ease-in-out infinite alternate}.load-line.ready span{width:100%}.load-line.error span{width:100%;background:var(--bad)}
+@keyframes loadingLine{from{transform:translateX(-28%)}to{transform:translateX(52%)}}
+.velocity-guide{margin:-2px 2px 17px}.velocity-guide-title{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px;color:rgba(245,238,224,.38);font-size:8px;letter-spacing:.1em;text-transform:uppercase}.velocity-guide-title b{color:rgba(245,238,224,.6);font-size:8px;letter-spacing:0;text-transform:none}.velocity-guide-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}.velocity-guide-chip{--zone:var(--cream);min-width:0;padding:7px 6px 6px;border-top:2px solid var(--zone);border-radius:5px 5px 9px 9px;background:color-mix(in srgb,var(--zone) 8%,transparent);box-shadow:inset 0 1px 0 rgba(255,255,255,.035)}.velocity-guide-chip b,.velocity-guide-chip small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.velocity-guide-chip b{color:var(--zone);font-size:8px;text-shadow:0 0 10px color-mix(in srgb,var(--zone) 45%,transparent)}.velocity-guide-chip small{margin-top:3px;color:rgba(245,238,224,.37);font-size:7px;font-variant-numeric:tabular-nums}.velocity-guide-chip:nth-child(1){--zone:var(--zone-upper)}.velocity-guide-chip:nth-child(2){--zone:var(--zone-middle)}.velocity-guide-chip:nth-child(3){--zone:var(--zone-lower)}.velocity-guide-chip:nth-child(4){--zone:var(--zone-friction)}
+.section-label{display:flex;align-items:center;gap:10px;margin-bottom:9px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:rgba(245,238,224,.48)}
+.section-label:after{content:"";height:1px;flex:1;background:var(--line)}
+.mode-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
+.mode-button{position:relative;min-height:73px;border:1px solid var(--line);border-radius:15px;background:rgba(245,238,224,.035);cursor:pointer;text-align:left;padding:11px;transition:.2s ease;overflow:hidden}
+.mode-button:hover{background:rgba(245,238,224,.07)}.mode-button.active{border-color:rgba(232,201,122,.52);background:linear-gradient(145deg,rgba(232,201,122,.14),rgba(67,34,125,.18));box-shadow:inset 0 0 25px rgba(232,201,122,.05)}
+.mode-button b{display:block;font-size:11px}.mode-button span{display:block;margin-top:5px;color:rgba(245,238,224,.42);font-size:9px;line-height:1.35}.mode-button.active b{color:var(--gold-bright)}
+.setup-bottom{margin-top:auto}
+.advanced{margin:15px 0 13px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.advanced summary{list-style:none;cursor:pointer;padding:12px 1px;display:flex;justify-content:space-between;font-size:10px;color:rgba(245,238,224,.55)}.advanced summary::-webkit-details-marker{display:none}.advanced summary:after{content:"＋";color:var(--gold-bright)}.advanced[open] summary:after{content:"−"}
+.advanced-body{padding:0 0 13px;display:grid;gap:12px}
+.setting-row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;font-size:10px;color:rgba(245,238,224,.62)}
+.setting-row small{display:block;font-size:8px;color:rgba(245,238,224,.35);margin-top:3px}
+.setting-row input[type=range]{width:128px;accent-color:var(--gold-bright)}
+.setting-row select{max-width:155px;background:#1b102b;color:var(--cream);border:1px solid var(--line);border-radius:9px;padding:7px 8px;font-size:9px}
+.switch{width:38px;height:22px;border:0;border-radius:99px;background:rgba(245,238,224,.13);padding:3px;cursor:pointer;transition:.2s}.switch i{display:block;width:16px;height:16px;border-radius:50%;background:rgba(245,238,224,.58);transition:.2s}.switch.on{background:rgba(232,201,122,.36)}.switch.on i{transform:translateX(16px);background:var(--gold-bright);box-shadow:0 0 12px rgba(232,201,122,.55)}
+.setup-note{text-align:center;margin-top:9px;color:rgba(245,238,224,.36);font-size:9px;line-height:1.5}
+
+/* Stage Mission · 얼굴과 네온 피아노롤을 겹치는 글래스 챌린지 */
+[hidden]{display:none!important}
+.camera-feed{position:fixed;top:0;left:0;width:1px;height:1px;opacity:.001;pointer-events:none}
+.setup-column{overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(168,146,90,.3) transparent}.setup-column>*{flex-shrink:0}
+.challenge-panel{margin:14px 0 2px;padding:14px;border:1px solid rgba(191,157,255,.3);border-radius:18px;background:linear-gradient(125deg,rgba(111,62,181,.2),rgba(245,238,224,.045));box-shadow:inset 0 1px 0 rgba(255,255,255,.1)}
+.challenge-heading{display:flex;justify-content:space-between;align-items:center;gap:8px}.challenge-heading .eyebrow{font-size:8px;color:#C9ACFF;letter-spacing:.13em}.challenge-heading small{font-size:8px;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:4px 6px}.challenge-panel h4{font-size:15px;margin-top:9px;letter-spacing:-.035em}.challenge-panel p{font-size:9px;line-height:1.7;color:var(--muted);margin:7px 0 10px;word-break:keep-all}.camera-preview{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:12px;margin-bottom:10px;background:#160c24}.camera-preview video{display:block;width:100%;max-height:175px;object-fit:cover;transform:scaleX(-1)}.camera-preview span{position:absolute;bottom:8px;left:9px;font-size:8px;letter-spacing:.12em;text-shadow:0 1px 5px #000;color:#fff}.camera-button{width:100%;min-height:40px;border:1px solid rgba(199,163,255,.45);border-radius:11px;background:rgba(167,112,255,.16);font-size:10px;cursor:pointer}.camera-button.on{background:rgba(126,225,178,.1);border-color:rgba(126,225,178,.4);color:var(--ok)}.challenge-panel .camera-status{margin-bottom:0;color:rgba(245,238,224,.48);font-size:8px}
+.challenge-recording{display:none;position:absolute;top:85px;left:50%;transform:translateX(-50%);align-items:center;gap:7px;z-index:6;white-space:nowrap;padding:7px 11px;border:1px solid rgba(255,255,255,.23);border-radius:99px;background:rgba(23,11,38,.46);backdrop-filter:blur(14px);font-size:8px;letter-spacing:.12em}.challenge-recording i{width:6px;height:6px;border-radius:50%;background:#FF648F;box-shadow:0 0 10px #FF648F}.challenge-recording b{font-weight:500;font-variant-numeric:tabular-nums}.challenge-recording button{border:0;border-left:1px solid var(--line);padding-left:9px;background:none;cursor:pointer;font-size:9px;color:var(--cream)}
+.glass-mode #gameCanvas{left:50%;transform:translateX(-50%);border-radius:24px;box-shadow:0 0 0 1px rgba(245,238,224,.14),0 30px 110px #000}
+.glass-mode #playScreen{left:50%;right:auto;transform:translateX(-50%);width:var(--stage-width);padding:16px 12px;background:none;animation:none}
+.glass-mode #playScreen{height:var(--stage-height);top:var(--stage-top);bottom:auto}.glass-mode #gameCanvas{top:var(--stage-top)}
+.glass-mode .stage-shade{background:linear-gradient(90deg,rgba(7,3,13,.5),transparent 30% 70%,rgba(7,3,13,.5))}.glass-mode .grain{opacity:.06}
+.glass-mode .challenge-recording{display:flex}.glass-mode .song-copy h2{max-width:calc(var(--stage-width) - 230px);font-size:11px}.glass-mode .song-hud{gap:7px}.glass-mode .song-hud .icon-button,.glass-mode .score-hud .icon-button{width:36px;height:36px;border-radius:12px}.glass-mode .game-hud{grid-template-columns:1fr auto;gap:8px}.glass-mode .combo-hud{position:absolute;top:115px;left:auto;right:8px;transform:none;min-width:70px}.glass-mode .combo-number{font-size:38px}.glass-mode .judge-text{font-size:12px;height:20px}.glass-mode .score-block{min-width:64px}.glass-mode .score-block b{font-size:14px}.glass-mode .time-block{display:none}.glass-mode .next-note{top:31%;width:100%}.glass-mode .next-note b{font-size:13px}.glass-mode .zone-hud{width:calc(100% - 24px);bottom:85px;background:rgba(39,23,59,.37);border-color:rgba(255,255,255,.26)}.glass-mode .zone-grid{gap:3px}.glass-mode .zone-segment{grid-template-columns:auto 1fr;padding:6px 4px}.glass-mode .zone-segment small{display:none}.glass-mode .zone-segment b{font-size:8px}.glass-mode .voice-dock{min-width:calc(100% - 24px)}.glass-mode .pitch-panel{min-width:0;width:100%;padding:11px;gap:8px;background:rgba(39,23,59,.35);border-color:rgba(255,255,255,.24)}.glass-mode .pitch-value b{font-size:11px}.glass-mode .pitch-meter{width:54px}.glass-mode .zone-hud-top{font-size:6px}.glass-mode .zone-hud-top b{font-size:8px}
+.challenge-result{margin:22px 0;padding:17px;border:1px solid rgba(195,157,255,.32);border-radius:21px;background:linear-gradient(130deg,rgba(108,60,168,.2),rgba(245,238,224,.035));text-align:left}.challenge-result h3{font-size:17px;margin:7px 0}.challenge-result p{font-size:10px;color:var(--muted);line-height:1.7;word-break:keep-all}.challenge-result video{display:block;max-height:360px;max-width:100%;margin:14px auto;border-radius:14px;background:#08040e;aspect-ratio:9/16}.challenge-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:13px}.challenge-actions button{min-height:46px;font-size:11px;border-radius:12px}.challenge-actions .primary-button{box-shadow:none}.challenge-result .clip-local{margin-top:10px;font-size:8px;color:rgba(245,238,224,.4)}
+.result-card.challenge-summary{padding:24px}.challenge-summary .grade-orb,.challenge-summary .new-best{display:none}.challenge-summary .result-title{margin-top:12px;font-size:17px}.challenge-summary .result-score{font-size:24px}.challenge-summary .result-stats{margin:14px 0}.challenge-summary .result-stat{padding:9px 6px}.challenge-summary .result-actions button{min-height:43px;font-size:11px}.challenge-summary .challenge-result{margin:14px 0 0}.challenge-summary .challenge-result video{max-height:300px}
+
+/* 플레이 */
+#playScreen{display:none;padding:max(14px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));background:radial-gradient(circle at 50% 90%,rgba(67,34,125,.08),transparent 38%)}
+#playScreen.on{display:flex;flex-direction:column}
+.game-progress{position:absolute;left:0;top:0;width:100%;height:3px;background:rgba(245,238,224,.09)}.game-progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--plum),var(--gold-bright),var(--cyan));box-shadow:0 0 15px var(--gold-bright)}
+.game-hud{position:relative;display:grid;grid-template-columns:1fr auto 1fr;align-items:start;gap:18px;width:100%;z-index:5;pointer-events:none}
+.game-hud>*{pointer-events:auto}
+.song-hud{display:flex;align-items:center;gap:12px;min-width:0}.song-hud .icon-button{flex:0 0 auto}.song-copy{min-width:0}.song-copy .eyebrow{font-size:8px}.song-copy h2{max-width:min(34vw,370px);font-size:14px;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.song-copy p{font-size:9px;color:rgba(245,238,224,.42);margin-top:3px}
+.combo-hud{text-align:center;min-width:190px}.judge-text{height:25px;font-size:18px;font-weight:700;letter-spacing:.08em;color:var(--gold-bright);text-shadow:0 0 25px currentColor}.judge-text.pop{animation:judgePop .28s cubic-bezier(.2,1.6,.3,1)}@keyframes judgePop{0%{transform:scale(.72);opacity:.2}100%{transform:scale(1);opacity:1}}
+.combo-number{font-size:42px;line-height:.9;font-weight:700;letter-spacing:-.055em;text-shadow:0 8px 30px rgba(0,0,0,.45)}.combo-label{font-size:8px;letter-spacing:.22em;color:rgba(245,238,224,.45);margin-top:5px}
+.score-hud{display:flex;justify-content:flex-end;align-items:center;gap:9px}.score-block{text-align:right;min-width:92px}.score-block b{display:block;font-size:18px;font-variant-numeric:tabular-nums}.score-block span{font-size:8px;color:rgba(245,238,224,.43);letter-spacing:.1em}.time-block{min-width:58px;text-align:right;font-size:10px;color:rgba(245,238,224,.55);font-variant-numeric:tabular-nums}
+.countdown{position:absolute;left:50%;top:47%;transform:translate(-50%,-50%);z-index:5;text-align:center;pointer-events:none;opacity:0}.countdown.on{opacity:1}.countdown b{display:block;font-size:clamp(70px,12vw,150px);line-height:.8;color:var(--cream);text-shadow:0 0 60px rgba(232,201,122,.45)}.countdown span{display:block;margin-top:20px;font-size:10px;letter-spacing:.32em;color:var(--gold-bright)}
+.next-note{position:absolute;left:50%;top:21%;transform:translateX(-50%);z-index:4;text-align:center;pointer-events:none;transition:.2s}.next-note span{font-size:8px;letter-spacing:.16em;color:rgba(245,238,224,.42)}.next-note b{display:block;margin-top:5px;font-size:18px;color:rgba(245,238,224,.86);text-shadow:0 0 20px rgba(245,238,224,.25)}
+.zone-hud{position:absolute;z-index:5;left:50%;bottom:max(88px,calc(env(safe-area-inset-bottom) + 70px));transform:translateX(-50%);width:min(610px,calc(100vw - 32px));padding:8px 10px 9px;border:1px solid rgba(245,238,224,.13);border-radius:15px;background:rgba(10,5,17,.68);box-shadow:0 16px 42px rgba(0,0,0,.3);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);pointer-events:none}
+.zone-hud-top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 2px 6px;font-size:7px;letter-spacing:.13em;color:rgba(245,238,224,.4);text-transform:uppercase}.zone-hud-top b{font-size:9px;color:var(--cream);letter-spacing:.04em;text-transform:none;transition:color .2s,text-shadow .2s}
+.zone-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.zone-segment{--zone:var(--cream);position:relative;isolation:isolate;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:5px;min-width:0;padding:7px 7px 6px;border-top:2px solid rgba(245,238,224,.13);border-radius:5px 5px 9px 9px;color:rgba(245,238,224,.44);transition:.2s}.zone-segment:after{content:"";position:absolute;z-index:-1;inset:0;border-radius:inherit;background:var(--zone);opacity:.025;transition:.2s}.zone-segment i{width:7px;height:7px;border-radius:50%;background:var(--zone);box-shadow:0 0 9px var(--zone)}.zone-segment b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:9px}.zone-segment small{font-size:7px;color:rgba(245,238,224,.32);font-variant-numeric:tabular-nums}.zone-segment.active{border-color:var(--zone);color:var(--cream);box-shadow:0 -4px 15px color-mix(in srgb,var(--zone) 34%,transparent)}.zone-segment.active:after{opacity:.12}.zone-segment.active b{color:var(--zone);text-shadow:0 0 12px var(--zone)}
+.zone-segment[data-zone="upper"]{--zone:var(--zone-upper)}.zone-segment[data-zone="middle"]{--zone:var(--zone-middle)}.zone-segment[data-zone="lower"]{--zone:var(--zone-lower)}.zone-segment[data-zone="friction"]{--zone:var(--zone-friction)}
+.voice-dock,.tap-dock{position:absolute;z-index:5;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);pointer-events:none}
+.voice-dock{display:none;align-items:center;gap:10px;min-width:min(520px,calc(100vw - 32px));justify-content:center}.voice-dock.on{display:flex}.pitch-panel{min-width:290px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px;padding:11px 17px;border:1px solid var(--line);border-radius:18px;background:rgba(10,5,17,.64);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 18px 50px rgba(0,0,0,.34)}
+.pitch-value{text-align:left}.pitch-value:last-child{text-align:right}.pitch-value span{display:block;font-size:8px;letter-spacing:.12em;color:rgba(245,238,224,.42)}.pitch-value b{display:block;margin-top:4px;font-size:15px;font-variant-numeric:tabular-nums}.pitch-value.good b{color:var(--gold-bright)}
+.pitch-meter{position:relative;width:88px;height:5px;border-radius:99px;background:linear-gradient(90deg,var(--bad),var(--gold-bright) 45% 55%,var(--bad));opacity:.75}.pitch-meter i{position:absolute;width:9px;height:9px;left:50%;top:50%;border-radius:50%;background:#fff;transform:translate(-50%,-50%);box-shadow:0 0 12px #fff;transition:left .08s linear}
+.tap-dock{display:none;gap:8px;width:min(600px,calc(100vw - 30px));pointer-events:auto}.tap-dock.on{display:flex}.lane-button{flex:1;min-height:62px;border:1px solid rgba(245,238,224,.18);border-radius:16px 16px 8px 8px;background:linear-gradient(180deg,rgba(245,238,224,.11),rgba(245,238,224,.045));cursor:pointer;font-weight:700;font-size:13px;box-shadow:inset 0 1px 0 rgba(255,255,255,.08);touch-action:none;transition:.08s}.lane-button:nth-child(1){color:var(--cyan)}.lane-button:nth-child(2){color:var(--violet)}.lane-button:nth-child(3){color:var(--gold-bright)}.lane-button:nth-child(4){color:var(--rose)}.lane-button.active{transform:translateY(4px);background:rgba(245,238,224,.2);box-shadow:0 0 28px currentColor}
+.demo-dock{display:none;position:absolute;left:50%;bottom:max(21px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:5;border:1px solid var(--line);border-radius:999px;padding:9px 14px;background:rgba(10,5,17,.56);font-size:9px;letter-spacing:.14em;color:rgba(245,238,224,.58);backdrop-filter:blur(15px)}.demo-dock.on{display:block}
+
+/* 오버레이 / 결과 */
+.overlay{position:fixed;inset:0;z-index:40;display:none;place-items:center;padding:22px;background:rgba(7,3,13,.66);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}.overlay.on{display:grid;animation:fade .22s ease}@keyframes fade{from{opacity:0}to{opacity:1}}
+.overlay-card{width:min(420px,100%);border:1px solid rgba(245,238,224,.16);border-radius:28px;padding:28px;background:linear-gradient(145deg,rgba(34,17,56,.96),rgba(12,6,20,.96));box-shadow:0 32px 90px rgba(0,0,0,.5);text-align:center}
+.pause-icon{width:62px;height:62px;margin:0 auto 18px;border:1px solid rgba(232,201,122,.4);border-radius:22px;display:grid;place-items:center;background:rgba(232,201,122,.08);font-size:24px;color:var(--gold-bright)}.overlay-card h3{font-size:25px;letter-spacing:-.04em}.overlay-card>p{margin:10px auto 22px;color:var(--muted);font-size:12px;line-height:1.65}.overlay-actions{display:grid;gap:9px}.secondary-button{min-height:48px;border:1px solid var(--line);border-radius:14px;background:rgba(245,238,224,.055);cursor:pointer;font-size:12px}.secondary-button:hover{background:rgba(245,238,224,.1)}
+#resultScreen{align-items:center;justify-content:center;padding:24px;background:radial-gradient(circle at 50% 40%,rgba(67,34,125,.25),transparent 38%),rgba(7,3,13,.38)}
+.result-card{width:min(680px,100%);max-height:calc(100dvh - 40px);overflow:auto;border:1px solid rgba(245,238,224,.15);border-radius:32px;padding:clamp(25px,4vw,46px);background:linear-gradient(145deg,rgba(27,13,45,.94),rgba(10,5,17,.92));box-shadow:0 50px 120px rgba(0,0,0,.5);backdrop-filter:blur(22px);text-align:center}
+.grade-orb{width:128px;height:128px;margin:19px auto 10px;display:grid;place-items:center;position:relative;border-radius:50%;background:radial-gradient(circle,rgba(232,201,122,.2),rgba(67,34,125,.15) 55%,transparent 56%);font-size:80px;line-height:1;font-weight:700;color:var(--gold-bright);text-shadow:0 0 38px rgba(232,201,122,.45)}.grade-orb:before,.grade-orb:after{content:"";position:absolute;inset:6px;border:1px solid rgba(232,201,122,.25);border-radius:50%;animation:orbit 8s linear infinite}.grade-orb:after{inset:-9px;border-style:dashed;animation-direction:reverse;animation-duration:15s}@keyframes orbit{to{transform:rotate(360deg)}}
+.result-title{font-size:20px;letter-spacing:-.04em}.result-score{font-size:34px;font-weight:700;margin-top:6px;font-variant-numeric:tabular-nums}.new-best{display:inline-block;margin-top:7px;border-radius:999px;padding:5px 9px;background:rgba(126,225,178,.1);color:var(--ok);font-size:9px;letter-spacing:.1em;opacity:0}.new-best.on{opacity:1}
+.result-stats{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin:25px 0}.result-stat{border:1px solid var(--line);border-radius:14px;padding:13px 7px;background:rgba(245,238,224,.035)}.result-stat span{display:block;font-size:8px;color:rgba(245,238,224,.42);letter-spacing:.07em}.result-stat b{display:block;margin-top:6px;font-size:16px}.result-actions{display:grid;grid-template-columns:1fr 1.4fr;gap:9px}
+.toast{position:fixed;z-index:80;left:50%;bottom:max(26px,env(safe-area-inset-bottom));transform:translate(-50%,18px);max-width:min(520px,calc(100vw - 28px));padding:11px 15px;border:1px solid rgba(245,238,224,.16);border-radius:12px;background:rgba(15,8,25,.94);box-shadow:0 16px 45px rgba(0,0,0,.4);font-size:11px;color:rgba(245,238,224,.84);opacity:0;pointer-events:none;transition:.25s}.toast.on{opacity:1;transform:translate(-50%,0)}
+
+@media(max-width:980px){
+  #libraryScreen{padding:18px}.library-shell{display:block;min-height:auto}.hero-copy{max-width:none;padding:10px 5px 28px}.hero-copy .brand-mark{margin-bottom:36px}.hero-copy h1{font-size:clamp(45px,10vw,76px)}.hero-copy>p{max-width:600px}.library-console{height:auto;min-height:680px}.track-list{max-height:390px}
+}
+@media(max-width:680px){
+  #libraryScreen{padding:max(14px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}.hero-copy{padding:5px 5px 23px}.hero-copy .brand-mark{margin-bottom:31px}.hero-copy h1{font-size:44px}.hero-copy>p{font-size:13px;margin-top:18px}.signal-row{margin-top:18px}.library-console{display:block;border-radius:24px;min-height:0}.library-column{border-right:0;border-bottom:1px solid var(--line);padding:21px 13px 13px}.track-list{max-height:315px}.setup-column{padding:19px 16px 20px}.selected-visual{min-height:170px}.selected-visual h3{font-size:26px}.setup-bottom{margin-top:18px}
+  .game-hud{grid-template-columns:1fr 1fr;gap:8px}.song-hud .icon-button{width:42px;height:42px;border-radius:14px}.song-copy h2{max-width:48vw;font-size:11px}.combo-hud{position:absolute;top:67px;left:50%;transform:translateX(-50%);min-width:160px}.judge-text{font-size:14px}.combo-number{font-size:34px}.score-hud{gap:5px}.score-block{min-width:64px}.score-block b{font-size:14px}.time-block{display:none}.score-hud .icon-button{width:42px;height:42px;border-radius:14px}.next-note{top:24%}.zone-hud{bottom:max(79px,calc(env(safe-area-inset-bottom) + 66px));width:calc(100vw - 28px);padding:7px 7px 8px}.zone-hud-top{padding-bottom:5px}.zone-grid{gap:3px}.zone-segment{grid-template-columns:auto 1fr;padding:6px 4px;gap:4px}.zone-segment small{display:none}.zone-segment i{width:6px;height:6px}.zone-segment b{font-size:8px}.pitch-panel{min-width:calc(100vw - 28px);gap:8px;padding:10px 12px}.pitch-meter{width:70px}.tap-dock{gap:5px}.lane-button{min-height:58px}.result-stats{grid-template-columns:repeat(3,1fr)}.result-actions{grid-template-columns:1fr}.result-card{border-radius:25px}
+}
+@media(max-height:720px) and (min-width:681px){.library-console{height:calc(100dvh - 34px);min-height:570px}.hero-copy .brand-mark{margin-bottom:48px}.selected-visual{min-height:155px}.selected-visual h3{margin-top:18px}.setup-column{padding:20px}.mode-button{min-height:65px}.advanced{margin:10px 0}.result-card{padding:24px}.grade-orb{width:100px;height:100px;font-size:62px;margin-top:10px}.result-stats{margin:16px 0}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important}.primary-button,.track-item,.switch i{transition:none!important}}
+</style>
+<style id="touchingvoice-app-design">
+/* Product shell */
+:root{--surface:#15121b;--surface-raised:#1c1725;--hairline:rgba(245,238,224,.075);--ease-out:cubic-bezier(.16,1,.3,1)}
+body{background:#0c0a10}button,a{-webkit-tap-highlight-color:transparent}button:active{transform:scale(.975)}
+#libraryScreen{padding:0;background:#0d0b11;overflow:hidden}#libraryScreen.on{animation:appReveal .45s ease}
+.library-shell{display:grid;grid-template-columns:90px 1fr;grid-template-rows:82px minmax(0,1fr);width:100%;max-width:1600px;height:100dvh;min-height:0;gap:0;margin:auto;align-items:stretch}
+.app-header{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;padding:0 35px 0 27px;border-bottom:1px solid var(--hairline);z-index:4;background:#0d0b11}
+.app-wordmark{display:flex;align-items:center;gap:12px;color:var(--cream);text-decoration:none}.app-wordmark .brand-glyph{width:36px;height:36px;border-radius:12px;background:linear-gradient(145deg,#e5c98c,#9d7d4b);border:0;box-shadow:0 3px 16px #b3914822}.app-wordmark .brand-glyph:before,.app-wordmark .brand-glyph:after{background:#2b1942}.app-wordmark b{display:block;font-size:19px;letter-spacing:-.045em}.app-wordmark small{display:block;margin-top:4px;color:#8d8599;font-size:9px;letter-spacing:.04em}
+.app-header-right{display:flex;align-items:center;gap:25px}.connection-status{display:flex;align-items:center;gap:7px;color:#8b8297;font-size:10px}.connection-status i{width:5px;height:5px;border-radius:50%;background:#b19b6c}.app-utility{width:38px;height:38px;border:1px solid var(--hairline);border-radius:50%;background:#1b1622;color:#b5aabe;cursor:pointer}.app-utility svg{width:20px;height:20px;vertical-align:middle}
+.app-nav{grid-column:1;grid-row:2;display:flex;flex-direction:column;align-items:center;gap:13px;padding:30px 11px 20px;border-right:1px solid var(--hairline)}.nav-button{position:relative;width:64px;min-height:67px;border:0;border-radius:16px;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;color:#77707f;cursor:pointer;transition:background .25s,color .25s,transform .25s}.nav-button svg{width:22px;height:22px}.nav-button span{font-size:9px}.nav-button:hover{color:#d6c8e8;background:#ffffff05}.nav-button.active{color:#dcc4ff;background:linear-gradient(135deg,#43227d80,#27183390);box-shadow:inset 0 1px 0 #d2b1ff16}.nav-button.active:before{content:"";position:absolute;left:-11px;top:23px;width:2px;height:21px;border-radius:2px;background:#c5a1ff;box-shadow:0 0 12px #ad76ff}.nav-signature{margin-top:auto;color:#4e4758;writing-mode:vertical-rl;letter-spacing:.22em;font-size:8px}
+.library-console{grid-column:2;grid-row:2;display:grid;grid-template-columns:minmax(340px,1.2fr) minmax(340px,.85fr);gap:clamp(24px,3vw,54px);height:100%;min-height:0;border:0;border-radius:0;padding:30px clamp(24px,3.6vw,56px);background:none;box-shadow:none;backdrop-filter:none;overflow:hidden}
+.library-column{padding:0;border:0;min-width:0;overflow:auto;scrollbar-width:none}.library-column::-webkit-scrollbar{display:none}.library-welcome{display:flex;align-items:center;justify-content:space-between;margin:0 0 21px}.library-welcome .eyebrow{font-size:8px;color:#8e829d;letter-spacing:.17em}.library-welcome h2{font-size:26px;font-weight:700;letter-spacing:-.05em;margin-top:8px}.library-date{font-size:10px;color:#6e6679}
+.feature-banner{position:relative;flex-shrink:0;min-height:216px;width:100%;overflow:hidden;isolation:isolate;border:1px solid #e2c8ff13;border-radius:23px;background:radial-gradient(ellipse at 88% 0%,#4c2c76,#20122e 56%,#1b1226);text-align:left;padding:25px;cursor:pointer;transition:box-shadow .5s,transform .5s var(--ease-out)}.feature-banner:hover{box-shadow:0 16px 50px #43227d35;transform:translateY(-2px)}.feature-banner:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#1a122700,transparent 75%),linear-gradient(180deg,transparent 66%,#150c2360);z-index:-1;pointer-events:none}.feature-banner canvas{position:absolute;inset:0;width:100%;height:100%;z-index:-1}.feature-copy{display:block;position:relative;pointer-events:none}.feature-label{display:flex;align-items:center;gap:10px;font-size:8px;letter-spacing:.18em;color:#d7b988}.feature-label i{font-style:normal;color:#c6a5ec;font-size:13px}.feature-copy strong{display:block;margin:16px 0 10px;font-weight:500;font-size:clamp(21px,2.1vw,30px);letter-spacing:-.045em;line-height:1.25;color:#f4edff}.feature-caption{font-size:10px;color:#a997bf}.feature-action{position:relative;display:flex;align-items:center;gap:20px;margin-top:19px;font-size:10px;color:#dfc9f7}.feature-action b{font-size:17px;font-weight:400}
+.console-head{padding:27px 0 13px;align-items:center}.console-head h2{font-size:16px;margin:0;letter-spacing:-.035em}.count-badge{border:0;border-radius:0;padding:0;background:none;color:#77707f;font-size:9px;letter-spacing:.08em}.filter-row{padding:0 0 15px;gap:6px;min-height:47px}.filter-button{padding:8px 12px;font-size:10px;border-radius:9px;color:#797180;background:#ffffff03}.filter-button.active{background:#f5eee0;color:#271c33;box-shadow:0 3px 9px #0002}
+.track-list{display:flex;gap:3px;flex-shrink:0;overflow:visible;max-height:none;min-height:0;padding:0 0 12px}.track-item{min-height:81px;grid-template-columns:56px minmax(0,1fr) auto;padding:9px 10px;border:1px solid transparent;border-radius:13px;gap:13px;position:relative;transition:background .2s,border-color .2s,transform .35s var(--ease-out)}.track-item:hover{background:#ffffff04;transform:translateX(3px)}.track-item.selected{background:linear-gradient(100deg,#d5b0ff0f,#d5b0ff03);border-color:#d5b0ff20;box-shadow:none}.track-item.selected:after{content:"";position:absolute;right:0;top:26px;bottom:26px;width:2px;border-radius:2px;background:#bd96f0;box-shadow:0 0 11px #bd96f0}
+.track-index{display:none}.track-art{position:relative;display:block;width:54px;height:54px;border-radius:12px;overflow:hidden;isolation:isolate;background:radial-gradient(ellipse at 50% 10%,#5a4475,#20182b 65%);box-shadow:inset 0 1px 0 #fff2}.track-art:before{content:"";position:absolute;inset:9px;border:5px solid #b19bc870;border-top-color:#eadcf6;border-right-color:#695180;border-radius:50%;transform:rotateX(40deg) rotateZ(-25deg);box-shadow:0 7px 8px #0008}.track-art i{position:absolute;bottom:8px;width:2px;background:#decaed50;border-radius:2px}.track-art i:nth-child(1){left:10px;height:7px}.track-art i:nth-child(2){left:15px;height:11px}.track-art i:nth-child(3){left:20px;height:5px}.track-art.stage{background:radial-gradient(ellipse at 80% 0%,#6e573c,#211923 70%)}.track-art.stage:before{border-color:#c1a37280;border-top-color:#f7e3af;border-right-color:#81704e;transform:rotateX(40deg) rotateZ(32deg)}.track-item:nth-child(3n) .track-art:before{border-radius:11px;transform:rotate(-25deg) scale(.85)}.track-item:nth-child(4n) .track-art:before{inset:11px;border-width:2px;border-radius:50%;box-shadow:0 0 0 5px #b39ace25,0 0 0 10px #c2a9d817}
+.track-title{font-size:13px;line-height:1.5;letter-spacing:-.025em;font-weight:500}.track-desc{font-size:10px;color:#7f748d;margin-top:3px}.track-bpm{font-size:8px;color:#73697e;min-width:40px;line-height:1.6}.track-bpm b{font-size:11px;font-weight:500;color:#c4b8cf}.track-bpm small{display:block;font-size:8px;color:#786e82;margin-top:3px}.folder-bar{border-top:1px solid var(--hairline);padding:16px 0;margin-top:12px}.folder-connect{min-height:43px;background:#17131e;border-color:var(--hairline);border-radius:12px;font-size:10px;color:#a99fb5}
+/* Focused preparation sheet */
+.setup-column{padding:0 0 8px;border:0;min-width:0;overflow:auto;scrollbar-width:none}.setup-column::-webkit-scrollbar{display:none}.detail-topline{display:flex;align-items:center;justify-content:space-between;height:27px;min-height:27px;margin:0 0 18px;color:#75697f;font-size:8px;letter-spacing:.15em}.detail-back{border:0;background:none;color:#b4a5c5;cursor:pointer;display:flex;gap:8px;align-items:center;font-size:16px}.detail-back span{font-size:10px;letter-spacing:0}.selected-visual{isolation:isolate;padding:23px 24px 20px;min-height:320px;border:1px solid #d5b0ff20;border-radius:24px;background:radial-gradient(ellipse at 90% 0%,#503869,#241831 52%,#17101f);overflow:hidden;box-shadow:inset 0 1px 0 #e6cfff0c,0 20px 40px #0003}.selected-visual:before{display:none}.selected-visual:after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,transparent 28%,#180e2100 48%,#180f27f2 84%);pointer-events:none}.selected-visual canvas{position:absolute;inset:0;z-index:-2;width:100%;height:100%}.cover-topline{display:flex;align-items:center;justify-content:space-between;font-size:8px;color:#d1bde7;letter-spacing:.12em}.cover-topline span:last-child{color:#9b86b2}.cover-symbol{display:none}.selected-number{display:none}.source-line{margin-top:156px;font-size:8px;color:#d8c29e;letter-spacing:.1em}.source-line i{width:4px;height:4px;box-shadow:0 0 7px #e7c796}.selected-visual h3{font-size:26px;max-width:100%;margin-top:9px;line-height:1.2;letter-spacing:-.055em}.selected-description{font-size:10px;color:#a38eb6;margin-top:7px}.meta-row{margin-top:17px;gap:0}.meta-chip{background:none;border:0;border-right:1px solid #ffffff16;border-radius:0;padding:0 11px;font-size:9px;color:#c8b8d4;letter-spacing:0}.meta-chip:first-child{padding-left:0}.meta-chip:last-child{border-right:0}
+.load-state{min-height:22px;margin:13px 4px 19px}.load-state-top{justify-content:flex-start;gap:6px;font-size:9px}.load-state-top b{color:#8c8298;font-size:9px}.status-dot{width:4px;height:4px;border-radius:50%;background:#7a996d}.load-line{height:1px;margin-top:8px;background:#ffffff05}.load-line.ready span{background:#c8ad7730}.section-label{font-size:10px;letter-spacing:0;color:#aba0b8;margin:0 0 10px}.section-label:after{background:var(--hairline)}
+.mode-grid{gap:8px}.mode-button{min-height:84px;padding:15px 13px 12px 41px;border:1px solid #f5eee00b;border-radius:14px;background:#19141f}.mode-button .mode-icon{position:absolute;left:14px;top:17px;font-size:19px;color:#8e7aa2;font-style:normal}.mode-button b{font-size:11px;letter-spacing:-.02em}.mode-button span{font-size:9px;margin-top:6px;color:#85788f}.mode-button em{position:absolute;right:10px;top:8px;font-size:6px;letter-spacing:.13em;color:#796686;font-style:normal}.mode-button.active{border-color:#b48aee75;background:linear-gradient(120deg,#3b255280,#281c3980);box-shadow:inset 0 1px 0 #ffffff06}.mode-button.active b{color:#e3cef8}.mode-button.active .mode-icon{color:#c59be8}
+.velocity-guide{order:4;margin:18px 0 5px}.velocity-guide-title{font-size:7px;color:#665a72}.velocity-guide-title b{font-size:8px;color:#80708e}.velocity-guide-grid{gap:0;padding:5px 0;border:1px solid #ffffff07;border-radius:12px;background:#ffffff02}.velocity-guide-chip{border:0;border-radius:0;padding:7px 8px;background:none;box-shadow:none;text-align:center}.velocity-guide-chip b{font-size:9px;text-shadow:none;font-weight:500}.velocity-guide-chip b:before{content:"";display:inline-block;width:4px;height:4px;vertical-align:middle;margin-right:5px;border-radius:50%;background:var(--zone);box-shadow:0 0 7px var(--zone)}.velocity-guide-chip small{display:none}
+.challenge-panel{order:3;margin:14px 0 0;border-radius:15px;padding:15px;background:linear-gradient(115deg,#3b265327,#6d4b3f17);border-color:#d3bce421;box-shadow:none}.challenge-heading .eyebrow{font-size:7px;letter-spacing:.11em;color:#c8a4ea}.challenge-heading small{font-size:7px;border:0;padding:0;color:#a390b5}.challenge-panel h4{font-size:13px;margin-top:9px}.challenge-panel p{font-size:10px;margin:7px 0 12px;line-height:1.55}.camera-button{font-size:10px;background:#bc8deb10;border-color:#bc8deb40;border-radius:10px}.challenge-panel .camera-status{font-size:8px;margin-top:8px;color:#877393}.camera-preview video{max-height:145px}.setup-bottom{order:5;margin-top:12px;position:relative}.advanced{border-top:0;border-bottom:1px solid var(--hairline);margin:0 0 14px}.advanced summary{font-size:10px;padding:12px 2px;color:#91819f}.setting-row{font-size:10px}.setting-row small{font-size:9px;line-height:1.5}
+.primary-button{min-height:55px;background:linear-gradient(115deg,#d6be8a,#ecd6a3 55%,#c4a66f);border-radius:14px;box-shadow:0 6px 25px #c5a26616,inset 0 1px 0 #fff8;font-size:13px}.primary-button .arrow{font-size:19px}.primary-button:not(:disabled):hover{transform:translateY(-1px);box-shadow:0 8px 30px #c5a26625}.setup-note{font-size:8px;margin-top:11px;line-height:1.6;color:#73617f}
+/* Play HUD and transitions */
+#playScreen .game-hud{padding:11px;border:1px solid #fff1;border-radius:21px;background:linear-gradient(110deg,#22152c70,#120a1c40);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 9px 35px #0002}.song-copy .eyebrow{color:#b197c9;font-size:7px}.song-copy h2{font-size:13px}.song-copy p{font-size:8px}.combo-number{font-size:40px;color:#f7edff;text-shadow:0 0 25px #b184e02d}.combo-label{font-size:7px;letter-spacing:.24em}.judge-text{font-size:15px;letter-spacing:.16em}.judge-text.pop{animation:judgeImpact .4s var(--ease-out)}.score-block b{font-size:17px}.game-progress{height:2px}.next-note{top:19%}.next-note b{font-size:15px}.zone-hud{border-color:#c5a0e126;background:linear-gradient(115deg,#2416349e,#100a189e);box-shadow:inset 0 1px 0 #fff06,0 20px 40px #0003}.pitch-panel{background:#160e229c;border-color:#c5a0e126}.countdown b{font-weight:500;letter-spacing:-.06em;animation:countBreath .7s var(--ease-out) infinite}.countdown span{font-size:8px;letter-spacing:.34em}.glass-mode #playScreen .game-hud{padding:9px;border-radius:17px;background:linear-gradient(120deg,#e8d6fc1b,#160c241f);border-color:#fff2;backdrop-filter:blur(12px)}.glass-mode .combo-hud{top:117px;right:7px}.glass-mode .next-note{top:31%}.glass-mode .challenge-recording{top:91px;font-size:7px}.glass-mode .song-copy h2{font-size:10px}.glass-mode .song-copy p{font-size:7px}.glass-mode #gameCanvas{box-shadow:0 0 0 1px #dfc6ff26,0 25px 100px #0009}.glass-mode .zone-hud{background:#291b3b44;border-color:#ffffff32}.overlay-card{background:linear-gradient(150deg,#2a1e38ed,#130d1def);border-color:#ccb2e62a;border-radius:25px}.result-card{background:linear-gradient(140deg,#251830f0,#110b19f5);border-color:#b497d028}.result-stats{border-top:1px solid var(--hairline);border-bottom:1px solid var(--hairline);gap:0}.result-stat{border:0;border-radius:0;background:none;padding:16px 8px}.grade-orb{font-size:90px;text-shadow:0 5px 30px #d6b96b45;animation:medalArrive .9s var(--ease-out)}
+@keyframes appReveal{from{opacity:0}to{opacity:1}}@keyframes judgeImpact{0%{transform:translateY(7px) scale(.8);opacity:0}40%{transform:translateY(-2px) scale(1.06);opacity:1}100%{transform:translateY(0) scale(1)}}@keyframes countBreath{0%{transform:translateY(8px) scale(.94);opacity:.2}30%{opacity:1}100%{transform:translateY(-2px) scale(1.01);opacity:1}}@keyframes medalArrive{from{transform:translateY(20px) rotateY(45deg) scale(.8);opacity:0}to{transform:none;opacity:1}}
+@media(min-width:1200px){.library-console{grid-template-columns:minmax(400px,1.25fr) minmax(360px,.8fr)}.feature-banner{min-height:232px}.feature-copy strong{font-size:31px}.track-title{font-size:14px}.selected-visual{min-height:349px}.source-line{margin-top:177px}.selected-visual h3{font-size:29px}}
+@media(max-width:980px) and (min-width:761px){.library-shell{grid-template-columns:72px 1fr;grid-template-rows:72px 1fr}.app-nav{padding:23px 8px}.nav-button{width:54px}.nav-button.active:before{left:-8px}.library-console{padding:22px;gap:20px;grid-template-columns:minmax(270px,1fr) minmax(290px,1fr)}.feature-banner{min-height:202px;padding:20px}.feature-copy strong{font-size:23px}.track-item{grid-template-columns:44px minmax(0,1fr) auto;padding:8px 4px;gap:9px}.track-art{width:43px;height:43px}.track-title{font-size:11px}.track-desc{font-size:8px}.track-bpm{font-size:7px;min-width:30px}.track-bpm b{font-size:10px}.selected-visual{padding:20px;min-height:300px}.source-line{margin-top:141px}.selected-visual h3{font-size:24px}.mode-button{padding-left:32px;padding-right:8px}.mode-button .mode-icon{left:10px;font-size:16px}.mode-button b{font-size:10px}.mode-button span{font-size:8px}}
+/* Mobile: one destination at a time, with persistent navigation */
+@media(max-width:760px){
+  .library-shell{display:grid;grid-template-columns:1fr;grid-template-rows:68px minmax(0,1fr) 71px;min-height:0;height:100dvh}.app-header{grid-column:1;grid-row:1;padding:0 20px;min-height:68px}.app-wordmark{gap:9px}.app-wordmark .brand-glyph{width:31px;height:31px;border-radius:10px}.app-wordmark b{font-size:17px}.app-wordmark small{font-size:8px;margin-top:3px}.app-header-right{gap:12px}.connection-status{font-size:8px}.app-utility{width:32px;height:32px}.app-utility svg{width:18px;height:18px}
+  .app-nav{grid-column:1;grid-row:3;flex-direction:row;justify-content:space-around;gap:0;padding:5px 14px max(7px,env(safe-area-inset-bottom));border-right:0;border-top:1px solid var(--hairline);background:#110e17eb;backdrop-filter:blur(24px);z-index:10}.nav-button{min-height:54px;width:68px;border-radius:12px;gap:6px}.nav-button svg{width:20px;height:20px}.nav-button span{font-size:8px}.nav-button.active{background:none;color:#d1afea;box-shadow:none}.nav-button.active:before{width:15px;height:2px;top:-5px;left:calc(50% - 7px)}.nav-signature{display:none}
+  .library-console{grid-column:1;grid-row:2;display:block;padding:0;height:100%;min-height:0;border-radius:0;overflow:hidden}.library-column{height:100%;padding:23px 20px 20px;overflow:auto}.library-welcome{margin-bottom:19px}.library-welcome .eyebrow{font-size:7px;letter-spacing:.15em}.library-welcome h2{font-size:25px;margin-top:8px}.library-date{font-size:9px}.feature-banner{min-height:195px;border-radius:20px;padding:23px}.feature-copy strong{font-size:25px;margin-top:13px}.feature-caption{font-size:9px}.feature-label{font-size:7px}.feature-action{margin-top:15px;font-size:9px}.console-head{padding-top:26px}.console-head h2{font-size:16px}.filter-row{padding-bottom:13px;min-height:45px}.filter-button{font-size:10px;padding:8px 11px}.track-list{max-height:none;overflow:visible;gap:3px}.track-item{min-height:77px;padding:9px 5px;gap:12px;grid-template-columns:53px minmax(0,1fr) 42px}.track-art{width:51px;height:51px}.track-title{font-size:12px}.track-desc{font-size:9px}.track-bpm b{font-size:11px}.folder-bar{padding-bottom:0}
+  .setup-column{display:none;position:relative;height:100%;padding:17px 20px 0;overflow:auto}.mobile-detail .library-column{display:none}.mobile-detail .setup-column{display:flex;animation:detailArrive .4s var(--ease-out)}.detail-topline{height:24px;margin-bottom:14px;font-size:7px}.detail-back span{font-size:10px}.selected-visual{min-height:283px;border-radius:21px;padding:20px}.source-line{margin-top:123px;font-size:7px}.selected-visual h3{font-size:25px;margin-top:8px}.cover-topline{font-size:7px}.selected-description{font-size:10px}.meta-row{margin-top:14px}.meta-chip{font-size:9px}.load-state{margin:11px 2px 15px;min-height:22px}.load-state-top b{font-size:8px}.mode-button{min-height:74px}.mode-button b{font-size:11px}.mode-button span{font-size:9px}.velocity-guide{margin:14px 0 0}.challenge-panel{padding:13px;margin-top:13px}.challenge-panel h4{font-size:13px}.challenge-panel .camera-status{font-size:8px}.setup-bottom{margin-top:6px;padding:0 0 15px;position:sticky;bottom:0;z-index:5;background:linear-gradient(180deg,#0d0b1100,#0d0b11 20%);padding-top:6px}.advanced{margin-bottom:11px;background:#0d0b11}.advanced summary{font-size:9px;padding:10px 0}.primary-button{min-height:51px;border-radius:13px;font-size:12px}.setup-note{font-size:7px;margin-top:8px}.setting-row input[type=range]{width:110px}.setting-row{font-size:9px}.setting-row small{font-size:8px}.camera-preview video{max-height:125px}
+  #playScreen .game-hud{padding:8px;border-radius:17px}.song-copy h2{font-size:11px}.song-hud{gap:7px}.combo-hud{top:87px}.combo-number{font-size:35px}.score-block b{font-size:14px}.next-note{top:26%}.next-note b{font-size:13px}.zone-hud-top b{font-size:8px}.pitch-value b{font-size:12px}.pitch-panel{min-width:calc(100vw - 28px)}.result-card{border-radius:24px}.result-stats{grid-template-columns:repeat(5,1fr)}.result-stat b{font-size:13px}.result-stat span{font-size:6px}
+}
+@media(max-width:360px){.app-header{padding:0 15px}.connection-status{display:none}.library-column{padding:20px 15px}.setup-column{padding-left:15px;padding-right:15px}.feature-copy strong{font-size:23px}.track-title{font-size:11px}.selected-visual h3{font-size:23px}.mode-button{padding-left:34px}.mode-button .mode-icon{left:10px}.mode-button b{font-size:10px}}
+@media(max-height:680px) and (min-width:761px){.library-shell{grid-template-rows:66px 1fr}.library-console{padding-top:21px;padding-bottom:20px}.library-welcome{margin-bottom:16px}.feature-banner{min-height:180px;padding:20px}.feature-copy strong{font-size:24px}.selected-visual{min-height:287px}.source-line{margin-top:122px}.detail-topline{margin-bottom:12px}}
+@keyframes detailArrive{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}.feature-banner:hover,.track-item:hover,button:active{transform:none}}
+/* The primary action stays outside the scrollable preparation content. */
+.setup-column{overflow:hidden}.setup-scroll{display:flex;flex-direction:column;flex:1;min-height:0;overflow:auto;scrollbar-width:none;padding-bottom:8px}.setup-scroll::-webkit-scrollbar{display:none}.setup-scroll>*{flex-shrink:0}.setup-bottom{flex-shrink:0;position:relative;bottom:auto;background:#0d0b11;margin-top:0;padding-top:8px;border-top:1px solid var(--hairline)}.setup-bottom .advanced{margin:0 0 9px}.advanced-body{max-height:180px;overflow:auto}.setup-bottom .setup-note{margin-top:8px}.setup-bottom #savedClipsButton{display:none!important}.setup-bottom .primary-button{min-height:53px}.library-welcome,.console-head,.filter-row,.folder-bar{flex-shrink:0}
+@media(min-width:761px){.selected-visual{min-height:270px;padding:21px}.source-line{margin-top:107px}.selected-visual h3{font-size:24px}.selected-description{font-size:9px}.load-state{margin:12px 2px 13px}.mode-button{min-height:74px}.detail-back{visibility:hidden}.detail-topline{margin-bottom:12px;justify-content:flex-end;height:17px;min-height:17px}.setup-bottom{padding-bottom:0}}
+@media(max-width:760px){.setup-column{overflow:hidden}.setup-scroll{padding-right:1px}.setup-bottom{padding:8px 0 10px}.advanced-body{max-height:160px}.selected-visual{min-height:277px}.source-line{margin-top:118px}}
+.demo-dock{white-space:nowrap;font-size:8px;letter-spacing:.1em}.next-note,.glass-mode .next-note{display:none}.zone-hud-top>span{letter-spacing:.16em}
+.result-card,.advanced-body,#savedClipsList{scrollbar-width:thin;scrollbar-color:#655075 transparent}.result-card::-webkit-scrollbar,.advanced-body::-webkit-scrollbar,#savedClipsList::-webkit-scrollbar{width:3px}.result-card::-webkit-scrollbar-thumb,.advanced-body::-webkit-scrollbar-thumb,#savedClipsList::-webkit-scrollbar-thumb{background:#655075;border-radius:8px}
+@media(max-width:760px){body:not(.glass-mode) .combo-hud{top:70px;left:8px;right:8px;transform:none;min-width:0;display:flex;align-items:center;justify-content:center;gap:8px}body:not(.glass-mode) .combo-number{font-size:23px}body:not(.glass-mode) .combo-label{font-size:6px;margin:0}body:not(.glass-mode) .judge-text{font-size:12px;height:auto;margin-right:7px;min-width:72px;text-align:right}.glass-mode .song-copy h2{max-width:calc(var(--stage-width) - 211px)}}
+@media(max-width:760px){.library-shell{grid-template-rows:calc(68px + env(safe-area-inset-top)) minmax(0,1fr) calc(71px + env(safe-area-inset-bottom))}.app-header{padding-top:env(safe-area-inset-top)}.app-nav{padding-bottom:calc(7px + env(safe-area-inset-bottom))}.setup-column:has(#challengePanel:not([hidden])) .selected-visual{min-height:219px}.setup-column:has(#challengePanel:not([hidden])) .source-line{margin-top:60px}}
+/* Practice identity: meaningful, lightweight musical symbols. */
+.track-art:before,.track-art:after{display:none!important}.track-art{display:grid;place-items:center;color:#C9AFEB;background:#261B35;box-shadow:inset 0 0 0 1px #c5a4ec14}.track-art.stage{color:#D2BC8D;background:#2A231F}.track-art svg{width:27px;height:27px}.practice-status{display:inline-block;margin-top:12px;padding:5px 8px;border:1px solid #d6b9ef26;border-radius:6px;font-size:9px;color:#baa5cb;background:#160f2280}.feature-caption{display:block;max-width:76%;line-height:1.7}.feature-copy strong{margin-top:17px;margin-bottom:13px}.feature-banner{background:linear-gradient(115deg,#21152f,#302040)}
+@media(max-width:760px){.feature-caption{font-size:10px;max-width:80%}.practice-status{font-size:8px;margin-top:9px}.feature-copy strong{font-size:27px}}
+/* Playback prioritizes clean movement over compositing effects. */
+body[data-screen="play"] .stage-shade,body[data-screen="play"] .grain{display:none}
+body[data-screen="play"] #playScreen{animation:none}
+body[data-screen="play"] #playScreen .game-hud,body[data-screen="play"] .zone-hud,body[data-screen="play"] .pitch-panel,body[data-screen="play"] .demo-dock{backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:none}
+body[data-screen="play"] .zone-segment.active{box-shadow:none}
+body[data-screen="play"] .zone-segment.active b{color:var(--zone);text-shadow:none}
+</style>
+<link rel="stylesheet" href="embed.css">
+</head>
+<body data-screen="library">
+<div id="app">
+  <video id="cameraSource" class="camera-feed" muted playsinline aria-hidden="true"></video>
+  <canvas id="gameCanvas" aria-hidden="true"></canvas>
+  <div class="stage-shade"></div>
+
+  <section class="screen on" id="libraryScreen" aria-labelledby="mainTitle">
+    <div class="library-shell">
+      <header class="app-header">
+        <a class="app-wordmark" href="#" id="homeButton" aria-label="터칭보이스 홈"><span class="brand-glyph"></span><span><b id="mainTitle">터칭보이스</b><small>보컬트레이닝 시스템</small></span></a>
+        <div class="app-header-right"><span class="connection-status"><i></i><span id="catalogSignal">트랙 확인 중</span></span><button class="app-utility" id="tuningButton" aria-label="플레이 설정"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 7h16M4 17h16M8 4v6m8 4v6"/></svg></button></div>
+      </header>
+      <nav class="app-nav" aria-label="메인 메뉴">
+        <button class="nav-button active" data-library-view="all" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M9 4v9h6V4m-3 9v7"/></svg><span>연습</span></button>
+        <button class="nav-button" id="navClips"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h5M8 16h3"/></svg><span>내 기록</span></button>
+        <div class="nav-signature" aria-hidden="true">TV / 01</div>
+      </nav>
+
+      <div class="library-console">
+        <div class="library-column">
+          <div class="library-welcome"><div><span class="eyebrow">3D VOCAL RHYTHM TRAINING</span><h2 id="libraryHeading">오늘의 플레이</h2></div><span class="library-date" id="libraryDate"></span></div>
+          <button class="feature-banner" id="featureStage" aria-label="오늘의 연습 · 기본 연습 둘러보기"><canvas id="featureCanvas" aria-hidden="true"></canvas><span class="feature-copy"><span class="feature-label">DAILY PRACTICE <i>♪</i></span><strong>오늘의 연습</strong><span class="feature-caption">내 음성정보에 맞춰, 필요한 연습부터.<br><span class="practice-status">음성정보 미연결 · 맞춤 추천 준비 중</span></span></span><span class="feature-action">기본 연습 둘러보기 <b>→</b></span></button>
+          <div class="console-head">
+            <div><h2>플레이리스트</h2></div>
+            <span class="count-badge" id="trackCount">0 TRACKS</span>
+          </div>
+          <div class="filter-row" role="tablist" aria-label="트랙 분류">
+            <button class="filter-button active" data-filter="all" role="tab">전체</button>
+            <button class="filter-button" data-filter="보컬 트레이닝" role="tab">보컬 트레이닝</button>
+            <button class="filter-button" data-filter="Stage Mission" role="tab">Stage Mission</button>
+          </div>
+          <div class="track-list" id="trackList" aria-label="트랙 목록"></div>
+          <div class="host-profile" id="hostProfileLabel">Training Studio · 리듬 트레이닝</div>
+          <div class="folder-bar">
+            <button class="soft-button folder-connect" id="folderButton"><span>다른 트랙 폴더 연결</span><span>↗</span></button>
+            <input id="folderInput" type="file" webkitdirectory multiple hidden>
+          </div>
+        </div>
+
+        <div class="setup-column">
+          <div class="setup-scroll">
+          <div class="detail-topline"><button class="detail-back" id="detailBack" aria-label="트랙 목록으로 돌아가기">← <span>플레이리스트</span></button><span>READY TO PLAY</span></div>
+          <div class="selected-visual">
+            <canvas id="coverCanvas" aria-hidden="true"></canvas>
+            <div class="cover-topline"><span id="coverCategory">VOCAL TRAINING</span><span id="coverIndex">01 / 15</span></div>
+            <div class="cover-symbol" id="coverSymbol" aria-hidden="true">01</div>
+            <div class="source-line"><i></i><span id="sourceLabel">MIDI + AUDIO CONNECTED</span></div>
+            <h3 id="selectedTitle">트랙을 선택해 주세요</h3>
+            <p class="selected-description" id="selectedDescription">폴더 안의 MIDI와 오디오를 자동으로 매핑합니다.</p>
+            <div class="meta-row">
+              <span class="meta-chip" id="metaBpm">— BPM</span>
+              <span class="meta-chip" id="metaNotes">— NOTES</span>
+              <span class="meta-chip" id="metaRange">— RANGE</span>
+              <span class="meta-chip" id="metaDuration">—:—</span>
+            </div>
+            <span class="selected-number" id="selectedNumber">01</span>
+          </div>
+
+          <div class="load-state">
+            <div class="load-state-top"><span class="status-dot"></span><b id="loadLabel">트랙 목록 준비 중</b></div>
+            <div class="load-line" id="loadLine"><span></span></div>
+          </div>
+
+          <div class="velocity-guide" aria-label="MIDI 벨로시티 발성 영역 대표값">
+            <div class="velocity-guide-title"><span>VOICE COLOR</span><b>4가지 발성 목표</b></div>
+            <div class="velocity-guide-grid">
+              <div class="velocity-guide-chip"><b>상인두</b><small>V16</small></div>
+              <div class="velocity-guide-chip"><b>중인두</b><small>V48</small></div>
+              <div class="velocity-guide-chip"><b>하인두</b><small>V80</small></div>
+              <div class="velocity-guide-chip"><b>성대마찰</b><small>V112</small></div>
+            </div>
+          </div>
+
+          <div class="section-label">플레이 모드</div>
+          <div class="mode-grid" id="modeGrid">
+            <button class="mode-button active" data-mode="voice"><i class="mode-icon">◉</i><b>보이스 플레이</b><span>내 목소리로 도전</span><em>VOICE</em></button>
+            <button class="mode-button" data-mode="demo"><i class="mode-icon">▷</i><b>미리 듣기</b><span>노트와 반주 확인</span><em>AUTO</em></button>
+          </div>
+
+          <div class="challenge-panel" id="challengePanel" hidden>
+            <div class="challenge-heading"><span class="eyebrow">STAGE CHALLENGE</span><small>9:16 세로 영상</small></div>
+            <h4>나의 무대, 한 편의 챌린지</h4>
+            <p>얼굴과 플레이를 세로 영상으로 담아요.</p>
+            <div class="camera-preview" id="cameraPreview" hidden><video id="cameraPreviewVideo" autoplay muted playsinline></video><span>CAMERA PREVIEW · 아직 녹화 전</span></div>
+            <button class="camera-button" id="cameraButton">카메라 켜고 챌린지 준비</button>
+            <p class="camera-status" id="cameraStatus" role="status">카메라를 켠 뒤 시작하면 녹화됩니다. 카메라 없이도 연습할 수 있어요.</p>
+          </div>
+
+          </div>
+          <div class="setup-bottom">
+            <details class="advanced">
+              <summary>입력·판정 설정</summary>
+              <div class="advanced-body">
+                <div class="setting-row">
+                  <div>노트 속도 <b id="speedValue">자동</b><small>숫자가 클수록 노트가 천천히 흐릅니다 (화면에 보이는 시간)</small></div>
+                  <input id="speedRange" type="range" min="3" max="10" step="0.5" value="6.5" aria-label="노트 속도">
+                </div>
+                <div class="setting-row">
+                  <div>화면 타이밍 보정 <b id="visualValue">자동</b><small>노트가 소리보다 먼저 지나가면 올리세요 (블루투스 150~300ms)</small></div>
+                  <input id="visualRange" type="range" min="0" max="600" step="25" value="0" aria-label="화면 타이밍 보정">
+                </div>
+                <div class="setting-row">
+                  <div>입력 지연 보정 <b id="latencyValue">200ms</b><small>화면 보정에 더해, 목소리가 마이크에 늦게 잡히는 만큼</small></div>
+                  <input id="latencyRange" type="range" min="0" max="600" step="25" value="200" aria-label="입력 지연 보정">
+                </div>
+                <div class="setting-row">
+                  <div>가이드 음<small>목표 음을 작게 들려줍니다</small></div>
+                  <button class="switch on" id="guideSwitch" role="switch" aria-checked="true"><i></i></button>
+                </div>
+                <div class="setting-row">
+                  <div>옥타브 자유<small>같은 음이름이면 다른 옥타브도 허용</small></div>
+                  <button class="switch" id="octaveSwitch" role="switch" aria-checked="false"><i></i></button>
+                </div>
+                <div class="setting-row">
+                  <div>마이크<small>블루투스 사용 시 내장 마이크 선택</small></div>
+                  <select id="micSelect" aria-label="마이크 선택"><option value="">자동 선택</option></select>
+                </div>
+              </div>
+            </details>
+            <button class="primary-button" id="startButton" disabled>
+              <span class="button-row"><span id="startLabel">트랙 준비 중</span><span class="arrow">→</span></span>
+            </button>
+            <button class="camera-button" id="cancelStart" style="margin-top:8px" hidden>권한 요청 취소</button>
+            <button class="camera-button" id="savedClipsButton" style="margin-top:8px" hidden>보관한 챌린지 영상</button>
+            <p class="setup-note" id="setupNote">목소리 모드는 localhost 또는 HTTPS에서 마이크 권한이 필요합니다.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="playScreen" aria-label="리듬게임 플레이 화면">
+    <div class="game-progress"><span id="gameProgress"></span></div>
+    <div class="game-hud">
+      <div class="song-hud">
+        <button class="icon-button" id="hudPause" aria-label="일시정지">Ⅱ</button>
+        <div class="song-copy"><div class="eyebrow" id="hudCategory">VOICE TRAINING</div><h2 id="hudTitle">—</h2><p id="hudMeta">— BPM · VOICE MODE</p></div>
+      </div>
+      <div class="combo-hud">
+        <div class="judge-text" id="judgeText"></div>
+        <div class="combo-number" id="comboNumber">0</div>
+        <div class="combo-label">COMBO</div>
+      </div>
+      <div class="score-hud">
+        <div class="time-block" id="hudTime">0:00 / 0:00</div>
+        <div class="score-block"><b id="hudScore">000,000</b><span>SCORE</span></div>
+        <button class="window-mode-button" id="windowModeButton" type="button" aria-label="일시정지하고 창으로 돌아가기">창으로 ↙</button>
+        <button class="icon-button" id="guideButton" aria-label="가이드 음 켜기 또는 끄기">♪</button>
+      </div>
+    </div>
+    <div class="next-note"><span>NEXT TARGET</span><b id="nextTarget">—</b></div>
+    <div class="challenge-recording" id="recordingIndicator"><i></i><span id="recordingLabel">REC</span><b id="recordingTime">0:00</b><button id="finishClipButton" aria-label="챌린지 녹화 마치기">마치기 □</button></div>
+    <div class="zone-hud" id="zoneHud" aria-label="MIDI 벨로시티 발성 영역 지도">
+      <div class="zone-hud-top"><span>VOICE COLOR</span><b id="zoneCurrent">현재 목표 · —</b></div>
+      <div class="zone-grid">
+        <div class="zone-segment" data-zone="upper"><i></i><b>상인두</b><small>V1–31</small></div>
+        <div class="zone-segment" data-zone="middle"><i></i><b>중인두</b><small>V32–63</small></div>
+        <div class="zone-segment" data-zone="lower"><i></i><b>하인두</b><small>V64–95</small></div>
+        <div class="zone-segment" data-zone="friction"><i></i><b>성대마찰</b><small>V96–127</small></div>
+      </div>
+    </div>
+    <div class="countdown" id="countdown"><b>3</b><span>GET READY</span></div>
+
+    <div class="voice-dock" id="voiceDock">
+      <div class="pitch-panel">
+        <div class="pitch-value"><span>TARGET</span><b id="targetPitch">—</b></div>
+        <div class="pitch-meter"><i id="pitchNeedle"></i></div>
+        <div class="pitch-value" id="myPitchWrap"><span>MY VOICE</span><b id="myPitch">대기</b></div>
+      </div>
+    </div>
+    <div class="demo-dock" id="demoDock">AUTO PERFORMANCE · INPUT OFF</div>
+  </section>
+
+  <section class="screen" id="resultScreen" aria-labelledby="resultHeading">
+    <div class="result-card">
+      <div class="eyebrow">PERFORMANCE COMPLETE</div>
+      <div class="grade-orb" id="resultGrade">S</div>
+      <h2 class="result-title" id="resultHeading">연습 완료</h2>
+      <div class="result-score" id="resultScore">0</div>
+      <span class="new-best" id="newBest">NEW BEST</span>
+      <div class="result-stats">
+        <div class="result-stat"><span>PERFECT</span><b id="resultPerfect">0</b></div>
+        <div class="result-stat"><span>GREAT</span><b id="resultGreat">0</b></div>
+        <div class="result-stat"><span>GOOD</span><b id="resultGood">0</b></div>
+        <div class="result-stat"><span>MISS</span><b id="resultMiss">0</b></div>
+        <div class="result-stat"><span>MAX COMBO</span><b id="resultCombo">0</b></div>
+      </div>
+      <div class="result-actions">
+        <button class="secondary-button" id="resultLibrary">트랙 선택</button>
+        <button class="primary-button" id="retryButton"><span class="button-row"><span>같은 곡 다시 하기</span><span class="arrow">↻</span></span></button>
+      </div>
+      <div class="challenge-result" id="challengeResult" hidden>
+        <div class="eyebrow">MY STAGE CHALLENGE</div>
+        <h3>오늘의 무대를 담았어요</h3>
+        <p id="clipStatus" role="status">영상을 준비하고 있습니다.</p>
+        <video id="clipPreview" controls playsinline preload="metadata" hidden></video>
+        <div class="challenge-actions"><button class="secondary-button" id="downloadClip" disabled>영상 저장 ↓</button><button class="primary-button" id="shareClip" disabled>챌린지 공유 ↗</button></div>
+        <p class="clip-local" id="clipStorageStatus">공유는 직접 선택한 앱으로만 전달됩니다. 중요한 영상은 기기에도 저장해 주세요.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="overlay" id="pauseOverlay" role="dialog" aria-modal="true" aria-labelledby="pauseTitle">
+    <div class="overlay-card">
+      <div class="pause-icon">Ⅱ</div>
+      <h3 id="pauseTitle">잠시 쉬어갈게요</h3>
+      <p id="pauseMessage">음악과 게임 시간이 함께 멈췄습니다.<br>준비되면 같은 지점에서 이어갈 수 있어요.</p>
+      <div class="overlay-actions">
+        <button class="primary-button" id="resumeButton"><span class="button-row"><span>계속 플레이</span><span class="arrow">→</span></span></button>
+        <button class="secondary-button" id="pauseSaveClip" hidden>여기까지 영상으로 저장</button>
+        <button class="secondary-button" id="quitButton">트랙 선택으로 나가기</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="overlay" id="savedClipsOverlay" role="dialog" aria-modal="true" aria-labelledby="savedClipsTitle"><div class="overlay-card"><div class="eyebrow">MY RECORDS</div><h3 id="savedClipsTitle" style="margin-top:10px">내 기록</h3><p>이 브라우저에 보관된 챌린지 결과와 영상입니다.<br>기록을 선택해 결과를 확인하고 영상을 공유하세요.</p><div id="savedClipsList" style="display:grid;gap:7px;max-height:45vh;overflow:auto;text-align:left"></div><button class="secondary-button" id="closeSavedClips" style="margin-top:15px;width:100%">닫기</button></div></div>
+  <div class="grain"></div>
+</div>
+
+<script src="access.js"></script>
+<script src="host-bridge.js"></script>
+<script src="presentation.js"></script>
+<script>
+'use strict';
+if(!rhythmAccess.canBoot)throw new Error('코칭 스튜디오 로그인이 필요합니다.');
+
+(function installChallengeRecorder(root) {
+  'use strict';
+
+  const MEBIBYTE = 1024 * 1024;
+  const DEFAULT_MAX_BYTES = 180 * MEBIBYTE;
+  const DEFAULT_HEADROOM_BYTES = 4 * MEBIBYTE;
+  const DEFAULT_VIDEO_BITS_PER_SECOND = 3_500_000;
+  const DEFAULT_AUDIO_BITS_PER_SECOND = 128_000;
+  const DEFAULT_TIMESLICE_MS = 1000;
+  const STOP_EVENT_TIMEOUT_MS = 8000;
+  const FINAL_STOP_GRACE_MS = 4000;
+
+  const MIME_CANDIDATES = Object.freeze([
+    'video/mp4;codecs=avc1.42E01E,mp4a.40.2',
+    'video/mp4;codecs=avc1,mp4a.40.2',
+    'video/mp4;codecs=h264,aac',
+    'video/mp4',
+    'video/webm;codecs=vp8,opus',
+    'video/webm'
+  ]);
+
+  class ChallengeRecorder {
+    constructor(options) {
+      const config = options || {};
+      this.onWarning = typeof config.onWarning === 'function' ? config.onWarning : null;
+      this.maxBytes = positiveNumber(config.maxBytes, DEFAULT_MAX_BYTES);
+      this.videoBitsPerSecond = positiveNumber(
+        config.videoBitsPerSecond,
+        DEFAULT_VIDEO_BITS_PER_SECOND
+      );
+      this.audioBitsPerSecond = positiveNumber(
+        config.audioBitsPerSecond,
+        DEFAULT_AUDIO_BITS_PER_SECOND
+      );
+      this.timesliceMs = positiveNumber(config.timesliceMs, DEFAULT_TIMESLICE_MS);
+
+      this.state = 'idle';
+      this.startedAt = null;
+      this.mimeType = '';
+      this.bytes = 0;
+
+      this._resetSession();
+    }
+
+    static get mimeCandidates() {
+      return MIME_CANDIDATES.slice();
+    }
+
+    static supportedMimeTypes() {
+      const Recorder = root.MediaRecorder;
+      if (typeof Recorder !== 'function') return [];
+      if (typeof Recorder.isTypeSupported !== 'function') return MIME_CANDIDATES.slice();
+      return MIME_CANDIDATES.filter((mimeType) => {
+        try {
+          return Recorder.isTypeSupported(mimeType);
+        } catch (error) {
+          return false;
+        }
+      });
+    }
+
+    /**
+     * Synchronously starts a canvas + backing audio + raw microphone recording.
+     * The microphone is connected only to the recording destination, never to speakers.
+     */
+    start({ canvas, audioContext, backingNode, microphoneStream, name } = {}) {
+      if (this.state === 'recording' || this.state === 'paused' || this.state === 'stopping') {
+        throw new Error('ChallengeRecorder is already active.');
+      }
+      if (!canvas || typeof canvas.captureStream !== 'function') {
+        throw new TypeError('A canvas with captureStream() is required.');
+      }
+      if (!audioContext || typeof audioContext.createMediaStreamDestination !== 'function') {
+        throw new TypeError('A live AudioContext is required.');
+      }
+      if (!backingNode || typeof backingNode.connect !== 'function') {
+        throw new TypeError('A backing AudioNode is required.');
+      }
+      if (!microphoneStream || typeof microphoneStream.getAudioTracks !== 'function') {
+        throw new TypeError('A microphone MediaStream is required.');
+      }
+      if (microphoneStream.getAudioTracks().length === 0) {
+        throw new Error('The microphone stream has no audio track.');
+      }
+      if (typeof root.MediaRecorder !== 'function' || typeof root.MediaStream !== 'function') {
+        throw new Error('MediaRecorder is not supported in this browser.');
+      }
+
+      this._resetSession();
+      this.state = 'starting';
+      this._name = sanitizeName(name || 'touchingvoice-challenge');
+      this._audioContext = audioContext;
+      this._backingNode = backingNode;
+
+      try {
+        this._canvasStream = canvas.captureStream(30);
+        const canvasTracks = this._canvasStream.getVideoTracks();
+        if (canvasTracks.length === 0) {
+          throw new Error('Canvas capture did not provide a video track.');
+        }
+        canvasTracks.forEach((track) => this._ownedTracks.add(track));
+
+        this._backingGain = audioContext.createGain();
+        this._backingGain.gain.value = 1;
+        backingNode.connect(this._backingGain);
+
+        this._microphoneSource = audioContext.createMediaStreamSource(microphoneStream);
+        this._microphoneGain = audioContext.createGain();
+        this._microphoneGain.gain.value = 1;
+        this._microphoneSource.connect(this._microphoneGain);
+
+        this._limiter = audioContext.createDynamicsCompressor();
+        setAudioParam(this._limiter.threshold, -3, audioContext.currentTime);
+        setAudioParam(this._limiter.knee, 0, audioContext.currentTime);
+        setAudioParam(this._limiter.ratio, 20, audioContext.currentTime);
+        setAudioParam(this._limiter.attack, 0.003, audioContext.currentTime);
+        setAudioParam(this._limiter.release, 0.25, audioContext.currentTime);
+
+        this._mixDestination = audioContext.createMediaStreamDestination();
+        this._backingGain.connect(this._limiter);
+        this._microphoneGain.connect(this._limiter);
+        this._limiter.connect(this._mixDestination);
+
+        const mixedAudioTracks = this._mixDestination.stream.getAudioTracks();
+        if (mixedAudioTracks.length === 0) {
+          throw new Error('The recording mix did not provide an audio track.');
+        }
+        mixedAudioTracks.forEach((track) => this._ownedTracks.add(track));
+
+        this._recordingStream = new root.MediaStream();
+        canvasTracks.forEach((track) => this._recordingStream.addTrack(track));
+        mixedAudioTracks.forEach((track) => this._recordingStream.addTrack(track));
+
+        this.startedAt = Date.now();
+        this._startedClock = monotonicNow();
+        this._startMediaRecorder();
+        this.state = 'recording';
+        return this;
+      } catch (error) {
+        this.state = 'error';
+        this.startedAt = null;
+        this._discardRecorder();
+        this._releaseRecordingResources();
+        throw error;
+      }
+    }
+
+    pause() {
+      if (
+        this.state !== 'recording' ||
+        !this._recorder ||
+        this._recorder.state !== 'recording'
+      ) {
+        return false;
+      }
+      try {
+        this._recorder.pause();
+        this._pausedClock = monotonicNow();
+        this.state = 'paused';
+        return true;
+      } catch (error) {
+        this._warn('녹화를 일시정지하지 못했습니다.', 'pause-failed', error);
+        return false;
+      }
+    }
+
+    resume() {
+      if (
+        this.state !== 'paused' ||
+        !this._recorder ||
+        this._recorder.state !== 'paused'
+      ) {
+        return false;
+      }
+      try {
+        this._recorder.resume();
+        if (this._pausedClock !== null) {
+          this._pausedMilliseconds += monotonicNow() - this._pausedClock;
+        }
+        this._pausedClock = null;
+        this.state = 'recording';
+        return true;
+      } catch (error) {
+        this._warn('녹화를 다시 시작하지 못했습니다.', 'resume-failed', error);
+        return false;
+      }
+    }
+
+    stop() {
+      if (this._stopPromise) return this._stopPromise;
+      if (!this._recorder || this.state === 'idle' || this.state === 'error') {
+        this._stopPromise = Promise.reject(
+          new Error('ChallengeRecorder has not been started.')
+        );
+        return this._stopPromise;
+      }
+
+      this._ensureStopPromise();
+      const now = monotonicNow();
+      if (this._pausedClock !== null) {
+        this._pausedMilliseconds += now - this._pausedClock;
+        this._pausedClock = null;
+      }
+      this._stoppedClock = now;
+      this.state = 'stopping';
+
+      try {
+        if (this._recorder.state !== 'inactive') {
+          this._recorder.stop();
+        }
+      } catch (error) {
+        this._recorderError = this._recorderError || error;
+        this._warn('녹화 종료 신호를 보내지 못했습니다. 저장된 구간을 복구합니다.', 'stop-failed', error);
+      }
+
+      this._armStopWatchdog();
+      return this._stopPromise;
+    }
+
+    _resetSession() {
+      this._chunks = [];
+      this.bytes = 0;
+      this.mimeType = '';
+      this._name = 'touchingvoice-challenge';
+      this._audioContext = null;
+      this._backingNode = null;
+      this._backingGain = null;
+      this._microphoneSource = null;
+      this._microphoneGain = null;
+      this._limiter = null;
+      this._mixDestination = null;
+      this._canvasStream = null;
+      this._recordingStream = null;
+      this._ownedTracks = new Set();
+      this._recorder = null;
+      this._recorderError = null;
+      this._stopPromise = null;
+      this._resolveStop = null;
+      this._rejectStop = null;
+      this._stopWatchdog = null;
+      this._startedClock = null;
+      this._stoppedClock = null;
+      this._pausedClock = null;
+      this._pausedMilliseconds = 0;
+      this._memoryStopRequested = false;
+      this._finalized = false;
+      this._result = null;
+    }
+
+    _startMediaRecorder() {
+      const Recorder = root.MediaRecorder;
+      const supported = ChallengeRecorder.supportedMimeTypes();
+      const candidates = supported.length ? supported : [''];
+      const totalBits = this.videoBitsPerSecond + this.audioBitsPerSecond;
+      const optionFactories = [
+        (mimeType) => Object.assign(
+          {},
+          mimeType ? { mimeType } : {},
+          {
+            videoBitsPerSecond: this.videoBitsPerSecond,
+            audioBitsPerSecond: this.audioBitsPerSecond
+          }
+        ),
+        (mimeType) => Object.assign({}, mimeType ? { mimeType } : {}, { bitsPerSecond: totalBits }),
+        (mimeType) => Object.assign({}, mimeType ? { mimeType } : {})
+      ];
+      let lastError = null;
+
+      for (const mimeType of candidates) {
+        for (const makeOptions of optionFactories) {
+          let recorder = null;
+          try {
+            recorder = new Recorder(this._recordingStream, makeOptions(mimeType));
+            this._recorder = recorder;
+            this._bindRecorder(recorder);
+            recorder.start(this.timesliceMs);
+            this.mimeType = recorder.mimeType || mimeType || 'video/webm';
+            return;
+          } catch (error) {
+            lastError = error;
+            if (recorder) {
+              recorder.ondataavailable = null;
+              recorder.onstop = null;
+              recorder.onerror = null;
+              try {
+                if (recorder.state !== 'inactive') recorder.stop();
+              } catch (stopError) {
+                // The recorder never entered a usable state.
+              }
+            }
+            this._recorder = null;
+          }
+        }
+      }
+
+      throw lastError || new Error('No supported MediaRecorder format was found.');
+    }
+
+    _bindRecorder(recorder) {
+      recorder.ondataavailable = (event) => {
+        if (event && event.data && event.data.size > 0) {
+          this._acceptChunk(event.data);
+        }
+      };
+      recorder.onerror = (event) => {
+        const error = event && event.error
+          ? event.error
+          : new Error('MediaRecorder reported an unknown error.');
+        this._recorderError = error;
+        this._warn('녹화 중 오류가 발생했습니다. 저장된 구간을 복구합니다.', 'recorder-error', error);
+        const stopping = this.stop();
+        stopping.catch(() => {});
+      };
+      recorder.onstop = () => {
+        this._ensureStopPromise();
+        if (this._stoppedClock === null) this._stoppedClock = monotonicNow();
+        this._finalize();
+      };
+    }
+
+    _acceptChunk(chunk) {
+      if (this._finalized) return;
+      if (this.bytes + chunk.size > this.maxBytes) {
+        this._requestMemoryStop();
+        return;
+      }
+
+      this._chunks.push(chunk);
+      this.bytes += chunk.size;
+
+      const headroom = Math.min(DEFAULT_HEADROOM_BYTES, Math.max(MEBIBYTE, this.maxBytes * 0.025));
+      if (this.bytes >= this.maxBytes - headroom) {
+        this._requestMemoryStop();
+      }
+    }
+
+    _requestMemoryStop() {
+      if (this._memoryStopRequested || this._finalized) return;
+      this._memoryStopRequested = true;
+      this._warn(
+        '녹화 데이터가 ' + Math.round(this.maxBytes / MEBIBYTE) +
+          'MB 한도에 가까워 자동으로 종료합니다. 지금까지의 영상은 저장됩니다.',
+        'memory-limit',
+        null
+      );
+      const requestStop = () => {
+        const stopping = this.stop();
+        stopping.catch(() => {});
+      };
+      if (typeof root.queueMicrotask === 'function') root.queueMicrotask(requestStop);
+      else Promise.resolve().then(requestStop);
+    }
+
+    _ensureStopPromise() {
+      if (!this._stopPromise) {
+        this._stopPromise = new Promise((resolve, reject) => {
+          this._resolveStop = resolve;
+          this._rejectStop = reject;
+        });
+      }
+      return this._stopPromise;
+    }
+
+    _armStopWatchdog() {
+      if (this._stopWatchdog || this._finalized) return;
+      this._stopWatchdog = root.setTimeout(() => {
+        this._stopWatchdog = null;
+        if (this._finalized) return;
+        this._warn(
+          '브라우저의 녹화 종료가 늦어 녹화용 트랙을 닫고 4초 더 기다립니다.',
+          'stop-timeout',
+          null
+        );
+        this._stopOwnedTracks();
+        if (this._finalized) return;
+        this._stopWatchdog = root.setTimeout(() => {
+          this._stopWatchdog = null;
+          if (this._finalized) return;
+          this._failStop(new Error('녹화 종료 실패: 최종 녹화 데이터를 받지 못했습니다.'));
+        }, FINAL_STOP_GRACE_MS);
+      }, STOP_EVENT_TIMEOUT_MS);
+    }
+
+    _finalize() {
+      if (this._finalized) return;
+      this._finalized = true;
+      if (this._stopWatchdog) {
+        root.clearTimeout(this._stopWatchdog);
+        this._stopWatchdog = null;
+      }
+
+      const mimeType = this.mimeType ||
+        (this._recorder && this._recorder.mimeType) ||
+        'video/webm';
+      const BlobCtor = root.Blob;
+      const blob = new BlobCtor(this._chunks, { type: mimeType });
+      const extension = /^video\/mp4(?:;|$)/i.test(mimeType) ? 'mp4' : 'webm';
+      const fileName = stripMediaExtension(this._name) + '.' + extension;
+      const FileCtor = root.File;
+      let file;
+      if (typeof FileCtor === 'function') {
+        file = new FileCtor([blob], fileName, { type: mimeType, lastModified: Date.now() });
+      } else {
+        file = new BlobCtor([blob], { type: mimeType });
+        file.name = fileName;
+        file.lastModified = Date.now();
+      }
+
+      const endClock = this._stoppedClock === null ? monotonicNow() : this._stoppedClock;
+      const seconds = this._startedClock === null
+        ? 0
+        : Math.max(0, (endClock - this._startedClock - this._pausedMilliseconds) / 1000);
+      const result = { blob, file, mimeType, seconds };
+      const recorderError = this._recorderError;
+
+      this._discardRecorder();
+      this._releaseRecordingResources();
+
+      if (blob.size === 0) {
+        this.state = 'error';
+        if (this._rejectStop) {
+          this._rejectStop(recorderError || new Error('녹화 데이터가 없어 파일을 만들지 못했습니다.'));
+        }
+        return;
+      }
+
+      this.state = 'stopped';
+      this._result = result;
+      if (this._resolveStop) this._resolveStop(result);
+    }
+
+    _failStop(error) {
+      if (this._finalized) return;
+      this._finalized = true;
+      if (this._stopWatchdog) {
+        root.clearTimeout(this._stopWatchdog);
+        this._stopWatchdog = null;
+      }
+      this._recorderError = error;
+      this._warn(error.message, 'stop-failed', error);
+      this._discardRecorder();
+      this._releaseRecordingResources();
+      this.state = 'error';
+      if (this._rejectStop) this._rejectStop(error);
+    }
+
+    _discardRecorder() {
+      if (!this._recorder) return;
+      this._recorder.ondataavailable = null;
+      this._recorder.onerror = null;
+      this._recorder.onstop = null;
+      try {
+        if (this._recorder.state !== 'inactive') this._recorder.stop();
+      } catch (error) {
+        // Tracks are stopped below even if MediaRecorder itself cannot be stopped.
+      }
+      this._recorder = null;
+    }
+
+    _releaseRecordingResources() {
+      // Remove only the extra branch made for recording. The backing node keeps
+      // every pre-existing connection, including its speaker destination.
+      if (this._backingNode && this._backingGain) {
+        try {
+          this._backingNode.disconnect(this._backingGain);
+        } catch (error) {
+          // It may already have been disconnected during an AudioContext shutdown.
+        }
+      }
+
+      disconnectPair(this._backingGain, this._limiter);
+      disconnectPair(this._microphoneSource, this._microphoneGain);
+      disconnectPair(this._microphoneGain, this._limiter);
+      disconnectPair(this._limiter, this._mixDestination);
+
+      this._stopOwnedTracks();
+
+      this._backingNode = null;
+      this._backingGain = null;
+      this._microphoneSource = null;
+      this._microphoneGain = null;
+      this._limiter = null;
+      this._mixDestination = null;
+      this._canvasStream = null;
+      this._recordingStream = null;
+      this._audioContext = null;
+    }
+
+    _stopOwnedTracks() {
+      // These are generated output tracks. Camera and microphone source tracks
+      // are never included in this set and therefore remain alive.
+      this._ownedTracks.forEach((track) => {
+        try {
+          track.stop();
+        } catch (error) {
+          // Track was already ended.
+        }
+      });
+      this._ownedTracks.clear();
+    }
+
+    _warn(message, code, error) {
+      if (typeof this.onWarning !== 'function') return;
+      try {
+        this.onWarning(message, {
+          code,
+          error: error || null,
+          bytes: this.bytes,
+          maxBytes: this.maxBytes,
+          state: this.state,
+          recorder: this
+        });
+      } catch (callbackError) {
+        // A UI warning callback must never break recording cleanup.
+      }
+    }
+  }
+
+  function positiveNumber(value, fallback) {
+    const number = Number(value);
+    return Number.isFinite(number) && number > 0 ? number : fallback;
+  }
+
+  function monotonicNow() {
+    return root.performance && typeof root.performance.now === 'function'
+      ? root.performance.now()
+      : Date.now();
+  }
+
+  function setAudioParam(parameter, value, time) {
+    if (!parameter) return;
+    if (typeof parameter.setValueAtTime === 'function') parameter.setValueAtTime(value, time || 0);
+    else parameter.value = value;
+  }
+
+  function disconnectPair(source, destination) {
+    if (!source || typeof source.disconnect !== 'function') return;
+    try {
+      source.disconnect(destination);
+    } catch (error) {
+      // The requested recording-only edge may already be gone.
+    }
+  }
+
+  function sanitizeName(value) {
+    const cleaned = String(value)
+      .replace(/[\\/:*?\"<>|\u0000-\u001F]/g, '-')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .slice(0, 120);
+    return cleaned || 'touchingvoice-challenge';
+  }
+
+  function stripMediaExtension(value) {
+    return String(value).replace(/\.(?:mp4|webm)$/i, '');
+  }
+
+  root.ChallengeRecorder = ChallengeRecorder;
+})(typeof globalThis !== 'undefined' ? globalThis : this);
+
+
+/* VOICE DRIVE · 정적 manifest/폴더 선택/Web Audio를 쓰는 3D 리듬게임 */
+const TRACK_ROOT='../../assets/rhythm/';
+const TRACK_BASE='트랙/';
+const NOTE_NAMES=['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'];
+const SOLFEGE=['도','도♯','레','레♯','미','파','파♯','솔','솔♯','라','라♯','시'];
+const REDUCED_MOTION=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const LANE_KEYS=['KeyD','KeyF','KeyJ','KeyK'];
+const GRACE=.32; // 노트가 끝난 뒤에도 목소리를 인정하는 유예(초) — 반응 지연 흡수
+
+const FALLBACK_TRACKS=[
+  {id:'scale-5tone-ascending',category:'보컬 트레이닝',path:'scale_5tone_ascending',midi:'scale_5tone_ascending.mid',audio:['scale_5tone_ascending.mp3'],name:'5음 스케일 상행',bpm:100,description:'기초 음정 이동',range:'C3–C5',noteCount:162,duration:91.8},
+  {id:'scale-5tone-descending-male',category:'보컬 트레이닝',path:'scale_5tone_descending_male',midi:'scale_5tone_descending_male.mid',audio:['scale_5tone_descending_male.mp3'],name:'5음 스케일 하행 (남)',bpm:100,description:'하행 음정 컨트롤',range:'C3–C5',noteCount:162,duration:91.8},
+  {id:'scale-1358-short-male',category:'보컬 트레이닝',path:'scale_1358_short_male',midi:'scale_1358_short_male.mid',audio:['scale_1358_short_male.mp3'],name:'1-3-5-8 아르페지오 숏 (남)',bpm:90,description:'짧은 도약 연습',range:'C3–D5',noteCount:150,duration:85.1},
+  {id:'scale-1358-long-male',category:'보컬 트레이닝',path:'scale_1358_long_male',midi:'scale_1358_long_male.mid',audio:['scale_1358_long_male.mp3'],name:'1-3-5-8 아르페지오 롱 (남)',bpm:90,description:'긴 호흡의 도약 연습',range:'C3–D5',noteCount:182,duration:88.1},
+  {id:'vocal-chord-step-up-male',category:'보컬 트레이닝',path:'vocal_chord_step_up_male',midi:'vocal_chord_step_up_male.mid',audio:['vocal_chord_step_up_male.mp3'],name:'코드 스텝업 (남)',bpm:140,description:'단계별 코드 이동',range:'C3–D5',noteCount:260,duration:144},
+  {id:'breath-foundation-basic',category:'보컬 트레이닝',path:'breath foundation_basic',midi:'breath foundation_basic.mid',audio:['breath foundation_basic.mp3'],name:'호흡 기초 (기본)',bpm:60,description:'호흡과 일정한 소리',range:'A♯3–A♯4',noteCount:16,duration:104.3},
+  {id:'breath-foundation-hold',category:'보컬 트레이닝',path:'breath foundation_hold',midi:'breath foundation_hold.mid',audio:['breath foundation_hold.mp3'],name:'호흡 기초 (홀드)',bpm:60,description:'길게 유지하는 호흡',range:'A♯3–A♯4',noteCount:16,duration:160.1},
+  {id:'stage-01-dorian',category:'Stage Mission',path:'Stage Mission/01 Dorian',midi:'Dorian Scale.mid',audio:['Dorian Track.mp3'],name:'01 도리안',bpm:84,description:'♮6 특징 · 소울/펑크 마이너',range:'A♯2–C4',noteCount:106,duration:57},
+  {id:'stage-02-mixo-lydian',category:'Stage Mission',path:'Stage Mission/02 Mixo-Lydian',midi:'Mixo-Lydian scale.mid',audio:['Mixo-Lydian Track.mp3'],name:'02 믹소리디안',bpm:106,description:'♭7 특징 · 블루스/록',range:'A♯2–C4',noteCount:106,duration:46.1},
+  {id:'stage-04-lydian',category:'Stage Mission',path:'Stage Mission/04 Lydian',midi:'Lydian Scale.mid',audio:['Lydian Track.mp3'],name:'04 리디안',bpm:88,description:'♯4 특징 · 가장 밝음',range:'C3–C4',noteCount:105,duration:54.6},
+  {id:'stage-05-aeolian',category:'Stage Mission',path:'Stage Mission/05 Aeolian',midi:'Aeolian Scale.mid',audio:['Aeolian Track.mp3'],name:'05 에올리안',bpm:74,description:'내추럴 마이너',range:'A♯2–C4',noteCount:106,duration:64.9},
+  {id:'stage-06-phrygian',category:'Stage Mission',path:'Stage Mission/06 Flygian',midi:'flygian Scale.mid',audio:['flygian Track.mp3'],name:'06 프리지안',bpm:105,description:'♭2 특징 · 스페인/다크',range:'A♯2–C4',noteCount:106,duration:46.2},
+  {id:'stage-07-locrian',category:'Stage Mission',path:'Stage Mission/07 Locrian',midi:'Locrian Scale.mid',audio:['Locrian Track.mp3'],name:'07 로크리안',bpm:100,description:'♭2·♭5 · 최종 관문',range:'C3–C4',noteCount:105,duration:48.7},
+  {id:'stage-08-pentatonic',category:'Stage Mission',path:'Stage Mission/08 Pentatonic',midi:'Pentatonic Scale.mid',audio:['Pentatonic Track.mp3'],name:'08 펜타토닉',bpm:84,description:'5음 스케일',range:'A♯2–G4',noteCount:209,duration:97.2},
+  {id:'stage-09-blues',category:'Stage Mission',path:'Stage Mission/09 Bluse',midi:'Bluse Scale.mid',audio:['Bluse Track.mp3'],name:'09 블루스',bpm:120,description:'블루노트 ♭3·♭5',range:'A♯2–G4',noteCount:169,duration:57}
+];
+
+const $=id=>document.getElementById(id);
+const state={catalog:[],filter:'all',selected:null,asset:null,mode:'voice',loadToken:0,catalogName:'내장 트랙',audioCtx:null,session:null,micStream:null,micAnalyser:null,micBuffer:null,pitchHistory:[],lastPitchCheck:0,guideOn:readBool('tvGuide',true),octaveFree:readBool('tvOctaveFree',false),latency:readNumber('tvInputLatency',.2,0,.6),lookAhead:readNumber('tvLookAhead',0,0,10),visualDelay:readNumber('tvVisualDelay',-1,-1,.8),toastTimer:0,menuTime:0};
+const challenge={enabled:false,requesting:false,cameraToken:0,stream:null,recorder:null,take:null,url:null,recordCanvas:null,recordCtx:null,lastFrame:0,error:'',starting:false};
+const CLIP_DB_NAME='tv-stage-challenges-v1';
+const clipMemory=new Map();let clipDatabasePromise=null;
+
+function readBool(key,fallback){try{const v=localStorage.getItem(key);return v===null?fallback:v==='true'}catch(e){return fallback}}
+function readNumber(key,fallback,min,max){try{const n=parseFloat(localStorage.getItem(key));return Number.isFinite(n)?Math.min(max,Math.max(min,n)):fallback}catch(e){return fallback}}
+function save(key,value){try{localStorage.setItem(key,String(value))}catch(e){}}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function lerp(a,b,t){return a+(b-a)*t}
+function pad2(n){return String(n).padStart(2,'0')}
+function fmtTime(sec){sec=Math.max(0,Number(sec)||0);return Math.floor(sec/60)+':'+pad2(Math.floor(sec%60))}
+function noteName(midi,withSolfege=false){if(!Number.isFinite(midi))return '—';const m=Math.round(midi),oct=Math.floor(m/12)-1,name=NOTE_NAMES[(m%12+12)%12]+oct;return withSolfege?name+' · '+SOLFEGE[(m%12+12)%12]:name}
+function midiHz(m){return 440*Math.pow(2,(m-69)/12)}
+function showToast(message){const el=$('toast');el.textContent=message;el.classList.add('on');clearTimeout(state.toastTimer);state.toastTimer=setTimeout(()=>el.classList.remove('on'),3200)}
+function showScreen(id){if(id!=='playScreen')rhythmPresentation.collapse();document.querySelectorAll('.screen').forEach(el=>el.classList.toggle('on',el.id===id));document.body.dataset.screen=id.replace('Screen','');menuArtwork.dirty=true}
+function setSwitch(el,on){el.classList.toggle('on',on);el.setAttribute('aria-checked',String(on))}
+
+async function initCatalog(){
+  if(state.catalogLoading)return;state.catalogLoading=true;
+  try{
+  await hostBridge.waitForProfile();
+  let tracks;
+  try{
+    const response=await fetch(TRACK_ROOT+'tracks-manifest.json',{cache:'no-store'});if(!response.ok)throw new Error('manifest');
+    const manifest=await response.json();if(!Array.isArray(manifest.tracks)||!manifest.tracks.length)throw new Error('empty manifest');
+    tracks=manifest.tracks.map(item=>{const meta=FALLBACK_TRACKS.find(x=>x.id===item.id)||{};return Object.assign({},meta,item,{source:'url',base:manifest.base||TRACK_BASE})});state.catalogName='트랙테스트 · 자동 연결';
+  }catch(error){tracks=FALLBACK_TRACKS.map(item=>Object.assign({},item,{source:'url',base:TRACK_BASE}));state.catalogName=location.protocol==='file:'?'내장 목록 · 폴더 연결 필요':'내장 목록'}
+  state.catalog=tracks;setLibraryView(state.filter);$('catalogSignal').textContent=tracks.length+'개 트랙 연결';
+  }finally{state.catalogLoading=false}
+}
+function renderCatalog(){
+  const list=$('trackList');list.textContent='';const visible=state.catalog.filter(t=>state.filter==='all'||t.category===state.filter);$('trackCount').textContent=pad2(visible.length)+' TRACKS';
+  visible.forEach(track=>{
+    const globalIndex=state.catalog.indexOf(track)+1,button=document.createElement('button');button.className='track-item';button.type='button';if(state.selected&&state.selected.id===track.id)button.classList.add('selected');
+    button.setAttribute('aria-pressed',String(Boolean(state.selected&&state.selected.id===track.id)));button.setAttribute('aria-label',(track.name||track.path)+' · '+Math.round(track.bpm||0)+' BPM');
+    const idx=document.createElement('span');idx.className='track-art'+(track.category==='Stage Mission'?' stage':'');idx.setAttribute('aria-hidden','true');idx.innerHTML=practiceTrackIcon(track);
+    const main=document.createElement('span');main.className='track-main';const title=document.createElement('span');title.className='track-title';title.textContent=track.name||track.path.split('/').pop();const desc=document.createElement('span');desc.className='track-desc';desc.textContent=track.description||track.category||'MIDI 트랙';main.append(title,desc);
+    const bpm=document.createElement('span');bpm.className='track-bpm';const bpmNumber=document.createElement('b');bpmNumber.textContent=Math.round(track.bpm||0)||'—';bpm.append(bpmNumber,document.createTextNode('BPM'));
+    const duration=document.createElement('small');duration.textContent=fmtTime(track.duration);bpm.appendChild(duration);
+    button.append(idx,main,bpm);button.addEventListener('click',()=>{if(state.starting||state.session)return;revealTrackDetail();if(state.selected&&state.selected.id===track.id&&state.asset)return;selectTrack(track)});list.appendChild(button);
+  });
+  if(!visible.length){const empty=document.createElement('p');empty.className='setup-note';empty.textContent='이 분류에는 트랙이 없습니다.';list.appendChild(empty)}
+}
+function revealTrackDetail(){const screen=$('libraryScreen');screen.classList.add('mobile-detail');document.querySelector('.setup-scroll').scrollTop=0;menuArtwork.dirty=true}
+function setLibraryView(filter){
+  if(state.starting||state.session)return;stopChallengeCamera(true);state.filter=filter;
+  document.querySelectorAll('.filter-button').forEach(x=>{const active=x.dataset.filter===filter;x.classList.toggle('active',active);x.setAttribute('aria-selected',String(active))});
+  document.querySelectorAll('[data-library-view]').forEach(x=>{x.classList.add('active');x.setAttribute('aria-current','page')});
+  $('libraryHeading').textContent=filter==='all'?'오늘의 플레이':filter==='Stage Mission'?'스테이지 미션':'보컬 트레이닝';
+  $('libraryScreen').classList.remove('mobile-detail');document.querySelector('.library-column').scrollTop=0;
+  const visible=state.catalog.filter(t=>filter==='all'||t.category===filter);renderCatalog();
+  if(visible.length&&!visible.some(t=>state.selected&&t.id===state.selected.id))selectTrack(visible[0]);
+  if(!visible.length){state.loadToken++;stopChallengeCamera(true);state.selected=null;state.asset=null;refreshChallengeUI();$('selectedTitle').textContent='아직 트랙이 없어요';$('selectedDescription').textContent='다른 트랙 폴더를 연결해 주세요.';$('sourceLabel').textContent='트랙 추가';$('coverCategory').textContent='YOUR NEXT STAGE';$('coverIndex').textContent='— / —';['metaBpm','metaNotes','metaRange','metaDuration'].forEach(id=>$(id).textContent='—');setLoadState('','이 분류에 연결된 트랙이 없습니다.');setStartReady(false);$('startLabel').textContent='재생할 트랙이 없어요'}
+  refreshChallengeUI();setMode(state.mode);menuArtwork.dirty=true;
+}
+function trackFileUrl(track,file){return TRACK_ROOT+(track.base||TRACK_BASE)+track.path.split('/').map(encodeURIComponent).join('/')+'/'+encodeURIComponent(file)}
+async function getArrayBuffer(track,kind,file){
+  await hostBridge.waitForProfile();
+  if(track.source==='file'){if(kind==='midi')return track.midiFile.arrayBuffer();const target=track.audioFiles.find(x=>x.name===file)||track.audioFiles[0];return target.arrayBuffer()}
+  if(hostBridge.protectedAssets)return hostBridge.readAsset(track.id+'-'+kind);
+  if(hostBridge.production)throw new Error('승인된 스튜디오의 트랙 연결이 필요합니다.');
+  const response=await fetch(trackFileUrl(track,file));if(!response.ok)throw new Error(file+' 파일을 읽을 수 없습니다.');return response.arrayBuffer();
+}
+async function getTrackInfo(track){
+  if(track.source==='file'){if(!track.infoFile)return {};try{return JSON.parse(await track.infoFile.text())}catch(e){return {}}}
+  try{const response=await fetch(trackFileUrl(track,track.info||'트랙정보.json'),{cache:'no-store'});return response.ok?await response.json():{}}catch(e){return {}}
+}
+function setLoadState(type,label){$('loadLabel').textContent=label;$('loadLine').className='load-line '+type}
+async function selectTrack(track){
+  if(state.session||state.starting)return;stopChallengeCamera(true);state.selected=track;state.asset=null;refreshChallengeUI();renderCatalog();updateSelectedCard(track);const token=++state.loadToken;setLoadState('loading','MIDI와 오디오 해석 중');setStartReady(false);
+  try{
+    const audioCtx=ensureAudioContext(),infoPromise=getTrackInfo(track),midiPromise=getArrayBuffer(track,'midi',track.midi),info=await infoPromise,midiBuffer=await midiPromise,bpm=Number(info.bpm)||Number(track.bpm)||100,notes=parseMidi(new Uint8Array(midiBuffer),bpm);
+    if(!notes.length)throw new Error('MIDI 안에서 노트를 찾지 못했습니다.');const audioNames=Array.isArray(track.audio)?track.audio:[track.audio],audioBuffers=[];
+    for(const name of audioNames){const bytes=await getArrayBuffer(track,'audio',name),decoded=await audioCtx.decodeAudioData(bytes.slice(0));audioBuffers.push({name,buffer:decoded})}
+    if(token!==state.loadToken)return;
+    const min=Math.min(...notes.map(n=>n.midi)),max=Math.max(...notes.map(n=>n.midi)),audioDuration=Math.max(...audioBuffers.map(x=>x.buffer.duration)),offset=Number(info['시작오프셋'])||0;
+    const actual={name:info['이름']||track.name||track.path.split('/').pop(),description:info['설명']||track.description||'',bpm,offset,notes,audioBuffers,minMidi:min,maxMidi:max,duration:Math.max(audioDuration,notes[notes.length-1].t+notes[notes.length-1].dur+offset),range:noteName(min)+'–'+noteName(max),source:track.source};
+    state.asset=actual;track.name=actual.name;track.description=actual.description||track.description;track.bpm=bpm;track.noteCount=notes.length;track.range=actual.range;track.duration=actual.duration;
+    updateSelectedCard(track,actual);renderCatalog();setLoadState('ready','플레이 준비 완료 · '+notes.length+' 노트');$('loadLabel').title='실제 MIDI '+notes.length+'개 · 오디오 '+fmtTime(audioDuration)+' 연결 완료';setStartReady(true);
+  }catch(error){if(token!==state.loadToken)return;console.error(error);setLoadState('error',location.protocol==='file:'?'폴더 연결 버튼을 눌러 주세요':'파일 매핑을 확인해 주세요');setStartReady(false);$('sourceLabel').textContent='TRACK CONNECTION NEEDED'}
+}
+function updateSelectedCard(track,asset){
+  const index=Math.max(0,state.catalog.indexOf(track));$('selectedNumber').textContent=pad2(index+1);$('selectedTitle').textContent=(asset&&asset.name)||track.name||track.path.split('/').pop();$('selectedDescription').textContent=(asset&&asset.description)||track.description||track.category||'MIDI와 오디오를 연결하는 중입니다.';
+  $('metaBpm').textContent=Math.round((asset&&asset.bpm)||track.bpm||0)+' BPM';$('metaNotes').textContent=((asset&&asset.notes.length)||track.noteCount||'—')+' NOTES';$('metaRange').textContent=(asset&&asset.range)||track.range||'— RANGE';$('metaDuration').textContent=fmtTime((asset&&asset.duration)||track.duration||0);$('sourceLabel').textContent=track.category==='Stage Mission'?'스테이지 미션':'보컬 트레이닝';
+  $('coverCategory').textContent=track.category==='Stage Mission'?'STAGE MISSION':'VOCAL TRAINING';$('coverIndex').textContent=pad2(index+1)+' / '+pad2(state.catalog.length);menuArtwork.dirty=true;
+}
+function setStartReady(ready){const labels={voice:'보이스 플레이 시작',demo:'미리 듣기 시작'};$('startButton').disabled=!ready||Boolean(state.starting)||challenge.requesting||Boolean(state.finalizing)||hostBridge.stopping;$('startLabel').textContent=state.starting?'무대 준비 중':ready?(isStageChallenge()?'챌린지 녹화 시작 ●':labels[state.mode]):'트랙 준비 중'}
+
+async function connectFolder(){
+  if('showDirectoryPicker' in window&&window.isSecureContext){try{const handle=await window.showDirectoryPicker({mode:'read'}),records=[];await scanDirectoryHandle(handle,'',records);await ingestFolderRecords(records,handle.name);return}catch(error){if(error&&error.name==='AbortError')return}}
+  $('folderInput').click();
+}
+async function scanDirectoryHandle(handle,prefix,out){for await(const [name,entry] of handle.entries()){if(name.startsWith('.'))continue;const path=prefix?prefix+'/'+name:name;if(entry.kind==='directory')await scanDirectoryHandle(entry,path,out);else out.push({path:path.normalize('NFC'),file:await entry.getFile()})}}
+async function ingestFolderRecords(records,folderName){
+  const clean=records.filter(r=>!r.path.split('/').some(part=>part.startsWith('.'))),hasTrackRoot=clean.some(r=>r.path.normalize('NFC').split('/').includes('트랙')),groups=new Map();
+  for(const record of clean){let parts=record.path.normalize('NFC').split('/').filter(Boolean);if(hasTrackRoot){const at=parts.lastIndexOf('트랙');if(at<0)continue;parts=parts.slice(at+1)}if(!parts.length)continue;const filename=parts.pop(),dir=parts.join('/')||(folderName||'선택한 트랙');if(!groups.has(dir))groups.set(dir,[]);groups.get(dir).push({name:filename,file:record.file})}
+  const tracks=[];let order=0;
+  for(const [path,files] of groups){
+    const midiFiles=files.filter(x=>/\.midi?$/i.test(x.name)),audioFiles=files.filter(x=>/\.(mp3|wav|m4a|aac)$/i.test(x.name));if(!midiFiles.length||!audioFiles.length)continue;
+    const infoRecord=files.find(x=>x.name.normalize('NFC')==='트랙정보.json')||files.find(x=>/\.json$/i.test(x.name));let info={};if(infoRecord){try{info=JSON.parse(await infoRecord.file.text())}catch(e){}}
+    const leaf=path.split('/').pop(),stemMatch=midiFiles.find(x=>x.name.replace(/\.midi?$/i,'').toLowerCase()===leaf.toLowerCase()),selectedMidi=stemMatch||midiFiles[0];
+    tracks.push({id:'local-'+Date.now()+'-'+order++,category:(path.split('/').some(part=>part.toLowerCase()==='stage mission')||String(folderName).toLowerCase()==='stage mission')?'Stage Mission':'보컬 트레이닝',path,midi:selectedMidi.name,audio:audioFiles.map(x=>x.name),midiFile:selectedMidi.file,audioFiles:audioFiles.map(x=>x.file),infoFile:infoRecord&&infoRecord.file,source:'file',name:info['이름']||leaf,bpm:Number(info.bpm)||100,description:info['설명']||'로컬 폴더 트랙',range:info['실측']&&info['실측']['음역'],noteCount:info['실측']&&info['실측']['노트수'],duration:info['실측']&&info['실측']['오디오길이(초)']});
+  }
+  if(!tracks.length){showToast('MIDI와 오디오가 함께 있는 트랙 폴더를 찾지 못했습니다.');return}tracks.sort((a,b)=>a.category.localeCompare(b.category,'ko')||a.path.localeCompare(b.path,'ko'));state.catalog=tracks;state.catalogName=folderName||'선택한 폴더';setLibraryView('all');$('catalogSignal').textContent=tracks.length+'개 로컬 트랙 연결';showToast(tracks.length+'개 트랙의 MIDI와 오디오를 연결했습니다.');
+}
+
+function parseMidi(data,fallbackBpm){
+  const text=(p,n)=>String.fromCharCode(...data.slice(p,p+n)),u16=p=>(data[p]<<8)|data[p+1],u32=p=>(((data[p]<<24)>>>0)|(data[p+1]<<16)|(data[p+2]<<8)|data[p+3])>>>0;
+  if(data.length<14||text(0,4)!=='MThd')return [];const headerLength=u32(4),tracks=u16(10),division=u16(12);if(division&0x8000)return [];let p=8+headerLength;const events=[];let serial=0;
+  const readVar=()=>{let value=0,b=0,count=0;do{if(p>=data.length)return value;b=data[p++];value=(value<<7)|(b&0x7f);count++}while((b&0x80)&&count<5);return value};
+  for(let trackIndex=0;trackIndex<tracks&&p+8<=data.length;trackIndex++){
+    if(text(p,4)!=='MTrk')break;const length=u32(p+4),end=Math.min(data.length,p+8+length);p+=8;let tick=0,running=0;
+    while(p<end){
+      tick+=readVar();if(p>=end)break;let status=data[p];if(status&0x80){p++;running=status}else status=running;
+      if(status===0xff){const type=data[p++],len=readVar();if(type===0x51&&len>=3)events.push({tick,type:'tempo',uspq:(data[p]<<16)|(data[p+1]<<8)|data[p+2],serial:serial++});p+=len;continue}
+      if(status===0xf0||status===0xf7){p+=readVar();continue}const kind=status&0xf0,channel=status&0x0f;
+      if(kind===0x80||kind===0x90){const note=data[p++],velocity=data[p++];events.push({tick,type:(kind===0x90&&velocity>0)?'on':'off',note,velocity,channel,serial:serial++})}
+      else if(kind===0xc0||kind===0xd0)p+=1;else if(kind>=0x80&&kind<=0xe0)p+=2;else break;
+    }p=end;
+  }
+  events.sort((a,b)=>a.tick-b.tick||(a.type==='tempo'?-1:b.type==='tempo'?1:a.serial-b.serial));const seconds=[];let tick=0,time=0,uspq=60000000/(fallbackBpm||120);
+  for(const event of events){time+=(event.tick-tick)/division*(uspq/1e6);tick=event.tick;if(event.type==='tempo')uspq=event.uspq;else seconds.push(Object.assign({},event,{time}))}
+  const open=new Map(),notes=[];for(const event of seconds){const key=event.channel+':'+event.note;if(event.type==='on'){if(!open.has(key))open.set(key,[]);open.get(key).push(event)}else{const stack=open.get(key);if(!stack||!stack.length)continue;const start=stack.shift();notes.push({t:start.time,dur:Math.max(.07,event.time-start.time),midi:event.note,velocity:start.velocity||90,channel:event.channel})}}
+  notes.sort((a,b)=>a.t-b.t||a.midi-b.midi);return notes;
+}
+
+function ensureAudioContext(){if(!state.audioCtx)state.audioCtx=new (window.AudioContext||window.webkitAudioContext)({latencyHint:'interactive'});return state.audioCtx}
+async function refreshMicrophones(){
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)return;
+  try{const devices=await navigator.mediaDevices.enumerateDevices(),select=$('micSelect'),current=select.value;select.textContent='';const automatic=document.createElement('option');automatic.value='';automatic.textContent='자동 선택';select.appendChild(automatic);devices.filter(d=>d.kind==='audioinput').forEach((d,index)=>{const option=document.createElement('option');option.value=d.deviceId;option.textContent=d.label||('마이크 '+(index+1));select.appendChild(option)});if([...select.options].some(o=>o.value===current))select.value=current}catch(error){}
+}
+async function startMicrophone(startToken){
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)throw new Error('이 주소에서는 마이크를 사용할 수 없습니다.');const chosen=$('micSelect').value,audio={echoCancellation:true,noiseSuppression:false,autoGainControl:true,channelCount:1};if(chosen)audio.deviceId={exact:chosen};
+  let stream;try{stream=await navigator.mediaDevices.getUserMedia({audio})}catch(error){if(startToken!==undefined&&startToken!==state.startToken)throw new DOMException('시작 요청 취소','AbortError');if(chosen&&error.name!=='NotAllowedError')stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:false,autoGainControl:true}});else throw error}
+  if(startToken!==undefined&&startToken!==state.startToken){stream.getTracks().forEach(t=>t.stop());throw new DOMException('시작 요청 취소','AbortError')}state.micStream=stream;
+  stream.getAudioTracks().forEach(track=>track.addEventListener('ended',()=>{if(state.session&&state.session.mode==='voice'){pauseGame(true);showToast('마이크 연결이 끊겨 연습을 멈췄습니다. 연결 상태를 확인해 주세요.')}}));
+  const source=ensureAudioContext().createMediaStreamSource(state.micStream),highpass=state.audioCtx.createBiquadFilter();highpass.type='highpass';highpass.frequency.value=70;const boost=state.audioCtx.createGain();boost.gain.value=4;state.micAnalyser=state.audioCtx.createAnalyser();state.micAnalyser.fftSize=4096;state.micAnalyser.smoothingTimeConstant=.12;state.micBuffer=new Float32Array(state.micAnalyser.fftSize);source.connect(highpass).connect(boost).connect(state.micAnalyser);state.micNodes=[source,highpass,boost];state.pitchHistory=[];
+}
+function stopMicrophone(){if(state.micStream)state.micStream.getTracks().forEach(track=>track.stop());state.micStream=null;state.micAnalyser=null;state.micBuffer=null;state.pitchHistory=[];for(const node of state.micNodes||[])try{node.disconnect()}catch{}state.micNodes=[]}
+function detectPitch(){
+  const analyser=state.micAnalyser,buffer=state.micBuffer;if(!analyser||!buffer)return {hz:0,confidence:0,rms:0};analyser.getFloatTimeDomainData(buffer);const n=buffer.length;let rms=0;for(let i=0;i<n;i++)rms+=buffer[i]*buffer[i];rms=Math.sqrt(rms/n);state.lastRms=rms;if(rms<.0015)return {hz:0,confidence:0,rms};
+  const sampleRate=state.audioCtx.sampleRate,minLag=Math.max(40,Math.floor(sampleRate/700)),maxLag=Math.min(Math.floor(sampleRate/75),n/2);let bestLag=0,best=-1;
+  for(let lag=minLag;lag<=maxLag;lag++){let corr=0,e0=0,e1=0;for(let i=0;i<n-lag;i+=2){const a=buffer[i],b=buffer[i+lag];corr+=a*b;e0+=a*a;e1+=b*b}const value=corr/Math.sqrt(e0*e1+1e-12);if(value>best){best=value;bestLag=lag}}
+  if(best<.36||!bestLag)return {hz:0,confidence:best,rms};let hz=sampleRate/bestLag;state.pitchHistory.push(hz);if(state.pitchHistory.length>3)state.pitchHistory.shift();const sorted=[...state.pitchHistory].sort((a,b)=>a-b);hz=sorted[Math.floor(sorted.length/2)];return {hz,confidence:best,rms};
+}
+
+function setMode(mode){if(state.starting||state.session||state.finalizing)return;if(mode!=='voice'&&mode!=='demo')return;state.mode=mode;if(mode==='demo')stopChallengeCamera(true);document.querySelectorAll('.mode-button').forEach(x=>x.classList.toggle('active',x.dataset.mode===mode));setStartReady(Boolean(state.asset));$('setupNote').textContent=isStageChallenge()?'이어폰을 끼면 반주와 목소리가 더 깨끗하게 녹음됩니다.':mode==='voice'?'유선 이어폰을 사용하면 음정 판정이 가장 정확합니다.':'마이크 없이 실제 MIDI 피아노롤과 오디오 싱크를 확인합니다.'}
+
+function isStageChallenge(){return Boolean(state.mode==='voice'&&challenge.enabled&&state.selected&&state.selected.category==='Stage Mission')}
+function refreshChallengeUI(){
+  const stage=state.selected&&state.selected.category==='Stage Mission',live=challenge.stream&&challenge.stream.getVideoTracks().some(t=>t.readyState==='live');
+  $('challengePanel').hidden=!stage;$('cameraPreview').hidden=!live;$('cameraButton').classList.toggle('on',Boolean(live));$('cameraButton').textContent=challenge.requesting?'권한 요청 중 · 취소':live?'카메라 켜짐 · 끄기':'카메라 켜고 챌린지 준비';
+  $('cameraStatus').textContent=challenge.requesting?'브라우저의 카메라 접근을 허용해 주세요.':live?'얼굴 위치를 확인한 뒤 시작하세요. 녹화에는 반주와 목소리가 함께 담깁니다.':'카메라를 켠 뒤 시작하면 녹화됩니다. 카메라 없이도 연습할 수 있어요.';setStartReady(Boolean(state.asset));
+}
+function mediaErrorMessage(error){return ({NotAllowedError:'카메라·마이크 권한을 허용해 주세요. 주소창의 사이트 권한에서 변경할 수 있어요.',NotFoundError:'연결된 카메라 또는 마이크를 찾지 못했습니다.',NotReadableError:'카메라·마이크를 다른 앱에서 사용 중인지 확인해 주세요.',OverconstrainedError:'이 카메라에서는 요청한 영상 설정을 사용할 수 없습니다.'})[error&&error.name]||(error&&error.message)||'카메라 연결을 확인해 주세요.'}
+async function openChallengeCamera(){
+  if(challenge.stream&&challenge.stream.getVideoTracks().some(t=>t.readyState==='live'))return true;
+  if(!window.isSecureContext||!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)throw new Error('카메라는 localhost 또는 HTTPS 주소에서 사용할 수 있어요.');
+  if(!window.MediaRecorder||!HTMLCanvasElement.prototype.captureStream)throw new Error('이 브라우저는 챌린지 영상 녹화를 지원하지 않습니다. 최신 Safari 또는 Chrome에서 열어 주세요.');
+  const token=++challenge.cameraToken;challenge.requesting=true;refreshChallengeUI();let stream;
+  try{
+    if(!state.starting)await hostBridge.requestStart(hostBridge.snapshot('camera'),'camera-preview');if(token!==challenge.cameraToken)return false;hostBridge.stateChanged('camera-preview');
+    try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'user'},width:{ideal:1280},height:{ideal:720},frameRate:{ideal:30,max:30}},audio:false})}catch(error){if(token!==challenge.cameraToken)return false;if(error.name!=='OverconstrainedError')throw error;stream=await navigator.mediaDevices.getUserMedia({video:true,audio:false})}
+    if(token!==challenge.cameraToken){stream.getTracks().forEach(t=>t.stop());return false}
+    challenge.stream=stream;const video=$('cameraSource');video.srcObject=stream;video.muted=true;await video.play();const preview=$('cameraPreviewVideo');preview.srcObject=stream;preview.muted=true;preview.play().catch(()=>{});
+    if(token!==challenge.cameraToken)return false;
+    challenge.enabled=true;hostBridge.stateChanged('camera-preview');stream.getVideoTracks()[0].addEventListener('ended',()=>{if(state.session&&state.session.challenge){challenge.error='카메라 연결이 끊겼습니다. 여기까지 녹화한 영상을 저장할 수 있어요.';pauseGame(true);showToast(challenge.error)}});return true;
+  }catch(error){if(stream)stream.getTracks().forEach(t=>t.stop());if(token!==challenge.cameraToken)return false;challenge.stream=null;challenge.enabled=false;$('cameraSource').srcObject=null;throw error}
+  finally{if(token===challenge.cameraToken){challenge.requesting=false;refreshChallengeUI();setMode(state.mode);hostBridge.stateChanged()}}
+}
+function stopChallengeCamera(reset=false){
+  if(reset)hostBridge.cancelRequests();challenge.cameraToken++;challenge.requesting=false;if(challenge.stream)challenge.stream.getTracks().forEach(t=>t.stop());challenge.stream=null;['cameraSource','cameraPreviewVideo'].forEach(id=>{$(id).pause();$(id).srcObject=null});$('cameraPreview').hidden=true;if(reset)challenge.enabled=false;hostBridge.stateChanged();
+}
+async function toggleChallengeCamera(){
+  if(state.session)return;if(state.starting){if(challenge.requesting)cancelPendingStart();return}
+  if(challenge.requesting||(challenge.stream&&challenge.stream.getVideoTracks().some(t=>t.readyState==='live'))){stopChallengeCamera(true);refreshChallengeUI();setMode(state.mode);return}
+  try{await openChallengeCamera()}catch(error){$('cameraStatus').textContent=mediaErrorMessage(error);showToast(mediaErrorMessage(error))}
+}
+function cancelPendingStart(){if(!state.starting||state.session)return;rhythmPresentation.collapse();hostBridge.cancelRequests();state.startToken=(state.startToken||0)+1;state.starting=false;stopMicrophone();stopChallengeCamera(true);$('cancelStart').hidden=true;refreshChallengeUI();showToast('시작 요청을 취소했습니다.');hostBridge.stateChanged('cancelled')}
+function setGlassMode(on){document.body.classList.toggle('glass-mode',on);resizeCanvas();$('pauseSaveClip').hidden=!on}
+function prepareChallengeRecording(session){
+  challenge.error='';challenge.recordCanvas=document.createElement('canvas');challenge.recordCanvas.width=720;challenge.recordCanvas.height=1280;challenge.recordCtx=challenge.recordCanvas.getContext('2d',{alpha:false});challenge.lastFrame=0;
+  const recorder=new ChallengeRecorder();challenge.recorder=recorder;recorder.onWarning=message=>{challenge.error=message;showToast(message);$('recordingLabel').textContent='녹화 종료'};
+  session.recordingDelay=state.audioCtx.createDelay(1);session.recordingDelay.delayTime.value=clamp(visualDelay(),0,1);session.compressor.connect(session.recordingDelay);
+  renderChallengeVideo(session,true);recorder.start({canvas:challenge.recordCanvas,audioContext:state.audioCtx,backingNode:session.recordingDelay,microphoneStream:state.micStream,name:'터칭보이스_'+state.asset.name+'_'+new Date().toISOString().replace(/[:.]/g,'-')});
+}
+async function settleChallengeRecording(){
+  const recorder=challenge.recorder;if(!recorder)return null;
+  try{return await recorder.stop()}catch(error){challenge.error='영상 저장을 마치지 못했습니다. '+(error.message||'');return null}finally{challenge.recorder=null;challenge.recordCanvas=null;challenge.recordCtx=null}
+}
+function showChallengeTake(take,partial){
+  if(take&&!take.blob.size)take=null;
+  $('challengeResult').hidden=false;const preview=$('clipPreview');preview.pause();preview.hidden=!take;
+  if(challenge.url){URL.revokeObjectURL(challenge.url);challenge.url=null}challenge.take=take;$('downloadClip').disabled=!take;$('shareClip').disabled=!take;
+  if(!take){preview.removeAttribute('src');preview.load();$('clipStatus').textContent=challenge.error||'녹화된 영상이 없습니다. 카메라를 켜고 다시 시작해 주세요.';return}
+  challenge.url=URL.createObjectURL(take.blob);preview.src=challenge.url;preview.load();
+  const format=take.mimeType.includes('mp4')?'MP4':'WebM';$('clipStatus').textContent=(partial?'여기까지의 무대':'완주한 무대')+' · '+fmtTime(take.seconds)+' · '+format+' · '+(take.blob.size/1048576).toFixed(1)+' MB'+(challenge.error?' · '+challenge.error:'');
+}
+function openClipDatabase(){
+  if(clipDatabasePromise)return clipDatabasePromise;
+  clipDatabasePromise=new Promise((resolve,reject)=>{if(!window.indexedDB){reject(new Error('브라우저 보관 미지원'));return}const request=indexedDB.open(CLIP_DB_NAME,1);request.onupgradeneeded=()=>{const db=request.result,store=db.createObjectStore('clips',{keyPath:'id'});store.createIndex('createdAt','createdAt')};request.onsuccess=()=>{const db=request.result;db.onversionchange=()=>{db.close();clipDatabasePromise=null};resolve(db)};request.onerror=()=>reject(request.error);request.onblocked=()=>reject(new Error('영상 보관함을 다른 탭에서 사용 중입니다.'))});clipDatabasePromise.catch(()=>{clipDatabasePromise=null});return clipDatabasePromise;
+}
+async function rememberChallengeTake(take,result){
+  if(!take||!take.blob.size)return;const now=Date.now(),entry={id:now+'-'+Math.random().toString(36).slice(2,8),createdAt:now,title:result.track.name||'스테이지 미션',blob:take.blob,fileName:take.file.name,mimeType:take.mimeType,seconds:take.seconds,result:{...result,track:{id:result.track.id,name:result.track.name,category:result.track.category}},persisted:false};clipMemory.set(entry.id,entry);
+  if(challenge.take===take)$('clipStorageStatus').textContent='이 브라우저에 영상을 보관하는 중입니다…';
+  try{const db=await openClipDatabase();await new Promise((resolve,reject)=>{const tx=db.transaction('clips','readwrite');tx.objectStore('clips').put({...entry,persisted:true});tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error||new Error('보관 취소'))});entry.persisted=true;clipMemory.delete(entry.id);if(challenge.take===take)$('clipStorageStatus').textContent='브라우저에 보관됐어요. 홈의 ‘내 기록’에서 결과와 영상을 다시 열 수 있습니다.'}
+  catch(error){if(challenge.take===take)$('clipStorageStatus').textContent='브라우저 보관 공간을 사용할 수 없습니다. 화면을 닫기 전에 영상 저장을 눌러 주세요.'}
+  refreshSavedClipsButton();
+}
+function clearHostMemberView(){
+  state.loadToken++;state.asset=null;setStartReady(false);
+  $('clipPreview').pause();$('clipPreview').removeAttribute('src');$('savedClipsOverlay').classList.remove('on');$('savedClipsList').textContent='';$('savedClipsButton').hidden=true;
+  if(challenge.url){URL.revokeObjectURL(challenge.url);challenge.url=null}challenge.take=null;
+  const reload=()=>{if(!hostBridge.authorized)return;if(state.catalog.length&&state.selected)void selectTrack(state.selected);else if(!state.catalog.length)void initCatalog().catch(()=>{})};
+  if(state.session||state.starting||state.finalizing)void hostBridge.stop('profile-change').then(reload);
+  else reload();
+}
+async function recentChallengeClips(){
+  if(!hostBridge.authorized || (hostBridge.embedded&&!hostBridge.profileId))return [];
+  const requestedProfileId=hostBridge.profileId;
+  let entries=[];try{const db=await openClipDatabase();entries=await new Promise((resolve,reject)=>{const found=[],tx=db.transaction('clips','readonly'),request=tx.objectStore('clips').index('createdAt').openCursor(null,'prev');request.onsuccess=()=>{const cursor=request.result;if(cursor&&found.length<20){found.push(cursor.value);cursor.continue()}else resolve(found)};request.onerror=()=>reject(request.error)})}catch(error){}
+  if(!hostBridge.authorized || requestedProfileId!==hostBridge.profileId)return [];
+  return [...entries,...clipMemory.values()].filter(entry=>!hostBridge.embedded||entry.result?.profileId===hostBridge.profileId).sort((a,b)=>b.createdAt-a.createdAt).slice(0,20);
+}
+async function refreshSavedClipsButton(){const entries=await recentChallengeClips();$('savedClipsButton').hidden=!entries.length;$('savedClipsButton').textContent='보관한 챌린지 영상 · '+entries.length+'개'}
+async function openSavedClips(){
+  if(!hostBridge.authorized || (hostBridge.embedded&&!hostBridge.profileId))return;
+  const entries=await recentChallengeClips(),list=$('savedClipsList');if(!hostBridge.authorized || (hostBridge.embedded&&!hostBridge.profileId))return;list.textContent='';if(!entries.length){const empty=document.createElement('p');empty.style.cssText='padding:28px 12px;text-align:center;color:#baa5ce;line-height:1.9';empty.textContent='아직 담아둔 무대가 없어요. 스테이지 미션에서 카메라를 켜고 첫 챌린지를 기록해 보세요.';list.appendChild(empty);$('savedClipsOverlay').classList.add('on');return}
+  entries.forEach(entry=>{const button=document.createElement('button');button.className='secondary-button';button.style.cssText='text-align:left;padding:12px;line-height:1.6';button.textContent=entry.title+' · '+fmtTime(entry.seconds)+'\n'+new Date(entry.createdAt).toLocaleString('ko-KR')+(entry.persisted?'':' · 이번 화면에만 보관');button.addEventListener('click',()=>{if(!hostBridge.authorized || (hostBridge.embedded&&entry.result?.profileId!==hostBridge.profileId))return;$('savedClipsOverlay').classList.remove('on');showResult({...entry.result,fromHistory:true,challenge:true});showChallengeTake({blob:entry.blob,file:new File([entry.blob],entry.fileName,{type:entry.mimeType}),mimeType:entry.mimeType,seconds:entry.seconds},entry.result.partial);$('clipStorageStatus').textContent=entry.persisted?'이 브라우저에 보관된 영상입니다. 중요한 영상은 기기에도 저장해 주세요.':'이번 화면에 임시 보관 중입니다. 닫기 전에 영상 저장을 눌러 주세요.'});list.appendChild(button)});$('savedClipsOverlay').classList.add('on');
+}
+function downloadChallenge(){if(!challenge.take||!challenge.url)return;const a=document.createElement('a');a.href=challenge.url;a.download=challenge.take.file.name;document.body.appendChild(a);a.click();a.remove();showToast('영상 저장을 시작했습니다. 다운로드 목록을 확인해 주세요.')}
+async function shareChallenge(){
+  const take=challenge.take;if(!take)return;const button=$('shareClip');button.disabled=true;
+  try{if(navigator.share&&navigator.canShare&&navigator.canShare({files:[take.file]})){await navigator.share({files:[take.file],title:'터칭보이스 스테이지 챌린지',text:'#터칭보이스 #보컬챌린지 #StageMission'})}else{downloadChallenge();$('clipStatus').textContent='이 브라우저에서는 파일 공유 대신 영상을 저장합니다. 저장한 영상을 릴스·쇼츠·틱톡에서 선택해 주세요.'}}
+  catch(error){if(error.name!=='AbortError'){$('clipStatus').textContent='공유창을 열지 못했습니다. 영상 저장 버튼으로 받은 뒤 원하는 앱에 올려 주세요.'}}
+  finally{button.disabled=false}
+}
+function makeGameNotes(asset,mode){
+  const notes=asset.notes.map((raw,index)=>{const t=raw.t+asset.offset,velocity=clamp(Math.round(Number(raw.velocity)||80),1,127),zone=voiceZoneFromVelocity(velocity);return Object.assign({},raw,{id:index,t,dur:Math.max(.07,raw.dur),end:t+Math.max(.07,raw.dur),rawVelocity:raw.velocity,velocity,zoneId:zone.id,zoneIndex:zone.index,judged:false,result:'',samples:0,tuned:0,centered:0,run:0,hitAt:0,preview:''})});
+  if(mode==='voice'){for(let i=0;i<notes.length-1;i++){const a=notes[i],b=notes[i+1],overlap=a.end-b.t;if(overlap>0&&overlap<.18&&b.t>a.t){a.end=b.t-.01;a.dur=Math.max(.06,a.end-a.t)}}}return notes;
+}
+async function startGame(){
+  if(!state.asset||state.session||state.starting||state.finalizing||hostBridge.stopping||challenge.requesting)return;rhythmPresentation.enter();state.starting=true;const token=state.startToken=(state.startToken||0)+1,button=$('startButton');button.disabled=true;$('startLabel').textContent='무대 준비 중';$('cancelStart').hidden=false;const withCamera=isStageChallenge(),hostRun=hostBridge.snapshot(state.mode);$('clipPreview').pause();
+  try{
+    const audioCtx=ensureAudioContext();const resumePromise=audioCtx.resume();await hostBridge.requestStart(hostRun);if(token!==state.startToken)return;await resumePromise;await hostBridge.prepareMetrics(hostRun);if(token!==state.startToken)return;if(withCamera&&!await openChallengeCamera())return;if(state.mode==='voice'||withCamera)await startMicrophone(token);if(token!==state.startToken)return;if(withCamera&&(!challenge.stream||!challenge.stream.getVideoTracks().some(t=>t.readyState==='live')))throw new Error('카메라 연결이 끊겼습니다. 다시 켜고 시작해 주세요.');const notes=makeGameNotes(state.asset,state.mode),master=audioCtx.createGain(),compressor=audioCtx.createDynamicsCompressor();master.gain.value=.9;compressor.threshold.value=-8;compressor.knee.value=16;compressor.ratio.value=4;master.connect(compressor).connect(audioCtx.destination);
+    const startAt=audioCtx.currentTime+2.4,sources=[];state.asset.audioBuffers.forEach(item=>{const source=audioCtx.createBufferSource();source.buffer=item.buffer;source.connect(master);source.start(startAt);sources.push(source)});const totalDuration=Math.max(state.asset.duration,...state.asset.audioBuffers.map(x=>x.buffer.duration));
+    state.session={status:'playing',mode:state.mode,notes,master,compressor,sources,guideNodes:[],guideGain:null,startAt,totalDuration,minMidi:state.asset.minMidi,maxMidi:state.asset.maxMidi,bpm:state.asset.bpm,track:state.selected,score:0,perfect:0,great:0,good:0,miss:0,combo:0,maxCombo:0,accuracyPoints:0,judged:0,currentPitch:0,currentMidi:null,displayMidi:null,currentCents:0,pitchConfidence:0,lastHud:0,lastTarget:null,zoneSignature:'',pitchTrail:[],particles:[],laneFlash:[0,0,0,0],shake:0,flash:0};
+    state.session.challenge=withCamera;state.session.hostRun=hostRun;hostRun.startedAt=new Date(Date.now()+2400).toISOString();hostBridge.attachMicrophone(state.session);
+    if(withCamera){setGlassMode(true);drawBackdrop(-2.4,state.session);drawPianoRoll(-2.4,state.session);prepareChallengeRecording(state.session);state.micStream.getAudioTracks().forEach(track=>track.addEventListener('ended',()=>{if(state.session&&state.session.challenge){challenge.error='마이크 연결이 끊겼습니다. 여기까지 녹화한 영상을 저장할 수 있어요.';pauseGame(true);showToast(challenge.error)}}))}
+    scheduleGuideNotes(state.session);applyVisualUI();preparePlayUI();showScreen('playScreen');hostBridge.stateChanged('playing');
+  }catch(error){if(token!==state.startToken)return;rhythmPresentation.collapse();console.error(error);await settleChallengeRecording();cleanupSession();showScreen('libraryScreen');refreshChallengeUI();showToast(withCamera||state.mode==='voice'?mediaErrorMessage(error):'게임을 시작하지 못했습니다. 파일 연결을 확인해 주세요.')}
+  finally{if(token===state.startToken){state.starting=false;if(!state.session){stopMicrophone();stopChallengeCamera(true);rhythmPresentation.collapse()}$('cancelStart').hidden=true;setStartReady(Boolean(state.asset));hostBridge.stateChanged()}}
+}
+const GUIDE_GAIN=.34;
+function scheduleGuideNotes(session){
+  const ctx=state.audioCtx,gain=ctx.createGain();gain.gain.value=state.guideOn?GUIDE_GAIN:0;gain.connect(session.challenge?ctx.destination:session.master);session.guideGain=gain;
+  session.notes.forEach(note=>{const start=session.startAt+note.t;if(start<ctx.currentTime)return;const duration=Math.min(.5,Math.max(.14,note.dur*.85)),env=ctx.createGain();env.gain.setValueAtTime(0,start);env.gain.linearRampToValueAtTime(1,start+.008);env.gain.setValueAtTime(1,start+Math.min(.12,duration*.5));env.gain.exponentialRampToValueAtTime(.001,start+duration);env.connect(gain);
+    const osc=ctx.createOscillator();osc.type='triangle';osc.frequency.value=midiHz(note.midi);osc.connect(env);osc.start(start);osc.stop(start+duration+.02);
+    const hi=ctx.createOscillator(),hiGain=ctx.createGain();hi.type='square';hi.frequency.value=midiHz(note.midi)*2;hiGain.gain.value=.08;hi.connect(hiGain).connect(env);hi.start(start);hi.stop(start+duration+.02);
+    session.guideNodes.push(osc,hi)});
+}
+function preparePlayUI(){
+  const s=state.session;$('hudTitle').textContent=state.asset.name;$('hudCategory').textContent=state.selected.category;$('hudMeta').textContent=Math.round(s.bpm)+' BPM · '+({voice:'VOICE MODE',demo:'AUTO MODE'}[s.mode]);$('hudScore').textContent='000,000';$('comboNumber').textContent='0';$('judgeText').textContent='';$('gameProgress').style.width='0%';$('voiceDock').classList.toggle('on',s.mode==='voice');$('demoDock').classList.toggle('on',s.mode==='demo');$('guideButton').style.opacity=state.guideOn?1:.4;$('countdown').classList.add('on');$('countdown').querySelector('b').textContent='3';
+  updateZoneHud(null);
+  $('recordingLabel').textContent='REC';$('recordingTime').textContent='0:00';$('finishClipButton').disabled=false;
+  if(!s.challenge&&CW<680&&CH>CW&&!state.rotateHintShown){state.rotateHintShown=true;showToast('폰을 가로로 돌리면 노트 레인이 더 길게 보여요')}
+}
+function measuredOutputLatency(){const c=state.audioCtx;return c?((c.outputLatency||c.baseLatency||0)):0}
+function visualDelay(){return state.visualDelay>=0?state.visualDelay:measuredOutputLatency()}
+/* raw=오디오 시계 · display=귀에 들리는 시점(출력 지연만큼 늦춤, 노트 그리기용) · timeline=판정용(display에서 반응·마이크 지연만큼 더 늦춤) */
+function gameTimes(){const raw=state.audioCtx.currentTime-state.session.startAt,vd=visualDelay();return {raw,display:raw-vd,timeline:raw-vd-state.latency}}
+function currentTarget(timeline){const notes=state.session.notes;let tail=null,next=null;for(const note of notes){if(note.judged)continue;if(timeline>=note.t-.06&&timeline<=note.end+.06)return note;if(!tail&&timeline>note.end&&timeline<=note.end+GRACE)tail=note;if(note.t>timeline&&!next)next=note}return tail||next}
+function pitchDifference(hz,midi){let cents=1200*Math.log2(hz/midiHz(midi));if(state.octaveFree)cents=((cents+600)%1200+1200)%1200-600;return cents}
+function displayMidiForTarget(midi,target){return state.octaveFree&&target&&Number.isFinite(midi)?midi+12*Math.round((target.midi-midi)/12):midi}
+function updateGame(){
+  const session=state.session;if(!session||session.status!=='playing')return;const now=performance.now(),times=gameTimes(),raw=times.raw,display=times.display,timeline=times.timeline,remaining=-raw;
+  if(remaining>0){$('countdown').classList.add('on');$('countdown').querySelector('b').textContent=String(clamp(Math.ceil(remaining),1,3));$('countdown').querySelector('span').textContent='GET READY'}
+  else if(raw<.62){$('countdown').classList.add('on');$('countdown').querySelector('b').textContent=session.mode==='voice'?'SING':'GO';$('countdown').querySelector('span').textContent='FOLLOW THE LIGHT'}else $('countdown').classList.remove('on');if(raw<0)return;
+  /* 화면보다 늦춘 판정 시간축을 TARGET·센트 계산에도 동일하게 써 전환 구간의 음 불일치를 막는다. */
+  const target=currentTarget(timeline);session.lastTarget=target;
+  if(session.mode==='voice'&&now-state.lastPitchCheck>42){state.lastPitchCheck=now;const detected=detectPitch();hostBridge.sample(session,detected,target,timeline,raw);session.currentPitch=detected.hz;session.pitchConfidence=detected.confidence;session.currentMidi=detected.hz?69+12*Math.log2(detected.hz/440):null;session.displayMidi=displayMidiForTarget(session.currentMidi,target);session.pitchTrail.push({t:timeline,midi:session.displayMidi});while(session.pitchTrail.length&&session.pitchTrail[0].t<timeline-2.8)session.pitchTrail.shift();if(target&&detected.hz)session.currentCents=pitchDifference(detected.hz,target.midi);for(const note of session.notes){if(note.judged)continue;if(timeline<note.t-.08)break;if(timeline>note.end+GRACE)continue;note.samples++;if(detected.hz){const c=Math.abs(pitchDifference(detected.hz,note.midi));if(c<=75){note.tuned++;note.run=(note.run||0)+1;if(!note.hitAt&&timeline>=note.t-.05&&(note.run>=2||c<=40)){note.hitAt=timeline;previewHit(note,c<=40?'PERFECT':'GREAT')}}else note.run=0;if(c<=40)note.centered++}else note.run=0}}
+  if(session.mode==='demo'){for(const note of session.notes)if(!note.judged&&display>=note.t)award(note,'PERFECT',0)}
+  else if(session.mode==='voice'){for(const note of session.notes){if(note.judged||timeline<=note.end+GRACE)continue;const expected=Math.max(3,Math.round(note.dur/.042)),tuned=Math.min(1,note.tuned/expected),centered=Math.min(1,note.centered/expected);if(centered>=.6||tuned>=.75)award(note,'PERFECT',0);else if(tuned>=.4)award(note,'GREAT',0);else if(tuned>=.15)award(note,'GOOD',0);else award(note,'MISS',0)}}
+  else{for(const note of session.notes)if(!note.judged&&timeline>note.t+.2)award(note,'MISS',0)}
+  if(now-session.lastHud>70){session.lastHud=now;updateHud(raw,timeline,target)}updateParticles(session);if(raw>session.totalDuration+.7)finishGame();
+}
+const RESULT_VALUES={PERFECT:1000,GREAT:750,GOOD:450,MISS:0},RESULT_WEIGHTS={PERFECT:1,GREAT:.78,GOOD:.48,MISS:0},RESULT_RANK={MISS:0,GOOD:1,GREAT:2,PERFECT:3};
+/* 첫 접촉 순간의 즉시 반응: 팝업·파티클·콤보·점수를 바로 주고, 최종 채점은 award()에서 확정만 */
+function previewHit(note,result){const s=state.session;if(!s||note.judged||note.preview)return;note.preview=result;s.combo++;s.maxCombo=Math.max(s.maxCombo,s.combo);s.score+=RESULT_VALUES[result]+Math.min(500,s.combo*8);s.flash=.75;spawnHitParticles(note,result);showJudgement(result,0);updateScoreHud()}
+function award(note,result,error){
+  const s=state.session;if(!s||note.judged)return;const values=RESULT_VALUES,weights=RESULT_WEIGHTS;
+  if(note.preview){if(RESULT_RANK[result]<RESULT_RANK[note.preview])result=note.preview;note.judged=true;note.result=result;s.judged++;s[result.toLowerCase()]++;if(result!==note.preview){s.score+=values[result]-values[note.preview];showJudgement(result,error)}s.accuracyPoints+=weights[result];updateScoreHud();return}
+  note.judged=true;note.result=result;s.judged++;
+  if(result==='MISS'){s.miss++;s.combo=0;s.shake=REDUCED_MOTION?0:5}else{s[result.toLowerCase()]++;s.combo++;s.maxCombo=Math.max(s.maxCombo,s.combo);s.score+=values[result]+Math.min(500,s.combo*8);s.flash=.75;spawnHitParticles(note,result)}s.accuracyPoints+=weights[result];showJudgement(result,error);updateScoreHud();
+}
+function hitLane(lane){
+  const s=state.session;if(!s||s.status!=='playing'||s.mode!=='tap')return;const timeline=gameTimes().timeline;s.laneFlash[lane]=1;let best=null,bestError=Infinity;
+  for(const note of s.notes){if(note.judged||note.lane!==lane)continue;const error=Math.abs(timeline-note.t);if(error<bestError){best=note;bestError=error}if(note.t>timeline+.22)break}
+  if(!best||bestError>.2){showJudgement(best&&timeline<best.t?'EARLY':'EMPTY',0);return}const result=bestError<=.065?'PERFECT':bestError<=.125?'GREAT':'GOOD';award(best,result,timeline-best.t);
+}
+function showJudgement(result,error){const el=$('judgeText'),labels={PERFECT:'PERFECT',GREAT:'GREAT',GOOD:'GOOD',MISS:'MISS',EARLY:'TOO EARLY',EMPTY:'—'};el.textContent=labels[result]||result;el.style.color=result==='MISS'?'var(--bad)':result==='GOOD'?'var(--ok)':'var(--gold-bright)';el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop')}
+function updateScoreHud(){const s=state.session;if(!s)return;$('hudScore').textContent=String(Math.round(s.score)).padStart(6,'0');$('comboNumber').textContent=s.combo}
+function updateZoneHud(note){
+  const s=state.session,zone=note?(VOICE_ZONES[note.zoneIndex]||voiceZoneFromVelocity(note.velocity)):null,velocity=note?clamp(Math.round(Number(note.velocity)||80),1,127):0,signature=zone?zone.id+':'+velocity:'none';if(s&&s.zoneSignature===signature)return;if(s)s.zoneSignature=signature;
+  document.querySelectorAll('.zone-segment').forEach(el=>el.classList.toggle('active',Boolean(zone&&el.dataset.zone===zone.id)));const current=$('zoneCurrent');current.textContent=zone?'현재 목표 · '+zone.label+' · V'+velocity:'현재 목표 · —';current.style.color=zone?zone.main:'';current.style.textShadow=zone?'0 0 14px '+zone.main:'';
+}
+function updateHud(raw,timeline,target){
+  const s=state.session,progress=clamp(raw/s.totalDuration*100,0,100);$('gameProgress').style.width=progress+'%';$('hudTime').textContent=fmtTime(raw)+' / '+fmtTime(s.totalDuration);const next=s.notes.find(n=>!n.judged&&n.t>=timeline-.1),nextZone=next&&(VOICE_ZONES[next.zoneIndex]||voiceZoneFromVelocity(next.velocity));$('nextTarget').textContent=next?noteName(next.midi,true)+' · '+nextZone.label:'FINISH';updateZoneHud(target||next);
+  if(s.mode==='voice'){const targetZone=target&&(VOICE_ZONES[target.zoneIndex]||voiceZoneFromVelocity(target.velocity));$('targetPitch').textContent=target?noteName(target.midi,true)+' · '+targetZone.label:'—';if(s.currentMidi!==null&&s.currentPitch){const rounded=Math.round(s.currentMidi),cents=target?pitchDifference(s.currentPitch,target.midi):Math.round((s.currentMidi-rounded)*100);$('myPitch').textContent=noteName(rounded)+' '+(cents>=0?'+':'')+Math.round(cents)+'¢';$('myPitchWrap').classList.toggle('good',Math.abs(cents)<=50);$('pitchNeedle').style.left=(50+clamp(cents,-100,100)*.43)+'%'}else{{const lv=Math.min(8,Math.round((state.lastRms||0)*220));$('myPitch').textContent=lv>0?'듣는 중 '+'▮'.repeat(lv)+'▯'.repeat(8-lv):'듣는 중 ▯▯▯▯▯▯▯▯'}$('myPitchWrap').classList.remove('good');$('pitchNeedle').style.left='50%'}}
+}
+function spawnHitParticles(note,result){
+  const s=state.session;if(!s)return;
+  s.particles.push({midi:note.midi,life:1,born:performance.now(),color:stageNoteZone(note).main});
+  if(s.particles.length>8)s.particles.splice(0,s.particles.length-8);
+}
+function updateParticles(s){
+  const now=performance.now();s.particles.forEach(p=>{p.life=1-(now-p.born)/220});
+  s.particles=s.particles.filter(p=>p.life>0);
+  if(s.laneFlash)s.laneFlash=s.laneFlash.map(v=>Math.max(0,v-.11));
+  s.shake=0;s.flash=0;
+}
+
+async function pauseGame(automatic=false){const s=state.session;if(!s||s.status!=='playing')return;s.status='paused';hostBridge.pause(s);if(challenge.recorder&&challenge.recorder.state==='recording'&&!challenge.recorder.pause()){challenge.error='일시정지 오류로 여기까지의 녹화를 종료했습니다.';challenge.recorder.stop().catch(()=>{});showToast(challenge.error)}$('recordingLabel').textContent='PAUSED';await state.audioCtx.suspend();if(state.session!==s||s.status!=='paused')return;$('pauseMessage').innerHTML=automatic?'화면을 벗어나 음악과 녹화를 멈췄습니다.<br>버튼을 눌러 같은 지점에서 이어가세요.':s.challenge?'음악과 영상 녹화가 함께 멈췄습니다.<br>쉬는 시간은 영상에 포함되지 않아요.':'음악과 게임 시간이 함께 멈췄습니다.<br>준비되면 같은 지점에서 이어갈 수 있어요.';$('pauseOverlay').classList.add('on')}
+async function resumeGame(){const s=state.session;if(!s||s.status!=='paused')return;const micReady=state.micStream&&state.micStream.getAudioTracks().some(t=>t.readyState==='live'&&!t.muted),cameraReady=challenge.stream&&challenge.stream.getVideoTracks().some(t=>t.readyState==='live'&&!t.muted);if((s.challenge&&(!cameraReady||!micReady))||(s.mode==='voice'&&!micReady)){showToast(s.challenge?'카메라·마이크가 끊겼습니다. 여기까지 영상을 저장한 뒤 다시 시작해 주세요.':'마이크 연결이 끊겼습니다. 트랙 선택으로 나간 뒤 다시 시작해 주세요.');return}rhythmPresentation.enter();try{await state.audioCtx.resume()}catch(error){rhythmPresentation.collapse();showToast('음악을 다시 시작하지 못했습니다. 이어하기를 다시 눌러 주세요.');return}if(state.session!==s||s.status!=='paused')return;if(challenge.recorder&&challenge.recorder.state==='paused'&&!challenge.recorder.resume()){await state.audioCtx.suspend();showToast('녹화를 재개하지 못했습니다. 여기까지 영상을 저장해 주세요.');return}$('recordingLabel').textContent=challenge.recorder&&challenge.recorder.state==='stopped'?'녹화 종료':'REC';s.status='playing';hostBridge.resume(s);$('pauseOverlay').classList.remove('on')}
+function cleanupSession(){const s=state.session;if(s){s.sources.forEach(node=>{try{node.stop();node.disconnect()}catch(e){}});s.guideNodes.forEach(node=>{try{node.stop();node.disconnect()}catch(e){}});try{s.master.disconnect();s.compressor.disconnect();if(s.recordingDelay)s.recordingDelay.disconnect();if(s.guideGain)s.guideGain.disconnect()}catch(e){}}stopMicrophone();stopChallengeCamera();state.session=null;setGlassMode(false);$('pauseOverlay').classList.remove('on')}
+async function quitGame(){
+  rhythmPresentation.collapse();
+  if(state.session){await finishGame(true,{returnToLibrary:!state.session.challenge});return}
+  cleanupSession();showScreen('libraryScreen');refreshChallengeUI();setStartReady(Boolean(state.asset));hostBridge.stateChanged();
+}
+function finishGame(partial=false,options={}){
+  rhythmPresentation.collapse();
+  if(state.finishPromise)return state.finishPromise;
+  state.finishPromise=finishCurrentGame(partial,options).finally(()=>{state.finishPromise=null});return state.finishPromise;
+}
+async function finishCurrentGame(partial=false,options={}){
+  const s=state.session;if(!s||s.status==='finalizing')return;
+  const duration=clamp(state.audioCtx.currentTime-s.startAt,0,s.totalDuration);
+  s.status='finalizing';state.finalizing=true;hostBridge.stateChanged('finalizing');
+  $('finishClipButton').disabled=true;$('recordingLabel').textContent='저장 중';$('pauseOverlay').classList.remove('on');
+  const result={track:s.track,mode:s.mode,partial,challenge:s.challenge,duration,
+    profileId:s.hostRun?.profileId,profileName:s.hostRun?.profileName,
+    score:Math.round(s.score),perfect:s.perfect,great:s.great,good:s.good,miss:s.miss,
+    maxCombo:s.maxCombo,total:s.notes.length,judged:s.judged,
+    accuracy:Math.round(s.accuracyPoints/Math.max(1,partial?s.judged:s.notes.length)*100)};
+  // Request recorder final chunks before stopping the source tracks. Cleanup is immediate.
+  const audioPromise=hostBridge.stopRaw(s),takePromise=s.challenge?settleChallengeRecording():Promise.resolve(null);
+  cleanupSession();stopChallengeCamera(true);
+  let take=null,audioBlob=null;
+  try{
+    [take,audioBlob]=await Promise.all([takePromise,audioPromise]);
+    hostBridge.publishResult(s,result,audioBlob);
+    if(!options.returnToLibrary&&!state.hostReturnToLibrary){showResult(result);if(s.challenge){showChallengeTake(take,partial);await rememberChallengeTake(take,result)}}
+    else showScreen('libraryScreen');
+  }finally{state.finalizing=false;refreshChallengeUI();setStartReady(Boolean(state.asset));hostBridge.stateChanged();}
+}
+
+function showResult(result){
+  document.querySelector('.result-card').classList.toggle('challenge-summary',Boolean(result.challenge));
+  $('retryButton').hidden=Boolean(result.fromHistory);
+  const grade=result.accuracy>=95?'S':result.accuracy>=88?'A':result.accuracy>=75?'B':result.accuracy>=60?'C':'D';$('resultGrade').textContent=grade;$('resultHeading').textContent=result.mode==='demo'?'3D 매핑 미리보기 완료':result.accuracy+'% 정확도로 완주했습니다';$('resultScore').textContent=result.score.toLocaleString()+' SCORE';$('resultPerfect').textContent=result.perfect;$('resultGreat').textContent=result.great;$('resultGood').textContent=result.good;$('resultMiss').textContent=result.miss;$('resultCombo').textContent=result.maxCombo;
+  if(result.partial)$('resultHeading').textContent='여기까지의 무대를 기록했습니다';$('challengeResult').hidden=!result.challenge;
+  let isBest=false;if(result.mode!=='demo'&&!result.partial&&!result.fromHistory){const key='tvRhythmBest:'+(result.profileId||'local')+':'+result.track.id,old=readNumber(key,0,0,1e12);if(result.score>old){save(key,result.score);isBest=true}}$('newBest').classList.toggle('on',isBest);showScreen('resultScreen');
+}
+
+const canvas=$('gameCanvas'),gfx=canvas.getContext('2d',{alpha:false});let CW=0,CH=0,DPR=1,stars=[];
+function resizeCanvas(){DPR=Math.min(window.devicePixelRatio||1,2);const glass=document.body.classList.contains('glass-mode');CW=glass?Math.min(window.innerWidth,window.innerHeight*9/16):window.innerWidth;CH=glass?CW*16/9:window.innerHeight;document.body.style.setProperty('--stage-width',CW+'px');document.body.style.setProperty('--stage-height',CH+'px');document.body.style.setProperty('--stage-top',Math.max(0,(window.innerHeight-CH)/2)+'px');canvas.width=Math.round(CW*DPR);canvas.height=Math.round(CH*DPR);canvas.style.width=CW+'px';canvas.style.height=CH+'px';gfx.setTransform(DPR,0,0,DPR,0,0);const count=REDUCED_MOTION?30:Math.min(95,Math.round(CW*CH/14000));stars=Array.from({length:count},()=>({x:Math.random(),y:Math.random()*.58,size:.4+Math.random()*1.5,speed:.25+Math.random(),phase:Math.random()*6.28}))}
+function rollGeometry(session){
+  const mobile=CW<680,glass=session&&session.challenge,top=glass?CH*.38:Math.max(mobile?132:100,CH*(mobile?.16:.14)),bottom=glass?CH*.79:Math.max(top+72,CH-(session&&session.mode==='voice'?(mobile?158:174):(mobile?88:94))),keyLeft=mobile?7:18,keyRight=mobile?54:82,judgeX=keyRight+(mobile?27:58),right=CW-(mobile?10:24),low=Math.floor(session&&Number.isFinite(session.minMidi)?session.minMidi:48)-2,high=Math.ceil(session&&Number.isFinite(session.maxMidi)?session.maxMidi:72)+2,rows=high-low+1,rowH=(bottom-top)/rows,look=state.lookAhead||(mobile?5:6.5),speed=(right-judgeX)/look;
+  return {mobile,top,bottom,keyLeft,keyRight,judgeX,right,low,high,rows,rowH,look,speed,height:bottom-top};
+}
+function timeX(noteTime,timeline,roll){return roll.judgeX+(noteTime-timeline)*roll.speed}
+function pitchY(midi,roll){return roll.bottom-((midi-roll.low)+.5)*roll.rowH}
+function isBlackKey(midi){return [1,3,6,8,10].includes((midi%12+12)%12)}
+const TV_STAGE_VISUAL=Object.freeze({
+  plum:'#43227D',cream:'#F5EEE0',gold:'#A8925A',
+  plumRgb:'67,34,125',creamRgb:'245,238,224',goldRgb:'168,146,90',
+  cyan:'#75DAE8',cyanRgb:'117,218,232',ink:'#08040E'
+});
+
+function stageNoteZone(note){
+  if(typeof VOICE_ZONES!=='undefined'&&VOICE_ZONES.length){
+    return VOICE_ZONES[note&&Number.isFinite(note.zoneIndex)?note.zoneIndex:Math.min(3,Math.floor(clamp(Math.round(Number(note&&note.velocity)||80),1,127)/32))]||voiceZoneFromVelocity(note&&note.velocity);
+  }
+  const fallback=[
+    {main:'#A970FF',light:'#F3E9FF',deep:'#6726D4',rgb:'169,112,255'},
+    {main:'#FF64B2',light:'#FFF0F8',deep:'#BE2675',rgb:'255,100,178'},
+    {main:'#4DDFEA',light:'#E9FEFF',deep:'#16899E',rgb:'77,223,234'},
+    {main:'#E8C97A',light:'#FFF8DB',deep:'#A06D24',rgb:'232,201,122'}
+  ];
+  return fallback[Math.min(3,Math.floor(clamp(Math.round(Number(note&&note.velocity)||80),1,127)/32))];
+}
+
+function stageChamferPath(g,x,y,w,h,cut){
+  const c=Math.max(1,Math.min(cut,w*.18,h*.42));
+  g.beginPath();
+  g.moveTo(x+c,y);g.lineTo(x+w-c,y);g.lineTo(x+w,y+c);
+  g.lineTo(x+w,y+h-c);g.lineTo(x+w-c,y+h);g.lineTo(x+c,y+h);
+  g.lineTo(x,y+h-c);g.lineTo(x,y+c);g.closePath();
+}
+
+function stageGlassBarPath(g,x,y,w,h){
+  stageChamferPath(g,x,y,w,h,Math.min(3.2,h*.34));
+}
+const TV_NOTE_SPRITE_CACHE=new Map();
+
+function stageNoteSprite(palette,height,variant,camera){
+  const scale=Math.max(1,Math.min(2,Math.round(DPR||1))),bodyH=Math.max(3,Math.round(height*2)/2),key=[palette.rgb,bodyH,variant,camera?'camera':'stage',scale].join('|');
+  if(TV_NOTE_SPRITE_CACHE.has(key))return TV_NOTE_SPRITE_CACHE.get(key);
+  const bodyW=Math.max(48,bodyH*6),radius=Math.min(4,bodyH*.3),cap=Math.max(radius,Math.min(7,bodyH*.62)),pad=variant==='active'?13:variant==='approach'?10:7,canvas=document.createElement('canvas');
+  canvas.width=Math.ceil((bodyW+pad*2)*scale);canvas.height=Math.ceil((bodyH+pad*2)*scale);
+  const c=canvas.getContext('2d');c.setTransform(scale,0,0,scale,0,0);const x=pad,y=pad,miss=variant==='miss',active=variant==='active',glow=active?11:variant==='approach'?8:miss?2:5;
+  c.save();c.globalCompositeOperation='screen';c.shadowColor=palette.main;c.shadowBlur=glow;roundRectPath(c,x,y,bodyW,bodyH,radius);c.fillStyle='rgba('+palette.rgb+','+(active?'.4':miss?'.12':'.24')+')';c.fill();c.restore();
+  const base=c.createLinearGradient(x,0,x+bodyW,0);base.addColorStop(0,palette.light);base.addColorStop(.11,palette.main);base.addColorStop(.62,palette.main);base.addColorStop(1,palette.deep);roundRectPath(c,x,y,bodyW,bodyH,radius);c.fillStyle=base;c.fill();
+  c.save();roundRectPath(c,x,y,bodyW,bodyH,radius);c.clip();if(camera){c.fillStyle='rgba(8,4,14,.1)';c.fillRect(x,y,bodyW,bodyH)}
+  const glass=c.createLinearGradient(0,y,0,y+bodyH);glass.addColorStop(0,'rgba(255,255,255,.45)');glass.addColorStop(.18,'rgba(255,255,255,.14)');glass.addColorStop(.5,'rgba(255,255,255,0)');glass.addColorStop(1,'rgba(8,4,14,.28)');c.fillStyle=glass;c.fillRect(x,y,bodyW,bodyH);
+  c.fillStyle='rgba(255,255,255,.76)';roundRectPath(c,x+1,y+Math.max(.8,bodyH*.12),Math.max(1.2,Math.min(2.4,bodyH*.18)),Math.max(1,bodyH*.76),bodyH*.12);c.fill();c.restore();
+  c.strokeStyle=miss?'rgba(255,214,224,.84)':'rgba(255,255,255,.58)';c.lineWidth=active?1.05:.7;if(miss)c.setLineDash([3,2]);roundRectPath(c,x+.35,y+.35,bodyW-.7,bodyH-.7,Math.max(.5,radius-.35));c.stroke();c.setLineDash([]);
+  c.strokeStyle='rgba(255,255,255,.68)';c.lineWidth=.65;c.beginPath();c.moveTo(x+radius,y+.8);c.lineTo(x+bodyW-radius,y+.8);c.stroke();
+  const sprite={canvas,scale,bodyW,bodyH,cap,pad};if(TV_NOTE_SPRITE_CACHE.size>=48)TV_NOTE_SPRITE_CACHE.delete(TV_NOTE_SPRITE_CACHE.keys().next().value);TV_NOTE_SPRITE_CACHE.set(key,sprite);return sprite;
+}
+
+function stageDrawNoteSprite(g,sprite,x,y,w,h){
+  const scale=sprite.scale,pad=sprite.pad,cap=sprite.cap,targetCap=Math.min(cap,w*.5),sourceWing=(pad+cap)*scale,destWing=pad+targetCap,fullHeight=sprite.canvas.height,destY=y-pad,destHeight=h+pad*2;
+  g.drawImage(sprite.canvas,0,0,sourceWing,fullHeight,x-pad,destY,destWing,destHeight);
+  const sourceMiddleX=sourceWing,sourceMiddleW=Math.max(1,sprite.canvas.width-sourceWing*2),destMiddleW=Math.max(0,w-targetCap*2);
+  if(destMiddleW>.01)g.drawImage(sprite.canvas,sourceMiddleX,0,sourceMiddleW,fullHeight,x+targetCap,destY,destMiddleW,destHeight);
+  g.drawImage(sprite.canvas,sprite.canvas.width-sourceWing,0,sourceWing,fullHeight,x+w-targetCap,destY,destWing,destHeight);
+}
+
+/* Static piano surface is rasterized only on resize, range, or camera changes. */
+const FLAT_ROLL_CACHE={key:'',surface:null,builds:0};
+function flatRollSurface(session,r){
+  const camera=Boolean(session&&session.challenge),key=[CW,CH,DPR,r.top,r.bottom,r.low,r.high,camera].join('|');
+  if(FLAT_ROLL_CACHE.key===key&&FLAT_ROLL_CACHE.surface)return FLAT_ROLL_CACHE.surface;
+  const surface=document.createElement('canvas');surface.width=canvas.width;surface.height=canvas.height;
+  const g=surface.getContext('2d');g.setTransform(DPR,0,0,DPR,0,0);
+  if(camera){
+    const tint=g.createLinearGradient(0,0,0,CH);tint.addColorStop(0,'rgba(13,8,21,.36)');tint.addColorStop(.24,'rgba(13,8,21,.04)');tint.addColorStop(.54,'rgba(13,8,21,.08)');tint.addColorStop(1,'rgba(13,8,21,.55)');g.fillStyle=tint;g.fillRect(0,0,CW,CH);
+  }else{
+    g.fillStyle='#0D0A13';g.fillRect(0,0,CW,CH);
+  }
+  /* Flat, quiet rows — no extruded faces, moving lights or deck shadow. */
+  roundRectPath(g,r.keyRight,r.top,r.right-r.keyRight,r.height,5);g.fillStyle=camera?'rgba(18,11,29,.19)':'#15101F';g.fill();
+  g.save();g.beginPath();g.rect(r.keyRight,r.top,r.right-r.keyRight,r.height);g.clip();
+  for(let midi=r.low;midi<=r.high;midi++){
+    const y=r.bottom-(midi-r.low+1)*r.rowH;
+    if(isBlackKey(midi)){g.fillStyle=camera?'rgba(0,0,0,.025)':'rgba(0,0,0,.13)';g.fillRect(r.keyRight,y,r.right-r.keyRight,r.rowH)}
+    const sy=(Math.round(y*DPR)+.5)/DPR;g.beginPath();g.moveTo(r.keyRight,sy);g.lineTo(r.right,sy);
+    g.strokeStyle=midi%12===0?'rgba(223,210,244,.18)':'rgba(223,210,244,.055)';g.lineWidth=1/DPR;g.stroke();
+  }
+  g.restore();
+  g.strokeStyle=camera?'rgba(245,238,224,.16)':'rgba(223,210,244,.11)';g.lineWidth=1/DPR;roundRectPath(g,r.keyRight,r.top,r.right-r.keyRight,r.height,5);g.stroke();
+  const kw=r.keyRight-r.keyLeft;
+  g.fillStyle='#20182A';roundRectPath(g,r.keyLeft-1,r.top-1,kw+2,r.height+2,5);g.fill();
+  g.save();roundRectPath(g,r.keyLeft,r.top,kw,r.height,4);g.clip();
+  for(let midi=r.low;midi<=r.high;midi++){
+    const y=r.bottom-(midi-r.low+1)*r.rowH,black=isBlackKey(midi),x=black?r.keyLeft+kw*.32:r.keyLeft,w=black?kw*.68:kw;
+    g.fillStyle=black?'#20182B':'#E8E1EE';g.fillRect(x,y,w,r.rowH);
+    g.fillStyle=black?'rgba(255,255,255,.07)':'rgba(32,18,44,.22)';g.fillRect(x,Math.round((y+r.rowH)*DPR)/DPR-1/DPR,w,1/DPR);
+    if(midi%12===0&&r.rowH>9){g.fillStyle='#50425D';g.font='600 '+Math.max(7,Math.min(10,r.rowH*.5))+'px Paperlogy';g.textAlign='left';g.textBaseline='middle';g.fillText(noteName(midi),r.keyLeft+4,y+r.rowH*.5)}
+  }
+  g.restore();
+  const halo=g.createLinearGradient(r.judgeX-6,0,r.judgeX+6,0);halo.addColorStop(0,'rgba(221,197,255,0)');halo.addColorStop(.5,'rgba(221,197,255,.14)');halo.addColorStop(1,'rgba(221,197,255,0)');g.fillStyle=halo;g.fillRect(r.judgeX-6,r.top,12,r.height);
+  g.fillStyle='#E9DEF9';g.fillRect(r.judgeX-1,r.top,2,r.height);
+  g.fillStyle='#BAA2D7';g.beginPath();g.moveTo(r.judgeX-4,r.top-7);g.lineTo(r.judgeX+4,r.top-7);g.lineTo(r.judgeX,r.top-2);g.closePath();g.fill();
+  g.font='500 8px Paperlogy';g.textAlign='right';g.textBaseline='alphabetic';g.fillStyle='rgba(245,238,224,.36)';g.fillText('← NOTE FLOW',r.right-2,r.top-10);
+  FLAT_ROLL_CACHE.key=key;FLAT_ROLL_CACHE.surface=surface;FLAT_ROLL_CACHE.builds++;return surface;
+}
+function drawBackdrop(time,session){
+  const r=rollGeometry(session);
+  if(session&&session.challenge){gfx.fillStyle='#0D0A13';gfx.fillRect(0,0,CW,CH);drawCameraCover(gfx,$('cameraSource'),0,0,CW,CH)}
+  gfx.drawImage(flatRollSurface(session,r),0,0,CW,CH);
+}
+function drawPianoRoll(time,session){
+  const g=gfx,r=rollGeometry(session),target=session&&session.lastTarget;
+  g.save();
+  if(target&&target.midi>=r.low&&target.midi<=r.high){
+    const zone=stageNoteZone(target),y=pitchY(target.midi,r)-r.rowH*.5,kw=r.keyRight-r.keyLeft,black=isBlackKey(target.midi),x=black?r.keyLeft+kw*.32:r.keyLeft,w=black?kw*.68:kw;
+    g.fillStyle='rgba('+zone.rgb+',.065)';g.fillRect(r.keyRight,y,r.right-r.keyRight,r.rowH);
+    g.fillStyle=zone.main;g.fillRect(x,y,w,Math.max(1,r.rowH-1/DPR));
+    if(r.rowH>9){g.fillStyle='#241432';g.font='700 '+Math.max(7,Math.min(10,r.rowH*.5))+'px Paperlogy';g.textAlign='left';g.textBaseline='middle';g.fillText(noteName(target.midi),x+4,y+r.rowH*.5)}
+  }
+  /* Only beat positions move; keep exact audio-clock timeX without easing. */
+  const beat=60/(session&&session.bpm||100),first=Math.floor((time-.5)/beat)-1,last=Math.ceil((time+r.look+.5)/beat)+1;
+  for(let pass=0;pass<2;pass++){
+    g.beginPath();for(let n=first;n<=last;n++){if(Number(((n%4)+4)%4===0)!==pass)continue;const x=timeX(n*beat,time,r);if(x<r.keyRight||x>r.right)continue;g.moveTo(x,r.top);g.lineTo(x,r.bottom)}
+    g.strokeStyle=pass?'rgba(217,202,236,.16)':'rgba(217,202,236,.045)';g.lineWidth=pass?1:.7;g.stroke();
+  }
+  g.restore();
+}
+function drawNotes(timeline,session){
+  const r=rollGeometry(session),isActive=n=>timeline>=n.t-.06&&timeline<=n.end+.12;
+  const visible=session.notes.filter(n=>n.end>=timeline-.7&&n.t<=timeline+r.look+.2).sort((a,b)=>Number(isActive(a))-Number(isActive(b))||a.midi-b.midi||b.t-a.t);
+  gfx.save();gfx.beginPath();gfx.rect(r.keyRight,r.top,r.right-r.keyRight,r.height);gfx.clip();for(const note of visible)drawOneNote(note,timeline,session,r);gfx.restore();
+}
+/* MIDI velocity를 음량이 아닌 발성 목표 영역 태그로 쓰는 터칭보이스 제작 규약 */
+const VOICE_ZONES=[
+  {index:0,id:'upper',label:'상인두',min:1,max:31,marker:16,main:'#A970FF',light:'#F3E9FF',deep:'#6726D4',rgb:'169,112,255'},
+  {index:1,id:'middle',label:'중인두',min:32,max:63,marker:48,main:'#FF64B2',light:'#FFF0F8',deep:'#BE2675',rgb:'255,100,178'},
+  {index:2,id:'lower',label:'하인두',min:64,max:95,marker:80,main:'#4DDFEA',light:'#E9FEFF',deep:'#16899E',rgb:'77,223,234'},
+  {index:3,id:'friction',label:'성대마찰',min:96,max:127,marker:112,main:'#E8C97A',light:'#FFF8DB',deep:'#A06D24',rgb:'232,201,122'}
+];
+function voiceZoneFromVelocity(velocity){const v=clamp(Math.round(Number(velocity)||80),1,127);return VOICE_ZONES[Math.min(3,Math.floor(v/32))]}
+function drawOneNote(note,timeline,session,r){
+  const g=gfx,x0=timeX(note.t,timeline,r),x1=timeX(note.end,timeline,r);if(x1<r.keyRight||x0>r.right)return;
+  const zone=stageNoteZone(note),miss=note.result==='MISS',palette=miss?{main:'#FF668B',light:'#FFEAF0',deep:'#8B294A',rgb:'255,102,139'}:zone,y=pitchY(note.midi,r);
+  const rowCap=Math.max(3.5,r.rowH-1),h=Math.min(rowCap,Math.max(4,r.rowH*.72)),top=y-h*.5,rawW=Math.max(1,x1-x0),w=Math.max(2,rawW);
+  const active=timeline>=note.t-.06&&timeline<=note.end+.12,approaching=timeline<note.t&&note.t-timeline<=.85,passed=timeline>note.end+.12,feedback=note.preview||note.result,camera=Boolean(session&&session.challenge),impactAt=note.hitAt||((note.result&&timeline>=note.t)?note.t:0),impactAge=impactAt?timeline-impactAt:-1;
+  const variant=miss?'miss':active?'active':approaching?'approach':'normal',sprite=stageNoteSprite(palette,h,variant,camera);
+  let alpha=camera?.96:.92;if(passed&&note.judged)alpha=.22;if(miss)alpha=.3;
+  g.save();g.globalAlpha=alpha;stageDrawNoteSprite(g,sprite,x0,top,w,h);
+
+  /* Contact feedback stays small; the note itself remains a simple rounded bar. */
+  if(active&&r.judgeX>=x0-1&&r.judgeX<=x1+1){
+    const orbR=Math.max(2.7,h*.34);g.save();g.globalCompositeOperation='screen';g.shadowColor=palette.main;g.shadowBlur=9;g.fillStyle=palette.main;g.beginPath();g.arc(r.judgeX,y,orbR,0,Math.PI*2);g.fill();g.shadowBlur=0;g.fillStyle=palette.light;g.beginPath();g.arc(r.judgeX-orbR*.18,y-orbR*.2,Math.max(1,orbR*.28),0,Math.PI*2);g.fill();g.restore();
+  }
+  if(impactAge>=0&&impactAge<.25&&!miss){
+    const p=clamp(impactAge/.25,0,1),radius=Math.max(5,h*.55)+(REDUCED_MOTION?0:p*9),ring=feedback==='GOOD'?'#7EE1B2':feedback==='GREAT'?TV_STAGE_VISUAL.cream:palette.light;
+    g.save();g.globalCompositeOperation='screen';g.globalAlpha=(1-p)*.64;g.strokeStyle=ring;g.lineWidth=1;g.beginPath();g.arc(r.judgeX,y,radius,0,Math.PI*2);g.stroke();g.restore();
+  }
+  if(miss){const cx=x0+Math.min(4,w*.5),s=Math.max(1.8,h*.25);g.strokeStyle='#FFD8E1';g.lineWidth=1;g.beginPath();g.moveTo(cx-s,y-s);g.lineTo(cx+s,y+s);g.moveTo(cx+s,y-s);g.lineTo(cx-s,y+s);g.stroke()}
+  g.restore();
+}
+function drawPitchTrail(session,timeline){
+  if(session.mode!=='voice'||!session.pitchTrail.length)return;const g=gfx,r=rollGeometry(session);g.save();g.beginPath();g.rect(r.keyRight,r.top,r.judgeX-r.keyRight+4,r.height);g.clip();g.lineWidth=3;g.lineJoin='round';g.lineCap='round';g.shadowColor='#75DAE8';g.shadowBlur=12;g.strokeStyle='rgba(117,218,232,.72)';g.beginPath();let drawing=false;
+  for(const point of session.pitchTrail){if(point.midi===null){drawing=false;continue}const x=timeX(point.t,timeline,r),y=pitchY(point.midi,r);if(x<r.keyRight-3||x>r.judgeX+4){drawing=false;continue}if(!drawing){g.moveTo(x,y);drawing=true}else g.lineTo(x,y)}g.stroke();g.restore();
+}
+function drawInputOrb(session){
+  if(session.mode!=='voice'||session.displayMidi===null)return;const r=rollGeometry(session),y=pitchY(session.displayMidi,r);gfx.save();gfx.globalCompositeOperation='screen';gfx.shadowColor='#75DAE8';gfx.shadowBlur=30;gfx.fillStyle='rgba(117,218,232,.96)';gfx.beginPath();gfx.arc(r.judgeX,y,7,0,Math.PI*2);gfx.fill();gfx.strokeStyle='rgba(245,238,224,.86)';gfx.lineWidth=1.2;gfx.beginPath();gfx.arc(r.judgeX,y,13,0,Math.PI*2);gfx.stroke();gfx.restore();
+}
+function drawParticles(session){
+  if(!session.particles.length)return;
+  const g=gfx,r=rollGeometry(session);g.save();g.lineWidth=1;
+  session.particles.forEach(p=>{
+    const life=clamp(p.life,0,1);g.globalAlpha=life*.3;g.strokeStyle=p.color;g.beginPath();g.arc(r.judgeX,pitchY(p.midi,r),Math.max(5,r.rowH*.4)+(REDUCED_MOTION?0:(1-life)*7),0,Math.PI*2);g.stroke();
+  });
+  g.restore();
+}
+function drawMenuNotes(time){
+  const fake={mode:'voice',minMidi:48,maxMidi:72,bpm:100,lastTarget:null,pitchTrail:[]},step=.58,first=Math.floor(time/step)-2,pattern=[48,50,52,55,57,60,57,55,52,50],markers=[16,48,80,112],notes=[];drawPianoRoll(time,fake);for(let i=first;i<first+13;i++){const at=((i%pattern.length)+pattern.length)%pattern.length,midi=pattern[at],velocity=markers[((i%markers.length)+markers.length)%markers.length],t=i*step,zone=voiceZoneFromVelocity(velocity);notes.push({t,end:t+.32,dur:.32,midi,velocity,zoneIndex:zone.index,judged:false,result:''})}fake.notes=notes;drawNotes(time,fake);
+}
+function roundRectPath(g,x,y,w,h,r){r=Math.max(0,Math.min(r,w/2,h/2));g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()}
+function drawCameraCover(g,video,x,y,w,h){
+  if(!video||video.readyState<2||!video.videoWidth)return;const scale=Math.max(w/video.videoWidth,h/video.videoHeight),sw=w/scale,sh=h/scale,sx=(video.videoWidth-sw)/2,sy=(video.videoHeight-sh)*.38;
+  g.save();g.translate(x+w,y);g.scale(-1,1);g.drawImage(video,sx,sy,sw,sh,0,0,w,h);g.restore();
+}
+function recordGlassPanel(g,x,y,w,h){const fill=g.createLinearGradient(x,y,x+w,y+h);fill.addColorStop(0,'rgba(245,238,224,.17)');fill.addColorStop(1,'rgba(25,12,42,.44)');roundRectPath(g,x,y,w,h,22);g.fillStyle=fill;g.fill();g.strokeStyle='rgba(245,238,224,.32)';g.lineWidth=1.2;g.stroke()}
+function renderChallengeVideo(session,force=false){
+  if(!session||!session.challenge||!challenge.recordCtx)return;const now=performance.now();if(!force&&now-challenge.lastFrame<1000/30)return;if(!force&&session.status==='paused')return;challenge.lastFrame=now;
+  const g=challenge.recordCtx;g.setTransform(1,0,0,1,0,0);g.drawImage(canvas,0,0,720,1280);g.textBaseline='middle';g.textAlign='left';
+  if(session.recordingDelay){const delay=clamp(visualDelay(),0,1);if(session.lastRecordingDelay!==delay){session.recordingDelay.delayTime.setTargetAtTime(delay,state.audioCtx.currentTime,.02);session.lastRecordingDelay=delay}}
+  recordGlassPanel(g,24,28,672,128);g.fillStyle='#E8C97A';g.font='700 16px Paperlogy, sans-serif';g.fillText('TOUCHING VOICE  /  STAGE CHALLENGE',45,54);g.fillStyle='#F5EEE0';g.font='700 30px Paperlogy, sans-serif';g.fillText(state.asset.name,45,94,485);g.fillStyle='rgba(245,238,224,.65)';g.font='14px Paperlogy, sans-serif';g.fillText(Math.round(session.bpm)+' BPM  ·  '+(session.mode==='demo'?'AUTO PREVIEW':'LIVE VOCAL'),45,128);
+  g.textAlign='right';g.font='700 25px Paperlogy, sans-serif';g.fillStyle='#F5EEE0';g.fillText(Math.round(session.score).toLocaleString(),674,94);g.font='12px Paperlogy, sans-serif';g.fillStyle='rgba(245,238,224,.6)';g.fillText('SCORE',674,125);
+  g.textAlign='right';g.font='700 60px Paperlogy, sans-serif';g.fillStyle='#F5EEE0';g.shadowColor='#A970FF';g.shadowBlur=18;g.fillText('×'+session.combo,668,225);g.shadowBlur=0;g.font='13px Paperlogy, sans-serif';g.fillText('COMBO',668,267);
+  const raw=gameTimes().raw,target=session.lastTarget||session.notes.find(n=>!n.judged),zone=target&&(VOICE_ZONES[target.zoneIndex]||voiceZoneFromVelocity(target.velocity));
+  g.textAlign='center';if(raw<0){g.fillStyle='#F5EEE0';g.font='700 94px Paperlogy, sans-serif';g.fillText(String(Math.ceil(-raw)),360,365)}
+  recordGlassPanel(g,24,1044,672,102);g.textAlign='left';g.font='13px Paperlogy, sans-serif';g.fillStyle='rgba(245,238,224,.65)';g.fillText('VOICE COLOR',44,1066);g.textAlign='right';g.fillStyle=zone?zone.light:'#F5EEE0';g.fillText(target?noteName(target.midi)+' · '+zone.label:'STAGE COMPLETE',674,1066);g.textAlign='left';
+  VOICE_ZONES.forEach((z,i)=>{const x=44+i*165,active=zone&&zone.id===z.id;g.fillStyle=z.main;g.globalAlpha=active?1:.55;g.shadowBlur=active?16:0;g.shadowColor=z.main;roundRectPath(g,x,1090,144,3,1);g.fill();g.shadowBlur=0;g.font=(active?'700 ':'')+'19px Paperlogy, sans-serif';g.fillText(z.label,x,1117);g.globalAlpha=1});
+  g.textAlign='center';g.fillStyle='#F5EEE0';g.font='700 18px Paperlogy, sans-serif';g.fillText('#터칭보이스  #보컬챌린지',360,1191);g.fillStyle='rgba(245,238,224,.55)';g.font='13px Paperlogy, sans-serif';g.fillText('보컬트레이닝 시스템 · 나만의 목소리로 완성하는 무대',360,1223);
+  const progress=clamp(raw/session.totalDuration,0,1);g.fillStyle='rgba(245,238,224,.15)';g.fillRect(24,1253,672,3);g.fillStyle='#C49BFF';g.fillRect(24,1253,672*progress,3);
+  $('recordingTime').textContent=fmtTime(Math.max(0,raw+2.4));if(challenge.recorder&&challenge.recorder.state==='stopped')$('recordingLabel').textContent='녹화 종료';
+}
+/* Static microphone and voice-level artwork; repainted only when needed. */
+const menuArtwork={last:0,dirty:true,pointerX:0,pointerY:0,hoverX:0,hoverY:0,items:[{canvas:$('featureCanvas'),feature:true,w:0,h:0},{canvas:$('coverCanvas'),feature:false,w:0,h:0}]};
+const artworkObserver=new ResizeObserver(entries=>{for(const entry of entries){const item=menuArtwork.items.find(x=>x.canvas===entry.target);if(!item)continue;item.w=entry.contentRect.width;item.h=entry.contentRect.height;item.scale=Math.min(devicePixelRatio||1,1.5);item.canvas.width=Math.round(item.w*item.scale);item.canvas.height=Math.round(item.h*item.scale);menuArtwork.dirty=true}});
+menuArtwork.items.forEach(item=>artworkObserver.observe(item.canvas));
+const artworkVisibility=new IntersectionObserver(entries=>{for(const entry of entries){const item=menuArtwork.items.find(x=>x.canvas===entry.target);if(item){item.visible=entry.isIntersecting;menuArtwork.dirty=true}}});menuArtwork.items.forEach(item=>artworkVisibility.observe(item.canvas));
+function practiceTrackIcon(track){
+  const name=(track.path+' '+track.name).toLowerCase();
+  let shape;
+  if(track.category==='Stage Mission'){
+    const label=/^08\b|펜타|penta/.test(track.name)?'PENTA':/^09\b|블루스|blues/.test(track.name)?'BLUSE':'MODE';
+    return '<span style="display:flex;flex-direction:column;align-items:center;gap:5px"><svg style="width:23px;height:12px" viewBox="0 0 28 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12V8m6 4V5m6 7V2m6 10V5m6 7V8"/></svg><b style="font-size:9px;letter-spacing:.04em;font-weight:700">'+label+'</b></span>';
+  }
+  else if(/breath|호흡/.test(name))shape='<path d="M3 10h16c6 0 6-7 2-7-3 0-3 3-3 3M3 15h21M3 20h13c6 0 6 6 2 6-2 0-3-2-3-2"/>';
+  else if(/1358|아르페지오/.test(name))shape='<path d="M4 23h4v-6h5v-6h5V5h6"/><path d="m20 2 4 3-3 4"/>';
+  else if(/descending|하행/.test(name))shape='<path d="M5 6v5M11 10v6M17 15v6M23 20v5M5 3l18 17"/>';
+  else shape='<path d="M5 19v6M11 14v11M17 9v16M23 4v21"/>';
+  return '<svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">'+shape+'</svg>';
+}
+function paintCoverSculpture(item,time,index){
+  const g=item.canvas.getContext('2d'),w=item.w,h=item.h;if(w<1||h<1)return;
+  g.setTransform(item.scale,0,0,item.scale,0,0);g.clearRect(0,0,w,h);
+  const featured=item.feature,cx=w*(featured?.83:.53),cy=h*(featured?.48:.32),unit=Math.min(w*(featured?.16:.22),h*.3),stage=!featured&&state.selected&&state.selected.category==='Stage Mission';
+  g.save();g.translate(cx,cy);
+  /* Quiet voice-level markings, not a live recording or analysis display. */
+  const bars=[.2,.38,.62,.9,.72,.45,.25];
+  for(let side of [-1,1])for(let i=0;i<bars.length;i++){
+    const x=side*(unit*.62+i*unit*.095),height=unit*bars[i]*.65;
+    g.fillStyle='rgba(196,166,231,'+(.12+(6-i)*.026)+')';roundRectPath(g,x-1,-height/2,2,height,1);g.fill();
+  }
+  g.scale(unit,unit);g.rotate(-.14);
+  const metal=g.createLinearGradient(-.36,0,.36,0);metal.addColorStop(0,'#635267');metal.addColorStop(.22,stage?'#C4AB72':'#B9A4CA');metal.addColorStop(.38,'#F5EEE0');metal.addColorStop(.55,stage?'#B49A60':'#9D85B5');metal.addColorStop(.85,'#493A57');metal.addColorStop(1,'#927B9F');
+  /* A shaded studio microphone, painted once: no 3D engine or animation loop. */
+  g.save();g.scale(1,.24);g.fillStyle='#09051170';g.beginPath();g.ellipse(.12,3.5,.5,.24,0,0,Math.PI*2);g.fill();g.restore();
+  g.fillStyle=metal;roundRectPath(g,-.045,.38,.09,.39,.04);g.fill();
+  g.beginPath();g.ellipse(0,.79,.34,.085,0,0,Math.PI*2);g.fill();g.strokeStyle='#e9d9ec66';g.lineWidth=.012;g.stroke();
+  g.strokeStyle=metal;g.lineWidth=.066;g.lineCap='round';g.beginPath();g.moveTo(-.37,-.13);g.lineTo(-.37,.12);g.bezierCurveTo(-.37,.6,.37,.6,.37,.12);g.lineTo(.37,-.13);g.stroke();
+  g.shadowColor='#06020b88';g.shadowBlur=unit*.16;g.shadowOffsetX=unit*.07;g.shadowOffsetY=unit*.09;
+  g.fillStyle=metal;roundRectPath(g,-.285,-.72,.57,1.01,.27);g.fill();g.shadowBlur=0;g.shadowOffsetX=0;g.shadowOffsetY=0;
+  const grille=g.createLinearGradient(-.25,0,.25,0);grille.addColorStop(0,'#292130');grille.addColorStop(.32,'#a899ae');grille.addColorStop(.52,'#72677d');grille.addColorStop(1,'#201927');
+  g.save();roundRectPath(g,-.25,-.685,.5,.65,.23);g.clip();g.fillStyle=grille;g.fillRect(-.25,-.69,.5,.67);
+  for(let row=0;row<23;row++)for(let col=0;col<18;col++){
+    const x=-.26+col*.03+(row%2)*.015,y=-.68+row*.03;
+    g.fillStyle='#160f20b0';g.beginPath();g.ellipse(x,y,.009,.008,0,0,Math.PI*2);g.fill();g.fillStyle='#f5eee038';g.fillRect(x-.008,y+.009,.014,.004);
+  }g.restore();
+  g.strokeStyle='#F5EEE08c';g.lineWidth=.009;roundRectPath(g,-.27,-.71,.54,.99,.26);g.stroke();
+  g.fillStyle='#312339';roundRectPath(g,-.071,.05,.142,.105,.04);g.fill();g.fillStyle=stage?'#E8C97A':'#D3B6FA';roundRectPath(g,-.032,.086,.064,.014,.007);g.fill();
+  for(const side of [-1,1]){g.fillStyle=metal;g.beginPath();g.ellipse(side*.315,-.105,.055,.068,0,0,Math.PI*2);g.fill();g.strokeStyle='#f5eee054';g.lineWidth=.01;g.stroke()}
+  g.restore();
+  if(featured){const fade=g.createLinearGradient(0,0,w,0);fade.addColorStop(0,'rgba(27,18,38,.75)');fade.addColorStop(.57,'rgba(27,18,38,.5)');fade.addColorStop(.78,'rgba(27,18,38,0)');g.fillStyle=fade;g.fillRect(0,0,w,h)}
+}
+function updateMenuArtwork(timestamp){
+  if(document.hidden||!$('libraryScreen').classList.contains('on')||!menuArtwork.dirty)return;
+  menuArtwork.last=timestamp;menuArtwork.dirty=false;
+  const index=Math.max(0,state.catalog.indexOf(state.selected));for(const item of menuArtwork.items)if(item.visible&&item.w>0&&item.canvas.offsetParent!==null)paintCoverSculpture(item,0,index);
+}
+function renderFrame(timestamp){
+  state.menuTime=timestamp/1000;const session=state.session;
+  if(session){const time=gameTimes().display;gfx.save();drawBackdrop(time,session);drawPianoRoll(time,session);drawNotes(time,session);drawPitchTrail(session,time);drawInputOrb(session);drawParticles(session);gfx.restore();renderChallengeVideo(session);updateGame()}
+  else updateMenuArtwork(timestamp);
+  requestAnimationFrame(renderFrame);
+}
+
+document.querySelectorAll('.filter-button').forEach(button=>button.addEventListener('click',()=>setLibraryView(button.dataset.filter)));
+document.querySelectorAll('[data-library-view]').forEach(button=>button.addEventListener('click',()=>setLibraryView(button.dataset.libraryView)));
+$('homeButton').addEventListener('click',event=>{event.preventDefault();setLibraryView('all')});
+$('featureStage').addEventListener('click',()=>setLibraryView('보컬 트레이닝'));
+$('detailBack').addEventListener('click',()=>{stopChallengeCamera(true);refreshChallengeUI();setMode(state.mode);$('libraryScreen').classList.remove('mobile-detail');menuArtwork.dirty=true});
+$('navClips').addEventListener('click',openSavedClips);
+$('tuningButton').addEventListener('click',()=>{revealTrackDetail();const detail=document.querySelector('.advanced');detail.open=true;requestAnimationFrame(()=>detail.scrollIntoView({block:'center',behavior:REDUCED_MOTION?'auto':'smooth'}))});
+$('libraryDate').textContent=new Intl.DateTimeFormat('ko-KR',{month:'long',day:'numeric',weekday:'short'}).format(new Date());
+document.querySelectorAll('.mode-button').forEach(button=>button.addEventListener('click',()=>setMode(button.dataset.mode)));
+$('folderButton').addEventListener('click',connectFolder);
+$('folderInput').addEventListener('change',event=>{const files=[...event.target.files],records=files.map(file=>({path:(file.webkitRelativePath||file.name).normalize('NFC'),file}));ingestFolderRecords(records,files[0]&&files[0].webkitRelativePath.split('/')[0]);event.target.value=''});
+$('startButton').addEventListener('click',startGame);
+$('cameraButton').addEventListener('click',toggleChallengeCamera);$('finishClipButton').addEventListener('click',()=>finishGame(true));$('pauseSaveClip').addEventListener('click',()=>finishGame(true));$('downloadClip').addEventListener('click',downloadChallenge);$('shareClip').addEventListener('click',shareChallenge);
+$('cancelStart').addEventListener('click',cancelPendingStart);$('savedClipsButton').addEventListener('click',openSavedClips);$('closeSavedClips').addEventListener('click',()=>$('savedClipsOverlay').classList.remove('on'));
+function applyVisualUI(){const ms=Math.round((state.visualDelay>=0?state.visualDelay:measuredOutputLatency())*1000);$('visualRange').value=Math.min(600,ms);$('visualValue').textContent=state.visualDelay>=0?ms+'ms':'자동('+ms+'ms)'}
+applyVisualUI();$('visualRange').addEventListener('input',event=>{state.visualDelay=Number(event.target.value)/1000;save('tvVisualDelay',state.visualDelay);$('visualValue').textContent=event.target.value+'ms'});
+function speedLabel(v){return v+'초 · '+(v<=4?'빠름':v<=7?'보통':'느림')}
+function applySpeedUI(){const v=state.lookAhead||(innerWidth<680?5:6.5);$('speedRange').value=v;$('speedValue').textContent=state.lookAhead?speedLabel(v):'자동('+v+'초)'}
+applySpeedUI();$('speedRange').addEventListener('input',event=>{state.lookAhead=Number(event.target.value);save('tvLookAhead',state.lookAhead);$('speedValue').textContent=speedLabel(state.lookAhead)});
+$('latencyRange').value=Math.round(state.latency*1000);$('latencyValue').textContent=Math.round(state.latency*1000)+'ms';$('latencyRange').addEventListener('input',event=>{state.latency=Number(event.target.value)/1000;$('latencyValue').textContent=event.target.value+'ms';save('tvInputLatency',state.latency)});
+setSwitch($('guideSwitch'),state.guideOn);setSwitch($('octaveSwitch'),state.octaveFree);
+$('guideSwitch').addEventListener('click',()=>{state.guideOn=!state.guideOn;save('tvGuide',state.guideOn);setSwitch($('guideSwitch'),state.guideOn)});
+$('octaveSwitch').addEventListener('click',()=>{state.octaveFree=!state.octaveFree;save('tvOctaveFree',state.octaveFree);setSwitch($('octaveSwitch'),state.octaveFree)});
+$('micSelect').addEventListener('pointerdown',()=>{if($('micSelect').options.length<=1)refreshMicrophones()},{once:true});
+$('windowModeButton').addEventListener('click',()=>rhythmPresentation.leave());
+$('hudPause').addEventListener('click',()=>pauseGame(false));$('resumeButton').addEventListener('click',resumeGame);$('quitButton').addEventListener('click',quitGame);
+$('guideButton').addEventListener('click',()=>{
+  state.guideOn=!state.guideOn;save('tvGuide',state.guideOn);$('guideButton').style.opacity=state.guideOn?1:.4;setSwitch($('guideSwitch'),state.guideOn);
+  if(state.session){if(!state.session.guideGain)scheduleGuideNotes(state.session);else state.session.guideGain.gain.setTargetAtTime(state.guideOn?GUIDE_GAIN:0,state.audioCtx.currentTime,.02)}
+});
+document.querySelectorAll('.lane-button').forEach(button=>{const lane=Number(button.dataset.lane);button.addEventListener('pointerdown',event=>{event.preventDefault();button.classList.add('active');hitLane(lane)});['pointerup','pointercancel','pointerleave'].forEach(name=>button.addEventListener(name,()=>button.classList.remove('active')))});
+document.addEventListener('keydown',event=>{
+  if(event.code==='Escape'&&(state.starting||state.session)){event.preventDefault();rhythmPresentation.leave();return}
+  if(event.repeat||event.target.closest('input,select,textarea,button,a,summary,[contenteditable="true"]'))return;const lane=LANE_KEYS.indexOf(event.code);if(lane>=0){const b=document.querySelector('.lane-button[data-lane="'+lane+'"]');if(b)b.classList.add('active');hitLane(lane);return}
+  if(event.code==='Space'){if(state.session){event.preventDefault();state.session.status==='paused'?resumeGame():pauseGame(false)}else if($('libraryScreen').classList.contains('on')&&state.asset){event.preventDefault();startGame()}}
+  if(event.code==='KeyG')$('guideButton').click();if(event.code==='Comma'||event.code==='Period'){const cur=visualDelay(),next=clamp(cur+(event.code==='Comma'?-.025:.025),0,.6);state.visualDelay=next;save('tvVisualDelay',next);applyVisualUI();showToast('화면 타이밍 보정: '+Math.round(next*1000)+'ms'+(event.code==='Period'?' (노트가 더 늦게 옴)':' (노트가 더 일찍 옴)'))}if(event.code==='Minus'||event.code==='Equal'){const cur=state.lookAhead||(innerWidth<680?5:6.5),next=clamp(cur+(event.code==='Minus'?-.5:.5),3,10);state.lookAhead=next;save('tvLookAhead',next);applySpeedUI();showToast('노트 속도: '+speedLabel(next))}if(event.code==='BracketLeft'){$('latencyRange').value=Math.max(0,Number($('latencyRange').value)-25);$('latencyRange').dispatchEvent(new Event('input'))}if(event.code==='BracketRight'){$('latencyRange').value=Math.min(600,Number($('latencyRange').value)+25);$('latencyRange').dispatchEvent(new Event('input'))}
+});
+document.addEventListener('keyup',event=>{const lane=LANE_KEYS.indexOf(event.code);if(lane>=0){const b=document.querySelector('.lane-button[data-lane="'+lane+'"]');if(b)b.classList.remove('active')}});
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&state.session&&state.session.status==='playing')pauseGame(true)});
+$('resultLibrary').addEventListener('click',()=>{$('clipPreview').pause();showScreen('libraryScreen');setLibraryView(state.filter);refreshChallengeUI();setStartReady(Boolean(state.asset))});$('retryButton').addEventListener('click',startGame);window.addEventListener('resize',resizeCanvas,{passive:true});
+window.addEventListener('pagehide',event=>{void hostBridge.stop('pagehide');state.startToken=(state.startToken||0)+1;state.starting=false;$('cancelStart').hidden=true;if(challenge.recorder)challenge.recorder.stop().catch(()=>{});stopChallengeCamera(true);stopMicrophone();if(challenge.url&&!event.persisted){URL.revokeObjectURL(challenge.url);challenge.url=null}});
+window.addEventListener('pageshow',()=>{refreshChallengeUI();setStartReady(Boolean(state.asset));if(state.session&&state.session.status==='paused')$('pauseOverlay').classList.add('on')});
+window.addEventListener('beforeunload',event=>{if(clipMemory.size||(state.session&&state.session.challenge)){event.preventDefault();event.returnValue=''}});
+
+rhythmPresentation.configure({onExit(){if(state.starting&&!state.session)cancelPendingStart();else if(state.session?.status==='playing')void pauseGame(true)},onResize:resizeCanvas});
+resizeCanvas();requestAnimationFrame(renderFrame);initCatalog().catch(error=>{setStartReady(false);showToast(error.message)});refreshSavedClipsButton();hostBridge.ready();
+</script>
+</body>
+</html>
