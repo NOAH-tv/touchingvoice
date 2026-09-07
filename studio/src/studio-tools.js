@@ -5,7 +5,8 @@ export function mountStudioTools({engine,getProfile,getTab,isBusy,isRecordLocked
   const snapshots=new Map(),completed=new Set();
   const notify=()=>{onLocks();paint();};
   const run=async fn=>{try{return await fn();}catch(e){toast(e?.message||'오디오 작업을 완료하지 못했습니다.',true);}};
-  const post=message=>frame.contentWindow?.postMessage(message,origin);
+  const post=(message,transfer=[])=>frame.contentWindow?.postMessage(message,origin,transfer);
+  const ensureRhythm=()=>{if(!frame.getAttribute('src')&&frame.dataset.src)frame.src=frame.dataset.src;};
   const sendProfile=()=>post({type:'tv-host-profile',...getProfile(),protectedAssets:typeof getTrainingAsset==='function'});
   let rhythmExpanded=false,returnScroll=null;
   function setRhythmExpanded(expanded){
@@ -26,7 +27,7 @@ export function mountStudioTools({engine,getProfile,getTab,isBusy,isRecordLocked
   function fillDevices(el,items,label){const previous=el.value;el.replaceChildren();const o=document.createElement('option');o.value='';o.textContent=label;el.append(o);for(const [i,item] of items.entries()){if(!item.deviceId||item.deviceId==='default')continue;const option=document.createElement('option');option.value=item.deviceId;option.textContent=item.label||`장치 ${i+1} · 연결 후 이름 표시`;el.append(option);}if([...el.options].some(o=>o.value===previous))el.value=previous;}
   async function refreshDevices(){if(devicesBusy)return;devicesBusy=true;paint();try{const list=await engine.listDevices();fillDevices($('boothInputSelect'),list.inputs,'시스템 기본 입력');fillDevices($('boothOutputSelect'),list.outputs,'시스템 기본 출력');$('boothOutputSelect').disabled=!list.outputSupported; $('boothOutputSelect').title=list.outputSupported?'헤드폰 출력 장치를 선택합니다.':'이 브라우저는 시스템 기본 출력을 사용합니다.';if(!list.supported)toast('장치 목록을 지원하지 않는 환경입니다.',true);}finally{devicesBusy=false;paint();}}
   $('boothRefreshDevices').onclick=()=>run(refreshDevices);
-  $('boothConnectBtn').onclick=()=>run(async()=>{if(isRecordLocked()||trainingActive||isBusy())throw new Error('진행 중인 기록이나 훈련을 마친 뒤 연결하세요.');if(engine.state.mode==='mic'&&engine.state.playing){engine.stop();return;}await stopHostInput();await engine.startMic($('boothInputSelect').value);await refreshDevices();if(engine.state.mode==='mic'&&$('boothOutputSelect').value&&engine.monitorStatus.outputSupported)await engine.setOutputDevice($('boothOutputSelect').value);paint();});
+  $('boothConnectBtn').onclick=()=>run(async()=>{if(isRecordLocked()||trainingActive||isBusy())throw new Error('진행 중인 기록이나 훈련을 마친 뒤 연결하세요.');if(engine.state.mode==='mic'&&engine.state.playing){engine.stop();return;}await stopHostInput();if(isBusy())throw new Error('코칭 화면을 다시 열어 주세요.');await engine.startMic($('boothInputSelect').value);await refreshDevices();if(engine.state.mode==='mic'&&$('boothOutputSelect').value&&engine.monitorStatus.outputSupported)await engine.setOutputDevice($('boothOutputSelect').value);paint();});
   $('boothOutputSelect').onchange=()=>run(async()=>{outputBusy=true;paint();try{await engine.setOutputDevice($('boothOutputSelect').value);}finally{outputBusy=false;paint();}});
   $('boothRecordBtn').onclick=()=>recordToggle();
   $('boothPlayBtn').onclick=()=>run(async()=>{const take=getLatestRecording();if(take)await playEntry(take);});
@@ -34,14 +35,14 @@ export function mountStudioTools({engine,getProfile,getTab,isBusy,isRecordLocked
   $('boothAnalysisBtn').onclick=()=>setTab('analyzer');$('boothArchiveBtn').onclick=()=>setTab('sessions');
   $('boothMRBtn').onclick=()=>{const query=$('boothMRQuery').value.trim();if(!query){$('boothMRQuery').focus();return;}window.open('https://www.youtube.com/results?search_query='+encodeURIComponent(query+' MR'),'_blank','noopener,noreferrer');};
   $('boothMRQuery').onkeydown=e=>{if(e.key==='Enter'){$('boothMRBtn').click();e.preventDefault();}};
-  function setTrainingMode(rhythm){rhythmMode=rhythm;if(!rhythm)stopRhythm();$('rhythmWorkspace').hidden=!rhythm;$('quickTraining').hidden=rhythm;$('rhythmModeBtn').setAttribute('aria-selected',String(rhythm));$('quickModeBtn').setAttribute('aria-selected',String(!rhythm));if(rhythm)sendProfile();}
+  function setTrainingMode(rhythm){rhythmMode=rhythm;if(!rhythm)stopRhythm();$('rhythmWorkspace').hidden=!rhythm;$('quickTraining').hidden=rhythm;$('rhythmModeBtn').setAttribute('aria-selected',String(rhythm));$('quickModeBtn').setAttribute('aria-selected',String(!rhythm));if(rhythm){ensureRhythm();sendProfile();post({type:'tv-host-resume'});}}
   $('rhythmModeBtn').onclick=()=>setTrainingMode(true);$('quickModeBtn').onclick=()=>setTrainingMode(false);
   frame.addEventListener('load',()=>{requestEpoch++;setRhythmExpanded(false);sendProfile();});
   window.addEventListener('message',event=>{
     if(event.origin!==origin||event.source!==frame.contentWindow)return;const message=event.data;if(!message||typeof message.type!=='string')return;
     if(message.type==='tv-rhythm-asset-request'){
       if(typeof message.requestId!=='string'||message.requestId.length>160)return;
-      const reply=data=>post({type:'tv-host-asset',requestId:message.requestId,...data});
+      const reply=data=>post({type:'tv-host-asset',requestId:message.requestId,...data},data.bytes?[data.bytes]:[]);
       if(typeof getTrainingAsset!=='function'||message.profileId!==getProfile().profileId||typeof message.assetId!=='string'||!/^[a-z0-9-]{1,100}$/.test(message.assetId)){reply({approved:false,message:'훈련 자료 접근 권한을 확인해 주세요.'});return;}
       const epoch=requestEpoch;
       Promise.resolve().then(()=>getTrainingAsset(message.assetId)).then(bytes=>{
@@ -89,5 +90,5 @@ export function mountStudioTools({engine,getProfile,getTab,isBusy,isRecordLocked
     if(getTab()==='analyzer'||getTab()==='booth')drawBooth(s.playing?latestFrame?.waveform:null,s.recording);
   }
   function drawBooth(wave,recording){const canvas=$('boothWave'),w=canvas.clientWidth,h=canvas.clientHeight;if(!w||!h)return;const scale=Math.min(devicePixelRatio||1,2);if(canvas.width!==Math.round(w*scale)||canvas.height!==Math.round(h*scale)){canvas.width=Math.round(w*scale);canvas.height=Math.round(h*scale);}const c=canvas.getContext('2d');if(!c)return;c.setTransform(scale,0,0,scale,0,0);c.clearRect(0,0,w,h);c.strokeStyle=recording?'#f599cd':'#bc93ff';c.lineWidth=1.4;c.beginPath();for(let x=0;x<w;x++){const sample=wave?.length?wave[Math.floor(x/w*wave.length)]:0,y=h/2+sample*h*.45;x?c.lineTo(x,y):c.moveTo(x,y);}c.stroke();if(!wave){c.fillStyle='#8e759f';c.font='12px Paperlogy';c.textAlign='center';c.fillText('마이크를 연결하면 원음 파형이 표시됩니다.',w/2,h/2-18);}}
-  return {get trainingActive(){return trainingActive;},onFrame(frame){latestFrame=frame;},paint,profileChanged(){latestFrame=null;sendProfile();paint();},beforeTabChange(next){if(next!=='training')stopRhythm();if(next!=='booth'&&next!=='analyzer'&&engine.monitorSettings.enabled)engine.setMonitorSettings({enabled:false});},stopRhythm};
+  return {resume(){sendProfile();if(frame.getAttribute('src'))post({type:'tv-host-resume'});},get trainingActive(){return trainingActive;},onFrame(frame){latestFrame=frame;},paint,profileChanged(){latestFrame=null;sendProfile();paint();},beforeTabChange(next){if(next==='training'){ensureRhythm();sendProfile();post({type:'tv-host-resume'});}else stopRhythm();if(next!=='booth'&&next!=='analyzer'&&engine.monitorSettings.enabled)engine.setMonitorSettings({enabled:false});},stopRhythm};
 }
