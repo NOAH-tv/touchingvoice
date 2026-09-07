@@ -3,14 +3,20 @@ import { getContext, postParent } from '../context.js';
 import { prepareUpload } from '../upload-data.js';
 /** The name matches the host interface; no legacy Drive proxy is used. */
 export class DriveBackupService {
-  constructor({persist,onChange=()=>{}}) {this.persist=persist;this.onChange=onChange;this.jobs=[];this.notified=new Set();}
+  constructor({persist,onChange=()=>{}}) {this.persist=persist;this.onChange=onChange;this.jobs=[];this.notified=new Set();this.queue=Promise.resolve();this.pending=new Map();}
   get active(){return this.jobs.some(j=>j.status==='uploading');}
-  async status(){return {configured:true,reachable:true,manual:true};}
+  async status(){return {configured:true,reachable:true,manual:false};}
   async enqueue(entry){
     const c=getContext();
     if(entry.profileId!==c.student.id)throw new Error('학생 기록 번호를 확인해 주세요.');
     if(!this.notified.has(entry.id)&&entry.fileAnalysis&&!entry.unsaved){this.notified.add(entry.id);postParent({type:'tv:exam-ready',branchId:c.branchId,studentId:c.student.id,recordId:entry.id,createdAt:entry.createdAt,duration:entry.duration,metricsAvailable:true});}
-    this.onChange();return entry;
+    this.onChange();
+    if(!entry.fileAnalysis||entry.unsaved||entry.franchiseUpload?.state==='complete')return entry;
+    if(this.pending.has(entry.id))return this.pending.get(entry.id);
+    const task=this.queue.catch(()=>{}).then(()=>this.retry(entry));
+    const tracked=task.finally(()=>this.pending.delete(entry.id));
+    this.pending.set(entry.id,tracked);this.queue=tracked;
+    return tracked;
   }
   async retry(entry){
     const c=getContext();if(entry.profileId!==c.student.id)throw new Error('다른 학생의 기록은 저장할 수 없습니다.');
