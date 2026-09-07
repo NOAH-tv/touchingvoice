@@ -188,6 +188,8 @@ const hostBridge = (() => {
       requests.delete(message.requestId);clearTimeout(request.timer);
       if(message.approved===false)request.reject(new Error(message.message || 'Training Studio에서 입력 작업을 마친 뒤 시작해 주세요.'));
       else request.resolve(message);
+    } else if(message.type==='tv-host-resume'){
+      if(authorized())void Promise.resolve(stopPromise).then(()=>{if(!authorized()||state.asset||state.session||state.starting)return;if(state.selected)void selectTrack(state.selected);else if(!state.catalog?.length)void initCatalog().catch(()=>{});});
     } else if(message.type==='tv-host-stop'){void stop(message.reason || 'host-stop');}
   });
   return {embedded,snapshot,requestStart,prepareMetrics,attachMicrophone,sample,pause,resume,stopRaw,publishResult,stateChanged,cancelRequests,stop,readAsset,waitForProfile,
