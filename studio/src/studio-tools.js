@@ -1,13 +1,13 @@
 /** Local host integration: DAW monitoring + original rhythm game, one member per take. */
 export function mountStudioTools({engine,getProfile,getTab,isBusy,isRecordLocked,stopHostInput,onLocks,setTab,onTrainingResult,getLatestRecording,getRecordElapsed,playEntry,downloadEntry,toast,recordToggle,getTrainingAsset=null}) {
   const $=id=>document.getElementById(id), origin=location.origin, frame=$('rhythmFrame');
-  let trainingActive=false,rhythmMode=true,latestFrame=null,devicesBusy=false,outputBusy=false,requestEpoch=0;
+  let trainingActive=false,rhythmMode=true,latestFrame=null,devicesBusy=false,outputBusy=false,requestEpoch=0,rhythmReady=false;
   const snapshots=new Map(),completed=new Set();
   const notify=()=>{onLocks();paint();};
   const run=async fn=>{try{return await fn();}catch(e){toast(e?.message||'오디오 작업을 완료하지 못했습니다.',true);}};
   const post=(message,transfer=[])=>frame.contentWindow?.postMessage(message,origin,transfer);
-  const ensureRhythm=()=>{if(!frame.getAttribute('src')&&frame.dataset.src)frame.src=frame.dataset.src;};
-  const sendProfile=()=>post({type:'tv-host-profile',...getProfile(),protectedAssets:typeof getTrainingAsset==='function'});
+  const ensureRhythm=()=>{if(!frame.getAttribute('src')&&frame.dataset.src){rhythmReady=false;frame.src=frame.dataset.src;}};
+  const sendProfile=()=>{if(rhythmReady)post({type:'tv-host-profile',...getProfile(),protectedAssets:typeof getTrainingAsset==='function'});};
   let rhythmExpanded=false,returnScroll=null;
   function setRhythmExpanded(expanded){
     expanded=expanded===true&&getTab()==='training'&&rhythmMode&&!document.hidden;
@@ -37,7 +37,9 @@ export function mountStudioTools({engine,getProfile,getTab,isBusy,isRecordLocked
   $('boothMRQuery').onkeydown=e=>{if(e.key==='Enter'){$('boothMRBtn').click();e.preventDefault();}};
   function setTrainingMode(rhythm){rhythmMode=rhythm;if(!rhythm)stopRhythm();$('rhythmWorkspace').hidden=!rhythm;$('quickTraining').hidden=rhythm;$('rhythmModeBtn').setAttribute('aria-selected',String(rhythm));$('quickModeBtn').setAttribute('aria-selected',String(!rhythm));if(rhythm){ensureRhythm();sendProfile();post({type:'tv-host-resume'});}}
   $('rhythmModeBtn').onclick=()=>setTrainingMode(true);$('quickModeBtn').onclick=()=>setTrainingMode(false);
-  frame.addEventListener('load',()=>{requestEpoch++;setRhythmExpanded(false);sendProfile();});
+  // The child announces readiness before its iframe load event may fire.
+  // Only that handshake starts a new request generation; late DOM load must not cancel its downloads.
+  frame.addEventListener('load',()=>{if(rhythmReady)sendProfile();});
   window.addEventListener('message',event=>{
     if(event.origin!==origin||event.source!==frame.contentWindow)return;const message=event.data;if(!message||typeof message.type!=='string')return;
     if(message.type==='tv-rhythm-asset-request'){
@@ -52,7 +54,7 @@ export function mountStudioTools({engine,getProfile,getTab,isBusy,isRecordLocked
       }).catch(error=>reply({approved:false,message:error?.message||'훈련 자료를 불러오지 못했습니다.'}));return;
     }
     if(message.type==='tv-rhythm-presentation'){if(typeof message.expanded==='boolean')setRhythmExpanded(message.expanded);return;}
-    if(message.type==='tv-rhythm-ready'){setRhythmExpanded(false);trainingActive=false;sendProfile();if(getTab()!=='training')stopRhythm();notify();return;}
+    if(message.type==='tv-rhythm-ready'){requestEpoch++;rhythmReady=true;setRhythmExpanded(false);trainingActive=false;sendProfile();if(getTab()!=='training')stopRhythm();notify();return;}
     if(message.type==='tv-rhythm-request-start')run(async()=>{
       const {requestId,runId}=message;const denied=reason=>post({type:'tv-host-start-ready',requestId,approved:false,message:reason});
       if(getTab()!=='training'||!rhythmMode||document.hidden)return denied('훈련 화면에서 시작해 주세요.');
