@@ -1,40 +1,63 @@
-import {call,config} from './api.js';
-let frame,context,openEpoch=0,expanded=false,returnScroll=null;
+import {config} from './api.js';
+let frame,context,expanded=false,returnScroll=null,suspended=false,waiting=false,loadTimer;
+const view=()=>document.querySelector('#studioView');
+function setWorkspace(next){document.body.classList.toggle('studio-workspace-active',next===true);}
+function showStatus(message,busy=true){
+  const mount=document.querySelector('#studioMount');if(!mount)return;
+  let status=document.querySelector('#studioLoadStatus');
+  if(!status){status=document.createElement('p');status.id='studioLoadStatus';status.className='studio-load-status';status.setAttribute('role','status');status.setAttribute('aria-live','polite');mount.append(status);}
+  status.textContent=message;status.hidden=!message;mount.classList.toggle('studio-is-loading',Boolean(message)&&busy);
+  const launch=document.querySelector('#studioLaunch');if(launch){launch.hidden=busy||Boolean(frame&&!message);launch.textContent=frame?'다시 연결':'스튜디오 열기';}
+}
 function setExpanded(next){
-  next=next===true&&Boolean(frame&&context)&&!document.querySelector('#studioView')?.hidden&&!document.hidden;
+  next=next===true&&Boolean(frame&&context)&&!suspended&&!view()?.hidden&&!document.hidden;
   if(next===expanded)return;
   if(next)returnScroll={left:window.scrollX,top:window.scrollY};
   expanded=next;document.body.classList.toggle('studio-game-expanded',next);
   if(!next&&returnScroll){window.scrollTo({...returnScroll,behavior:'instant'});returnScroll=null;}
 }
-const dispose=()=>{openEpoch++;setExpanded(false);if(frame){frame.contentWindow?.postMessage({type:'tv:studio-stop'},location.origin);frame.remove();frame=null;}context=null;};
-window.addEventListener('tv:logout',dispose);
-window.addEventListener('pagehide',dispose);
-window.addEventListener('tv:session',event=>{if(!event.detail)dispose();});
-window.addEventListener('tv:branch-change',dispose);
-window.addEventListener('tv:navigate',event=>{if(event.detail?.page!=='studio')dispose();});
-document.addEventListener('change',event=>{if(event.target.id==='studioStudent')dispose();});
-window.addEventListener('tv:open-studio',async event=>{
-  const student=event.detail?.student,branchId=event.detail?.branchId||student?.branchId;
-  if(!student?.id||!branchId)return;
+function dispose(){
+  clearTimeout(loadTimer);setExpanded(false);
+  if(frame){frame.contentWindow?.postMessage({type:'tv:studio-stop'},location.origin);frame.remove();frame=null;}
+  context=null;suspended=false;waiting=false;
+}
+function closeWorkspace(){dispose();setWorkspace(false);}
+function suspend(){
+  clearTimeout(loadTimer);setExpanded(false);setWorkspace(false);
+  if(frame&&!suspended){suspended=true;frame.contentWindow?.postMessage({type:'tv:studio-suspend'},location.origin);}
+}
+function watchLoading(){clearTimeout(loadTimer);loadTimer=setTimeout(()=>{if(waiting&&!suspended)showStatus('연결이 지연되고 있습니다. 잠시 기다리거나 다시 연결해 주세요.',false);},20000);}
+function openStudio(student,branchId,{reload=false}={}){
+  if(!student?.id||!branchId||student.branchId!==branchId||student.active===false||student.consent?.service!==true||student.consent?.voice!==true)return;
   const mount=document.querySelector('#studioMount');if(!mount)return;
-  const status=document.createElement('p');status.textContent='검사 대상자와 사용 권한을 확인하고 있습니다.';mount.replaceChildren(status);
-  dispose();const epoch=openEpoch;
-  try {
-    const dashboard=await call('dashboard',{},branchId);
-    if(epoch!==openEpoch)return;
-    const allowed=dashboard.students.find(s=>s.id===student.id&&s.active);
-    if(!allowed)throw new Error('이 학생의 코칭 권한을 확인할 수 없습니다.');
-    const url=new URL(config.studioUrl,location.href);url.searchParams.set('branchId',branchId);url.searchParams.set('studentId',student.id);
-    context={branchId,studentId:student.id};
-    frame=document.createElement('iframe');frame.title='선택 학생의 3D 발성 체크와 음성 검사';frame.src=url.href;frame.allow='microphone; camera; autoplay; fullscreen';frame.allowFullscreen=true;frame.style.cssText='width:100%;height:min(850px,calc(100dvh - 180px));min-height:560px;border:1px solid #493459;border-radius:20px;background:#10091b';
-    frame.addEventListener('load',()=>setExpanded(false));
-    mount.replaceChildren(frame);
-  } catch(error){if(epoch===openEpoch){status.textContent=error.message;mount.replaceChildren(status);}}
+  setWorkspace(true);
+  if(!reload&&frame&&context?.studentId===student.id&&context.branchId===branchId){
+    if(suspended){suspended=false;waiting=true;showStatus('코칭 워크스페이스를 다시 연결하고 있습니다.');frame.contentWindow?.postMessage({type:'tv:studio-resume'},location.origin);watchLoading();}
+    return;
+  }
+  dispose();mount.replaceChildren();
+  context={branchId,studentId:student.id,student};waiting=true;
+  // The child gate and every server action validate the signed-in instructor independently.
+  // Do not repeat the full dashboard download before the child can start loading.
+  const url=new URL(config.studioUrl,location.href);url.searchParams.set('branchId',branchId);url.searchParams.set('studentId',student.id);
+  frame=document.createElement('iframe');frame.title='선택 학생의 3D 발성 체크와 음성 검사';frame.src=url.href;frame.allow='microphone; camera; autoplay; fullscreen';frame.allowFullscreen=true;frame.className='coaching-workspace-frame';
+  mount.append(frame);showStatus('코칭 워크스페이스를 준비하고 있습니다.');watchLoading();
+}
+window.addEventListener('tv:logout',closeWorkspace);
+window.addEventListener('pagehide',closeWorkspace);
+window.addEventListener('tv:session',event=>{if(!event.detail)closeWorkspace();});
+window.addEventListener('tv:branch-change',closeWorkspace);
+window.addEventListener('tv:navigate',event=>{if(event.detail?.page==='studio')setWorkspace(true);else suspend();});
+document.addEventListener('change',event=>{if(event.target.id==='studioStudent'){dispose();document.querySelector('#studioMount')?.replaceChildren();showStatus('코칭할 학생을 선택해 주세요.',false);window.dispatchEvent(new CustomEvent('tv:studio-select',{detail:{studentId:event.target.value}}));}});
+window.addEventListener('tv:open-studio',event=>{
+  const student=event.detail?.student;openStudio(student,event.detail?.branchId||student?.branchId,{reload:event.detail?.reload===true});
 });
 window.addEventListener('message',event=>{
   if(event.origin!==location.origin||event.source!==frame?.contentWindow||!context)return;
+  if(event.data?.type==='tv:studio-ready'&&event.data.branchId===context.branchId&&event.data.studentId===context.studentId){waiting=false;clearTimeout(loadTimer);showStatus('',false);if(suspended)frame.contentWindow?.postMessage({type:'tv:studio-suspend'},location.origin);}
+  if(event.data?.type==='tv:studio-error'){waiting=false;clearTimeout(loadTimer);showStatus(event.data.message||'코칭 연결을 확인해 주세요.',false);}
+  if(event.data?.type==='tv:studio-reload-required'&&!suspended)openStudio(context.student,context.branchId,{reload:true});
   if(event.data?.type==='tv:studio-presentation'&&typeof event.data.expanded==='boolean')setExpanded(event.data.expanded);
-  if(event.data?.type==='tv:studio-request-context')frame.contentWindow.postMessage({type:'tv:studio-context',...context},location.origin);
+  if(event.data?.type==='tv:studio-request-context')frame.contentWindow.postMessage({type:'tv:studio-context',branchId:context.branchId,studentId:context.studentId},location.origin);
   if(event.data?.type==='tv:exam-saved'&&event.data.branchId===context.branchId&&event.data.studentId===context.studentId)window.dispatchEvent(new CustomEvent('tv:data-updated'));
 });
