@@ -2,7 +2,7 @@ import { initAuth } from '../auth.js';
 import { call, config } from '../api.js';
 import { establishContext, authorizedStudent, isParentMessage, postParent } from './context.js';
 
-let shutdown = null, closed = false;
+let shutdown = null, appModule=null, authorizedContext=null, closed=false,suspended=false,resumeEpoch=0,suspendPromise=Promise.resolve();
 function deny(message) {
   const status = document.getElementById('studioGateStatus');
   if (status) status.textContent = message;
@@ -10,12 +10,38 @@ function deny(message) {
 }
 async function stop() {
   if (closed) return;
-  closed = true;
+  closed = true;resumeEpoch++;
   document.documentElement.style.visibility = 'hidden';
   try { await shutdown?.(); } finally { postParent({type:'tv:studio-stopped'}); }
 }
+async function suspend(){
+  suspended=true;resumeEpoch++;document.documentElement.style.visibility='hidden';
+  if(appModule)suspendPromise=Promise.resolve(appModule.suspendStudio?.());
+  try{await suspendPromise;}catch(error){postParent({type:'tv:studio-error',message:error?.message||'입력 정리를 확인해 주세요.'});}
+}
+async function resume(){
+  const epoch=++resumeEpoch;suspended=false;
+  if(!appModule||!authorizedContext)return; // First boot still checks access before revealing the shell.
+  document.documentElement.style.visibility='hidden';
+  try{
+    await suspendPromise;
+    const {selected,user,context}=authorizedContext;
+    const fresh=await call('studio.context',{studentId:selected.studentId},selected.branchId);
+    if(closed||suspended||epoch!==resumeEpoch)return;
+    if(fresh?.staff?.uid!==user.uid)throw new Error('승인된 강사 계정이 필요합니다.');
+    authorizedStudent({branch:fresh.branch,students:[fresh.student]},selected.studentId,selected.branchId);
+    if(JSON.stringify(fresh)!==JSON.stringify(context)){postParent({type:'tv:studio-reload-required'});return;}
+    await appModule.resumeStudio?.();
+    if(closed||suspended||epoch!==resumeEpoch)return;
+    document.documentElement.style.visibility='';
+    postParent({type:'tv:studio-ready',branchId:selected.branchId,studentId:selected.studentId});
+  }catch(error){if(!closed&&epoch===resumeEpoch){suspended=true;postParent({type:'tv:studio-error',message:error?.message||'코칭 접근 권한을 확인하지 못했습니다.'});}}
+}
 window.addEventListener('message', event => {
-  if (isParentMessage(event) && ['tv:studio-stop','tv:logout'].includes(event.data?.type)) void stop();
+  if(!isParentMessage(event))return;
+  if(['tv:studio-stop','tv:logout'].includes(event.data?.type))void stop();
+  else if(event.data?.type==='tv:studio-suspend')void suspend();
+  else if(event.data?.type==='tv:studio-resume')void resume();
 });
 window.addEventListener('pagehide', () => { void stop(); });
 async function selection() {
@@ -49,15 +75,13 @@ async function authenticated() {
   });
 }
 try {
-  const user=await authenticated();
-  const session=await call('session');
-  if (!session?.staff || session.staff.uid!==user.uid) throw new Error('승인된 강사 계정이 필요합니다.');
-  const selected=await selection();
-  if (!session.branches?.some(b=>b.id===selected.branchId)) throw new Error('이 지점에 접근할 수 없습니다.');
-  const dashboard=await call('dashboard',{},selected.branchId);
-  const student=authorizedStudent(dashboard,selected.studentId,selected.branchId);
+  const [user,selected]=await Promise.all([authenticated(),selection()]);
+  const context=await call('studio.context',{studentId:selected.studentId},selected.branchId);
+  if (!context?.staff || context.staff.uid!==user.uid) throw new Error('승인된 강사 계정이 필요합니다.');
+  const student=authorizedStudent({branch:context.branch,students:[context.student]},selected.studentId,selected.branchId);
   if (closed) throw new Error('코칭 연결이 종료되었습니다.');
-  establishContext({uid:user.uid,branchId:selected.branchId,student,staff:session.staff,branch:dashboard.branch,preview:config.preview});
+  authorizedContext={selected,user,context};
+  establishContext({uid:user.uid,branchId:selected.branchId,student,staff:context.staff,branch:context.branch,preview:config.preview});
   // No Studio HTML, 3D assets, worker, or audio module is requested until authorization passes.
   const response=await fetch('./app-shell.html',{cache:'no-store'});
   if (!response.ok) throw new Error('코칭 화면을 불러오지 못했습니다.');
@@ -70,9 +94,10 @@ try {
   }
   const css=document.createElement('link');css.rel='stylesheet';css.href='./franchise.css';document.head.append(css);
   document.body.replaceChildren(...Array.from(parsed.body.childNodes, node=>document.importNode(node,true)));
-  const app=await import('./src/app.js');shutdown=app.shutdownStudio;
+  const app=await import('./src/app.js');appModule=app;shutdown=app.shutdownStudio;
   if(closed){await shutdown?.();throw new Error('코칭 연결이 종료되었습니다.');}
-  document.documentElement.style.visibility='';document.title='터칭보이스 · 코칭 스튜디오';
+  if(suspended)await suspend();
+  document.documentElement.style.visibility=suspended?'hidden':'';document.title='터칭보이스 · 코칭 스튜디오';
   postParent({type:'tv:studio-ready',branchId:selected.branchId,studentId:student.id});
 } catch(error) {
   if(!closed){document.documentElement.style.visibility='';deny(error?.message||'접근 권한을 확인하지 못했습니다.');postParent({type:'tv:studio-error',message:error?.message||'코칭 연결 실패'});}
