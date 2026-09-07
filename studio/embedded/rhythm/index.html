@@ -1119,18 +1119,55 @@ async function getTrackInfo(track){
   try{const response=await fetch(trackFileUrl(track,track.info||'트랙정보.json'),{cache:'no-store'});return response.ok?await response.json():{}}catch(e){return {}}
 }
 function setLoadState(type,label){$('loadLabel').textContent=label;$('loadLine').className='load-line '+type}
-async function selectTrack(track){
-  if(state.session||state.starting)return;stopChallengeCamera(true);state.selected=track;state.asset=null;refreshChallengeUI();renderCatalog();updateSelectedCard(track);const token=++state.loadToken;setLoadState('loading','MIDI와 오디오 해석 중');setStartReady(false);
-  try{
-    const audioCtx=ensureAudioContext(),infoPromise=getTrackInfo(track),midiPromise=getArrayBuffer(track,'midi',track.midi),info=await infoPromise,midiBuffer=await midiPromise,bpm=Number(info.bpm)||Number(track.bpm)||100,notes=parseMidi(new Uint8Array(midiBuffer),bpm);
-    if(!notes.length)throw new Error('MIDI 안에서 노트를 찾지 못했습니다.');const audioNames=Array.isArray(track.audio)?track.audio:[track.audio],audioBuffers=[];
-    for(const name of audioNames){const bytes=await getArrayBuffer(track,'audio',name),decoded=await audioCtx.decodeAudioData(bytes.slice(0));audioBuffers.push({name,buffer:decoded})}
-    if(token!==state.loadToken)return;
+const decodedTracks=new Map(),preparingTracks=new Map();
+const DECODED_CACHE_BYTES=64*1024*1024;
+let decodedBytes=0,trackCacheEpoch=0;
+function clearTrackCache(){decodedTracks.clear();preparingTracks.clear();decodedBytes=0;trackCacheEpoch++;}
+function decodedKey(track){return track.source==='file'?null:JSON.stringify([hostBridge.profileId,track.id,track.base,track.path,track.midi,track.audio]);}
+function cacheTrack(key,asset){
+  if(!key)return;
+  const size=asset.audioBuffers.reduce((n,item)=>n+item.buffer.length*item.buffer.numberOfChannels*4,0);
+  if(size>DECODED_CACHE_BYTES)return;
+  while(decodedBytes+size>DECODED_CACHE_BYTES&&decodedTracks.size){const first=decodedTracks.keys().next().value;decodedBytes-=decodedTracks.get(first).size;decodedTracks.delete(first);}
+  decodedTracks.set(key,{asset,size});decodedBytes+=size;
+}
+function prepareTrack(track,progress){
+  const key=decodedKey(track),hit=key&&decodedTracks.get(key);
+  if(hit){decodedTracks.delete(key);decodedTracks.set(key,hit);return Promise.resolve(hit.asset);}
+  if(key&&preparingTracks.has(key))return preparingTracks.get(key);
+  const epoch=trackCacheEpoch;
+  const task=(async()=>{
+    const audioCtx=ensureAudioContext(),audioNames=Array.isArray(track.audio)?track.audio:[track.audio];
+    // Start both protected downloads together; MIDI no longer blocks the larger accompaniment.
+    const [info,midiBuffer,audioBuffers]=await Promise.all([
+      getTrackInfo(track),getArrayBuffer(track,'midi',track.midi),
+      Promise.all(audioNames.map(async name=>{
+        const bytes=await getArrayBuffer(track,'audio',name);progress?.('반주를 재생할 수 있게 준비하는 중');
+        return {name,buffer:await audioCtx.decodeAudioData(bytes)};
+      }))
+    ]);
+    const bpm=Number(info.bpm)||Number(track.bpm)||100,notes=parseMidi(new Uint8Array(midiBuffer),bpm);
+    if(!notes.length)throw new Error('MIDI 안에서 노트를 찾지 못했습니다.');
     const min=Math.min(...notes.map(n=>n.midi)),max=Math.max(...notes.map(n=>n.midi)),audioDuration=Math.max(...audioBuffers.map(x=>x.buffer.duration)),offset=Number(info['시작오프셋'])||0;
     const actual={name:info['이름']||track.name||track.path.split('/').pop(),description:info['설명']||track.description||'',bpm,offset,notes,audioBuffers,minMidi:min,maxMidi:max,duration:Math.max(audioDuration,notes[notes.length-1].t+notes[notes.length-1].dur+offset),range:noteName(min)+'–'+noteName(max),source:track.source};
-    state.asset=actual;track.name=actual.name;track.description=actual.description||track.description;track.bpm=bpm;track.noteCount=notes.length;track.range=actual.range;track.duration=actual.duration;
-    updateSelectedCard(track,actual);renderCatalog();setLoadState('ready','플레이 준비 완료 · '+notes.length+' 노트');$('loadLabel').title='실제 MIDI '+notes.length+'개 · 오디오 '+fmtTime(audioDuration)+' 연결 완료';setStartReady(true);
-  }catch(error){if(token!==state.loadToken)return;console.error(error);setLoadState('error',location.protocol==='file:'?'폴더 연결 버튼을 눌러 주세요':'파일 매핑을 확인해 주세요');setStartReady(false);$('sourceLabel').textContent='TRACK CONNECTION NEEDED'}
+    if(epoch===trackCacheEpoch)cacheTrack(key,actual);
+    return actual;
+  })();
+  const tracked=task.finally(()=>{if(key&&preparingTracks.get(key)===tracked)preparingTracks.delete(key);});
+  if(key)preparingTracks.set(key,tracked);
+  return tracked;
+}
+async function selectTrack(track){
+  if(state.session||state.starting)return;stopChallengeCamera(true);state.selected=track;state.asset=null;refreshChallengeUI();renderCatalog();updateSelectedCard(track);const token=++state.loadToken;setStartReady(false);
+  const progress=label=>{if(token===state.loadToken){setLoadState('loading',label);$('startLabel').textContent=label;$('startButton').setAttribute('aria-busy','true');}};
+  progress('악보와 반주를 불러오는 중');
+  try{
+    const actual=await prepareTrack(track,progress);
+    if(token!==state.loadToken)return;
+    state.asset=actual;track.name=actual.name;track.description=actual.description||track.description;track.bpm=actual.bpm;track.noteCount=actual.notes.length;track.range=actual.range;track.duration=actual.duration;
+    updateSelectedCard(track,actual);renderCatalog();setLoadState('ready','플레이 준비 완료 · '+actual.notes.length+' 노트');$('loadLabel').title='실제 MIDI '+actual.notes.length+'개 · 오디오 '+fmtTime(actual.duration)+' 연결 완료';setStartReady(true);
+  }catch(error){if(token!==state.loadToken)return;console.error(error);setLoadState('error',location.protocol==='file:'?'폴더 연결 버튼을 눌러 주세요':(error?.message||'트랙 연결 실패')+' · 곡을 다시 눌러 재시도하세요');setStartReady(false);$('startLabel').textContent='곡을 다시 선택해 주세요';$('sourceLabel').textContent='트랙 연결 재시도 필요';}
+  finally{if(token===state.loadToken)$('startButton').removeAttribute('aria-busy');}
 }
 function updateSelectedCard(track,asset){
   const index=Math.max(0,state.catalog.indexOf(track));$('selectedNumber').textContent=pad2(index+1);$('selectedTitle').textContent=(asset&&asset.name)||track.name||track.path.split('/').pop();$('selectedDescription').textContent=(asset&&asset.description)||track.description||track.category||'MIDI와 오디오를 연결하는 중입니다.';
@@ -1261,7 +1298,7 @@ async function rememberChallengeTake(take,result){
   refreshSavedClipsButton();
 }
 function clearHostMemberView(){
-  state.loadToken++;state.asset=null;setStartReady(false);
+  clearTrackCache();state.loadToken++;state.asset=null;setStartReady(false);
   $('clipPreview').pause();$('clipPreview').removeAttribute('src');$('savedClipsOverlay').classList.remove('on');$('savedClipsList').textContent='';$('savedClipsButton').hidden=true;
   if(challenge.url){URL.revokeObjectURL(challenge.url);challenge.url=null}challenge.take=null;
   const reload=()=>{if(!hostBridge.authorized)return;if(state.catalog.length&&state.selected)void selectTrack(state.selected);else if(!state.catalog.length)void initCatalog().catch(()=>{})};
