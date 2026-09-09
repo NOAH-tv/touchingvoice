@@ -451,7 +451,9 @@ export class AnatomyView {
     const dt = Math.min(.06, Math.max(0, (now - this.lastFrame) / 1000));
     this.lastFrame = now;
     const smooth = 1 - Math.exp(-dt * 15);
-    for (const id of IDS) this.levels[id] += (this.targetLevels[id] - this.levels[id]) * smooth;
+    // processLayers already applies the artist's attack/release calibration.
+    // Do not add a second low-pass filter to vocal movement here.
+    for (const id of IDS) this.levels[id] = this.targetLevels[id];
     this.explodeAmount += ((this.exploded ? 1 : 0) - this.explodeAmount) * (1 - Math.exp(-dt * 7));
     for (const mesh of this.meshes) {
       const id = mesh.userData.layer, meta = mesh.userData.anatomy, level = this.levels[id];
