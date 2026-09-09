@@ -486,7 +486,7 @@ function issueDetail(id) {
 function examDetail(id) {
   const exam = S.hq?.exams?.find(row => row.id === id); if (!exam) return; const rows = [];
   const walk = (object, prefix = '', depth = 0) => { if (!object || typeof object !== 'object' || depth > 2) return; for (const [key, value] of Object.entries(object)) { if (typeof value === 'number' && Number.isFinite(value)) rows.push([prefix + key, value]); else if (value && typeof value === 'object' && !Array.isArray(value)) walk(value, `${prefix}${key}.`, depth + 1); } }; walk(exam.metrics);
-  openModal(`${hqStudent(exam.studentId)?.name || '학생'} · 검사 지표`, `<div class="detail-grid">${detailItem('지점', hqBranch(exam.branchId)?.name)}${detailItem('검사 일시', `${fullDate(exam.createdAt)} ${time(exam.createdAt)}`)}${detailItem('서비스', exam.sourceService || exam.metadata?.sourceService || '코칭 스튜디오')}${detailItem('연결 기록', exam.recordId || exam.id)}</div><p class="section-caption">저장된 음성 지표 · ${rows.length}개</p>${table(['지표', '값'], rows.slice(0, 150).map(([key, value]) => `<tr><td>${e(key)}</td><td>${Number(value.toFixed(4)).toLocaleString('ko-KR')}</td></tr>`), '이 검사에 저장된 수치 지표가 없습니다.')}${notice('표시된 값은 검사 당시 저장한 결과입니다. 개인의 발성기관 움직임을 직접 측정한 값이나 의학적 진단을 의미하지 않습니다.')}`, 'SAVED VOICE METRICS'); S.modalRoute = { type: 'exam', id };
+  openModal(`${hqStudent(exam.studentId)?.name || '학생'} · 검사 지표`, `<div class="detail-grid">${detailItem('지점', hqBranch(exam.branchId)?.name)}${detailItem('검사 일시', `${fullDate(exam.createdAt)} ${time(exam.createdAt)}`)}${detailItem('서비스', exam.sourceService || exam.metadata?.sourceService || '코칭 스튜디오')}${detailItem('연결 기록', exam.recordId || exam.id)}</div><div class="detail-actions">${button('발성심리보고서 발급', 'exam-report', exam.id, 'primary')}</div><p class="section-caption">저장된 음성 지표 · ${rows.length}개</p>${table(['지표', '값'], rows.slice(0, 150).map(([key, value]) => `<tr><td>${e(key)}</td><td>${Number(value.toFixed(4)).toLocaleString('ko-KR')}</td></tr>`), '이 검사에 저장된 수치 지표가 없습니다.')}${notice('표시된 값은 검사 당시 저장한 결과입니다. 개인의 발성기관 움직임을 직접 측정한 값이나 의학적 진단을 의미하지 않습니다.')}`, 'SAVED VOICE METRICS'); S.modalRoute = { type: 'exam', id };
 }
 function hqStudentDetail(id) {
   if (!owner()) return; const student = hqStudent(id); if (!student) return toast('학생 정보를 찾을 수 없습니다.', true);
@@ -626,6 +626,7 @@ async function handleAction(action, id, source) {
   if (action === 'issue-new') return issueForm();
   if (action === 'issue-detail') return issueDetail(id);
   if (action === 'exam-detail') return examDetail(id);
+  if (action === 'exam-report') { const exam = S.hq?.exams?.find(row => row.id === id); if (!exam) return; const url = new URL('./report.html', location.href); url.hash = new URLSearchParams({ exam: id, branch: exam.branchId }).toString(); return window.open(url.href, '_blank'); }
   if (action === 'go-approvals') return navigate('approvals');
   if (action === 'go-issues') return navigate('issues');
   if (action === 'database-mode') { S.databaseMode = id; return render(); }
