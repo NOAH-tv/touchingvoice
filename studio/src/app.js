@@ -459,7 +459,7 @@ function paint(now){
     for(const key of LAYER_KEYS){history[key].before.push(originalLevels[key]);history[key].after.push(levels[key]);if(history[key].after.length>150){history[key].after.shift();history[key].before.shift();}}
   }
   // Text panels and off-stage charts must not compete with the 3D render loop.
-  if(now-lastDetailPaint<100)return;lastDetailPaint=now;
+  if(now-lastDetailPaint<(stageVisible?100:32))return;lastDetailPaint=now;
   if(!stageVisible){
     for(const key of LAYER_KEYS){
       const pct=Math.round((levels[key]||0)*100),label=$('percent-'+key),width=pct+'%';
