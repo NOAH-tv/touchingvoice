@@ -97,6 +97,7 @@ async function establishSession() {
     $('#branchSelect').innerHTML = session.branches.map(branch => `<option value="${e(branch.id)}">${e(branch.name)}</option>`).join(''); $('#branchSelect').value = S.branchId;
     $('#staffName').textContent = session.staff.name || session.staff.email; $('#staffRole').textContent = roles[session.staff.role] || '승인된 구성원'; $('#staffAvatar').textContent = (session.staff.name || session.staff.email || 'T').slice(0, 1);
     $('#previewNotice').hidden = !preview; $('#previewRole').value = session.staff.role; showScreen('portal'); renderNav(); window.dispatchEvent(new CustomEvent('tv:session', { detail: session })); await refresh();
+    if (!preview && owner() && S.session === session && S.data) { navigate('studio', { openStudio: false }); $('#studioStudent').value = ''; }
   } catch (error) {
     if (epoch !== S.requestEpoch) return;
     S.session = null; S.data = null; $('#pendingEmail').textContent = S.user?.email || '로그인된 계정'; $('#pendingMessage').textContent = errorMessage(error); showScreen('pendingScreen'); loadBranchApplications();
@@ -372,6 +373,15 @@ function renderStudio() {
   $('#studioStudent').innerHTML = studentOptions(selected); $('#studioStudent').value = selected;
   $('#studioBack').textContent = '← 운영 화면으로'; $('#studioStudent').setAttribute('aria-label', '코칭할 학생 선택');
   $('#studioLaunch').textContent = '스튜디오 열기';
+  if (!$('#studioNewStudent')) {
+    const add = document.createElement('button'); add.id = 'studioNewStudent'; add.type = 'button';
+    add.className = 'button secondary'; add.dataset.action = 'student-new'; add.textContent = '새 학생 등록';
+    $('#studioBack').after(add);
+  }
+  if (!$('#studioMount iframe')) {
+    $('#studioLaunch').hidden = !available.length;
+    $('#studioMount').innerHTML = `<div class="empty-state"><h2>코칭 스튜디오</h2><p>${available.length ? '검사할 학생을 선택해 주세요.' : '학생을 등록하고 첫 음성 검사를 시작하세요.'}</p><small>3D 발성체크 · 음성 검사 · 훈련 · 누적 기록</small><p>${button('새 학생 등록', 'student-new', '', 'primary')}${button('학생 정보 확인', 'studio-members', '', 'secondary')}</p></div>`;
+  }
 }
 async function launchStudio(studentId, { reload = false } = {}) {
   const student = studentBy(studentId); if (!student) return toast('먼저 검사할 학생을 선택해 주세요.', true);
@@ -581,6 +591,7 @@ async function handleAction(action, id, source) {
   if (!S.session || !S.data) { if (action === 'refresh') return refresh(); return; }
   if (action === 'refresh') return refresh();
   if (action === 'student-new') return studentForm();
+  if (action === 'studio-members') return navigate('students');
   if (action === 'student-edit') return studentForm(id);
   if (action === 'student-detail') return studentDetail(id);
   if (action === 'initial-pack' && admin()) return confirmationForm('첫 4회 수강권 등록', `${studentName(id)} 학생의 첫 수강료 납부 또는 등록 근거를 확인한 경우에만 진행하세요. 이미 수강권 이력이 있는 학생은 재결제 확인으로 갱신합니다.`, 'initialPackForm', id, '첫 4회권 등록', { reason: true, confirm: true });
