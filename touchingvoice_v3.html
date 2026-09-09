@@ -3301,10 +3301,9 @@ function tvDomainCard(code,state){
  return `<section class="tv-domain" id="report-domain-${code}"><div class="tv-domain-head"><div class="tv-domain-heading"><span class="tv-domain-letter">${code}</span><div><small>${d.english}</small><h3>${d.name}</h3></div></div><div class="tv-domain-score">${s.legacyScore}<small> / 100점</small><span class="tv-mean-detail">응답 평균 ${s.displayMean} / 5</span></div></div>${tvScoreTrack(code,s)}<p class="tv-domain-title">${p.title}</p><p class="tv-domain-description">${p.body}</p><div class="tv-context-grid"><div><h4>일과 학습에서</h4><p>${p.work}</p></div><div><h4>관계와 소통에서</h4><p>${p.relation}</p></div></div><p class="tv-reflect"><b>생각해 볼 질문</b>${p.question}</p></section>`;
 }
 function tvVoicePanel(state){
- const v=state.stats.V;const qs=VOICE_SPECIAL.qs;
- const rows=[{i:9,label:'목소리에 대한 자신감'},{i:3,label:'오래 말하거나 노래할 때의 편안함'}];
- const items=rows.map(r=>({...r,index:qs.findIndex(q=>q.t===QUESTION_POOLS.V[r.i]?.t)})).filter(r=>r.index>=0).map(r=>{const val=answers[`V_${r.index}`];return `<div class="tv-voice-item"><span>${r.label}</span><strong>${val} / 5 · 해당 문항 응답</strong></div>`;}).join('');
- return `<section class="tv-voice-panel"><div class="tv-kicker">TOUCHINGVOICE · VOICE REFLECTION</div><h3>나의 목소리 경험 돌아보기</h3><p>말하고 노래할 때의 경험을 함께 살펴봅니다. 이 설문은 Big Five 성격 점수에 포함되지 않으며, 음성을 측정한 결과와도 구분됩니다.</p><div class="tv-voice-grid">${items}</div><p><b>성찰 질문</b> 내 목소리가 가장 편안했던 장면은 언제였나요? 누구와, 어떤 공간에서, 어떤 말을 했는지 떠올려 보세요.</p><p class="tv-scale-note">보조 설문 ${v.n}문항 완료. 서로 다른 목소리 경험을 하나의 능력 등급으로 판정하지 않습니다.</p></section>`;
+ const v=state.stats.V;
+ const interpretation=v.mean<2.5?'이번 응답에서는 목소리의 자신감·편안함·표현 경험을 낮게 평가한 항목이 많습니다. 실제 능력이 낮다는 뜻은 아닙니다. 가장 불편했던 상황과 도움받고 싶은 항목부터 확인하세요.':v.mean>3.5?'이번 응답에서는 목소리의 자신감·편안함·표현 경험을 긍정적으로 평가한 항목이 많습니다. 모든 발성 능력이 검증되었다는 뜻은 아닙니다. 편안했던 상황의 조건을 기록하고 다른 장면에서도 재현되는지 살펴보세요.':'이번 응답에서는 목소리 경험에 대한 평가가 중간 구간에 있습니다. 편안한 장면과 어려운 장면을 구분해, 상황에 따라 달라지는 경험을 살펴보세요.';
+ return `<section class="tv-voice-panel"><div class="tv-kicker">TOUCHINGVOICE · VOICE SPECIAL</div><h3>보이스 스페셜 · 목소리 경험</h3><div class="tv-voice-grid"><div class="tv-voice-item"><span>응답 평균</span><strong>${v.displayMean} / 5</strong></div><div class="tv-voice-item"><span>환산점수 · 평균 × 20</span><strong>${v.legacyScore} / 100</strong></div></div><p>${interpretation}</p><p class="tv-scale-note">${v.n}문항의 자기평가 평균입니다. Big Five와 별도인 보조 설문으로, 실제 음성 측정·발성 능력 등급·인구집단 백분위가 아닙니다. 해석 구간은 평균 2.5 미만 / 2.5~3.5 / 3.5 초과의 편집 기준입니다.</p></section>`;
 }
 // Editorial coaching prompts, not validated job-ability or facet scales.
 const TV_CONTEXT_FEEDBACK = {
@@ -3363,64 +3362,4 @@ function tvRenderReport(state){
  <article class="tv-page">${tvPageTop('TRAIT INSIGHTS · 02',state)}<div class="tv-kicker">나의 관계와 정서</div><h2>함께 지내고,<br>마음의 반응을 알아차리는 방식</h2>${tvDomainCard('A',state)}${tvDomainCard('N',state)}${tvPageBottom(3,state)}</article>
  <article class="tv-page">${tvPageTop('TRAIT INSIGHTS · 03',state)}<div class="tv-kicker">나의 탐색과 표현</div><h2>새로운 생각을 만나고,<br>나의 목소리를 살펴보는 시간</h2>${tvDomainCard('O',state)}${tvVoicePanel(state)}<section class="tv-summary"><h3>성격에서 표현으로</h3><p>성격 점수만으로 목소리의 높이·음색·발성 상태를 추정하지 않습니다. 다만 나의 참여 방식이나 마음의 반응을 이해하면, 어떤 표현을 연습해 보고 싶은지 스스로 선택하는 데 참고할 수 있습니다.</p></section>${tvPageBottom(4,state)}</article>
  ${tvContextPage('work',state,5)}${tvContextPage('relation',state,6)}${tvCoachingPage(state)}
- <article class="tv-page">${tvPageTop('REFLECTION & METHOD',state)}<div class="tv-kicker">이해를 작은 실천으로</div><h2>이번 주, 나에게 적용하기</h2><p class="tv-plan-intro">세 가지 중 나에게 필요한 한 가지만 골라 보세요.<br>성격을 바꾸는 과제가 아니라, 나의 선택을 넓혀 보는 연습입니다.</p>${plans}<div class="tv-note-lines"><h4>내가 선택한 한 가지와 해 본 뒤의 느낌</h4><div></div><div></div></div><section class="tv-method"><h3>검사 방법과 해석의 범위</h3><dl class="tv-method-grid"><div><dt>문항 구성</dt><dd>${tvEscape(ins.label)}<br>${tvEscape(ins.basis)}</dd></div><div><dt>점수 산출</dt><dd>역채점 후 영역별 평균 × 20, 정수로 반올림.<br>1점→20점 / 3점→60점 / 5점→100점.<br>V 보조 설문은 성격 점수에서 제외.</dd></div><div><dt>해석 구간</dt><dd>반올림 전 환산점수 50 미만 / 50~70 / 70 초과.<br>응답 평균 2.5 / 3.5를 경계로 한 편집 구간이며 규준 등급이 아닙니다.</dd></div><div><dt>응답 확인</dt><dd>${quality}</dd></div></dl><p class="tv-limits">${ins.id.startsWith('TV-IPIP')?'공개 IPIP 문항을 참고해 한국어 표현과 채점 키를 대조한 구성입니다. 이 결과지 자체의 한국어·연령별 타당화 및 규준 연구는 완료되지 않았습니다.':'자체 문항으로 구성한 검사입니다. 검증된 IPIP 원척도와 동등한 검사로 해석할 수 없으며, 이 검사판의 타당화와 규준 연구는 확인되지 않았습니다.'} 자기이해를 위한 자료이며 임상 진단이나 선발 판정용으로 해석하지 않습니다.</p><div class="tv-references">참고: <a href="https://ipip.ori.org/newBigFive5broadKey.htm" target="_blank" rel="noopener">IPIP Big-Five Factor Markers</a> · <a href="https://ipip.ori.org/newScoringInstructions.htm" target="_blank" rel="noopener">채점 방식</a> · <a href="https://ipip.ori.org/newNorms.htm" target="_blank" rel="noopener">규준 안내</a><br>문항판 ${tvEscape(ins.version)} · 결과지 ${TV_REPORT_VERSION} · 발행 TouchingVoice</div></section>${tvPageBottom(8,state)}</article>`;
-}
-function tvBuildResults(options={}){
- let stats;try{stats=Object.fromEntries([...TV_REPORT_ORDER,'V'].map(c=>[c,tvDomainStats(c)]));}catch(error){alert(error.message);return false;}
- const name=document.getElementById('user-name').value.trim();
- if(!name){alert('이름을 입력해 주세요.');return false;}
- const sample=options.sample===true || new URLSearchParams(location.search).get('sample')==='1';
- const itemResponses=[...BIG5,VOICE_SPECIAL].flatMap(d=>d.qs.map((q,i)=>({id:q.id||`${d.code}-${QUESTION_POOLS[d.code].indexOf(q)+1}`,domain:d.code,text:q.t,reverse:q.r===true,response:answers[`${d.code}_${i}`]})));
- const ins=tvInstrument();const signature=JSON.stringify({name,age:document.getElementById('user-age').value,gender:selectedGender,instrument:ins.id,items:itemResponses});
- if(!tvReportState||tvReportState.signature!==signature||tvReportState.sample!==sample){
-  const now=new Date();tvReportState={id:sample?'TV-B5-SAMPLE':'TV-B5-'+(globalThis.crypto?.randomUUID?.()||Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,10)).slice(0,12).toUpperCase(),name,completedAt:now.toISOString(),instrument:ins,reportVersion:TV_REPORT_VERSION,scoreScale:{id:'TV-MEAN-X20',min:20,max:100,neutral:60,formula:'round(keyedMean * 20)',normReferenced:false},stats,itemResponses,signature,sample,straightline:new Set(itemResponses.map(r=>r.response)).size===1};
- }
- const report=document.getElementById('professionalReport');report.innerHTML=tvRenderReport(tvReportState);
- document.getElementById('tvSampleBanner').hidden=!sample;
- document.getElementById('tvReportStatus').textContent='';
- const audio=document.getElementById('tvAudioAside');if(audio)audio.hidden=!window._voiceAnalysisReady;
- if(window._voiceAnalysisReady)renderVoiceResultStep3();
- if(!sample && options.persist!==false && tvSubmissionSignature!==signature){
-  tvSubmissionSignature=signature;
-  if(!tvReportState.counted){try{incrementTestCount(name);tvReportState.counted=true;}catch(error){console.warn('검사 회차를 저장하지 못했습니다.');}}
-  saveToSheets(Object.fromEntries([...TV_REPORT_ORDER,'V'].map(c=>[c,stats[c].legacyScore])),name);
- }
- return true;
-}
-async function tvPrintReport(){
- if(!tvReportState)return;
- try{await Promise.all([document.fonts.load('400 16px TVPrint'),document.fonts.load('700 16px TVPrint')]);await document.fonts.ready;
-  if(!document.fonts.check('400 16px TVPrint')||!document.fonts.check('700 16px TVPrint'))throw new Error('인쇄 글꼴을 불러오지 못했습니다.');
-  window.print();
- }catch(error){document.getElementById('tvReportStatus').textContent='인쇄용 글꼴을 불러오지 못했습니다. 연결을 확인하고 다시 시도해 주세요.';}
-}
-function tvDownloadBlob(blob,filename){const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);}
-async function tvDownloadReport(button){
- if(!tvReportState)return;button.disabled=true;const old=button.textContent;button.textContent='파일 준비 중';
- try{
-  let css=document.getElementById('tv-professional-report-style').textContent;
-  const paths=[...new Set([...css.matchAll(/url\('([^']+)'\)/g)].map(m=>m[1]))];
-  for(const path of paths){const response=await fetch(new URL(path,location.href));if(!response.ok)throw new Error('글꼴을 불러오지 못했습니다.');const bytes=await response.arrayBuffer();let binary='';for(const byte of new Uint8Array(bytes))binary+=String.fromCharCode(byte);css=css.split(`url('${path}')`).join(`url('data:font/${path.endsWith('.otf')?'otf':'ttf'};base64,${btoa(binary)}')`);}
-  const state=JSON.stringify({...tvReportState,signature:undefined}).replace(/</g,'\\u003c');
-  const standalone='<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>터칭보이스 성격 프로파일 · '+tvEscape(tvReportState.name)+'</title><style>'+css+'</style></head><body><div id="step-3"><div class="tv-report-toolbar"><div class="tv-brand">TouchingVoice<small>PERSONAL INSIGHT REPORT</small></div><div class="tv-report-actions"><button class="primary" onclick="document.fonts.ready.then(()=>window.print())">인쇄 / PDF 저장</button></div></div>'+(tvReportState.sample?'<div class="tv-sample-banner">샘플 결과지 · 가상 응답으로 생성되었습니다.</div>':'')+'<main class="tv-report">'+document.getElementById('professionalReport').innerHTML+'</main></div><script type="application/json" id="assessment-record">'+state+'<\/script></body></html>';
-  tvDownloadBlob(new Blob([standalone],{type:'text/html;charset=utf-8'}),'터칭보이스_Big5_'+tvReportState.id+'.html');
-  document.getElementById('tvReportStatus').textContent='결과지를 저장했습니다. 내려받은 파일은 인터넷 연결 없이 열거나 PDF로 인쇄할 수 있습니다.';
- }catch(error){document.getElementById('tvReportStatus').textContent='결과지 파일을 저장하지 못했습니다. 연결을 확인하거나 인쇄 / PDF 저장을 이용해 주세요.';}
- finally{button.disabled=false;button.textContent=old;}
-}
-function tvShareText(){if(!tvReportState)return '';return `[터칭보이스 Big Five 성격 프로파일]\n${tvReportState.name} 님 · ${tvDate(new Date(tvReportState.completedAt))}\n`+TV_REPORT_ORDER.map(c=>`${TV_REPORT_CONTENT[c].name} ${tvReportState.stats[c].legacyScore}/100점`).join(' · ')+'\n자기보고 응답 평균 × 20의 환산점수(20~100)이며 순위·백분위가 아닙니다.';}
-async function tvCopySummary(){try{await navigator.clipboard.writeText(tvShareText());document.getElementById('tvReportStatus').textContent='결과 요약을 복사했습니다.';}catch(error){document.getElementById('tvReportStatus').textContent='복사 권한을 확인하거나 결과지 파일을 저장해 주세요.';}}
-function tvLoadSample(){
- const name='김가온';document.getElementById('user-name').value=name;document.getElementById('user-age').value='32';selectedGender='여성';
- const sets=buildQuestionSets(name);BIG5.forEach((d,i)=>{d.qs=sets.BIG5[i].qs;});VOICE_SPECIAL.qs=sets.VOICE_SPECIAL.qs;
- const targets={E:4,C:4,A:3,N:2,O:4,V:3};
- answers={};[...BIG5,VOICE_SPECIAL].forEach(d=>d.qs.forEach((q,i)=>{const keyed=Math.min(5,Math.max(1,targets[d.code]+[0,1,0,-1,0][i%5]));answers[`${d.code}_${i}`]=q.r?6-keyed:keyed;}));
- document.getElementById('surveyBody').innerHTML='';buildSurvey();
- for(const [key,value] of Object.entries(answers)){document.querySelector(`#lk-${key} .lk-btn:nth-child(${value})`)?.classList.add('sel');document.getElementById(`qc-${key}`)?.classList.add('answered');}
- totalAnswered=totalQ;updateProg();tvBuildResults({persist:false,sample:true});switchStep('step-3');
-}
-if(new URLSearchParams(location.search).get('sample')==='1')tvLoadSample();
-
-</script>
-</body>
-</html>
+ <article class="tv-page">${tvPageTop('REFLECTION & METHOD',state)}<div class="tv-kicker">이해를 작은 실천으로</div><h2>이번 주, 나에게 적용하기</h2><p class="tv-plan-intro">세 가지 중 나에게 필요한 한 가지만 골라 보세요.<br>성격을[Truncated]
