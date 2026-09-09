@@ -1,3 +1,4 @@
+import { researchSnapshot } from './research-policy.js';
 export const MAX_ARTIFACT_BYTES=8*1024*1024;
 const byteLength=value=>new TextEncoder().encode(JSON.stringify(value)).byteLength;
 export function summarizeMetrics(entry) {
@@ -17,7 +18,7 @@ export async function prepareUpload(entry,context) {
   if(!(entry.blob instanceof Blob)||!entry.blob.size||!(entry.datasetBlob instanceof Blob)||!entry.fileAnalysis||entry.unsaved||entry.saving)throw new Error('원음·전체 분석·프레임 데이터를 PC에 저장한 뒤 서버에 보관할 수 있습니다.');
   if(entry.blob.size>MAX_ARTIFACT_BYTES)throw new Error('원음이 8 MB를 넘습니다. 이 PC에 저장되어 있으며 서버에는 아직 전송되지 않았습니다.');
   const metrics=summarizeMetrics(entry);
-  const metadata={format:'touchingvoice-franchise-exam',version:1,createdAt:entry.createdAt,duration:entry.duration,sourceService:'franchise-studio',sourceKind:entry.sourceKind||'recording',sourceSha256:entry.fileAnalysis.source?.sha256||null,analysisVersion:entry.fileAnalysis.analysisVersion||entry.fileAnalysis.version,annotation:entry.annotation||{},personality:entry.examination?.big5||{},examination:entry.examination||{},calibration:entry.profile,frameData:{encoding:'float32-le;base64',columns:entry.fileAnalysis.dataset?.columnCount,rows:entry.fileAnalysis.dataset?.rowCount}};
+  const metadata={research:researchSnapshot(entry),format:'touchingvoice-franchise-exam',version:1,createdAt:entry.createdAt,duration:entry.duration,sourceService:'franchise-studio',sourceKind:entry.sourceKind||'recording',sourceSha256:entry.fileAnalysis.source?.sha256||null,analysisVersion:entry.fileAnalysis.analysisVersion||entry.fileAnalysis.version,annotation:entry.annotation||{},personality:entry.examination?.big5||{},examination:entry.examination||{},calibration:entry.profile,frameData:{encoding:'float32-le;base64',columns:entry.fileAnalysis.dataset?.columnCount,rows:entry.fileAnalysis.dataset?.rowCount}};
   if(byteLength(metadata)>16*1024)throw new Error('검사 메타데이터가 서버의 16 KB 한도를 넘었습니다. 전체 결과는 PC에 보관됩니다.');
   // The complete binary frame matrix is preserved exactly; missing values remain IEEE NaN.
   const {blob,datasetBlob,saving,unsaved,franchiseUpload,driveBackup,...analysisRecord}=entry;
