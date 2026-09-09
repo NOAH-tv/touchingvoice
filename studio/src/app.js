@@ -35,7 +35,7 @@ let profile = sanitizeProfile({...DEFAULT_PROFILE,name:franchiseContext.student.
 let profiles = [], sessions = [], selectedLayer = 'nas', selectedFocus = null, tab = 'studio', dirty = false, comparing = false;
 let audioState = {mode:'idle',playing:false,recording:false,duration:0,currentTime:0};
 let lastFrame = null, levels = {}, originalLevels = {}, demo = false, recordingSnapshot = null, recordingStarted = 0;
-let capture = null, suggestion = null, lastPaint = 0, toastTimer, busy = false, microphoneAction = null, visibilityStopping = false, loopPlayback = false;
+let capture = null, suggestion = null, lastPaint = 0, lastDetailPaint = -Infinity, lastHistoryPaint = -Infinity, toastTimer, busy = false, microphoneAction = null, visibilityStopping = false, loopPlayback = false;
 let coreRun = null, coreStarting = false, coreFinishing = false, coreGeneration = 0, coreTimer = null, recordingSavePromise = null, currentResult = null, replayProfile = null;
 let selectedStructure = null, freeVoiceAccumulator = null, studioTools = null, fileAnalyzer = null, fileAnalysisView = null, loadedAnalysisSource = null;
 let participantIntake=null, memberHistory=null, driveBackup=null, driveConnection=null, lastDriveStatusPaint=0;
@@ -433,14 +433,43 @@ function canvasContext(id){const c=$(id),r=c.getBoundingClientRect(),dpr=Math.mi
 function drawWave(wave){const c=canvasContext('mainWave');if(!c)return;const {ctx,w,h}=c;ctx.strokeStyle='#36274c';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,h/2);ctx.lineTo(w,h/2);ctx.stroke();for(let x=0;x<w;x+=36){ctx.beginPath();ctx.moveTo(x,8);ctx.lineTo(x,h-8);ctx.strokeStyle='#21182f';ctx.stroke();}if(!wave)return;const grad=ctx.createLinearGradient(0,0,w,0);grad.addColorStop(0,'#604c92');grad.addColorStop(.45,'#c1a0ff');grad.addColorStop(1,'#604c92');ctx.strokeStyle=grad;ctx.lineWidth=1.5;ctx.beginPath();const step=Math.max(1,Math.floor(wave.length/w));for(let x=0,i=0;i<wave.length;i+=step,x++){const y=h/2-Math.max(-1,Math.min(1,wave[i]*2.5))*h*.4;x?ctx.lineTo(x,y):ctx.moveTo(x,y);}ctx.stroke();}
 function drawReference(){const c=canvasContext('referenceWave');if(!c)return;const {ctx,w,h}=c,arr=refs[selectedLayer]?.preview||[];ctx.strokeStyle='#c3adcf';ctx.lineWidth=2;ctx.lineCap='round';arr.forEach((v,i)=>{const hh=Math.max(1,Math.min(h*.8,v*h*3));const x=(i+.5)*w/100;ctx.beginPath();ctx.moveTo(x,(h-hh)/2);ctx.lineTo(x,(h+hh)/2);ctx.stroke();});}
 function drawLayerHistory(){const c=canvasContext('layerWave');if(!c)return;const {ctx,w,h}=c,d=history[selectedLayer];for(const [key,color,width] of [['before','#cec4d8',1],['after',META[selectedLayer].color,2]]){const arr=d[key];ctx.strokeStyle=color;ctx.lineWidth=width;ctx.beginPath();arr.forEach((v,i)=>{const x=w-(arr.length-1-i)*w/150,y=h-4-v*(h-8);i?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.stroke();}}
-function paint(now){requestAnimationFrame(paint);if(studioSuspended||document.hidden||now-lastPaint<32)return;const dt=Math.min(now-lastPaint||33,200);lastPaint=now;
+function paint(now){
+  requestAnimationFrame(paint);
+  const stageVisible=tab==='studio';
+  if(studioSuspended||document.hidden||(!stageVisible&&now-lastPaint<32))return;
+  const dt=Math.min(now-lastPaint||1000/60,200);lastPaint=now;
   let f=lastFrame?.features || EMPTY,wave=lastFrame?.waveform;
   if(demo){const t=now/1000;f={valid:true,level:-24,f0:220,rms:.06,clarity:.95};for(const [i,key] of LAYER_KEYS.entries()){const l=DEFAULT_PROFILE.layers[key];f[l.feature]=l.inputMin+(l.inputMax-l.inputMin)*(.5+.4*Math.sin(t*1.4+i*1.2));}wave=Float32Array.from({length:512},(_,i)=>.12*Math.sin(i*.25+t*2)*Math.sin(i*.013));}
-  const activeProfile=coreRun?.snapshot.profile||(audioState.recording&&recordingSnapshot?recordingSnapshot.profile:effectiveProfile());const result=processLayers(f,activeProfile,levels,dt);levels=result.levels;const baseline=processLayers(f,DEFAULT_PROFILE,originalLevels,dt);originalLevels=baseline.levels;anatomy.setLevels(levels);
-  for(const key of LAYER_KEYS){const pct=Math.round((levels[key]||0)*100);$('percent-'+key).innerHTML=`${pct}<small>%</small>`;$('bar-'+key).style.width=pct+'%';$('hud-'+key).textContent=pct+'%';$('hud-bar-'+key).style.width=pct+'%';history[key].before.push(originalLevels[key]);history[key].after.push(levels[key]);if(history[key].after.length>150){history[key].after.shift();history[key].before.shift();}}
-  const featureKey=activeProfile.layers[selectedLayer].feature;if(audioState.playing&&!demo)$('liveBadge').textContent=result.valid?'음성 감지':'음성 대기';const val=f[featureKey]+(featureKey==='level'?activeProfile.global.inputGainDb:0);$('rawFeature').textContent=f.valid&&Number.isFinite(val)?val.toFixed(1)+' '+FEATURES[featureKey].unit:'—';$('tunedOutput').innerHTML=`${Math.round((levels[selectedLayer]||0)*100)}<small>%</small>`;
-  $('levelReadout').textContent=Number.isFinite(f.level)&&f.level>-119?`${(f.level+activeProfile.global.inputGainDb).toFixed(1)} dBFS`:'— dB';$('pitchReadout').textContent=f.f0>0?`${Math.round(f.f0)} Hz`:'— Hz';$('timeDisplay').textContent=audioState.mode==='mic'?`${time(engine.currentTime)} · LIVE`:`${time(engine.currentTime)} / ${time(audioState.duration)}`;drawWave(wave);if(document.activeElement!==$('seekBar'))$('seekBar').value=audioState.duration?engine.currentTime/audioState.duration*1000:0;if(tab==='tuning'){drawLayerHistory();drawReference();}
-  updatePro(lastFrame);studioTools?.paint();renderCore();if($('resultDialog').open)drawResultTrace();
+  const activeProfile=coreRun?.snapshot.profile||(audioState.recording&&recordingSnapshot?recordingSnapshot.profile:effectiveProfile());
+  const result=processLayers(f,activeProfile,levels,dt);levels=result.levels;
+  if(stageVisible){
+    anatomy.setLevels(levels);
+    for(const key of LAYER_KEYS){
+      const level=levels[key]||0;
+      textIfChanged('hud-'+key,Math.round(level*100)+'%');
+      const bar=$('hud-bar-'+key),transform=`scaleX(${level.toFixed(4)})`;
+      if(bar.style.width!=='100%')bar.style.width='100%';
+      if(bar.style.transform!==transform)bar.style.transform=transform;
+    }
+  }
+  // Keep history at its original cadence; the model follows display frames.
+  if(now-lastHistoryPaint>=32){
+    const historyDt=Math.min(Number.isFinite(lastHistoryPaint)?now-lastHistoryPaint:33,200);lastHistoryPaint=now;
+    originalLevels=processLayers(f,DEFAULT_PROFILE,originalLevels,historyDt).levels;
+    for(const key of LAYER_KEYS){history[key].before.push(originalLevels[key]);history[key].after.push(levels[key]);if(history[key].after.length>150){history[key].after.shift();history[key].before.shift();}}
+  }
+  // Text panels and off-stage charts must not compete with the 3D render loop.
+  if(now-lastDetailPaint<100)return;lastDetailPaint=now;
+  if(!stageVisible){
+    for(const key of LAYER_KEYS){
+      const pct=Math.round((levels[key]||0)*100),label=$('percent-'+key),width=pct+'%';
+      if(label.firstChild?.nodeValue!==String(pct))label.firstChild.nodeValue=String(pct);
+      if($('bar-'+key).style.width!==width)$('bar-'+key).style.width=width;
+    }
+  }
+  if(tab==='tuning'){const featureKey=activeProfile.layers[selectedLayer].feature;if(audioState.playing&&!demo)$('liveBadge').textContent=result.valid?'음성 감지':'음성 대기';const val=f[featureKey]+(featureKey==='level'?activeProfile.global.inputGainDb:0);$('rawFeature').textContent=f.valid&&Number.isFinite(val)?val.toFixed(1)+' '+FEATURES[featureKey].unit:'—';const tuned=$('tunedOutput'),pct=String(Math.round((levels[selectedLayer]||0)*100));if(tuned.firstChild?.nodeValue!==pct)tuned.firstChild.nodeValue=pct;}
+  if(!stageVisible){$('levelReadout').textContent=Number.isFinite(f.level)&&f.level>-119?`${(f.level+activeProfile.global.inputGainDb).toFixed(1)} dBFS`:'— dB';$('pitchReadout').textContent=f.f0>0?`${Math.round(f.f0)} Hz`:'— Hz';$('timeDisplay').textContent=audioState.mode==='mic'?`${time(engine.currentTime)} · LIVE`:`${time(engine.currentTime)} / ${time(audioState.duration)}`;drawWave(wave);if(document.activeElement!==$('seekBar'))$('seekBar').value=audioState.duration?engine.currentTime/audioState.duration*1000:0;if(tab==='tuning'){drawLayerHistory();drawReference();}}
+  if(tab==='analyzer'||tab==='training')updatePro(lastFrame);if(tab==='training')studioTools?.paint();renderCore();if($('resultDialog').open)drawResultTrace();
   if(capture){const left=Math.max(0,5-(performance.now()-capture.start)/1000);$('captureBtn').textContent=`수집 중 ${left.toFixed(1)}초`;if(left===0)finishCapture();}
   if(!coreRun&&!coreFinishing&&audioState.recording&&performance.now()-recordingStarted>=180000)safe(()=>engine.stopRecording());
 }
