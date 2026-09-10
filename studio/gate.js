@@ -1,5 +1,5 @@
-import { initAuth } from '../auth.js';
-import { call, config } from '../api.js';
+import { initAuth } from '../auth.js?v=parallel-20260911';
+import { call, config } from '../api.js?v=parallel-20260911';
 import { establishContext, authorizedStudent, isParentMessage, postParent } from './context.js';
 
 let shutdown = null, appModule=null, authorizedContext=null, closed=false,suspended=false,resumeEpoch=0,suspendPromise=Promise.resolve();
@@ -75,6 +75,13 @@ async function authenticated() {
   });
 }
 try {
+  // Public shell only; protected assets and application execution remain gated.
+  const shellResponse = fetch('./app-shell.html?v=parallel-20260911').then(async response => {
+    if (!response.ok) throw new Error('코칭 화면을 불러오지 못했습니다.');
+    return response.text();
+  });
+  shellResponse.catch(() => {});
+  
   const [user,selected]=await Promise.all([authenticated(),selection()]);
   const context=await call('studio.context',{studentId:selected.studentId},selected.branchId);
   if (!context?.staff || context.staff.uid!==user.uid) throw new Error('승인된 강사 계정이 필요합니다.');
@@ -82,14 +89,12 @@ try {
   if (closed) throw new Error('코칭 연결이 종료되었습니다.');
   authorizedContext={selected,user,context};
   establishContext({uid:user.uid,branchId:selected.branchId,student,staff:context.staff,branch:context.branch,preview:config.preview});
-  // No Studio HTML, 3D assets, worker, or audio module is requested until authorization passes.
-  const response=await fetch('./app-shell.html',{cache:'no-store'});
-  if (!response.ok) throw new Error('코칭 화면을 불러오지 못했습니다.');
-  const parsed=new DOMParser().parseFromString(await response.text(),'text/html');
+  // Fetching public code is safe; execute it only after current authorization.
+  const parsed=new DOMParser().parseFromString(await shellResponse,'text/html');
   if (closed) throw new Error('코칭 연결이 종료되었습니다.');
   document.documentElement.style.visibility='hidden';
   for (const node of parsed.head.querySelectorAll('link,script[type="importmap"]')) {
-    if(node.tagName==='SCRIPT') {const map=document.createElement('script');map.type='importmap';map.textContent=node.textContent;document.head.append(map);}
+    if(node.tagName==='SCRIPT') {if(document.querySelector('script[type="importmap"]'))continue;const map=document.createElement('script');map.type='importmap';map.textContent=node.textContent;document.head.append(map);}
     else document.head.append(document.importNode(node,true));
   }
   const css=document.createElement('link');css.rel='stylesheet';css.href='./franchise.css';document.head.append(css);
