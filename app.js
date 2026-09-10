@@ -1,5 +1,5 @@
-import { initAuth, signIn, signOut } from './auth.js';
-import { call, config } from './api.js?v=fast-boot-20260911';
+import { initAuth, signIn, signOut } from './auth.js?v=parallel-20260911';
+import { call, config } from './api.js?v=parallel-20260911';
 import { coreMetricSummary } from './core-metrics.js?v=core-summary-20260910';
 
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -81,11 +81,33 @@ function toast(message, isError = false) {
 }
 function showScreen(name) { for (const id of ['bootState', 'loginScreen', 'pendingScreen', 'portal']) $(`#${id}`).hidden = id !== name; }
 function loginError(error) { $('#loginError').textContent = errorMessage(error); $('#loginError').hidden = false; }
-function clearPrivateState() { S.requestEpoch++; S.user = null; S.session = null; S.data = null; S.hq = null; S.branchId = ''; S.studentReturn = null; resetHistory(); $('#branchApplicationStatus').replaceChildren(); $('#branchApplyForm').reset(); $('#applyForm').reset(); $('#pendingError').hidden = true; $('#mainContent').replaceChildren(); $('#studioMount').replaceChildren(); $('#studioStudent').replaceChildren(); $('#branchSelect').replaceChildren(); $('#staffName').textContent = ''; $('#staffRole').textContent = ''; $('#staffAvatar').textContent = ''; closeModal(); document.title = '터칭보이스 · 로그인'; window.dispatchEvent(new CustomEvent('tv:session', { detail: null })); }
+const BOOT_CACHE_KEY = 'tv:boot:display:v1';
+function clearBootCache() { try { sessionStorage.removeItem(BOOT_CACHE_KEY); } catch {} }
+function readBootCache(uid) {
+  try {
+    const record = JSON.parse(sessionStorage.getItem(BOOT_CACHE_KEY) || 'null');
+    if (!record || record.uid !== uid || record.boot?.session?.staff?.uid !== uid || !Array.isArray(record.boot.session.branches) || !Number.isFinite(record.at) || Date.now() < record.at || Date.now() - record.at > 30 * 60 * 1000) { clearBootCache(); return null; }
+    return record.boot;
+  } catch { clearBootCache(); return null; }
+}
+function writeBootCache(boot) {
+  try { sessionStorage.setItem(BOOT_CACHE_KEY, JSON.stringify({uid:S.user.uid, at:Date.now(), boot})); } catch { clearBootCache(); }
+}
+function showCachedBoot(boot) {
+  // Display only: no tv:session event, studio initialization, or interactive controls.
+  S.session = boot.session; S.data = boot.dashboard; S.hq = boot.hq;
+  S.branchId = boot.session.activeBranchId || boot.session.branches[0]?.id || '';
+  S.page = owner() ? 'hq' : 'today';
+  try { renderNav(); render(); $('#portal').inert = true; $('#lastSynced').textContent = '이전 기록 · 현재 권한과 최신 정보 확인 중'; }
+  catch { clearBootCache(); showConnectionShell(); }
+  finally { S.session = null; S.data = null; S.hq = null; S.branchId = ''; }
+}
+function clearPrivateState({ preserveCache = false } = {}) { if (!preserveCache) clearBootCache(); S.requestEpoch++; S.user = null; S.session = null; S.data = null; S.hq = null; S.branchId = ''; S.studentReturn = null; resetHistory(); $('#branchApplicationStatus').replaceChildren(); $('#branchApplyForm').reset(); $('#applyForm').reset(); $('#pendingError').hidden = true; $('#mainContent').replaceChildren(); $('#studioMount').replaceChildren(); $('#studioStudent').replaceChildren(); $('#branchSelect').replaceChildren(); $('#staffName').textContent = ''; $('#staffRole').textContent = ''; $('#staffAvatar').textContent = ''; closeModal(); document.title = '터칭보이스 · 로그인'; window.dispatchEvent(new CustomEvent('tv:session', { detail: null })); }
 async function onAuth(user) {
-  clearPrivateState(); S.user = user;
+  const preserveCache = Boolean(user && !S.user);
+  clearPrivateState({ preserveCache }); S.user = user;
   if (!user) { showScreen('loginScreen'); return; }
-  showConnectionShell(); await establishSession();
+  showConnectionShell(); const cached = readBootCache(user.uid); if (cached) showCachedBoot(cached); await establishSession();
 }
 function showConnectionShell() {
   // No cached student, financial or permission data is exposed before approval.
@@ -102,6 +124,7 @@ async function establishSession() {
     const session = boot.session;
     if (epoch !== S.requestEpoch) return;
     if (session?.staff?.uid !== S.user.uid || !Array.isArray(session.branches)) throw new Error('이 계정의 운영 권한을 확인할 수 없습니다. 관리자에게 문의해 주세요.');
+    writeBootCache(boot);
     S.session = session; S.branchId = session.activeBranchId || session.branches[0]?.id || ''; S.page = owner() ? 'hq' : 'today';
     $('#branchSelect').innerHTML = session.branches.map(branch => `<option value="${e(branch.id)}">${e(branch.name)}</option>`).join(''); $('#branchSelect').value = S.branchId;
     $('#staffName').textContent = session.staff.name || session.staff.email; $('#staffRole').textContent = roles[session.staff.role] || '승인된 구성원'; $('#staffAvatar').textContent = (session.staff.name || session.staff.email || 'T').slice(0, 1);
@@ -109,7 +132,7 @@ async function establishSession() {
     if (!preview && owner() && S.session === session && S.data) { navigate('studio', { openStudio: false }); $('#studioStudent').value = ''; }
   } catch (error) {
     if (epoch !== S.requestEpoch) return;
-    S.session = null; S.data = null; S.hq = null; $('#mainContent').replaceChildren(); $('#portal').inert = false; $('#pendingEmail').textContent = S.user?.email || '로그인된 계정'; $('#pendingMessage').textContent = errorMessage(error); showScreen('pendingScreen'); loadBranchApplications();
+    clearBootCache(); S.session = null; S.data = null; S.hq = null; $('#mainContent').replaceChildren(); $('#portal').inert = false; $('#pendingEmail').textContent = S.user?.email || '로그인된 계정'; $('#pendingMessage').textContent = errorMessage(error); showScreen('pendingScreen'); loadBranchApplications();
   }
 }
 async function refresh({ quiet = false } = {}) {
@@ -120,7 +143,7 @@ async function refresh({ quiet = false } = {}) {
     const boot = await call('boot', {}, S.branchId); if (epoch !== S.requestEpoch) return;
     if (boot.session?.staff?.uid !== S.user?.uid) throw new Error('현재 로그인 계정의 권한을 다시 확인해 주세요.');
     if (boot.session.staff.role !== S.session.staff.role || JSON.stringify(boot.session.branches.map(b => b.id)) !== JSON.stringify(S.session.branches.map(b => b.id))) { await onAuth(S.user); return; }
-    S.session = boot.session; S.data = boot.dashboard; S.hq = boot.hq; $('#lastSynced').textContent = `${time(Date.now())} 서버에서 동기화`; renderNav(); render();
+    writeBootCache(boot); S.session = boot.session; S.data = boot.dashboard; S.hq = boot.hq; $('#lastSynced').textContent = `${time(Date.now())} 서버에서 동기화`; renderNav(); render();
   } catch (error) {
     if (epoch !== S.requestEpoch) return;
     if (['UNAUTHENTICATED','FORBIDDEN','STAFF_APPROVAL_REQUIRED','EMAIL_VERIFICATION_REQUIRED'].includes(error.code)) { await onAuth(S.user); return; }
@@ -720,8 +743,8 @@ $('#refreshButton').innerHTML = icon('refresh'); $('#refreshButton').addEventLis
 $('#pendingRetry').addEventListener('click', establishSession);
 function setPendingMode(mode) { document.querySelectorAll('[data-pending-mode]').forEach(button => button.classList.toggle('active', button.dataset.pendingMode === mode)); $('#applyForm').hidden = mode === 'branch'; $('#branchApplyForm').hidden = mode !== 'branch'; }
 document.querySelectorAll('[data-pending-mode]').forEach(button => button.addEventListener('click', () => setPendingMode(button.dataset.pendingMode)));
-$('#previewApplicant').addEventListener('click', async () => { if (!preview) return; setPendingMode('branch'); const { setPreviewRole } = await import('./auth.js'); await setPreviewRole('applicant'); });
-$('#pendingPreviewBack').addEventListener('click', async () => { if (!preview) return; const { setPreviewRole } = await import('./auth.js'); await setPreviewRole('owner'); });
+$('#previewApplicant').addEventListener('click', async () => { if (!preview) return; setPendingMode('branch'); const { setPreviewRole } = await import('./auth.js?v=parallel-20260911'); await setPreviewRole('applicant'); });
+$('#pendingPreviewBack').addEventListener('click', async () => { if (!preview) return; const { setPreviewRole } = await import('./auth.js?v=parallel-20260911'); await setPreviewRole('owner'); });
 $('#studioLaunch').addEventListener('click', () => launchStudio($('#studioStudent').value, { reload: true }).catch(error => toast(errorMessage(error), true)));
 window.addEventListener('tv:studio-select', event => { if (event.detail?.studentId) void launchStudio(event.detail.studentId).catch(error => toast(errorMessage(error), true)); });
 window.addEventListener('tv:data-refresh', () => { if (S.session) refresh({ quiet: true }); });
@@ -761,7 +784,7 @@ $('#branchApplyForm').addEventListener('submit', async event => {
 });
 $('#previewRole').addEventListener('change', async event => {
   if (!preview) return; const select = event.target; select.disabled = true;
-  try { const { setPreviewRole } = await import('./auth.js'); await setPreviewRole(select.value); } catch (error) { toast(errorMessage(error), true); } finally { select.disabled = false; }
+  try { const { setPreviewRole } = await import('./auth.js?v=parallel-20260911'); await setPreviewRole(select.value); } catch (error) { toast(errorMessage(error), true); } finally { select.disabled = false; }
 });
 document.querySelectorAll('[data-provider]').forEach(button => {
   button.addEventListener('click', async () => {
@@ -778,4 +801,4 @@ if (preview) {
 }
 const branchDeepLink = new URLSearchParams(location.search).get('apply') === 'branch';
 if (branchDeepLink) setPendingMode('branch');
-try { if (preview && branchDeepLink) { const { setPreviewRole } = await import('./auth.js'); await setPreviewRole('applicant'); } await initAuth(onAuth); } catch (error) { clearPrivateState(); showScreen('loginScreen'); loginError(error); }
+try { if (preview && branchDeepLink) { const { setPreviewRole } = await import('./auth.js?v=parallel-20260911'); await setPreviewRole('applicant'); } await initAuth(onAuth); } catch (error) { clearPrivateState(); showScreen('loginScreen'); loginError(error); }

@@ -2,8 +2,19 @@ import {config} from './config.js';
 
 let auth, sdk, setup, previewUser=null;
 const listeners = new Set();
+const deliveries = new WeakMap();
 const error = message => Object.assign(new Error(message), {code:'AUTH_CONFIGURATION'});
-const notify = user => { for (const fn of listeners) Promise.resolve(fn(user)).catch(() => {}); };
+function deliver(fn, user) {
+  const key = JSON.stringify(user ? [user.uid, user.email, user.emailVerified, user.role] : null);
+  const previous = deliveries.get(fn);
+  if (previous?.key === key) return previous.promise;
+  // Store before invoking the subscriber: Firebase may deliver its initial state
+  // while initAuth is also delivering the already-ready current user.
+  const promise = Promise.resolve().then(() => fn(user));
+  deliveries.set(fn, {key, promise});
+  return promise;
+}
+const notify = user => { for (const fn of listeners) deliver(fn, user).catch(() => {}); };
 
 async function initialize() {
   if (config.preview) {
@@ -31,12 +42,12 @@ export async function initAuth(onChange) {
   setup ||= initialize();
   try {
     await setup;
-    await onChange(config.preview ? previewUser : auth.currentUser);
+    await deliver(onChange, config.preview ? previewUser : auth.currentUser);
   } catch (err) {
-    await onChange(null);
+    await deliver(onChange, null);
     throw err;
   }
-  return () => listeners.delete(onChange);
+  return () => { listeners.delete(onChange); deliveries.delete(onChange); };
 }
 
 export async function signIn(provider) {

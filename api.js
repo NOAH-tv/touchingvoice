@@ -1,5 +1,5 @@
 import {config} from './config.js';
-import {getIdToken} from './auth.js';
+import {getIdToken} from './auth.js?v=parallel-20260911';
 export {config};
 const reads=new Set(['boot','staff.profile.read','session','studio.context','dashboard','hq.dashboard','exam.list','exam.read','exam.authorize','exam.audio','assets.read','branch.application.read','notification.plan']);
 
