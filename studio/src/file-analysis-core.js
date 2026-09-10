@@ -1,7 +1,7 @@
 import { analyzeFrame } from './audio.js';
 import { createVoiceMetricsAccumulator, VOICE_METRIC_KEYS } from './pro-metrics.js';
 import { ANALYZER_FIELDS, extractAnalyzerFeatures } from './analyzer-metrics.js';
-import { DEFAULT_PROFILE, LAYER_KEYS, processLayers, sanitizeProfile } from './tuning.js';
+import { DEFAULT_PROFILE, LAYER_KEYS, processLayers, sanitizeProfile } from './tuning.js?v=cumulative-20260910';
 
 export const FILE_ANALYSIS_VERSION = 1;
 export const FILE_FFT_SIZE = 4096;

@@ -1,3 +1,5 @@
+import { sanitizePersonalModel, personalResponseRange } from './personal-calibration.js';
+
 /**
  * TouchingVoice per-singer calibration. No network or browser dependencies.
  * Values describe a visual response to audio, not measured muscle activity.
@@ -91,6 +93,7 @@ export function sanitizeProfile(input = DEFAULT_PROFILE) {
     if (layer.outputMax < layer.outputMin) fail(`${LAYER_META[key].name}: 출력 상한은 하한 이상이어야 합니다.`);
     result.layers[key] = layer;
   }
+  if (input.personalModel !== undefined) result.personalModel = sanitizePersonalModel(input.personalModel);
   return result;
 }
 
@@ -114,10 +117,13 @@ export function processLayers(features, profile = DEFAULT_PROFILE, previous = {}
     let target = 0;
     if (valid && layer.enabled && Number.isFinite(feature)) {
       const value = feature + (layer.feature === 'level' ? gainDb : 0);
-      const normalized = clamp((value - layer.inputMin) / (layer.inputMax - layer.inputMin), 0, 1);
+      const personal = personalResponseRange(profile.personalModel, key, input, profile);
+      const low = personal?.inputMin ?? layer.inputMin, high = personal?.inputMax ?? layer.inputMax;
+      const normalized = clamp((value - low) / (high - low), 0, 1);
       const curved = Math.pow(normalized, layer.gamma);
       const adjusted = clamp(curved * layer.gain + layer.offset / 100, 0, 1);
       target = (layer.outputMin + adjusted * (layer.outputMax - layer.outputMin)) / 100;
+      if (personal) target *= personal.attenuation;
     }
     raw[key] = target;
     const old = Number.isFinite(previous[key]) ? clamp(previous[key], 0, 1) : 0;

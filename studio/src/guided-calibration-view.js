@@ -7,7 +7,7 @@ export function createGuidedCalibrationView() {
   dialog.setAttribute('aria-describedby', 'gcDescription');
   dialog.innerHTML = `
     <header class="gc-header">
-      <div><p class="gc-eyebrow">터칭보이스 · 개인 튜닝</p><h2 id="gcTitle">네 발성으로 맞추는 개인 튜닝</h2></div>
+      <div><p class="gc-eyebrow">터칭보이스 · 개인 튜닝</p><h2 id="gcTitle">음역별로 쌓아가는 미세 튜닝</h2></div>
       <div class="gc-header-actions"><div class="gc-member"><span>측정 대상</span><strong id="gcMember">학생 확인 중</strong></div><button id="gcClose" class="gc-button gc-close" type="button" aria-label="개인 튜닝 닫기">닫기 <span aria-hidden="true">×</span></button></div>
     </header>
     <div class="gc-content">
@@ -33,12 +33,12 @@ export function createGuidedCalibrationView() {
           <label class="gc-field"><span>시작 음</span><select id="gcRoot" aria-label="5음 스케일 시작 음"></select><small>선택한 음부터 다섯 음을 올라갑니다.</small></label>
           <div class="gc-settings-pair"><label class="gc-field"><span>속도 · BPM</span><input type="number" id="gcBpm" min="50" max="100" step="1" value="60" inputmode="numeric"></label><label class="gc-field"><span>반복 횟수</span><input type="number" id="gcRepeats" min="1" max="3" step="1" value="2" inputmode="numeric"></label></div>
           <label class="gc-check gc-headphones"><input type="checkbox" id="gcHeadphones"><span>이어폰을 착용했습니다.<small>스피커의 가이드 소리가 마이크에 들어가면 목소리로 측정될 수 있습니다.</small></span></label>
-          <div class="gc-guide"><h4>측정은 이렇게 진행돼요</h4><ol><li>시작 음과 속도를 고릅니다.</li><li>가이드를 듣고 발성합니다.</li><li>발음을 확인한 뒤 다음 영역으로 이동합니다.</li><li>네 영역을 마치면 결과를 확인하고 튜닝을 적용합니다.</li></ol></div>
+          <div class="gc-guide"><h4>측정은 이렇게 진행돼요</h4><ol><li>시작 음과 속도를 고릅니다.</li><li>가이드를 듣고 발성합니다.</li><li>발음을 확인하고 다른 음역이나 영역을 측정합니다.</li><li>확인한 측정을 기존 기준에 더해 적용합니다.</li></ol></div>
         </aside>
       </div>
       <div id="gcResult" class="gc-result" aria-label="개인 튜닝 측정 결과"></div>
     </div>
-    <footer class="gc-footer"><div><strong>네 영역의 기록을 한 사람의 기준으로</strong><p id="gcSaved" role="status">네 영역 측정을 완료하면 튜닝을 적용할 수 있습니다.</p></div><div class="gc-footer-actions"><button type="button" id="gcExport" class="gc-button gc-secondary" disabled>측정 결과 내보내기</button><button type="button" id="gcApply" class="gc-button gc-primary" disabled>이 사람에게 튜닝 적용</button></div></footer>`;
+    <footer class="gc-footer"><div><strong>네 영역의 기록을 한 사람의 기준으로</strong><p id="gcSaved" role="status">한 영역부터 측정하고 기존 기록에 계속 더할 수 있습니다.</p></div><div class="gc-footer-actions"><button type="button" id="gcExport" class="gc-button gc-secondary" disabled>측정 결과 내보내기</button><button type="button" id="gcApply" class="gc-button gc-primary" disabled>이 사람에게 튜닝 적용</button></div></footer>`;
   const root = dialog.querySelector('#gcRoot');
   const names = ['도', '도♯', '레', '레♯', '미', '파', '파♯', '솔', '솔♯', '라', '라♯', '시'];
   const letters = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B'];

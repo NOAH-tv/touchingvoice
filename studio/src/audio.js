@@ -1,5 +1,6 @@
 /** Local Web Audio engine. Raw capture stays separate from optional headphone monitoring. */
 import { BoothMonitor, DEFAULT_MONITOR_SETTINGS, sanitizeMonitorSettings } from './booth-monitor.js';
+import { PcmCaptureRecorder, PCM_MAX_SECONDS } from './pcm-capture.js?v=pcm24-20260910';
 
 const FFT_SIZE = 4096;
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
@@ -225,7 +226,8 @@ export class AudioEngine {
   }
   get state() {
     return { mode: this.mode, playing: this.playing, recording: this.recording,
-      duration: this.duration, currentTime: this.currentTime, fileName: this.fileName };
+      duration: this.duration, currentTime: this.currentTime, fileName: this.fileName,
+      recordingFormat: 'WAV · 24 bit · 48 kHz · mono', recordingLimitSeconds: PCM_MAX_SECONDS };
   }
   _state() { this.onState(this.state); }
   _error(error, fallback) {
@@ -239,10 +241,17 @@ export class AudioEngine {
     if (!AudioContextClass) throw new Error('이 브라우저는 Web Audio를 지원하지 않습니다. 최신 Chrome 또는 Safari에서 열어 주세요.');
     if (!this.context || this.context.state === 'closed') {
       this._monitor?.detach(); this._monitor = null; this._monitorSettings.enabled = false;
-      this.context = new AudioContextClass({ latencyHint: 'interactive' });
+      try { this.context = new AudioContextClass({ latencyHint: 'interactive', sampleRate: 48000 }); }
+      catch (cause) {
+        if (cause?.name !== 'NotSupportedError') throw cause;
+        // Use the supported native graph rate; the recorder explicitly resamples
+        // to48kHz and records both rates instead of mislabelling the input.
+        this.context = new AudioContextClass({ latencyHint: 'interactive' });
+      }
       this._outputDeviceId = '';
       this.analyser = this.context.createAnalyser();
       this.analyser.fftSize = FFT_SIZE;
+      this.analyser.channelCount = 1; this.analyser.channelCountMode = 'explicit'; this.analyser.channelInterpretation = 'discrete';
       this.analyser.minDecibels = -120;
       this.analyser.maxDecibels = 0;
       this.analyser.smoothingTimeConstant = 0.25;
@@ -306,7 +315,7 @@ export class AudioEngine {
       await this._ensureContext();
       if (generation !== this._generation) return;
       const constraints = { echoCancellation: false, noiseSuppression: false, autoGainControl: false,
-        channelCount: 1, ...(deviceId ? { deviceId: { exact: deviceId } } : {}) };
+        sampleRate: 48000, channelCount: 1, ...(deviceId ? { deviceId: { exact: deviceId } } : {}) };
       const stream = await navigator.mediaDevices.getUserMedia({ audio: constraints, video: false });
       if (generation !== this._generation) { stream.getTracks().forEach(t => t.stop()); return; }
       this.stream = stream;
@@ -396,7 +405,7 @@ export class AudioEngine {
   stop() {
     ++this._generation;
     // Request final data before stopping the tracks. onRecording still fires.
-    if (this._recorder?.state === 'recording' || this._recorder?.state === 'paused') this._recorder.stop();
+    if (this._recorder) void this._recorder.stop().catch(() => {});
     this._detach(); this.offset = 0;
     if (this.mode === 'mic') this.mode = 'idle';
     this._state();
@@ -409,38 +418,41 @@ export class AudioEngine {
     return this.state;
   }
   async startRecording() {
-    if (this.recording) return;
+    if (this.recording || this._recorder) return;
     if (this.mode !== 'mic' || !this.stream || !this.playing) throw this._error(new Error('마이크를 먼저 시작한 뒤 녹음해 주세요.'));
-    if (!globalThis.MediaRecorder) throw this._error(new Error('이 브라우저는 녹음을 지원하지 않습니다. 최신 Chrome 또는 Safari를 사용해 주세요.'));
+    const generation = this._generation;
+    let reported = false;
+    const report = cause => { if (cause?.name === 'AbortError') return cause; if (!reported) { reported = true; return this._error(cause); } return cause; };
+    const recorder = new PcmCaptureRecorder({ context: this.context, source: this.source, stream: this.stream,
+      onLimit: result => this._error(new Error(`${Math.round(result.duration)}초 녹음 한도에 도달해 WAV로 저장했습니다. 이어서 녹음하려면 새 녹음을 시작해 주세요.`)) });
+    this._recorder = recorder;
+    this._recordingStarted = performance.now();
+    this._recordingPromise = recorder.done.then(result => {
+      this.recording = false;
+      if (this._recorder === recorder) this._recorder = null;
+      this._state();
+      this.onRecording(result);
+      return result.blob;
+    }, cause => {
+      this.recording = false;
+      if (this._recorder === recorder) this._recorder = null;
+      this._state(); report(cause); return null;
+    });
     try {
-      const formats = ['audio/webm;codecs=opus', 'audio/mp4', 'audio/webm', 'audio/ogg;codecs=opus'];
-      const mimeType = formats.find(type => MediaRecorder.isTypeSupported(type));
-      const recorder = new MediaRecorder(this.stream, mimeType ? { mimeType } : undefined);
-      const chunks = [];
-      this._recorder = recorder;
-      this._recordingStarted = performance.now();
-      let resolveRecording;
-      this._recordingPromise = new Promise(resolve => { resolveRecording = resolve; });
-      recorder.ondataavailable = event => { if (event.data?.size) chunks.push(event.data); };
-      recorder.onerror = event => { this._error(event.error || new Error('녹음 중 오류가 발생했습니다.')); };
-      recorder.onstop = () => {
-        const blob = new Blob(chunks, { type: recorder.mimeType || mimeType || 'audio/webm' });
-        const duration = (performance.now() - this._recordingStarted) / 1000;
-        this.recording = false;
-        if (this._recorder === recorder) this._recorder = null;
-        this._state();
-        resolveRecording(blob.size ? blob : null);
-        if (blob.size) this.onRecording({ blob, mimeType: blob.type, duration });
-        else this._error(new Error('녹음된 소리가 없습니다. 마이크를 확인한 뒤 다시 녹음해 주세요.'));
-      };
-      recorder.start(250);
-      this.recording = true; this._state();
-    } catch (error) { this.recording = false; this._recorder = null; this._state(); throw this._error(error); }
+      await recorder.start();
+      if (generation !== this._generation || this._recorder !== recorder) { recorder.abort(); return; }
+      this.recording = true; this._recordingStarted = performance.now(); this._state();
+    } catch (cause) {
+      recorder.abort(); this.recording = false;
+      if (this._recorder === recorder) this._recorder = null;
+      this._state();
+      if (cause?.name !== 'AbortError') throw report(cause);
+    }
   }
   async stopRecording() {
     const recorder = this._recorder;
     if (!recorder) return null;
-    if (recorder.state !== 'inactive') recorder.stop();
+    void recorder.stop().catch(() => {});
     return await this._recordingPromise;
   }
   async destroy() {

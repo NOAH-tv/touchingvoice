@@ -1,6 +1,7 @@
-import { GUIDED_TASKS, buildGuidedSequence, evaluateGuidedTask, suggestGuidedCalibration } from './guided-calibration.js';
-import { createGuidedCalibrationView } from './guided-calibration-view.js';
+import { GUIDED_TASKS, buildGuidedSequence, evaluateGuidedTask } from './guided-calibration.js';
+import { createGuidedCalibrationView } from './guided-calibration-view.js?v=cumulative-20260910';
 import { ScaleTrainer } from './scale-trainer.js?v=guided-1';
+import { PcmCaptureRecorder } from './pcm-capture.js?v=pcm24-20260910';
 
 const clone = value => structuredClone(value);
 const noteName = midi => Number.isFinite(midi) ? ['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'][(Math.round(midi)%12+12)%12] + (Math.floor(Math.round(midi)/12)-1) : '—';
@@ -10,7 +11,7 @@ const rangeName = range => range ? `${noteName(range.minMidi)} – ${noteName(ra
 export function mountGuidedCalibration({engine,getSnapshot,isBusy,prepareInput,saveTask,applyProfile,onLocks=()=>{},onError=()=>{}}) {
   const dialog=createGuidedCalibrationView(); document.body.append(dialog);
   const el=id=>dialog.querySelector('#'+id);
-  let snapshot=null,selected='nas',results={},records={},confirmed={},generation=0,run=null;
+  let snapshot=null,selected='nas',results={},records={},confirmed={},pending={},generation=0,run=null;
   let phase='idle',listening=false,startPending=false,saved=false,closed=true,lastPaint=0,guideState={notes:[],elapsed:0,playing:false};
   const active=()=>phase!=='idle'||listening||startPending;
   const sameOwner=()=>{const current=getSnapshot();return current.profileId===snapshot?.profileId&&JSON.stringify(current.profile)===JSON.stringify(snapshot.profile);};
@@ -18,7 +19,12 @@ export function mountGuidedCalibration({engine,getSnapshot,isBusy,prepareInput,s
   const safe=async fn=>{try{await fn();}catch(error){feedback(error?.message||'측정 상태를 확인해 주세요.');onError(error);}};
   const guide=new ScaleTrainer({onState(state){guideState=state;paint();},onFinish(){if(run&&phase==='recording')void safe(finish);else{listening=false;refresh();}}});
   function settings(){return {rootMidi:Number(el('gcRoot').value),bpm:Number(el('gcBpm').value),repeats:Number(el('gcRepeats').value),transposeStep:1,countIn:2};}
-  function proposal(){return suggestGuidedCalibration(GUIDED_TASKS.map(t=>results[t.key]).filter(Boolean),snapshot?.profile);}
+  function proposal(){
+    const completed=Object.values(pending).map(record=>record.result).filter(result=>result.accepted&&result.testedRange);
+    if(!completed.length)return {usable:false,warnings:['발음을 확인한 측정이 필요합니다.']};
+    const minMidi=Math.min(...completed.map(result=>result.testedRange.minMidi)),maxMidi=Math.max(...completed.map(result=>result.testedRange.maxMidi));
+    return {usable:true,profile:clone(snapshot.profile),testedRange:{minMidi,maxMidi,minHz:440*2**((minMidi-69)/12),maxHz:440*2**((maxMidi-69)/12)}};
+  }
   function refresh(){
     const locked=active(),task=GUIDED_TASKS.find(t=>t.key===selected),result=results[selected];
     el('gcMember').textContent=snapshot?.profile?.name||'';
@@ -29,12 +35,12 @@ export function mountGuidedCalibration({engine,getSnapshot,isBusy,prepareInput,s
     for(const task of GUIDED_TASKS)el('gcStatus-'+task.key).textContent=results[task.key]?.accepted?(confirmed[task.key]?'확인 완료':'발음 확인 필요'):results[task.key]?'재측정':'측정 전';
     for(const id of ['gcRoot','gcBpm','gcRepeats','gcHeadphones'])el(id).disabled=locked;
     el('gcListen').disabled=locked;el('gcStart').disabled=locked||!el('gcHeadphones').checked;
-    el('gcStart').textContent=result?'이 발성 다시 측정':'측정 시작';el('gcStop').disabled=!locked||phase==='saving';
+    el('gcStart').textContent=result?'다른 구간 추가 측정':'측정 시작';el('gcStop').disabled=!locked||phase==='saving';
     el('gcConfirmVowel').disabled=locked||!result?.accepted;el('gcConfirmVowel').checked=!!confirmed[selected];
     el('gcNext').disabled=locked||!result?.accepted||!confirmed[selected];
-    const all=GUIDED_TASKS.every(t=>results[t.key]?.accepted&&confirmed[t.key]);
-    el('gcApply').disabled=locked||!all||saved;el('gcExport').disabled=locked||!Object.keys(results).length;
-    el('gcSaved').textContent=saved?'개인 튜닝을 이 PC에 적용·저장했습니다.':snapshot?.assessment?`이 PC의 최근 측정: ${new Date(snapshot.assessment.createdAt).toLocaleDateString('ko-KR')} · 확인 음역 ${rangeName(snapshot.assessment.testedRange)}`:'현재 학생의 측정과 튜닝을 이 PC에 보관합니다.';
+    const all=Object.keys(pending).length>0;
+    el('gcApply').disabled=locked||!all||saved;el('gcApply').textContent=`확인한 ${Object.keys(pending).length}개 측정 누적 적용`;el('gcExport').disabled=locked||!Object.keys(results).length;
+    el('gcSaved').textContent=saved?'개인 튜닝을 이 PC에 적용·저장했습니다.':snapshot?.assessment?`이 PC의 최근 측정: ${new Date(snapshot.assessment.createdAt).toLocaleDateString('ko-KR')} · 확인 음역 ${rangeName(snapshot.assessment.testedRange)}`:'확인한 구간부터 누적할 수 있습니다. 시작 음을 바꾸어 같은 영역을 더 측정하세요.';
     el('gcTimeline').setAttribute('aria-label',`${task.name} ‘${task.vowel}’ 과제의 목표 음정과 실제 발성 음정${result?` · ${result.completedNotes}/${result.notes.length}음 측정 완료 · 확인 음역 ${rangeName(result.testedRange)}`:''}`);
     renderResult();onLocks();paint();
   }
@@ -42,7 +48,7 @@ export function mountGuidedCalibration({engine,getSnapshot,isBusy,prepareInput,s
     const target=el('gcResult');target.replaceChildren();
     const result=results[selected];if(!result)return;
     const summary=document.createElement('p');summary.textContent=`${result.accepted?'측정 완료':'다시 측정해 주세요'} · 확인 음역 ${rangeName(result.testedRange)} · 음성 확보 ${Math.round((result.coverage||0)*100)}% · 목표 음정 ${Math.round((result.pitchAccuracy||0)*100)}%`;target.append(summary);
-    if(result.featureRange){const p=document.createElement('p');p.textContent=`3D 반응 범위 제안 ${result.featureRange.inputMin.toFixed(2)} ~ ${result.featureRange.inputMax.toFixed(2)} dB`;target.append(p);}
+    if(result.featureRange){const p=document.createElement('p');p.textContent=`이번 과제 전체의 음향 범위 ${result.featureRange.inputMin.toFixed(2)} ~ ${result.featureRange.inputMax.toFixed(2)} dB · 실제 누적 보정은 음정별로 계산합니다.`;target.append(p);}
     for(const warning of result.warnings||[]){const p=document.createElement('p');p.className='gc-warning';p.textContent=warning;target.append(p);}
   }
   function paint(features){
@@ -68,19 +74,12 @@ export function mountGuidedCalibration({engine,getSnapshot,isBusy,prepareInput,s
     if(!run&&result){for(const note of result.notes){if(!Number.isFinite(note.medianMidi))continue;ctx.fillStyle=note.accepted?'#60d7c9':'#e3b46b';ctx.beginPath();ctx.arc(x(note.start+note.duration/2),y(note.medianMidi),4,0,Math.PI*2);ctx.fill();}}
     if(guideState.playing){ctx.strokeStyle='#f5eee0aa';ctx.beginPath();ctx.moveTo(x(guideState.elapsed),10);ctx.lineTo(x(guideState.elapsed),height-14);ctx.stroke();}
   }
-  function makeRecorder(stream){
-    if(!globalThis.MediaRecorder)throw new Error('이 브라우저에서는 녹음할 수 없습니다. Chrome 또는 Edge에서 열어 주세요.');
-    const recorder=new MediaRecorder(stream),chunks=[];
-    let resolve,reject;const done=new Promise((yes,no)=>{resolve=yes;reject=no;});done.catch(()=>{});
-    recorder.ondataavailable=e=>{if(e.data?.size)chunks.push(e.data);};recorder.onerror=e=>reject(e.error||new Error('기준 음성 녹음에 실패했습니다.'));
-    recorder.onstop=()=>resolve(new Blob(chunks,{type:recorder.mimeType||'audio/webm'}));
-    recorder.start(250);
-    return {recorder,done};
+  function makeRecorder(){
+    return new PcmCaptureRecorder({context:engine.context,source:engine.source,stream:engine.stream,maxDurationSeconds:60});
   }
   async function stopRecorder(recording){
     if(!recording)return null;
-    if(recording.recorder.state!=='inactive')recording.recorder.stop();
-    let timer;try{return await Promise.race([recording.done,new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error('녹음 마무리를 확인하지 못했습니다. 다시 측정해 주세요.')),6000);})]);}finally{clearTimeout(timer);}
+    return await recording.stop();
   }
   async function start(){
     if(active()||!el('gcHeadphones').checked)return;
@@ -91,27 +90,29 @@ export function mountGuidedCalibration({engine,getSnapshot,isBusy,prepareInput,s
       await prepareInput();if(epoch!==generation||closed){engine.stop();return;}
       if(!sameOwner())throw new Error('마이크 연결 중 대상자나 개인 설정이 바뀌었습니다. 창을 닫고 다시 측정해 주세요.');
       if(engine.state.mode!=='mic'||!engine.state.playing)throw new Error('실제 마이크 입력이 필요합니다.');
-      current={layerKey:selected,sequence:buildGuidedSequence(settings()),samples:[],recording:makeRecorder(engine.stream),startedAt:performance.now(),epoch};run=current;
+      current={layerKey:selected,sequence:buildGuidedSequence(settings()),samples:[],recording:null,startedAt:performance.now(),epoch};run=current;
+      current.recording=makeRecorder();await current.recording.start();
+      if(epoch!==generation||closed){current.recording.abort();engine.stop();return;}
+      current.startedAt=performance.now();
       phase='recording';delete results[selected];delete confirmed[selected];delete records[selected];
       const started=await guide.startSequence(current.sequence);
       if(epoch!==generation||closed){await stopRecorder(current.recording);engine.stop();return;}
       if(!started)throw new Error('스케일 가이드가 시작되지 않았습니다. 다시 측정해 주세요.');
       current.guideOffsetSeconds=(performance.now()-current.startedAt)/1000-guide.currentTime;
       feedback(`준비 후 ‘${GUIDED_TASKS.find(t=>t.key===selected).vowel}’로 다섯 음을 따라 하세요.`);refresh();
-    }catch(error){if(epoch===generation){phase='idle';run=null;guide.stop();engine.stop();refresh();}if(current)await stopRecorder(current.recording).catch(()=>{});throw error;}
+    }catch(error){if(epoch===generation){phase='idle';run=null;guide.stop();engine.stop();refresh();}if(current)await stopRecorder(current.recording).catch(()=>{});if(error?.name!=='AbortError'||epoch===generation)throw error;}
     finally{startPending=false;refresh();}
   }
   async function finish(){
     if(!run||phase!=='recording')return;
     const current=run;phase='finishing';feedback('측정 결과와 원음을 저장하고 있습니다.');refresh();
     try{
-      const captureSettings=clone(engine.stream?.getAudioTracks?.()?.[0]?.getSettings?.()||null);
-      const blob=await stopRecorder(current.recording);engine.stop();
+      const recording=await stopRecorder(current.recording);const blob=recording?.blob,captureSettings=recording?.captureSettings||null;engine.stop();
       if(current.epoch!==generation||closed)return;
       if(!sameOwner())throw new Error('측정 중 대상자나 설정이 바뀌어 적용하지 않았습니다.');
       const result=evaluateGuidedTask({layerKey:current.layerKey,samples:current.samples,sequence:current.sequence,profile:snapshot.profile});
       if(!blob?.size)throw new Error('기준 음성이 비어 있습니다. 다시 측정해 주세요.');
-      const record=await saveTask({snapshot:clone(snapshot),result,sequence:current.sequence,samples:current.samples,blob,duration:(performance.now()-current.startedAt)/1000,guideOffsetSeconds:current.guideOffsetSeconds||0,captureSettings});
+      const record=await saveTask({snapshot:clone(snapshot),result,sequence:current.sequence,samples:current.samples,blob,duration:recording.duration,guideOffsetSeconds:current.guideOffsetSeconds||0,captureSettings});
       if(current.epoch!==generation||closed)return;
       results[current.layerKey]=result;records[current.layerKey]=record;
       feedback(result.accepted?'측정했습니다. 지도사가 안내 발음을 확인한 뒤 다음 영역으로 진행하세요.':'입력 조건이 부족합니다. 아래 안내를 확인하고 이 발성을 다시 측정하세요.');
@@ -119,24 +120,24 @@ export function mountGuidedCalibration({engine,getSnapshot,isBusy,prepareInput,s
   }
   async function cancel(){
     ++generation;const current=run;run=null;guide.stop();listening=false;phase='idle';
-    const pending=stopRecorder(current?.recording).catch(()=>{});if(current||engine.state.mode==='mic')engine.stop();await pending;
+    current?.recording?.abort();if(current||engine.state.mode==='mic')engine.stop();
     feedback('측정을 중지했습니다. 완료된 발성 결과는 유지됩니다.');refresh();
   }
   async function close(){if(phase==='saving')return;closed=true;await cancel();dialog.close();onLocks();}
   async function apply(){
-    if(active()||saved||!GUIDED_TASKS.every(t=>confirmed[t.key]))return;
+    if(active()||saved||!Object.keys(pending).length)return;
     if(!sameOwner())throw new Error('개인 설정이 바뀌었습니다. 다시 측정한 뒤 적용해 주세요.');
     const proposed=proposal();if(!proposed.usable)throw new Error(proposed.warnings.join(' '));
     phase='saving';refresh();
     try{
-      const assessment={version:1,protocol:'tv-guided-four-layer-v1',runId:snapshot.runId,createdAt:new Date().toISOString(),profileId:snapshot.profileId,interpretation:'과제별 음향 반응 보정 · 기관 발달 또는 압력의 직접 측정 아님',vowelConfirmation:'instructor',testedRange:proposed.testedRange,results:clone(results),recordIds:Object.fromEntries(Object.entries(records).map(([key,value])=>[key,value.id])),profileBefore:clone(snapshot.profile),profileAfter:clone(proposed.profile)};
-      await applyProfile({snapshot:clone(snapshot),profile:proposed.profile,assessment,records:clone(records)});
-      saved=true;snapshot={...getSnapshot(),runId:snapshot.runId};feedback('네 영역의 반응 범위를 적용했습니다. 3D 발성체크에서 개인 반응을 확인하세요.');
+      const assessment={version:1,protocol:'tv-guided-four-layer-v1',runId:snapshot.runId,createdAt:new Date().toISOString(),profileId:snapshot.profileId,interpretation:'과제별 음향 반응 보정 · 기관 발달 또는 압력의 직접 측정 아님',vowelConfirmation:'instructor',testedRange:proposed.testedRange,results:clone(results),confirmedRecords:Object.values(pending).map(value=>({id:value.id,layerKey:value.layerKey,result:clone(value.result)})),recordIds:Object.fromEntries(Object.values(pending).map(value=>[value.layerKey,value.id])),profileBefore:clone(snapshot.profile),profileAfter:clone(proposed.profile)};
+      await applyProfile({snapshot:clone(snapshot),profile:proposed.profile,assessment,records:clone(pending)});
+      saved=true;pending={};snapshot={...getSnapshot(),runId:snapshot.runId};feedback('확인한 음정 구간을 기존 기록에 더했습니다. 다른 음역을 측정해 계속 보강할 수 있습니다.');
     }finally{phase='idle';refresh();}
   }
   dialog.querySelectorAll('[data-gc-task]').forEach(button=>button.onclick=()=>{if(active())return;selected=button.dataset.gcTask;refresh();});
   for(const id of ['gcRoot','gcBpm','gcRepeats','gcHeadphones'])el(id).addEventListener('change',refresh);
-  el('gcConfirmVowel').onchange=()=>{confirmed[selected]=el('gcConfirmVowel').checked;refresh();};
+  el('gcConfirmVowel').onchange=()=>{confirmed[selected]=el('gcConfirmVowel').checked;const record=records[selected];if(record){if(confirmed[selected])pending[record.id]={...record,layerKey:selected,result:clone(results[selected])};else delete pending[record.id];}saved=false;refresh();};
   el('gcStart').onclick=()=>void safe(start);el('gcStop').onclick=()=>void safe(cancel);el('gcClose').onclick=()=>void safe(close);
   el('gcNext').onclick=()=>{if(active()||!results[selected]?.accepted||!confirmed[selected])return;const index=GUIDED_TASKS.findIndex(t=>t.key===selected);selected=GUIDED_TASKS[Math.min(index+1,3)].key;refresh();};
   el('gcListen').onclick=()=>void safe(async()=>{if(active())return;listening=true;refresh();try{await guide.startSequence(buildGuidedSequence(settings()));feedback('가이드 듣기 · 실제 목소리는 측정하지 않습니다.');}catch(error){listening=false;refresh();throw error;}});
@@ -145,7 +146,7 @@ export function mountGuidedCalibration({engine,getSnapshot,isBusy,prepareInput,s
   dialog.addEventListener('cancel',event=>{event.preventDefault();void safe(close);});
   return {
     get active(){return active();},
-    open(){if(active()||isBusy())throw new Error('진행 중인 녹음이나 훈련을 마친 뒤 개인 튜닝을 시작해 주세요.');snapshot={...clone(getSnapshot()),runId:crypto.randomUUID()};results={};records={};confirmed={};selected='nas';saved=false;closed=false;dialog.showModal();feedback('편한 시작 음을 고르고 이어폰을 착용하세요. 네 발성을 하나씩 측정합니다.');refresh();},
+    open(){if(active()||isBusy())throw new Error('진행 중인 녹음이나 훈련을 마친 뒤 개인 튜닝을 시작해 주세요.');snapshot={...clone(getSnapshot()),runId:crypto.randomUUID()};results={};records={};confirmed={};pending={};selected='nas';saved=false;closed=false;dialog.showModal();feedback('편한 시작 음을 고르고 이어폰을 착용하세요. 필요한 발성과 음역을 골라 측정하고, 확인한 기록을 누적하세요.');refresh();},
     cancel,close,
     onFrame(frame){if(!run||phase!=='recording'||!guideState.playing)return;let peak=0;for(const value of frame.waveform||[])peak=Math.max(peak,Math.abs(value));run.samples.push({time:guide.currentTime,features:{...frame.features},peak});const now=performance.now();if(now-lastPaint>60){lastPaint=now;paint(frame.features);}},
     onState(state){if(run&&phase==='recording'&&!state.playing){void safe(cancel);feedback('마이크 입력이 중지되어 이번 측정을 취소했습니다.');}},

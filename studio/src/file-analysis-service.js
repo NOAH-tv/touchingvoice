@@ -1,7 +1,7 @@
 import { uid } from './storage.js';
 /** Sequential full-file jobs keep immutable member ownership and preserve source files. */
 export class FileAnalysisService {
-  constructor({persist,onChange=()=>{},workerFactory=()=>new Worker(new URL('./file-analysis-worker.js',import.meta.url),{type:'module'}),decode=decodeFile}={}){this.persist=persist;this.onChange=onChange;this.workerFactory=workerFactory;this.decode=decode;this.jobs=[];this.running=false;}
+  constructor({persist,onChange=()=>{},workerFactory=()=>new Worker(new URL('./file-analysis-worker.js?v=cumulative-20260910',import.meta.url),{type:'module'}),decode=decodeFile}={}){this.persist=persist;this.onChange=onChange;this.workerFactory=workerFactory;this.decode=decode;this.jobs=[];this.running=false;}
   enqueue(entry){const same=this.jobs.find(j=>j.entry.id===entry.id&&['queued','decoding','analyzing','saving'].includes(j.status));if(same)return same.promise;let resolve;const job={id:uid(),entry,owner:structuredClone({profileId:entry.profileId,profile:entry.profile,refs:entry.refs}),status:'queued',progress:0,cancelled:false,promise:new Promise(r=>{resolve=r;}),resolve:null};job.resolve=resolve;this.jobs.push(job);this.changed();void this.pump();return job.promise;}
   changed(){this.onChange(this.jobs);}
   cancel(id){const job=this.jobs.find(j=>j.id===id);if(!job||['complete','error','cancelled','saving'].includes(job.status))return;job.cancelled=true;job.abort?.();this.changed();}

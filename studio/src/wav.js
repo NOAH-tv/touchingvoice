@@ -39,3 +39,37 @@ export function audioBufferToWav(buffer, { start = 0, duration } = {}) {
   }
   return new Blob([bytes], { type: 'audio/wav' });
 }
+
+/** Encode raw mono Float32 capture chunks as signed little-endian PCM24 WAV.
+ * No lossy codec, normalization, gate, monitoring effect or amplitude boost.
+ * The 24-bit container does not establish the physical ADC's precision.
+ * Chunks remain separate so encoding does not duplicate a long Float32 buffer.
+ */
+export function pcm24ChunksToWav(chunks, sampleRate = 48000) {
+  if (!Array.isArray(chunks) || !Number.isInteger(sampleRate) || sampleRate < 8000 || sampleRate > 192000)
+    throw new TypeError('PCM 채널과 샘플레이트가 올바르지 않습니다.');
+  let frameCount = 0;
+  for (const chunk of chunks) {
+    if (!(chunk instanceof Float32Array)) throw new TypeError('원음 PCM은 Float32 채널이어야 합니다.');
+    frameCount += chunk.length;
+  }
+  if (!Number.isSafeInteger(frameCount) || frameCount > sampleRate * 300) throw new TypeError('원음 녹음은 5분 이내로 저장해 주세요.');
+  const dataBytes = frameCount * 3, header = new ArrayBuffer(44), view = new DataView(header);
+  const ascii = (offset, text) => { for (let i = 0; i < text.length; i++) view.setUint8(offset + i, text.charCodeAt(i)); };
+  ascii(0, 'RIFF'); view.setUint32(4, 36 + dataBytes + (dataBytes % 2), true); ascii(8, 'WAVE');
+  ascii(12, 'fmt '); view.setUint32(16, 16, true); view.setUint16(20, 1, true);
+  view.setUint16(22, 1, true); view.setUint32(24, sampleRate, true); view.setUint32(28, sampleRate * 3, true);
+  view.setUint16(32, 3, true); view.setUint16(34, 24, true); ascii(36, 'data'); view.setUint32(40, dataBytes, true);
+  const parts = [header];
+  for (const chunk of chunks) {
+    const bytes = new Uint8Array(chunk.length * 3);
+    for (let i = 0; i < chunk.length; i++) {
+      const raw = chunk[i], sample = Number.isFinite(raw) ? Math.max(-1, Math.min(1, raw)) : 0;
+      const value = Math.round(sample * (sample < 0 ? 8388608 : 8388607));
+      bytes[i * 3] = value & 255; bytes[i * 3 + 1] = (value >> 8) & 255; bytes[i * 3 + 2] = (value >> 16) & 255;
+    }
+    parts.push(bytes);
+  }
+  if (dataBytes % 2) parts.push(new Uint8Array(1)); // RIFF chunks are word-aligned; data length excludes padding.
+  return new Blob(parts, { type: 'audio/wav' });
+}
