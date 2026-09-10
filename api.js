@@ -1,7 +1,7 @@
 import {config} from './config.js';
 import {getIdToken} from './auth.js';
 export {config};
-const reads=new Set(['session','studio.context','dashboard','hq.dashboard','exam.list','exam.read','exam.authorize','exam.audio','assets.read','branch.application.read','notification.plan']);
+const reads=new Set(['staff.profile.read','session','studio.context','dashboard','hq.dashboard','exam.list','exam.read','exam.authorize','exam.audio','assets.read','branch.application.read','notification.plan']);
 
 export async function call(action,payload={},branchId='',options={}) {
   const anonymous=action==='qr.checkin';

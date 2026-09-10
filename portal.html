@@ -11,11 +11,11 @@
   <link rel="stylesheet" href="./notifications.css">
 </head>
 <body>
-  <div id="bootState" class="boot-state" role="status"><img class="brand-logo boot-logo" src="/tv_logo_beige.png" alt="터칭보이스" width="180" height="57"><p>안전하게 연결하고 있습니다.</p><span class="loading-line"></span></div>
+  <div id="bootState" class="boot-state" role="status"><img class="brand-logo boot-logo" src="./assets/logo.png" alt="터칭보이스" width="180" height="57"><p>안전하게 연결하고 있습니다.</p><span class="loading-line"></span></div>
   <section id="loginScreen" class="login-screen" hidden aria-labelledby="loginTitle">
     <div class="login-grid" aria-hidden="true"></div>
     <div class="login-card">
-      <div class="wordmark"><img class="brand-logo login-logo" src="/tv_logo_beige.png" alt="터칭보이스" width="220" height="70"></div>
+      <div class="wordmark"><img class="brand-logo login-logo" src="./assets/logo.png" alt="터칭보이스" width="220" height="70"></div>
       <div class="login-divider"></div><p class="eyebrow">STAFF ACCESS</p>
       <h1 id="loginTitle">로그인</h1><p class="login-description">승인된 계정으로 로그인해 주세요.</p>
       <div class="social-actions">
@@ -39,7 +39,7 @@
   </section>
   <div id="portal" class="portal" hidden>
     <aside class="sidebar">
-      <a class="wordmark" href="#today" aria-label="터칭보이스 운영 화면"><img class="brand-logo sidebar-logo" src="/tv_logo_beige.png" alt="터칭보이스" width="180" height="57"></a>
+      <a class="wordmark" href="#today" aria-label="터칭보이스 운영 화면"><img class="brand-logo sidebar-logo" src="./assets/logo.png" alt="터칭보이스" width="180" height="57"></a>
       <label class="branch-label" for="branchSelect">WORKSPACE</label><select id="branchSelect" class="branch-select" aria-label="운영 지점"></select>
       <nav id="mainNav" aria-label="주 메뉴"></nav>
       <div class="sidebar-bottom"><span class="workspace-signal"><i></i><span id="workspaceStatus">접근 권한 확인됨</span></span><button data-page="settings" class="sidebar-settings" id="settingsNav"></button><div class="staff-card"><span id="staffAvatar" class="avatar"></span><span><strong id="staffName"></strong><small id="staffRole"></small></span><button data-action="logout" class="icon-button" title="로그아웃" aria-label="로그아웃">↗</button></div></div>
@@ -48,7 +48,7 @@
   </div>
   <dialog id="modal" aria-labelledby="modalTitle"><div class="modal-head"><div class="modal-heading"><button id="modalBack" class="button small ghost" type="button" hidden>← 이전 단계</button><div><p id="modalEyebrow" class="eyebrow"></p><h2 id="modalTitle"></h2></div></div><button id="modalClose" class="icon-button" aria-label="창 닫기">✕</button></div><div id="modalBody" class="modal-body"></div></dialog>
   <div id="toast" class="toast" role="status" hidden></div>
-  <script type="module" src="./app.js"></script>
+  <script type="module" src="./app.js?v=admin-edit-20260910"></script>
   <script type="module" src="./studio-host.js"></script>
   <script type="module" src="./notifications-host.js"></script>
 </body>
