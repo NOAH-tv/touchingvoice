@@ -1,4 +1,5 @@
 const PATTERNS = Object.freeze({
+  'five-ascending': [0, 2, 4, 5, 7],
   'five-tone': [0, 2, 4, 5, 7, 5, 4, 2, 0],
   arpeggio: [0, 4, 7, 12, 7, 4, 0],
   sustain: [0],
@@ -16,7 +17,7 @@ const integer = (value, fallback, min, max) => {
 export function buildScale(options = {}) {
   const input = options && typeof options === 'object' ? options : {};
   const settings = {
-    rootMidi: integer(input.rootMidi, 60, 48, 76),
+    rootMidi: integer(input.rootMidi, 60, 36, 76),
     pattern: Object.hasOwn(PATTERNS, input.pattern) ? input.pattern : 'five-tone',
     bpm: integer(input.bpm, 80, 50, 140),
     repeats: integer(input.repeats, 2, 1, 6),
@@ -71,9 +72,21 @@ export class ScaleTrainer {
   }
 
   async start(settings = {}) {
+    return this.startSequence(buildScale(settings));
+  }
+
+  /** Play a pre-built, bounded guide without touching microphone ownership. */
+  async startSequence(input) {
+    if (!input || !Number.isFinite(input.duration) || input.duration <= 0 || input.duration > MAX_DURATION
+      || !Array.isArray(input.notes) || !input.notes.length || input.notes.length > 100
+      || input.notes.some(n => !Number.isFinite(n.midi) || n.midi < 0 || n.midi > 127
+        || !Number.isFinite(n.start) || n.start < 0 || !Number.isFinite(n.duration)
+        || n.duration <= 0 || n.start + n.duration > input.duration + .001)) {
+      throw new Error('스케일 가이드의 음정과 시간을 확인해 주세요.');
+    }
+    const sequence = structuredClone(input);
     this.stop();
     const generation = this._generation;
-    const sequence = buildScale(settings);
     this._sequence = sequence;
     this._elapsed = 0;
     const AudioContextClass = globalThis.AudioContext || globalThis.webkitAudioContext;
