@@ -455,7 +455,7 @@ body[data-screen="play"] .zone-segment.active b{color:var(--zone);text-shadow:no
 </div>
 
 <script src="access.js"></script>
-<script src="host-bridge.js"></script>
+<script src="host-bridge.js?v=pcm24-20260910"></script>
 <script src="presentation.js"></script>
 <script>
 'use strict';
@@ -1214,14 +1214,14 @@ function parseMidi(data,fallbackBpm){
   notes.sort((a,b)=>a.t-b.t||a.midi-b.midi);return notes;
 }
 
-function ensureAudioContext(){if(!state.audioCtx)state.audioCtx=new (window.AudioContext||window.webkitAudioContext)({latencyHint:'interactive'});return state.audioCtx}
+function ensureAudioContext(){if(!state.audioCtx){const Audio=window.AudioContext||window.webkitAudioContext;try{state.audioCtx=new Audio({latencyHint:'interactive',sampleRate:48000})}catch(error){if(error?.name!=='NotSupportedError')throw error;state.audioCtx=new Audio({latencyHint:'interactive'})}}return state.audioCtx}
 async function refreshMicrophones(){
   if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)return;
   try{const devices=await navigator.mediaDevices.enumerateDevices(),select=$('micSelect'),current=select.value;select.textContent='';const automatic=document.createElement('option');automatic.value='';automatic.textContent='자동 선택';select.appendChild(automatic);devices.filter(d=>d.kind==='audioinput').forEach((d,index)=>{const option=document.createElement('option');option.value=d.deviceId;option.textContent=d.label||('마이크 '+(index+1));select.appendChild(option)});if([...select.options].some(o=>o.value===current))select.value=current}catch(error){}
 }
 async function startMicrophone(startToken){
-  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)throw new Error('이 주소에서는 마이크를 사용할 수 없습니다.');const chosen=$('micSelect').value,audio={echoCancellation:true,noiseSuppression:false,autoGainControl:true,channelCount:1};if(chosen)audio.deviceId={exact:chosen};
-  let stream;try{stream=await navigator.mediaDevices.getUserMedia({audio})}catch(error){if(startToken!==undefined&&startToken!==state.startToken)throw new DOMException('시작 요청 취소','AbortError');if(chosen&&error.name!=='NotAllowedError')stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:false,autoGainControl:true}});else throw error}
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)throw new Error('이 주소에서는 마이크를 사용할 수 없습니다.');const chosen=$('micSelect').value||hostBridge.inputDeviceId,audio={echoCancellation:false,noiseSuppression:false,autoGainControl:false,channelCount:1,sampleRate:{ideal:48000}};if(chosen)audio.deviceId={exact:chosen};
+  let stream;try{stream=await navigator.mediaDevices.getUserMedia({audio})}catch(error){if(startToken!==undefined&&startToken!==state.startToken)throw new DOMException('시작 요청 취소','AbortError');throw error}
   if(startToken!==undefined&&startToken!==state.startToken){stream.getTracks().forEach(t=>t.stop());throw new DOMException('시작 요청 취소','AbortError')}state.micStream=stream;
   stream.getAudioTracks().forEach(track=>track.addEventListener('ended',()=>{if(state.session&&state.session.mode==='voice'){pauseGame(true);showToast('마이크 연결이 끊겨 연습을 멈췄습니다. 연결 상태를 확인해 주세요.')}}));
   const source=ensureAudioContext().createMediaStreamSource(state.micStream),highpass=state.audioCtx.createBiquadFilter();highpass.type='highpass';highpass.frequency.value=70;const boost=state.audioCtx.createGain();boost.gain.value=4;state.micAnalyser=state.audioCtx.createAnalyser();state.micAnalyser.fftSize=4096;state.micAnalyser.smoothingTimeConstant=.12;state.micBuffer=new Float32Array(state.micAnalyser.fftSize);source.connect(highpass).connect(boost).connect(state.micAnalyser);state.micNodes=[source,highpass,boost];state.pitchHistory=[];
@@ -1333,12 +1333,14 @@ async function startGame(){
   if(!state.asset||state.session||state.starting||state.finalizing||hostBridge.stopping||challenge.requesting)return;rhythmPresentation.enter();state.starting=true;const token=state.startToken=(state.startToken||0)+1,button=$('startButton');button.disabled=true;$('startLabel').textContent='무대 준비 중';$('cancelStart').hidden=false;const withCamera=isStageChallenge(),hostRun=hostBridge.snapshot(state.mode);$('clipPreview').pause();
   try{
     const audioCtx=ensureAudioContext();const resumePromise=audioCtx.resume();await hostBridge.requestStart(hostRun);if(token!==state.startToken)return;await resumePromise;await hostBridge.prepareMetrics(hostRun);if(token!==state.startToken)return;if(withCamera&&!await openChallengeCamera())return;if(state.mode==='voice'||withCamera)await startMicrophone(token);if(token!==state.startToken)return;if(withCamera&&(!challenge.stream||!challenge.stream.getVideoTracks().some(t=>t.readyState==='live')))throw new Error('카메라 연결이 끊겼습니다. 다시 켜고 시작해 주세요.');const notes=makeGameNotes(state.asset,state.mode),master=audioCtx.createGain(),compressor=audioCtx.createDynamicsCompressor();master.gain.value=.9;compressor.threshold.value=-8;compressor.knee.value=16;compressor.ratio.value=4;master.connect(compressor).connect(audioCtx.destination);
-    const startAt=audioCtx.currentTime+2.4,sources=[];state.asset.audioBuffers.forEach(item=>{const source=audioCtx.createBufferSource();source.buffer=item.buffer;source.connect(master);source.start(startAt);sources.push(source)});const totalDuration=Math.max(state.asset.duration,...state.asset.audioBuffers.map(x=>x.buffer.duration));
-    state.session={status:'playing',mode:state.mode,notes,master,compressor,sources,guideNodes:[],guideGain:null,startAt,totalDuration,minMidi:state.asset.minMidi,maxMidi:state.asset.maxMidi,bpm:state.asset.bpm,track:state.selected,score:0,perfect:0,great:0,good:0,miss:0,combo:0,maxCombo:0,accuracyPoints:0,judged:0,currentPitch:0,currentMidi:null,displayMidi:null,currentCents:0,pitchConfidence:0,lastHud:0,lastTarget:null,zoneSignature:'',pitchTrail:[],particles:[],laneFlash:[0,0,0,0],shake:0,flash:0};
-    state.session.challenge=withCamera;state.session.hostRun=hostRun;hostRun.startedAt=new Date(Date.now()+2400).toISOString();hostBridge.attachMicrophone(state.session);
+    const startAt=audioCtx.currentTime+2.4,sources=[];state.asset.audioBuffers.forEach(item=>{const source=audioCtx.createBufferSource();source.buffer=item.buffer;source.connect(master);sources.push(source)});const totalDuration=Math.max(state.asset.duration,...state.asset.audioBuffers.map(x=>x.buffer.duration));
+    state.session={status:'starting',mode:state.mode,notes,master,compressor,sources,guideNodes:[],guideGain:null,startAt,totalDuration,minMidi:state.asset.minMidi,maxMidi:state.asset.maxMidi,bpm:state.asset.bpm,track:state.selected,score:0,perfect:0,great:0,good:0,miss:0,combo:0,maxCombo:0,accuracyPoints:0,judged:0,currentPitch:0,currentMidi:null,displayMidi:null,currentCents:0,pitchConfidence:0,lastHud:0,lastTarget:null,zoneSignature:'',pitchTrail:[],particles:[],laneFlash:[0,0,0,0],shake:0,flash:0};
+    state.session.challenge=withCamera;state.session.hostRun=hostRun;await hostBridge.attachMicrophone(state.session);if(token!==state.startToken){await hostBridge.stopRaw(state.session);cleanupSession();return;}
+    // Begin the full countdown only after lossless input acknowledges readiness.
+    state.session.startAt=audioCtx.currentTime+2.4;hostRun.startedAt=new Date(Date.now()+2400).toISOString();state.session.status='playing';for(const source of sources)source.start(state.session.startAt);
     if(withCamera){setGlassMode(true);drawBackdrop(-2.4,state.session);drawPianoRoll(-2.4,state.session);prepareChallengeRecording(state.session);state.micStream.getAudioTracks().forEach(track=>track.addEventListener('ended',()=>{if(state.session&&state.session.challenge){challenge.error='마이크 연결이 끊겼습니다. 여기까지 녹화한 영상을 저장할 수 있어요.';pauseGame(true);showToast(challenge.error)}}))}
     scheduleGuideNotes(state.session);applyVisualUI();preparePlayUI();showScreen('playScreen');hostBridge.stateChanged('playing');
-  }catch(error){if(token!==state.startToken)return;rhythmPresentation.collapse();console.error(error);await settleChallengeRecording();cleanupSession();showScreen('libraryScreen');refreshChallengeUI();showToast(withCamera||state.mode==='voice'?mediaErrorMessage(error):'게임을 시작하지 못했습니다. 파일 연결을 확인해 주세요.')}
+  }catch(error){if(token!==state.startToken)return;rhythmPresentation.collapse();console.error(error);state.session?.hostRun?.rawRecorder?.abort();await settleChallengeRecording();cleanupSession();showScreen('libraryScreen');refreshChallengeUI();showToast(withCamera||state.mode==='voice'?mediaErrorMessage(error):'게임을 시작하지 못했습니다. 파일 연결을 확인해 주세요.')}
   finally{if(token===state.startToken){state.starting=false;if(!state.session){stopMicrophone();stopChallengeCamera(true);rhythmPresentation.collapse()}$('cancelStart').hidden=true;setStartReady(Boolean(state.asset));hostBridge.stateChanged()}}
 }
 const GUIDE_GAIN=.34;
@@ -1433,16 +1435,16 @@ async function finishCurrentGame(partial=false,options={}){
     score:Math.round(s.score),perfect:s.perfect,great:s.great,good:s.good,miss:s.miss,
     maxCombo:s.maxCombo,total:s.notes.length,judged:s.judged,
     accuracy:Math.round(s.accuracyPoints/Math.max(1,partial?s.judged:s.notes.length)*100)};
-  // Request recorder final chunks before stopping the source tracks. Cleanup is immediate.
+  // Stop backing sound immediately, but retain the microphone until the PCM tail is flushed.
+  for(const node of [...s.sources,...s.guideNodes]){try{node.stop();}catch{}}
   const audioPromise=hostBridge.stopRaw(s),takePromise=s.challenge?settleChallengeRecording():Promise.resolve(null);
-  cleanupSession();stopChallengeCamera(true);
   let take=null,audioBlob=null;
   try{
     [take,audioBlob]=await Promise.all([takePromise,audioPromise]);
     hostBridge.publishResult(s,result,audioBlob);
     if(!options.returnToLibrary&&!state.hostReturnToLibrary){showResult(result);if(s.challenge){showChallengeTake(take,partial);await rememberChallengeTake(take,result)}}
     else showScreen('libraryScreen');
-  }finally{state.finalizing=false;refreshChallengeUI();setStartReady(Boolean(state.asset));hostBridge.stateChanged();}
+  }finally{cleanupSession();stopChallengeCamera(true);state.finalizing=false;refreshChallengeUI();setStartReady(Boolean(state.asset));hostBridge.stateChanged();}
 }
 
 function showResult(result){

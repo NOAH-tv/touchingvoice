@@ -12,6 +12,8 @@ const hostBridge = (() => {
   let stopPromise = null;
   let grantedRunId = null;
   let metricsModules = null;
+  let pcmModule = null;
+  let inputDeviceId = null;
   const post = (type, payload = {}) => {
     if (embedded && origin !== 'null') window.parent.postMessage({type,...payload},origin);
   };
@@ -65,7 +67,7 @@ const hostBridge = (() => {
     });
     grantedRunId = run.runId;
     run.profile = granted.profile || null;
-    run.refs = granted.refs || null;
+    run.refs = granted.refs || null;inputDeviceId=typeof granted.inputDeviceId==='string'?granted.inputDeviceId:null;
     // The owner is frozen before permission, never taken from a later profile message.
     post('tv-rhythm-state',{active:true,phase:'starting',mode:run.mode,runId:run.runId,profileId:run.profileId});
     return run;
@@ -76,6 +78,8 @@ const hostBridge = (() => {
   }
   async function prepareMetrics(run) {
     if (run.mode !== 'voice') return;
+    pcmModule ||= import('../../src/pcm-capture.js?v=pcm24-20260910');
+    run.pcmModule=await pcmModule;await run.pcmModule.preparePcmCapture(ensureAudioContext());
     try {
       metricsModules ||= Promise.all([import('../../src/audio.js'),import('../../src/pro-metrics.js')]);
       const [audio,metrics] = await metricsModules;
@@ -83,34 +87,29 @@ const hostBridge = (() => {
       run.accumulator = metrics.createVoiceMetricsAccumulator({...(run.profile?{profile:run.profile}:{}),profileId:run.profileId});
     } catch (error) {console.warn('실제 음향 분석 모듈을 불러오지 못했습니다.',error);}
   }
-  function attachMicrophone(session) {
+  async function attachMicrophone(session) {
     if (session.mode !== 'voice' || !state.micStream) return;
     const run = session.hostRun;
     run.pitchSamples=[];
     if (run.accumulator) {
       run.rawSource = state.audioCtx.createMediaStreamSource(state.micStream);
-      run.rawAnalyser = state.audioCtx.createAnalyser();run.rawAnalyser.fftSize=4096;
+      run.rawAnalyser = state.audioCtx.createAnalyser();run.rawAnalyser.fftSize=4096;run.rawAnalyser.channelCount=1;run.rawAnalyser.channelCountMode='explicit';run.rawAnalyser.channelInterpretation='discrete';
       run.rawAnalyser.smoothingTimeConstant=0;
       run.waveform=new Float32Array(4096);run.spectrum=new Float32Array(2048);
       run.rawSource.connect(run.rawAnalyser);
     }
-    if (typeof MediaRecorder !== 'function') return;
-    try {
-      const mime = ['audio/webm;codecs=opus','audio/mp4','audio/webm'].find(t=>MediaRecorder.isTypeSupported(t));
-      const recorder = new MediaRecorder(new MediaStream(state.micStream.getAudioTracks()),mime?{mimeType:mime}:undefined);
-      const chunks=[];let bytes=0;let resolve;
-      run.rawRecorder=recorder;run.audioPromise=new Promise(done=>{resolve=done});
-      let finalized=false;
-      const finish=()=>{if(finalized)return;finalized=true;clearTimeout(run.audioStopTimer);resolve(chunks.length?new Blob(chunks,{type:recorder.mimeType||chunks[0].type}):null);};
-      recorder.ondataavailable=event=>{if(event.data?.size){bytes+=event.data.size;if(bytes<=48*1024*1024)chunks.push(event.data);else if(recorder.state!=='inactive'){run.audioTruncated=true;recorder.stop();}}};
-      recorder.onstop=finish;recorder.onerror=()=>{run.audioError=true;if(recorder.state!=='inactive'){try{recorder.stop();}catch{finish();}}else finish();};
-      run.finishRaw=finish;
-      // Start at the actual track downbeat in sample(), after the countdown.
-    } catch(error) {run.audioError=true;console.warn('목소리 파일 녹음 미지원',error);}
+    const {PcmCaptureRecorder}=run.pcmModule||await (pcmModule ||= import('../../src/pcm-capture.js?v=pcm24-20260910'));
+    const recorder=new PcmCaptureRecorder({context:state.audioCtx,stream:state.micStream,onLimit:take=>{run.audioTruncated=true;showToast(`목소리 원음 녹음이 ${Math.round(take.duration)}초 한도에 도달했습니다. 여기까지 WAV로 보관합니다.`);}});
+    run.rawRecorder=recorder;
+    await recorder.start();run.rawStarted=true;
+    run.audioPromise=recorder.done.then(take=>{
+      run.captureSettings={...take.captureSettings,trainingStartOffsetSeconds:session.startAt-take.captureSettings.captureStartContextSeconds};
+      return take.blob;
+    }).catch(error=>{run.audioError=true;run.audioErrorMessage=error.message;showToast('WAV 원음 저장 실패: '+error.message);return null;});
   }
+
   function sample(session,detected,target,timeline,raw) {
     const run=session.hostRun;if(!run || session.mode!=='voice')return;
-    if(run.rawRecorder && !run.rawStarted){try{run.rawRecorder.start(1000);run.rawStarted=true;}catch{run.audioError=true;run.finishRaw?.();}}
     if(run.pitchSamples.length<20000) run.pitchSamples.push({t:Math.max(0,raw),hz:detected.hz||null,rms:detected.rms,confidence:detected.confidence,
       targetMidi:target?.midi ?? null,cents:target&&detected.hz?pitchDifference(detected.hz,target.midi):null});
     if(run.rawAnalyser){try{
@@ -118,17 +117,20 @@ const hostBridge = (() => {
       run.accumulator.add({features:run.analyzeFrame(run.waveform,run.spectrum,state.audioCtx.sampleRate)});
     }catch(error){if(!run.metricsError)console.warn('음향 프레임 분석 오류',error);run.metricsError=true;}}
   }
-  function pause(session) {const r=session?.hostRun?.rawRecorder;if(r?.state==='recording'){try{r.pause();}catch{}}stateChanged('paused');}
-  function resume(session) {const r=session?.hostRun?.rawRecorder;if(r?.state==='paused'){try{r.resume();}catch{}}stateChanged('playing');}
-  function stopRaw(session) {
-    const run=session?.hostRun;if(!run)return Promise.resolve(null);
+  // Suspending the shared AudioContext pauses both accompaniment and PCM sample clock.
+  function pause(){stateChanged('paused');}
+  function resume(){stateChanged('playing');}
+  async function stopRaw(session){
+    const run=session?.hostRun;if(!run)return null;
     try{run.rawSource?.disconnect();run.rawAnalyser?.disconnect();}catch{}
-    if(!run.rawRecorder)return Promise.resolve(null);
-    if(!run.rawStarted){run.finishRaw?.();return run.audioPromise;}
-    if(run.rawRecorder.state!=='inactive'){try{run.rawRecorder.stop();}catch{run.finishRaw?.();}}
-    // Browser failures must not keep the user's input locked forever.
-    run.audioStopTimer=setTimeout(()=>run.finishRaw?.(),4000);
-    return run.audioPromise;
+    if(!run.rawRecorder)return null;
+    if(!run.rawStarted){run.rawRecorder.abort();return null;}
+    const stopped=run.rawRecorder.stop();
+    if(state.audioCtx.state==='suspended'){
+      let timer;try{await Promise.race([state.audioCtx.resume(),new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error('일시정지한 원음 녹음을 마무리하지 못했습니다.')),4000);})]);}
+      catch(error){run.rawRecorder.abort();run.audioError=true;run.audioErrorMessage=error.message;}finally{clearTimeout(timer);}
+    }
+    await stopped.catch(()=>{});return await run.audioPromise;
   }
   function publishResult(session,result,audioBlob) {
     const run=session.hostRun;
@@ -141,13 +143,13 @@ const hostBridge = (() => {
       meanAbsoluteCents:errors.length?errors.reduce((n,s)=>n+Math.abs(s.cents),0)/errors.length:null};
     const voiceMetrics=run.accumulator?.finalize() || null;
     post('tv-rhythm-result',{profileId:run.profileId,profileName:run.profileName,runId:run.runId,
-      audioBlob:audioBlob?.size?audioBlob:null,voiceMetrics,
+      audioBlob:audioBlob?.size?audioBlob:null,captureSettings:run.captureSettings||null,voiceMetrics,
       result:{...result,track:{id:session.track.id,name:session.track.name,category:session.track.category},
         trackId:session.track.id,trackTitle:session.track.name,trackCategory:session.track.category,
         profileId:run.profileId,profileName:run.profileName,runId:run.runId,
         startedAt:run.startedAt,endedAt:new Date().toISOString(),completed:!result.partial,
         durationSeconds:result.duration,plannedDuration:session.totalDuration,
-        pitchMetrics,pitchSamples:samples,voiceMetrics,audioRecorded:Boolean(audioBlob?.size),audioTruncated:Boolean(run.audioTruncated)}});
+        pitchMetrics,pitchSamples:samples,voiceMetrics,audioRecorded:Boolean(audioBlob?.size),audioTruncated:Boolean(run.audioTruncated),audioError:run.audioErrorMessage||null}});
   }
   function stop(reason='host-stop') {
     if(typeof rhythmPresentation!=='undefined')rhythmPresentation.collapse();
@@ -195,5 +197,5 @@ const hostBridge = (() => {
   return {embedded,snapshot,requestStart,prepareMetrics,attachMicrophone,sample,pause,resume,stopRaw,publishResult,stateChanged,cancelRequests,stop,readAsset,waitForProfile,
     get protectedAssets(){return protectedAssets;},get production(){return production;},get authorized(){return authorized();},
     presentation(expanded){post('tv-rhythm-presentation',{expanded:Boolean(expanded)});},
-    get profileId(){return profile.profileId;},get stopping(){return Boolean(stopPromise);},ready(){post('tv-rhythm-ready',{version:1});stateChanged();}};
+    get inputDeviceId(){return inputDeviceId;},get profileId(){return profile.profileId;},get stopping(){return Boolean(stopPromise);},ready(){post('tv-rhythm-ready',{version:1});stateChanged();}};
 })();
