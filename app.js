@@ -1,5 +1,5 @@
 import { initAuth, signIn, signOut } from './auth.js';
-import { call, config } from './api.js';
+import { call, config } from './api.js?v=fast-boot-20260911';
 import { coreMetricSummary } from './core-metrics.js?v=core-summary-20260910';
 
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -85,23 +85,31 @@ function clearPrivateState() { S.requestEpoch++; S.user = null; S.session = null
 async function onAuth(user) {
   clearPrivateState(); S.user = user;
   if (!user) { showScreen('loginScreen'); return; }
-  showScreen('bootState'); await establishSession();
+  showConnectionShell(); await establishSession();
+}
+function showConnectionShell() {
+  // No cached student, financial or permission data is exposed before approval.
+  $('#portal').inert = true; $('#mainContent').hidden = false; $('#studioView').hidden = true;
+  $('#mainNav').innerHTML = '<p class="nav-section">COACH WORKSPACE</p><p>코칭 스튜디오</p><p>오늘의 운영</p><p>수업 캘린더</p><p>학생 · 기록</p>';
+  $('#mainContent').innerHTML = '<div class="page-heading"><div><p class="eyebrow">TOUCHINGVOICE</p><h1>코칭 워크스페이스</h1><p role="status">현재 접근 권한과 최신 기록을 함께 확인하고 있습니다.</p></div></div><div class="page-loading"><div class="skeleton"></div><div class="skeleton"></div></div>';
+  showScreen('portal');
 }
 async function establishSession() {
   if (!S.user) return;
-  const epoch = ++S.requestEpoch;
+  const epoch = ++S.requestEpoch, startedAt = Date.now();
   try {
-    const session = await call('session');
+    const boot = await call('boot');
+    const session = boot.session;
     if (epoch !== S.requestEpoch) return;
-    if (!session?.staff?.uid || !Array.isArray(session.branches)) throw new Error('이 계정의 운영 권한을 확인할 수 없습니다. 관리자에게 문의해 주세요.');
+    if (session?.staff?.uid !== S.user.uid || !Array.isArray(session.branches)) throw new Error('이 계정의 운영 권한을 확인할 수 없습니다. 관리자에게 문의해 주세요.');
     S.session = session; S.branchId = session.activeBranchId || session.branches[0]?.id || ''; S.page = owner() ? 'hq' : 'today';
     $('#branchSelect').innerHTML = session.branches.map(branch => `<option value="${e(branch.id)}">${e(branch.name)}</option>`).join(''); $('#branchSelect').value = S.branchId;
     $('#staffName').textContent = session.staff.name || session.staff.email; $('#staffRole').textContent = roles[session.staff.role] || '승인된 구성원'; $('#staffAvatar').textContent = (session.staff.name || session.staff.email || 'T').slice(0, 1);
-    $('#previewNotice').hidden = !preview; $('#previewRole').value = session.staff.role; showScreen('portal'); renderNav(); window.dispatchEvent(new CustomEvent('tv:session', { detail: session })); await refresh();
+    $('#previewNotice').hidden = !preview; $('#previewRole').value = session.staff.role; S.data = boot.dashboard; S.hq = boot.hq; $('#lastSynced').title = `초기 데이터 연결 ${((Date.now() - startedAt) / 1000).toFixed(2)}초`; $('#portal').inert = false; showScreen('portal'); $('#lastSynced').textContent = `${time(Date.now())} 서버에서 동기화`; renderNav(); render(); window.dispatchEvent(new CustomEvent('tv:session', { detail: session }));
     if (!preview && owner() && S.session === session && S.data) { navigate('studio', { openStudio: false }); $('#studioStudent').value = ''; }
   } catch (error) {
     if (epoch !== S.requestEpoch) return;
-    S.session = null; S.data = null; $('#pendingEmail').textContent = S.user?.email || '로그인된 계정'; $('#pendingMessage').textContent = errorMessage(error); showScreen('pendingScreen'); loadBranchApplications();
+    S.session = null; S.data = null; S.hq = null; $('#mainContent').replaceChildren(); $('#portal').inert = false; $('#pendingEmail').textContent = S.user?.email || '로그인된 계정'; $('#pendingMessage').textContent = errorMessage(error); showScreen('pendingScreen'); loadBranchApplications();
   }
 }
 async function refresh({ quiet = false } = {}) {
@@ -109,10 +117,13 @@ async function refresh({ quiet = false } = {}) {
   const epoch = ++S.requestEpoch; $('#refreshButton').disabled = true;
   if (!quiet) $('#mainContent').innerHTML = '<div class="page-loading" role="status" aria-label="운영 데이터 불러오는 중"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div>';
   try {
-    const [data, hq] = await Promise.all([call('dashboard', {}, S.branchId), owner() ? call('hq.dashboard') : Promise.resolve(null)]); if (epoch !== S.requestEpoch) return;
-    S.data = data; S.hq = hq; $('#lastSynced').textContent = `${time(Date.now())} 서버에서 동기화`; renderNav(); render();
+    const boot = await call('boot', {}, S.branchId); if (epoch !== S.requestEpoch) return;
+    if (boot.session?.staff?.uid !== S.user?.uid) throw new Error('현재 로그인 계정의 권한을 다시 확인해 주세요.');
+    if (boot.session.staff.role !== S.session.staff.role || JSON.stringify(boot.session.branches.map(b => b.id)) !== JSON.stringify(S.session.branches.map(b => b.id))) { await onAuth(S.user); return; }
+    S.session = boot.session; S.data = boot.dashboard; S.hq = boot.hq; $('#lastSynced').textContent = `${time(Date.now())} 서버에서 동기화`; renderNav(); render();
   } catch (error) {
     if (epoch !== S.requestEpoch) return;
+    if (['UNAUTHENTICATED','FORBIDDEN','STAFF_APPROVAL_REQUIRED','EMAIL_VERIFICATION_REQUIRED'].includes(error.code)) { await onAuth(S.user); return; }
     $('#lastSynced').textContent = '연결 상태 확인 필요';
     const message = error instanceof ReferenceError || error instanceof TypeError ? '화면을 준비하는 중 문제가 발생했습니다. 새로고침 후 다시 확인해 주세요.' : errorMessage(error);
     if (quiet && S.data) toast(message, true);
