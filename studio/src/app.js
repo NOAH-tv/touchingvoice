@@ -18,7 +18,7 @@ import { CalibrationLibraryService, observationFromRecord } from './calibration-
 import { buildPersonalModel } from './personal-calibration.js';
 import { mountStudioTools } from './studio-tools.js?v=pcm24-20260910';
 import { FileAnalysisService } from './file-analysis-service.js?v=cumulative-20260910';
-import { mountFileAnalysisView } from './file-analysis-view.js?v=examination-3';
+import { mountFileAnalysisView } from './file-analysis-view.js?v=core-summary-20260910';
 import { ANALYZER_FIELDS } from './analyzer-metrics.js';
 import { mountParticipantIntake } from './participant-intake.js?v=examination-1';
 import { resolveParticipant } from './participant-data.js';
