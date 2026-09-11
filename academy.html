@@ -167,6 +167,9 @@ body::before{content:""; position:fixed; inset:0; pointer-events:none; z-index:0
 .video-slot .vi{font-size:1.4rem; opacity:.5} .video-slot .vt{font-size:.8rem; color:var(--ink-soft); margin-top:.3rem}
 .video-slot .vhint{font-size:.7rem; color:var(--plum-soft); margin-top:.15rem}
 .video-slot iframe{width:100%; aspect-ratio:16/9; border:0; border-radius:8px}
+/* 강의 영상을 맨 위에 고정 — 아래 설명을 스크롤하며 영상을 계속 볼 수 있게 */
+.lesson-video{position:sticky; top:.4rem; z-index:6; background:var(--paper); border-radius:12px; margin-bottom:1.1rem}
+.lesson-video .video-slot{margin-top:0}
 .tvp{border-radius:10px; overflow:hidden; background:#000; box-shadow:0 6px 24px rgba(59,30,110,.18)}
 .tvp-stage{position:relative; width:100%; aspect-ratio:16/9; background:#000}
 .tvp-yt,.tvp-yt iframe{position:absolute; inset:0; width:100%; height:100%; border:0}
@@ -535,11 +538,11 @@ body::before{content:""; position:fixed; inset:0; pointer-events:none; z-index:0
 <!-- ═══ 협회(association) 컨셉 스킨 오버라이드 ═══ -->
 <link rel="stylesheet" href="https://hangeul.pstatic.net/hangeul_static/css/nanum-square.css">
 <style id="assoc-skin">
-@font-face{font-family:'Paperlogy';font-weight:300;font-display:swap;src:url('https://noah-tv.github.io/touchingvoice/Paperlogy-3Light.woff2') format('woff2'),url('https://noah-tv.github.io/touchingvoice/Paperlogy-3Light.ttf') format('truetype')}
-@font-face{font-family:'Paperlogy';font-weight:400;font-display:swap;src:url('https://noah-tv.github.io/touchingvoice/Paperlogy-4Regular.woff2') format('woff2'),url('https://noah-tv.github.io/touchingvoice/Paperlogy-4Regular.ttf') format('truetype')}
-@font-face{font-family:'Paperlogy';font-weight:500;font-display:swap;src:url('https://noah-tv.github.io/touchingvoice/Paperlogy-5Medium.woff2') format('woff2'),url('https://noah-tv.github.io/touchingvoice/Paperlogy-5Medium.ttf') format('truetype')}
-@font-face{font-family:'Paperlogy';font-weight:600;font-display:swap;src:url('https://noah-tv.github.io/touchingvoice/Paperlogy-6SemiBold.woff2') format('woff2'),url('https://noah-tv.github.io/touchingvoice/Paperlogy-6SemiBold.ttf') format('truetype')}
-@font-face{font-family:'Paperlogy';font-weight:800;font-display:swap;src:url('https://noah-tv.github.io/touchingvoice/Paperlogy-7Bold.woff2') format('woff2'),url('https://noah-tv.github.io/touchingvoice/Paperlogy-7Bold.ttf') format('truetype')}
+@font-face{font-family:'Paperlogy';font-weight:300;font-display:swap;src:url('https://noah-tv.github.io/touchingvoice/Paperlogy-3Light.ttf') format('truetype')}
+@font-face{font-family:'Paperlogy';font-weight:400;font-display:swap;src:url('https://noah-tv.github.io/touchingvoice/Paperlogy-4Regular.ttf') format('truetype')}
+@font-face{font-family:'Paperlogy';font-weight:500;font-display:swap;src:url('https://noah-tv.github.io/touchingvoice/Paperlogy-5Medium.ttf') format('truetype')}
+@font-face{font-family:'Paperlogy';font-weight:600;font-display:swap;src:url('https://noah-tv.github.io/touchingvoice/Paperlogy-6SemiBold.ttf') format('truetype')}
+@font-face{font-family:'Paperlogy';font-weight:800;font-display:swap;src:url('https://noah-tv.github.io/touchingvoice/Paperlogy-7Bold.ttf') format('truetype')}
 :root{
   --cream:#F5EEE0; --cream-2:#EFE6D6; --paper:#FBF7EC;
   --plum:#43227D; --plum-2:#5B3A8E; --plum-soft:#8B6BB8;
@@ -737,12 +740,23 @@ function lessonHtml(prog, wk){
   var refChips = (sc.ref && sc.ref.length)
     ? '<div class="ref-chips"><span class="rc-label">참고문헌</span>'+sc.ref.map(function(n){return '<span class="rc" title="아래 참고문헌 '+n+'번">['+n+']</span>';}).join('')+'</div>'
     : '';
-  return '<div class="lesson"><div class="lesson-meta"><b>수업 목표</b> \u00B7 '+sc.goal+'<br><b>준비물</b> \u00B7 '+sc.materials+refChips+'</div>'+
-    '<div class="timeline">'+tl+'</div>'+blocks+vid+'</div>';
+  return '<div class="lesson"><div class="lesson-video">'+vid+'</div><div class="lesson-meta"><b>수업 목표</b> \u00B7 '+sc.goal+'<br><b>준비물</b> \u00B7 '+sc.materials+refChips+'</div>'+
+    '<div class="timeline">'+tl+'</div>'+blocks+'</div>';
+}
+/* 주차 열기/닫기 — 열기 애니메이션이 끝나면 overflow를 풀어 상단 고정(sticky) 영상이 작동하게 한다 */
+function toggleWeek(w){
+  var body = w.querySelector('.week-body');
+  if(w.classList.contains('open')){
+    if(body) body.style.overflow = 'hidden';
+    w.classList.remove('open');
+  }else{
+    w.classList.add('open');
+    setTimeout(function(){ if(w.classList.contains('open') && body) body.style.overflow = 'visible'; }, 520);
+  }
 }
 function weekHtml(prog, wk){
   var hasScript = SCRIPTS[prog.id] && SCRIPTS[prog.id][wk.w];
-  return '<div class="week"><div class="week-head" onclick="this.parentElement.classList.toggle(\'open\')">'+
+  return '<div class="week"><div class="week-head" onclick="toggleWeek(this.parentElement)">'+
     '<div class="week-w">'+wk.w+'</div><div class="week-t">'+wk.t+'</div><div class="week-d">'+wk.d+'</div>'+
     (hasScript?'<span class="week-script-badge">60분 스크립트</span>':'')+
     '<div class="week-arrow">\u2304</div></div>'+
