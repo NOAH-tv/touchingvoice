@@ -1,9 +1,9 @@
 let current = null;
-export function establishContext({ uid, branchId, student, staff, branch, preview=false }) {
+export function establishContext({ uid, branchId, student, staff, branch, preview=false, assetAccess=null }) {
   if (current) throw new Error('학생 컨텍스트는 변경할 수 없습니다. 코칭을 다시 열어 주세요.');
   if (![uid, branchId, student?.id].every(v => typeof v === 'string' && v.length > 0 && v.length <= 200)) throw new Error('유효한 학생 식별자가 필요합니다.');
   if (student.branchId !== branchId || student.active === false) throw new Error('이 지점의 활성 학생이 아닙니다.');
-  current = Object.freeze({ uid, branchId, preview:preview===true, student: Object.freeze(structuredClone(student)), staff: Object.freeze(structuredClone(staff)), branch: Object.freeze(structuredClone(branch)) });
+  current = Object.freeze({ uid, branchId, preview:preview===true, assetAccess:assetAccess?Object.freeze(structuredClone(assetAccess)):null, student: Object.freeze(structuredClone(student)), staff: Object.freeze(structuredClone(staff)), branch: Object.freeze(structuredClone(branch)) });
   return current;
 }
 export function getContext() {

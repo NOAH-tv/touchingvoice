@@ -30,7 +30,7 @@ async function resume(){
     if(closed||suspended||epoch!==resumeEpoch)return;
     if(fresh?.staff?.uid!==user.uid)throw new Error('승인된 강사 계정이 필요합니다.');
     authorizedStudent({branch:fresh.branch,students:[fresh.student]},selected.studentId,selected.branchId);
-    if(JSON.stringify(fresh)!==JSON.stringify(context)){postParent({type:'tv:studio-reload-required'});return;}
+    if(JSON.stringify({staff:fresh.staff,branch:fresh.branch,student:fresh.student})!==JSON.stringify({staff:context.staff,branch:context.branch,student:context.student})){postParent({type:'tv:studio-reload-required'});return;}
     await appModule.resumeStudio?.();
     if(closed||suspended||epoch!==resumeEpoch)return;
     document.documentElement.style.visibility='';
@@ -89,7 +89,7 @@ try {
   const student=authorizedStudent({branch:context.branch,students:[context.student]},selected.studentId,selected.branchId);
   if (closed) throw new Error('코칭 연결이 종료되었습니다.');
   authorizedContext={selected,user,context};
-  establishContext({uid:user.uid,branchId:selected.branchId,student,staff:context.staff,branch:context.branch,preview:config.preview});
+  establishContext({uid:user.uid,branchId:selected.branchId,student,staff:context.staff,branch:context.branch,preview:config.preview,assetAccess:context.assetAccess});
   // Fetching public code is safe; execute it only after current authorization.
   const parsed=new DOMParser().parseFromString(await shellResponse,'text/html');
   if (closed) throw new Error('코칭 연결이 종료되었습니다.');
@@ -100,7 +100,7 @@ try {
   }
   const css=document.createElement('link');css.rel='stylesheet';css.href='./franchise.css';document.head.append(css);
   document.body.replaceChildren(...Array.from(parsed.body.childNodes, node=>document.importNode(node,true)));
-  const app=await import('./src/app.js?v=continuous-recording-20260911');appModule=app;shutdown=app.shutdownStudio;
+  const app=await import('./src/app.js?v=storage3d-20260911');appModule=app;shutdown=app.shutdownStudio;
   if(closed){await shutdown?.();throw new Error('코칭 연결이 종료되었습니다.');}
   if(suspended)await suspend();
   document.documentElement.style.visibility=suspended?'hidden':'';document.title='터칭보이스 · 코칭 스튜디오';
