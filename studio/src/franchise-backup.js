@@ -23,6 +23,7 @@ export class DriveBackupService {
   }
   async chunkedUpload(artifacts,context,requestId,entry){
     const manifest={studentId:artifacts.studentId,recordId:artifacts.recordId,metrics:artifacts.metrics,metadata:artifacts.metadata,audio:descriptor(artifacts.audio),analysis:descriptor(artifacts.analysis)};
+    if(artifacts.metadata.storageAudio)manifest.chunkBytes=UPLOAD_CHUNK_BYTES;
     let state=await this.repeat(()=>this.request('exam.upload.begin',manifest,context,requestId+'-begin',entry));
     if(state?.complete&&typeof state.complete==='object')return this.verifyResult(state.complete,artifacts);
     if(typeof state?.uploadId!=='string'||!state.uploadId||state.uploadId.length>200||![2*1024*1024,UPLOAD_CHUNK_BYTES].includes(state.chunkBytes))throw uploadError('UPLOAD_PROTOCOL','서버 분할 전송 설정을 확인하지 못했습니다.');
