@@ -232,7 +232,7 @@ body[data-screen="play"] #playScreen .game-hud,body[data-screen="play"] .zone-hu
 body[data-screen="play"] .zone-segment.active{box-shadow:none}
 body[data-screen="play"] .zone-segment.active b{color:var(--zone);text-shadow:none}
 </style>
-<link rel="stylesheet" href="embed.css">
+<link rel="stylesheet" href="embed.css?v=practice-20260911">
 </head>
 <body data-screen="library">
 <div id="app">
@@ -1287,10 +1287,12 @@ function showChallengeTake(take,partial){
   const format=take.mimeType.includes('mp4')?'MP4':'WebM';$('clipStatus').textContent=(partial?'여기까지의 무대':'완주한 무대')+' · '+fmtTime(take.seconds)+' · '+format+' · '+(take.blob.size/1048576).toFixed(1)+' MB'+(challenge.error?' · '+challenge.error:'');
 }
 function openClipDatabase(){
+  if(hostBridge.profileId==='__practice__')return Promise.reject(new Error('학생 없는 사용에서는 기록을 저장하지 않습니다.'));
   if(clipDatabasePromise)return clipDatabasePromise;
   clipDatabasePromise=new Promise((resolve,reject)=>{if(!window.indexedDB){reject(new Error('브라우저 보관 미지원'));return}const request=indexedDB.open(CLIP_DB_NAME,1);request.onupgradeneeded=()=>{const db=request.result,store=db.createObjectStore('clips',{keyPath:'id'});store.createIndex('createdAt','createdAt')};request.onsuccess=()=>{const db=request.result;db.onversionchange=()=>{db.close();clipDatabasePromise=null};resolve(db)};request.onerror=()=>reject(request.error);request.onblocked=()=>reject(new Error('영상 보관함을 다른 탭에서 사용 중입니다.'))});clipDatabasePromise.catch(()=>{clipDatabasePromise=null});return clipDatabasePromise;
 }
 async function rememberChallengeTake(take,result){
+  if(hostBridge.profileId==='__practice__'){$('clipStorageStatus').textContent='자유 사용 · 영상은 저장되지 않습니다.';return;}
   if(!take||!take.blob.size)return;const now=Date.now(),entry={id:now+'-'+Math.random().toString(36).slice(2,8),createdAt:now,title:result.track.name||'스테이지 미션',blob:take.blob,fileName:take.file.name,mimeType:take.mimeType,seconds:take.seconds,result:{...result,track:{id:result.track.id,name:result.track.name,category:result.track.category}},persisted:false};clipMemory.set(entry.id,entry);
   if(challenge.take===take)$('clipStorageStatus').textContent='이 브라우저에 영상을 보관하는 중입니다…';
   try{const db=await openClipDatabase();await new Promise((resolve,reject)=>{const tx=db.transaction('clips','readwrite');tx.objectStore('clips').put({...entry,persisted:true});tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error||new Error('보관 취소'))});entry.persisted=true;clipMemory.delete(entry.id);if(challenge.take===take)$('clipStorageStatus').textContent='브라우저에 보관됐어요. 홈의 ‘내 기록’에서 결과와 영상을 다시 열 수 있습니다.'}
@@ -1318,8 +1320,9 @@ async function openSavedClips(){
   const entries=await recentChallengeClips(),list=$('savedClipsList');if(!hostBridge.authorized || (hostBridge.embedded&&!hostBridge.profileId))return;list.textContent='';if(!entries.length){const empty=document.createElement('p');empty.style.cssText='padding:28px 12px;text-align:center;color:#baa5ce;line-height:1.9';empty.textContent='아직 담아둔 무대가 없어요. 스테이지 미션에서 카메라를 켜고 첫 챌린지를 기록해 보세요.';list.appendChild(empty);$('savedClipsOverlay').classList.add('on');return}
   entries.forEach(entry=>{const button=document.createElement('button');button.className='secondary-button';button.style.cssText='text-align:left;padding:12px;line-height:1.6';button.textContent=entry.title+' · '+fmtTime(entry.seconds)+'\n'+new Date(entry.createdAt).toLocaleString('ko-KR')+(entry.persisted?'':' · 이번 화면에만 보관');button.addEventListener('click',()=>{if(!hostBridge.authorized || (hostBridge.embedded&&entry.result?.profileId!==hostBridge.profileId))return;$('savedClipsOverlay').classList.remove('on');showResult({...entry.result,fromHistory:true,challenge:true});showChallengeTake({blob:entry.blob,file:new File([entry.blob],entry.fileName,{type:entry.mimeType}),mimeType:entry.mimeType,seconds:entry.seconds},entry.result.partial);$('clipStorageStatus').textContent=entry.persisted?'이 브라우저에 보관된 영상입니다. 중요한 영상은 기기에도 저장해 주세요.':'이번 화면에 임시 보관 중입니다. 닫기 전에 영상 저장을 눌러 주세요.'});list.appendChild(button)});$('savedClipsOverlay').classList.add('on');
 }
-function downloadChallenge(){if(!challenge.take||!challenge.url)return;const a=document.createElement('a');a.href=challenge.url;a.download=challenge.take.file.name;document.body.appendChild(a);a.click();a.remove();showToast('영상 저장을 시작했습니다. 다운로드 목록을 확인해 주세요.')}
+function downloadChallenge(){if(hostBridge.profileId==='__practice__'){showToast('학생을 선택해야 기록을 저장할 수 있습니다.');return;}if(!challenge.take||!challenge.url)return;const a=document.createElement('a');a.href=challenge.url;a.download=challenge.take.file.name;document.body.appendChild(a);a.click();a.remove();showToast('영상 저장을 시작했습니다. 다운로드 목록을 확인해 주세요.')}
 async function shareChallenge(){
+  if(hostBridge.profileId==='__practice__'){showToast('학생을 선택해야 기록을 공유할 수 있습니다.');return;}
   const take=challenge.take;if(!take)return;const button=$('shareClip');button.disabled=true;
   try{if(navigator.share&&navigator.canShare&&navigator.canShare({files:[take.file]})){await navigator.share({files:[take.file],title:'터칭보이스 스테이지 챌린지',text:'#터칭보이스 #보컬챌린지 #StageMission'})}else{downloadChallenge();$('clipStatus').textContent='이 브라우저에서는 파일 공유 대신 영상을 저장합니다. 저장한 영상을 릴스·쇼츠·틱톡에서 선택해 주세요.'}}
   catch(error){if(error.name!=='AbortError'){$('clipStatus').textContent='공유창을 열지 못했습니다. 영상 저장 버튼으로 받은 뒤 원하는 앱에 올려 주세요.'}}

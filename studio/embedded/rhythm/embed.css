@@ -71,3 +71,9 @@ body:not(.glass-mode) #gameCanvas{left:0;top:0;transform:none;max-width:none;max
  body:not(.glass-mode) .score-hud #guideButton{display:none}
  body:not(.glass-mode) .song-copy h2{max-width:32vw}
 }
+
+/* Override earlier .setup-column > * flex-shrink:0 so this region can scroll. */
+.setup-column > .setup-scroll{flex:1 1 0;min-height:0;overflow-y:auto;scrollbar-width:thin}
+.setup-scroll::-webkit-scrollbar{display:block;width:6px}
+.setup-scroll::-webkit-scrollbar-thumb{background:#674885;border-radius:6px}
+.library-console{min-height:0}
