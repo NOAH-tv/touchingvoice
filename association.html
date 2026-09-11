@@ -330,6 +330,10 @@ td select{padding:6px 8px;border:1px solid var(--rule);background:#fff}
 .modal-body{padding:28px;color:#fff}
 .modal-body .bank{margin-top:16px;background:rgba(227,211,175,.14);border:1px solid rgba(201,181,131,.4);padding:20px 22px;font-size:15px;line-height:2}
 .modal-body .bank b{color:var(--accent-soft)}
+.member-input{width:100%;box-sizing:border-box;padding:12px 14px;font-size:15px;border:1px solid rgba(255,255,255,.25);border-radius:10px;background:rgba(255,255,255,.06);color:#fff}
+.member-input:focus{outline:none;border-color:var(--accent-soft)}
+.copy-btn{background:none;border:none;cursor:pointer;color:var(--muted);font-size:13px;line-height:1;padding:2px 5px;margin-left:5px;border-radius:5px;vertical-align:baseline}
+.copy-btn:hover{color:var(--accent-deep);background:var(--beige-100)}
 #toast{
   position:fixed;left:50%;bottom:34px;transform:translateX(-50%) translateY(20px);
   background:var(--purple-deep);color:var(--accent-soft);padding:14px 26px;
@@ -734,7 +738,7 @@ td select{padding:6px 8px;border:1px solid var(--rule);background:#fff}
     <div class="admin-panel active" id="panel-members">
       <div class="table-wrap">
         <table>
-          <thead><tr><th>이름</th><th>이메일</th><th>연락처</th><th>등급</th><th>역할</th><th>가입일</th></tr></thead>
+          <thead><tr><th>이름</th><th>이메일</th><th>연락처</th><th>등급</th><th>역할</th><th>가입일</th><th>관리</th></tr></thead>
           <tbody id="adminMemberRows"></tbody>
         </table>
       </div>
@@ -831,6 +835,25 @@ td select{padding:6px 8px;border:1px solid var(--rule);background:#fff}
   </div>
 </div>
 
+<!-- 회원 정보 수정 -->
+<div class="modal-bg" id="memberModal">
+  <div class="modal" style="max-width:440px">
+    <div class="modal-head"><h3>회원 정보 수정</h3><button onclick="closeMemberModal()" aria-label="닫기">×</button></div>
+    <div class="modal-body">
+      <div style="font-size:12px;color:rgba(255,255,255,.55);margin-bottom:4px">이메일 (로그인 아이디 · 변경 불가)</div>
+      <div id="memEmail" class="selectable" style="font-weight:700;color:var(--accent-soft);margin-bottom:18px;word-break:break-all"></div>
+      <label style="display:block;font-size:13px;font-weight:700;margin-bottom:6px">이름</label>
+      <input id="memName" class="selectable member-input" type="text" autocomplete="off">
+      <label style="display:block;font-size:13px;font-weight:700;margin:14px 0 6px">연락처</label>
+      <input id="memPhone" class="selectable member-input" type="text" inputmode="tel" autocomplete="off" placeholder="010-0000-0000">
+      <div class="form-foot" style="display:flex;gap:10px;margin-top:24px">
+        <button class="btn btn-accent" onclick="saveMember()">저장</button>
+        <button class="btn btn-ghost" onclick="closeMemberModal()">취소</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="toast" role="status"></div>
 <div class="demo-banner" id="demoBanner" style="display:none">데모 모드 — Apps Script URL을 연결하면 실제 서버로 전환됩니다 (파일 상단 API_URL)</div>
 
@@ -858,6 +881,21 @@ function toast(msg){
 async function sha256hex(str){
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
   return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+/* 클립보드 복사 — 복사 차단 가드가 걸려 있어도 동작하도록 우회 */
+function copyText(t){
+  t = String(t);
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(t).then(()=>toast('복사됨 · ' + t)).catch(()=>_copyFallback(t));
+  }else{ _copyFallback(t); }
+}
+function _copyFallback(t){
+  const ta = document.createElement('textarea');
+  ta.value = t; ta.className = 'selectable';   // 가드 예외 대상
+  ta.style.cssText = 'position:fixed;top:-1000px;opacity:0';
+  document.body.appendChild(ta); ta.focus(); ta.select();
+  try{ document.execCommand('copy'); toast('복사됨 · ' + t); }catch(e){ toast('복사 실패 — 길게 눌러 복사해 주세요'); }
+  ta.remove();
 }
 
 /* ── 등급 접근 규칙 ── */
@@ -1185,17 +1223,35 @@ async function renderMypage(){
 }
 
 /* ═══════════════ 관리자 ═══════════════ */
-async function loadAdmin(){
+let ADMIN_CACHE = null;
+function renderAdminAll(d){
+  renderAdminMembers(d.members || []);
+  renderAdminEnrolls(d.enrollments || []);
+  renderAdminLectures(d.lectures || []);
+  renderAdminCodes(d.codes || []);
+}
+/* 통합 조회(admin_bootstrap) 1회로 회원/신청/강의/코드를 한 번에 받는다.
+   캐시가 있으면 즉시 그려서 화면이 바로 뜨고, 뒤에서 조용히 최신값으로 갱신한다.
+   force=true 면 캐시를 무시하고 서버에서 새로 받는다(승인·삭제 등 변경 직후). */
+async function loadAdmin(force){
+  if(ADMIN_CACHE && !force){ renderAdminAll(ADMIN_CACHE); }
+  else { $('#adminMemberRows').innerHTML = '<tr><td colspan="7" style="text-align:center;color:#8a7cb0;padding:28px">회원 정보를 불러오는 중…</td></tr>'; }
+
+  const r = await api('admin_bootstrap', { token: TOKEN });
+  if(r.status === 'ok'){
+    ADMIN_CACHE = { members:r.members||[], enrollments:r.enrollments||[], lectures:r.lectures||[], codes:r.codes||[] };
+    renderAdminAll(ADMIN_CACHE);
+    return;
+  }
+  // 구 백엔드(admin_bootstrap 미지원) 폴백 — 기존 4회 방식
   const [m, e, l, c] = await Promise.all([
     api('admin_listMembers', { token: TOKEN }),
     api('admin_listEnrollments', { token: TOKEN }),
     api('admin_listLectures', { token: TOKEN }),
     api('admin_listCodes', { token: TOKEN })
   ]);
-  renderAdminMembers(m.data || []);
-  renderAdminEnrolls(e.data || []);
-  renderAdminLectures(l.data || []);
-  renderAdminCodes(c.data || []);
+  ADMIN_CACHE = { members:m.data||[], enrollments:e.data||[], lectures:l.data||[], codes:c.data||[] };
+  renderAdminAll(ADMIN_CACHE);
 }
 async function adminCreateCode(course, count){
   const r = await api('admin_createCode', { token: TOKEN, course, count });
@@ -1206,7 +1262,7 @@ async function adminCreateCode(course, count){
     <div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:8px">
       ${codes.map(c => `<code class="selectable" style="font-family:monospace;font-size:15px;font-weight:700;padding:7px 13px;background:var(--beige-100);border-radius:7px;letter-spacing:1.5px">${esc(c)}</code>`).join('')}
     </div></div>`;
-  loadAdmin();
+  loadAdmin(true);
 }
 function renderAdminCodes(list){
   $('#adminCodeRows').innerHTML = list.map(c => {
@@ -1218,17 +1274,60 @@ function renderAdminCodes(list){
   }).join('') || '<tr><td colspan="6">발급된 코드가 없습니다</td></tr>';
 }
 function renderAdminMembers(list){
-  $('#adminMemberRows').innerHTML = list.map(m => `
-    <tr><td>${esc(m.name)}</td><td>${esc(m.email)}</td><td>${esc(m.phone)}</td>
+  $('#adminMemberRows').innerHTML = list.map(m => {
+    const phone = String(m.phone == null ? '' : m.phone).replace(/^'/, '');
+    const isAdmin = m.role === 'admin';
+    return `
+    <tr><td class="selectable">${esc(m.name)}</td>
+    <td class="selectable">${esc(m.email)}<button class="copy-btn" title="이메일 복사" onclick="copyText('${esc(m.email)}')">⧉</button></td>
+    <td class="selectable">${phone ? esc(phone) + `<button class="copy-btn" title="번호 복사" onclick="copyText('${esc(phone)}')">⧉</button>` : '—'}</td>
     <td><select onchange="adminSetLevel('${esc(m.email)}', this.value)">
       ${LEVELS.map(lv => `<option ${lv === m.level ? 'selected' : ''}>${lv}</option>`).join('')}
     </select></td>
-    <td>${m.role === 'admin' ? '<b style="color:var(--accent-deep)">관리자</b>' : '회원'}</td>
-    <td>${esc(m.joined)}</td></tr>`).join('') || '<tr><td colspan="6">회원이 없습니다</td></tr>';
+    <td>${isAdmin ? '<b style="color:var(--accent-deep)">관리자</b>' : '회원'}</td>
+    <td class="selectable">${esc(m.joined)}</td>
+    <td style="white-space:nowrap">
+      <button class="btn btn-ghost btn-sm" style="color:var(--accent-deep);border-color:var(--accent-deep)" onclick="adminEditMember('${esc(m.email)}')">수정</button>
+      ${isAdmin ? '' : `<button class="btn btn-ghost btn-sm" style="color:var(--bad);border-color:var(--bad)" onclick="adminDeleteMember('${esc(m.email)}')">탈퇴</button>`}
+    </td></tr>`;
+  }).join('') || '<tr><td colspan="7">회원이 없습니다</td></tr>';
 }
 async function adminSetLevel(email, level){
   const r = await api('admin_setMemberLevel', { token: TOKEN, email, level });
+  if(r.status === 'ok' && ADMIN_CACHE){ const mm = ADMIN_CACHE.members.find(x => x.email === email); if(mm) mm.level = level; }
   toast(r.status === 'ok' ? email + ' → ' + level : (r.msg || '변경 실패'));
+}
+/* 회원 정보 수정 / 탈퇴 */
+function adminEditMember(email){
+  const m = (ADMIN_CACHE && ADMIN_CACHE.members || []).find(x => x.email === email);
+  if(!m) return toast('회원 정보를 찾을 수 없습니다');
+  $('#memEmail').textContent = m.email;
+  $('#memName').value = m.name || '';
+  $('#memPhone').value = String(m.phone == null ? '' : m.phone).replace(/^'/, '');
+  $('#memberModal').dataset.email = email;
+  $('#memberModal').classList.add('open');
+  setTimeout(() => $('#memName').focus(), 50);
+}
+function closeMemberModal(){ $('#memberModal').classList.remove('open'); }
+async function saveMember(){
+  const email = $('#memberModal').dataset.email;
+  const name = $('#memName').value.trim();
+  const phone = $('#memPhone').value.trim();
+  if(!name) return toast('이름을 입력해 주세요');
+  const r = await api('admin_updateMember', { token: TOKEN, email, name, phone });
+  if(r.status !== 'ok') return toast(r.msg || '수정 실패');
+  if(ADMIN_CACHE){ const mm = ADMIN_CACHE.members.find(x => x.email === email); if(mm){ mm.name = name; mm.phone = phone; } renderAdminMembers(ADMIN_CACHE.members); }
+  closeMemberModal();
+  toast('회원 정보가 수정되었습니다');
+}
+async function adminDeleteMember(email){
+  const m = (ADMIN_CACHE && ADMIN_CACHE.members || []).find(x => x.email === email);
+  const name = m ? m.name : email;
+  if(!confirm(`'${name}' (${email}) 회원을 탈퇴(삭제) 처리할까요?\n\n해당 회원의 신청 내역·로그인 세션도 함께 삭제되며, 되돌릴 수 없습니다.`)) return;
+  const r = await api('admin_deleteMember', { token: TOKEN, email });
+  if(r.status !== 'ok') return toast(r.msg || '탈퇴 처리 실패');
+  if(ADMIN_CACHE){ ADMIN_CACHE.members = ADMIN_CACHE.members.filter(x => x.email !== email); renderAdminMembers(ADMIN_CACHE.members); }
+  toast('탈퇴 처리되었습니다');
 }
 function renderAdminEnrolls(list){
   $('#adminEnrollRows').innerHTML = list.map(e => {
@@ -1243,7 +1342,7 @@ function renderAdminEnrolls(list){
 }
 async function adminEnroll(id, status){
   const r = await api('admin_setEnrollment', { token: TOKEN, id, status });
-  if(r.status === 'ok'){ toast('처리되었습니다 — ' + status); loadAdmin(); }
+  if(r.status === 'ok'){ toast('처리되었습니다 — ' + status); loadAdmin(true); }
   else toast(r.msg || '처리 실패');
 }
 function renderAdminLectures(list){
@@ -1259,12 +1358,13 @@ function renderAdminLectures(list){
 }
 async function adminToggleLec(id, open){
   const r = await api('admin_toggleLecture', { token: TOKEN, id, open });
+  if(r.status === 'ok' && ADMIN_CACHE){ const ll = ADMIN_CACHE.lectures.find(x => x.id === id); if(ll) ll.open = open; }
   toast(r.status === 'ok' ? (open === 'TRUE' ? '공개로 전환' : '비공개로 전환') : (r.msg || '실패'));
 }
 async function adminDelLec(id){
   if(!confirm('이 강의를 삭제할까요?')) return;
   const r = await api('admin_deleteLecture', { token: TOKEN, id });
-  if(r.status === 'ok'){ toast('삭제되었습니다'); loadAdmin(); }
+  if(r.status === 'ok'){ toast('삭제되었습니다'); loadAdmin(true); }
 }
 
 /* ═══════════════ 초기화 & 이벤트 바인딩 ═══════════════ */
@@ -1314,6 +1414,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   route();
   window.addEventListener('hashchange', route);
 
+  // 강의실(아카데미)을 한가할 때 미리 로드 — 로그인 사용자는 '강의실' 클릭 시 즉시 뜬다
+  if(TOKEN){
+    const warmAcademy = () => loadLectures();
+    if('requestIdleCallback' in window) requestIdleCallback(warmAcademy, { timeout: 3500 });
+    else setTimeout(warmAcademy, 2000);
+  }
+
   $('#navToggle').addEventListener('click', () => $('#navLinks').classList.toggle('open'));
   $('#btnLogin').addEventListener('click', handleLogin);
   $('#loginPw').addEventListener('keydown', e => { if(e.key === 'Enter') handleLogin(); });
@@ -1339,7 +1446,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
     if(!lecture.title) return toast('강의 제목을 입력해 주세요');
     const r = await api('admin_addLecture', { token: TOKEN, lecture });
-    if(r.status === 'ok'){ toast('강의가 추가되었습니다'); $('#lfTitle').value = ''; $('#lfYt').value = ''; loadAdmin(); }
+    if(r.status === 'ok'){ toast('강의가 추가되었습니다'); $('#lfTitle').value = ''; $('#lfYt').value = ''; loadAdmin(true); }
     else toast(r.msg || '추가 실패');
   });
 
