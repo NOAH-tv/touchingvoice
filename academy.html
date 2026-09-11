@@ -1525,9 +1525,10 @@ function submitMock(){
       playerVars: { controls:0, disablekb:1, rel:0, modestbranding:1, playsinline:1,
                     fs:0, iv_load_policy:3, cc_load_policy:0, showinfo:0 },
       events: {
-        onReady: function(){ time.textContent = '0:00 / ' + fmt(yt.getDuration()); },
+        onReady: function(){ hideCaptions(); time.textContent = '0:00 / ' + fmt(yt.getDuration()); },
         onStateChange: function(e){
           var playing = (e.data === YT.PlayerState.PLAYING);
+          if(playing) hideCaptions();   // 재생 시 뒤늦게 켜지는 자동자막까지 차단
           box.classList.toggle('playing', playing);
           play.textContent = playing ? '‖' : '▶';
           if(playing){ if(!timer) timer=setInterval(tick, 250); }
@@ -1535,6 +1536,15 @@ function submitMock(){
         }
       }
     });
+
+    // 유튜브 자동자막(CC) 끄기 — cc_load_policy:0 로도 재생 중 모듈이 뒤늦게 로드되므로 명시적으로 내린다
+    function hideCaptions(){
+      var kill=function(){
+        try{ yt.unloadModule('captions'); }catch(e){}
+        try{ yt.unloadModule('cc'); }catch(e){}
+      };
+      kill(); setTimeout(kill,400); setTimeout(kill,1500);
+    }
 
     function tick(){
       if(!yt || !yt.getDuration) return;
