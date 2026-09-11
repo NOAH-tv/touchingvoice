@@ -1,8 +1,9 @@
+import { encodeWavToFlac } from './src/flac-encode.js';
 import { researchSnapshot } from './research-policy.js';
-export const MAX_ARTIFACT_BYTES=8*1024*1024;
+export const MAX_ARTIFACT_BYTES=20*1024*1024;
 export const MAX_AUDIO_BYTES=150*1024*1024;
 export const MAX_ANALYSIS_BYTES=64*1024*1024;
-export const UPLOAD_CHUNK_BYTES=2*1024*1024;
+export const UPLOAD_CHUNK_BYTES=4*1024*1024;
 const byteLength=value=>new TextEncoder().encode(JSON.stringify(value)).byteLength;
 export function summarizeMetrics(entry) {
   const a=entry.fileAnalysis;
@@ -35,8 +36,8 @@ export function calibrationMetadata(profile) {
   return calibration;
 }
 /** Freeze source/analysis once. Large source audio is never base64-expanded here;
- * the transport only expands the next 2 MiB slice. */
-export async function prepareUploadArtifacts(entry,context,{maxAudioBytes=MAX_AUDIO_BYTES,maxAnalysisBytes=MAX_ANALYSIS_BYTES}={}) {
+ * the transport only expands the next 4 MiB slice. */
+export async function prepareUploadArtifacts(entry,context,{maxAudioBytes=MAX_AUDIO_BYTES,maxAnalysisBytes=MAX_ANALYSIS_BYTES,encodeFlac=encodeWavToFlac,legacy=false}={}) {
   if(entry.profileId!==context.student.id)throw new Error('선택한 학생과 기록 소유자가 일치하지 않습니다.');
   if(!(entry.blob instanceof Blob)||!entry.blob.size||!(entry.datasetBlob instanceof Blob)||!entry.fileAnalysis||entry.unsaved||entry.saving)throw new Error('원음·전체 분석·프레임 데이터를 PC에 저장한 뒤 서버에 보관할 수 있습니다.');
   if(entry.blob.size>maxAudioBytes)throw new Error(`원음이 ${maxAudioBytes/1024/1024} MB를 넘습니다. 이 PC에 저장되어 있으며 서버에는 아직 전송되지 않았습니다.`);
@@ -45,27 +46,35 @@ export async function prepareUploadArtifacts(entry,context,{maxAudioBytes=MAX_AU
   const metadata=JSON.parse(JSON.stringify({research:researchSnapshot(entry),format:'touchingvoice-franchise-exam',version:1,createdAt:entry.createdAt,duration:entry.duration,sourceService:'franchise-studio',sourceKind:entry.sourceKind||'recording',sourceSha256:entry.fileAnalysis.source?.sha256||null,analysisVersion:entry.fileAnalysis.analysisVersion||entry.fileAnalysis.version,annotation:entry.annotation||{},personality:entry.examination?.big5||{},examination:entry.examination||{},captureSettings:entry.captureSettings||null,calibration:calibrationMetadata(entry.profile),frameData:{encoding:'float32-le;base64',columns:entry.fileAnalysis.dataset?.columnCount,rows:entry.fileAnalysis.dataset?.rowCount}}));
   if(byteLength(metadata)>16*1024)throw new Error('검사 메타데이터가 서버의 16 KB 한도를 넘었습니다. 전체 결과는 PC에 보관됩니다.');
   // The complete binary frame matrix is preserved exactly; missing values remain IEEE NaN.
-  const {blob,datasetBlob,saving,unsaved,franchiseUpload,driveBackup,...recordFields}=entry;
+  const {blob,datasetBlob,saving,unsaved,franchiseUpload,uploadArtifacts,driveBackup,...recordFields}=entry;
   // Freeze the JSON snapshot before awaiting binary reads; later personal tuning
   // must not change which model produced this archived examination.
   const analysisRecord=JSON.parse(JSON.stringify(recordFields));
-  const full={format:'touchingvoice-franchise-analysis',version:1,branchId:context.branchId,studentId:context.student.id,recordId:entry.id,analysisRecord};
+  const sourceHash=await blobSha256(blob);
+  if(/^[a-f0-9]{64}$/.test(metadata.sourceSha256||'')&&metadata.sourceSha256!==sourceHash)throw new Error('분석한 원음과 저장할 파일이 일치하지 않습니다. 원음을 다시 분석해 주세요.');
+  metadata.sourceSha256=sourceHash;
+  let audioBlob=blob,encoding=null;
+  if(!legacy&&['audio/wav','audio/x-wav'].includes(blob.type.split(';')[0])&&typeof Worker!=='undefined'){
+    try {const result=await encodeFlac(blob);const {blob:encoded,...info}=result;if(encoded.size<blob.size){audioBlob=encoded;encoding=info;}}
+    catch { /* Preserve the original WAV on unsupported input, Worker or WASM failure. */ }
+  }
+  const audioHash=audioBlob===blob?sourceHash:await blobSha256(audioBlob);
+  if(!legacy)metadata.storageAudio={format:audioBlob===blob?'original':'flac',mimeType:audioBlob.type,sha256:audioHash,sourceSha256:sourceHash,lossless:true,...encoding};
+  const full={format:'touchingvoice-franchise-analysis',version:1,branchId:context.branchId,studentId:context.student.id,recordId:entry.id,analysisRecord,storageAudio:metadata.storageAudio};
   const datasetHeader={encoding:'base64',binaryFormat:'float32-le',mimeType:datasetBlob.type,byteLength:datasetBlob.size};
   const analysis=new Blob([JSON.stringify(full).slice(0,-1),',"datasetData":',JSON.stringify(datasetHeader).slice(0,-1),',"data":"',await blobBase64(datasetBlob),'"}}'],{type:'application/json'});
   if(analysis.size>maxAnalysisBytes)throw new Error(`전체 프레임 분석 파일이 ${maxAnalysisBytes/1024/1024} MB를 넘습니다. 원음과 분석은 PC에 보관되며 서버에는 아직 전송되지 않았습니다.`);
-  const mimeType=blob.type.split(';')[0]||'audio/webm';
+  const mimeType=audioBlob.type.split(';')[0]||'audio/webm';
   const extension=({'audio/wav':'wav','audio/x-wav':'wav','audio/mpeg':'mp3','audio/mp4':'m4a','audio/aac':'aac','audio/ogg':'ogg','audio/webm':'webm','audio/flac':'flac'})[mimeType]||'bin';
   const safeId=String(analysisRecord.id).replace(/[^A-Za-z0-9_-]/g,'_');
-  const audioHash=await blobSha256(blob),analysisHash=await blobSha256(analysis);
-  if(/^[a-f0-9]{64}$/.test(metadata.sourceSha256||'')&&metadata.sourceSha256!==audioHash)throw new Error('분석한 원음과 저장할 파일이 일치하지 않습니다. 원음을 다시 분석해 주세요.');
-  metadata.sourceSha256=audioHash;
+  const analysisHash=await blobSha256(analysis);
   if(byteLength(metadata)>16*1024)throw new Error('검사 메타데이터가 서버의 16 KB 한도를 넘었습니다. 전체 결과는 PC에 보관됩니다.');
   return {studentId:context.student.id,recordId:analysisRecord.id,metrics,metadata,
-    audio:{blob,mimeType,name:safeId+'.'+extension,size:blob.size,sha256:audioHash},
+    audio:{blob:audioBlob,mimeType,name:safeId+'.'+extension,size:audioBlob.size,sha256:audioHash},
     analysis:{blob:analysis,mimeType:'application/json',name:safeId+'-analysis.json',size:analysis.size,sha256:analysisHash}};
 }
 export async function legacyUploadPayload(artifacts) {
-  if(artifacts.audio.size>MAX_ARTIFACT_BYTES||artifacts.analysis.size>MAX_ARTIFACT_BYTES)throw new Error('큰 원음은 분할 전송으로 저장해야 합니다.');
+  if(artifacts.audio.size>MAX_ARTIFACT_BYTES||artifacts.analysis.size>MAX_ARTIFACT_BYTES||artifacts.audio.size+artifacts.analysis.size>MAX_ARTIFACT_BYTES)throw new Error('큰 원음은 분할 전송으로 저장해야 합니다.');
   const {studentId,recordId,metrics,metadata,audio,analysis}=artifacts;
   return {studentId,recordId,metrics,metadata,audio:{base64:await blobBase64(audio.blob),mimeType:audio.mimeType,name:audio.name},analysis:{base64:await blobBase64(analysis.blob),mimeType:analysis.mimeType,name:analysis.name}};
 }
