@@ -692,7 +692,7 @@ void checkDriveConnection();
 initPro();renderCards();renderTuning();renderTransport();renderSessions();renderTraining();bindCore();setTab('analyzer');requestAnimationFrame(paint);
 await (async()=>{
   const identityLabel=document.createElement('strong');identityLabel.className='franchise-profile-name';identityLabel.textContent=franchiseContext.student.name;$('profileSelect').after(identityLabel);
-  if(franchiseContext.practice){document.body.classList.add('practice-mode');$('localSaveStatus').textContent='자유 사용 · 기록 안 함';$('saveProfileBtn').textContent='이번 사용에 적용';}
+  if(franchiseContext.practice){document.body.classList.add('practice-mode');$('localSaveStatus').textContent='자유 사용 · 기록 안 함';$('saveProfileBtn').textContent='이번 사용에 적용';document.querySelector('.local-badge').textContent='자유 사용 · 기록 안 함';$('backupTopBtn').textContent='개인 튜닝';document.querySelector('#boothPanel .booth-transport > span')?.replaceChildren(document.createTextNode('WAV 24bit · 48 kHz · 현재 화면에서만 분석'));}
   if(franchiseContext.preview){const notice=document.createElement('p');notice.className='franchise-preview-label';notice.textContent='로컬 시안 · 실제 Drive 전송 없음';document.querySelector('.workspace-label')?.after(notice);}
   profiles=(await store.all('profiles')).filter(p=>p.id===franchiseContext.student.id);
   if(!profiles.length){const first={id:franchiseContext.student.id,profile:copy(profile),refs:{},member:{type:'프랜차이즈 학생'},updatedAt:new Date().toISOString()};await store.put('profiles',first);profiles=[first];}
