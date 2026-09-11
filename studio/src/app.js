@@ -1,5 +1,5 @@
 import {config as franchiseConfig} from '../../config.js';
-import {readProtectedAsset,clearProtectedAssetCache} from '../protected-assets.js';
+import {readProtectedAsset,clearProtectedAssetCache} from '../protected-assets.js?v=storage3d-20260911';
 import { getContext, postParent } from '../context.js';
 const franchiseContext=getContext();
 import { AnatomyView } from './anatomy.js?v=nasal-smooth-20260906';
