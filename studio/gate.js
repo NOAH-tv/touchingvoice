@@ -35,11 +35,12 @@ async function resume(){
     if(closed||suspended||epoch!==resumeEpoch)return;
     document.documentElement.style.visibility='';
     postParent({type:'tv:studio-ready',branchId:selected.branchId,studentId:selected.studentId});
-  }catch(error){if(!closed&&epoch===resumeEpoch){suspended=true;postParent({type:'tv:studio-error',message:error?.message||'코칭 접근 권한을 확인하지 못했습니다.'});}}
+  }catch(error){if(!closed&&epoch===resumeEpoch){suspended=true;await stop();postParent({type:'tv:studio-error',message:error?.message||'코칭 접근 권한을 확인하지 못했습니다.'});}}
 }
 window.addEventListener('message', event => {
   if(!isParentMessage(event))return;
   if(['tv:studio-stop','tv:logout'].includes(event.data?.type))void stop();
+  else if(event.data?.type==='tv:studio-stop-recording'){void appModule?.stopBackgroundRecording?.();}
   else if(event.data?.type==='tv:studio-suspend')void suspend();
   else if(event.data?.type==='tv:studio-resume')void resume();
 });
@@ -99,7 +100,7 @@ try {
   }
   const css=document.createElement('link');css.rel='stylesheet';css.href='./franchise.css';document.head.append(css);
   document.body.replaceChildren(...Array.from(parsed.body.childNodes, node=>document.importNode(node,true)));
-  const app=await import('./src/app.js?v=core-summary-20260910');appModule=app;shutdown=app.shutdownStudio;
+  const app=await import('./src/app.js?v=continuous-recording-20260911');appModule=app;shutdown=app.shutdownStudio;
   if(closed){await shutdown?.();throw new Error('코칭 연결이 종료되었습니다.');}
   if(suspended)await suspend();
   document.documentElement.style.visibility=suspended?'hidden':'';document.title='터칭보이스 · 코칭 스튜디오';
