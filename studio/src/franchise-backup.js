@@ -1,3 +1,4 @@
+import { uploadDirect } from './storage-upload.js';
 import { call } from '../../api.js';
 import { getContext, postParent } from '../context.js';
 import { prepareUploadArtifacts, legacyUploadPayload, blobBase64, blobSha256, MAX_ARTIFACT_BYTES, UPLOAD_CHUNK_BYTES } from '../upload-data.js?v=flac-20260911';
@@ -117,10 +118,14 @@ export class DriveBackupService {
       const requestId=[...new Uint8Array(digest)].map(b=>b.toString(16).padStart(2,'0')).join('').slice(0,40);
       sent=true;
       let result;
-      if(artifacts.audio.size<=MAX_ARTIFACT_BYTES&&artifacts.analysis.size<=MAX_ARTIFACT_BYTES&&artifacts.audio.size+artifacts.analysis.size<=MAX_ARTIFACT_BYTES){
+      if(typeof uploadDirect==='function'&&!c.preview&&artifacts.metadata.storageAudio){
+        try{result=this.verifyResult(await uploadDirect({artifacts,context:c,entry,requestId,request:(action,payload,id)=>this.repeat(()=>this.request(action,payload,c,id,entry)),checkOwner:()=>this.checkOwner(c,entry),progress:patch=>this.progress(entry,patch)}),artifacts);}
+        catch(error){if(error?.code!=='DIRECT_STORAGE_DISABLED')throw error;}
+      }
+      if(!result&&artifacts.audio.size<=MAX_ARTIFACT_BYTES&&artifacts.analysis.size<=MAX_ARTIFACT_BYTES&&artifacts.audio.size+artifacts.analysis.size<=MAX_ARTIFACT_BYTES){
         const payload=await legacyUploadPayload(artifacts);await this.progress(entry,{phase:'uploading',transport:'legacy',totalBytes:artifacts.audio.size+artifacts.analysis.size,sentBytes:0});
         try{result=this.verifyResult(await this.request('exam.upload',payload,c,requestId,entry),artifacts);}catch(error){if(!['ARTIFACT_TOO_LARGE','INVALID_ARTIFACT'].includes(error?.code)||Math.max(artifacts.audio.size,artifacts.analysis.size)<=8*1024*1024)throw error;result=await this.chunkedUpload(artifacts,c,requestId,entry);}
-      }else result=await this.chunkedUpload(artifacts,c,requestId,entry);
+      }else if(!result)result=await this.chunkedUpload(artifacts,c,requestId,entry);
       this.checkOwner(c,entry);
       entry.franchiseUpload={state:'complete',progress:100,examId:result.id,storage:result.storage,completedAt:new Date().toISOString(),artifact:{fileId:result.artifact.fileId,analysisFileId:result.artifact.analysisFileId,size:result.artifact.size,sha256:result.artifact.sha256,analysisSize:result.artifact.analysisSize,analysisSha256:result.artifact.analysisSha256}};
       await this.persist(entry);job.status='complete';

@@ -23,7 +23,7 @@ import { ANALYZER_FIELDS } from './analyzer-metrics.js';
 import { mountParticipantIntake } from './participant-intake.js?v=practice-20260911';
 import { resolveParticipant } from './participant-data.js';
 import { mountMemberHistory } from './member-history.js';
-import { DriveBackupService } from './franchise-backup.js?v=flac-20260911';
+import { DriveBackupService } from './franchise-backup.js?v=direct-20260911';
 import { selectExamProgress } from './examination-workflow.js';
 
 const $ = id => document.getElementById(id);
