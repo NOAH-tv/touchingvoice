@@ -29,7 +29,7 @@ async function resume(){
     const fresh=await call('studio.context',{studentId:selected.studentId},selected.branchId);
     if(closed||suspended||epoch!==resumeEpoch)return;
     if(fresh?.staff?.uid!==user.uid)throw new Error('승인된 강사 계정이 필요합니다.');
-    authorizedStudent({branch:fresh.branch,students:[fresh.student]},selected.studentId,selected.branchId);
+    validateSelection(fresh,selected);
     if(JSON.stringify({staff:fresh.staff,branch:fresh.branch,student:fresh.student})!==JSON.stringify({staff:context.staff,branch:context.branch,student:context.student})){postParent({type:'tv:studio-reload-required'});return;}
     await appModule.resumeStudio?.();
     if(closed||suspended||epoch!==resumeEpoch)return;
@@ -45,16 +45,20 @@ window.addEventListener('message', event => {
   else if(event.data?.type==='tv:studio-resume')void resume();
 });
 window.addEventListener('pagehide', () => { void stop(); });
+function validateSelection(context,selected){
+  if(selected.studentId===''){if(context.mode!=='practice'||context.student!==null||context.branch?.id!==selected.branchId)throw new Error('자유 사용 권한을 확인하지 못했습니다.');return null;}
+  return authorizedStudent({branch:context.branch,students:[context.student]},selected.studentId,selected.branchId);
+}
 async function selection() {
   const params = new URLSearchParams(location.search), branchId=params.get('branchId'),studentId=params.get('studentId');
-  if (branchId && studentId) return {branchId,studentId};
+  if (branchId && params.has('studentId')) return {branchId,studentId};
   if (parent === window) throw new Error('운영 화면에서 학생을 선택한 뒤 코칭을 열어 주세요.');
   return new Promise((resolve,reject) => {
     const timer=setTimeout(()=>{window.removeEventListener('message',listener);reject(new Error('학생 연결 시간이 초과되었습니다. 운영 화면에서 다시 열어 주세요.'));},12000);
     function listener(event) {
       if (!isParentMessage(event) || event.data?.type !== 'tv:studio-context') return;
       const {branchId,studentId}=event.data;
-      if (![branchId,studentId].every(v=>typeof v==='string'&&v.length>0&&v.length<=200)) return;
+      if(typeof branchId!=='string'||!branchId||branchId.length>200||typeof studentId!=='string'||studentId.length>200)return;
       clearTimeout(timer);window.removeEventListener('message',listener);resolve({branchId,studentId});
     }
     window.addEventListener('message',listener);postParent({type:'tv:studio-request-context'});
@@ -77,7 +81,7 @@ async function authenticated() {
 }
 try {
   // Public shell only; protected assets and application execution remain gated.
-  const shellResponse = fetch('./app-shell.html?v=parallel-20260911').then(async response => {
+  const shellResponse = fetch('./app-shell.html?v=practice-20260911').then(async response => {
     if (!response.ok) throw new Error('코칭 화면을 불러오지 못했습니다.');
     return response.text();
   });
@@ -86,10 +90,10 @@ try {
   const [user,selected]=await Promise.all([authenticated(),selection()]);
   const context=await call('studio.context',{studentId:selected.studentId},selected.branchId);
   if (!context?.staff || context.staff.uid!==user.uid) throw new Error('승인된 강사 계정이 필요합니다.');
-  const student=authorizedStudent({branch:context.branch,students:[context.student]},selected.studentId,selected.branchId);
+  const student=validateSelection(context,selected);
   if (closed) throw new Error('코칭 연결이 종료되었습니다.');
   authorizedContext={selected,user,context};
-  establishContext({uid:user.uid,branchId:selected.branchId,student,staff:context.staff,branch:context.branch,preview:config.preview,assetAccess:context.assetAccess});
+  establishContext({uid:user.uid,branchId:selected.branchId,student,staff:context.staff,branch:context.branch,preview:config.preview,assetAccess:context.assetAccess,mode:context.mode});
   // Fetching public code is safe; execute it only after current authorization.
   const parsed=new DOMParser().parseFromString(await shellResponse,'text/html');
   if (closed) throw new Error('코칭 연결이 종료되었습니다.');
@@ -98,13 +102,13 @@ try {
     if(node.tagName==='SCRIPT') {if(document.querySelector('script[type="importmap"]'))continue;const map=document.createElement('script');map.type='importmap';map.textContent=node.textContent;document.head.append(map);}
     else document.head.append(document.importNode(node,true));
   }
-  const css=document.createElement('link');css.rel='stylesheet';css.href='./franchise.css';document.head.append(css);
+  const css=document.createElement('link');css.rel='stylesheet';css.href='./franchise.css?v=practice-20260911';document.head.append(css);
   document.body.replaceChildren(...Array.from(parsed.body.childNodes, node=>document.importNode(node,true)));
-  const app=await import('./src/app.js?v=storage3d-20260911');appModule=app;shutdown=app.shutdownStudio;
+  const app=await import('./src/app.js?v=practice-20260911');appModule=app;shutdown=app.shutdownStudio;
   if(closed){await shutdown?.();throw new Error('코칭 연결이 종료되었습니다.');}
   if(suspended)await suspend();
   document.documentElement.style.visibility=suspended?'hidden':'';document.title='터칭보이스 · 코칭 스튜디오';
-  postParent({type:'tv:studio-ready',branchId:selected.branchId,studentId:student.id});
+  postParent({type:'tv:studio-ready',branchId:selected.branchId,studentId:selected.studentId});
 } catch(error) {
   if(!closed){document.documentElement.style.visibility='';deny(error?.message||'접근 권한을 확인하지 못했습니다.');postParent({type:'tv:studio-error',message:error?.message||'코칭 연결 실패'});}
 }

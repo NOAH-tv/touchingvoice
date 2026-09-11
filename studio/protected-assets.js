@@ -24,7 +24,7 @@ async function storageBytes(access,uid){
 }
 async function fetchStorageVerified(context){
   let access=context.assetAccess;
-  if(Date.parse(access.expiresAt)<Date.now()+15000)access=await call('assets.access',{studentId:context.student.id},context.branchId);
+  if(Date.parse(access.expiresAt)<Date.now()+15000)access=await call('assets.access',{studentId:context.practice?'':context.student.id},context.branchId);
   if(access?.transport!=='firebase-storage'||access.assetId!=='model-vocal-01'||access.bucket!=='touchingvoice-d1b1b.firebasestorage.app'||access.path!=='protected/models/Vocal_01.glb'||access.size!==4631340||access.sha256!=='7fe03334bb3586591166e4701d456ca1d4d783e83c87ca7dc239315ae2add6b2'||!Number.isFinite(Date.parse(access.expiresAt)))throw new Error('3D 접근 권한을 확인하지 못했습니다.');
   const bytes=new Uint8Array(await storageBytes(access,context.uid));
   if(bytes.byteLength!==access.size)throw new Error('3D 모델을 모두 받지 못했습니다. 다시 시도해 주세요.');
