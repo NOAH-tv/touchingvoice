@@ -14,9 +14,9 @@ export async function uploadDirect({artifacts,context,request,requestId,entry,ch
  const tasks=new Set();let lastProgress=0;
  try{await Promise.all(['audio','analysis'].map(async kind=>{
   const artifact=artifacts[kind],target=ref(storage,access.paths[kind]);
-  try{const m=await getMetadata(target);guard();if(m.size!==artifact.size||m.contentType!==artifact.mimeType||m.customMetadata?.uid!==context.uid||m.customMetadata?.sha256!==artifact.sha256)throw new Error('기존 전송 파일과 정보가 다릅니다.');sent[kind]=artifact.size;return;}catch(error){if(error.code!=='storage/object-not-found')throw error;}
+  try{const m=await getMetadata(target);guard();if(m.size!==artifact.size||m.contentType!==artifact.mimeType||m.customMetadata?.uid!==context.uid||m.customMetadata?.sha256!==artifact.sha256)throw new Error('기존 전송 파일과 정보가 다릅니다.');sent[kind]=artifact.size;return;}catch(error){if(error.code!=='storage/object-not-found')throw storageFailure(error);}
   guard();const task=uploadBytesResumable(target,artifact.blob,{contentType:artifact.mimeType,customMetadata:{uid:context.uid,sha256:artifact.sha256,firebaseStorageDownloadTokens:''}});tasks.add(task);
-  await new Promise((resolve,reject)=>{const timer=setInterval(()=>{try{guard();}catch(error){task.cancel();clearInterval(timer);reject(error);}},500);task.on('state_changed',snap=>{sent[kind]=snap.bytesTransferred;if(Date.now()-lastProgress>500){lastProgress=Date.now();void progress({phase:'uploading',sentBytes:sent.audio+sent.analysis,totalBytes,progress:Math.min(95,Math.floor((sent.audio+sent.analysis)/totalBytes*95))}).catch(()=>{});}},error=>{clearInterval(timer);reject(error);},()=>{clearInterval(timer);tasks.delete(task);sent[kind]=artifact.size;resolve();});});
+  await new Promise((resolve,reject)=>{const timer=setInterval(()=>{try{guard();}catch(error){task.cancel();clearInterval(timer);reject(error);}},500);task.on('state_changed',snap=>{sent[kind]=snap.bytesTransferred;if(Date.now()-lastProgress>500){lastProgress=Date.now();void progress({phase:'uploading',sentBytes:sent.audio+sent.analysis,totalBytes,progress:Math.min(95,Math.floor((sent.audio+sent.analysis)/totalBytes*95))}).catch(()=>{});}},error=>{clearInterval(timer);reject(storageFailure(error));},()=>{clearInterval(timer);tasks.delete(task);sent[kind]=artifact.size;resolve();});});
  }));}catch(error){for(const task of tasks)task.cancel();throw error;}
  guard();await progress({phase:'verifying',sentBytes:totalBytes,totalBytes,progress:96});
  for(let attempt=0;attempt<12;attempt++){
@@ -28,3 +28,11 @@ export async function uploadDirect({artifacts,context,request,requestId,entry,ch
  throw new Error('원본 검증을 계속하려면 저장을 다시 시도해 주세요. 전송 파일은 보관되어 있습니다.');
 }
 const descriptor=a=>({name:a.name,mimeType:a.mimeType,size:a.size,sha256:a.sha256});
+
+function storageFailure(error){
+ if(error?.code==='storage/unknown'){
+  let detail='';try{detail=JSON.parse(error.serverResponse||error.customData?.serverResponse||'{}').error?.message||'';}catch(_){}
+  if(detail){error.message='직접 저장소 응답: '+String(detail).replace(/https?:\/\/\S+/g,'[주소]').slice(0,240);}
+ }
+ return error;
+}
