@@ -172,6 +172,10 @@ body::before{content:""; position:fixed; inset:0; pointer-events:none; z-index:0
 .lesson-video .video-slot{margin-top:0}
 /* 열린 주차는 overflow를 풀어야 상단 고정(sticky) 영상이 작동한다 (.week-body는 toggleWeek가 처리) */
 .week.open{overflow:visible}
+.lesson-tabs{display:flex; gap:.4rem; margin:0 0 1rem; border-bottom:1px solid var(--line)}
+.ltab{border:0; background:none; padding:.55rem .85rem; font-size:.9rem; font-weight:700; color:var(--ink-soft); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px}
+.ltab:hover{color:var(--plum)} .ltab.active{color:var(--plum); border-bottom-color:var(--plum)}
+.gyo-wrap{width:100%} .gyo-frame{width:100%; border:0; display:block; background:var(--paper); border-radius:12px; min-height:360px}
 .tvp{border-radius:10px; overflow:hidden; background:#000; box-shadow:0 6px 24px rgba(59,30,110,.18)}
 .tvp-stage{position:relative; width:100%; aspect-ratio:16/9; background:#000}
 .tvp-yt,.tvp-yt iframe{position:absolute; inset:0; width:100%; height:100%; border:0}
@@ -742,8 +746,16 @@ function lessonHtml(prog, wk){
   var refChips = (sc.ref && sc.ref.length)
     ? '<div class="ref-chips"><span class="rc-label">참고문헌</span>'+sc.ref.map(function(n){return '<span class="rc" title="아래 참고문헌 '+n+'번">['+n+']</span>';}).join('')+'</div>'
     : '';
-  return '<div class="lesson"><div class="lesson-video">'+vid+'</div><div class="lesson-meta"><b>수업 목표</b> \u00B7 '+sc.goal+'<br><b>준비물</b> \u00B7 '+sc.materials+refChips+'</div>'+
-    '<div class="timeline">'+tl+'</div>'+blocks+'</div>';
+  var wkNum = parseInt(String(wk.w),10) || 0;
+  var hasGyo = (prog.id==='level2') && wkNum>=1 && wkNum<=16;
+  var scriptInner = '<div class="lesson-meta"><b>수업 목표</b> \u00B7 '+sc.goal+'<br><b>준비물</b> \u00B7 '+sc.materials+refChips+'</div>'+
+    '<div class="timeline">'+tl+'</div>'+blocks;
+  if(!hasGyo) return '<div class="lesson"><div class="lesson-video">'+vid+'</div>'+scriptInner+'</div>';
+  return '<div class="lesson"><div class="lesson-video">'+vid+'</div>'+
+    '<div class="lesson-tabs"><button type="button" class="ltab active" data-lt="script">강의 스크립트</button><button type="button" class="ltab" data-lt="book">📖 교재</button></div>'+
+    '<div class="lpanel" data-lp="script">'+scriptInner+'</div>'+
+    '<div class="lpanel" data-lp="book" hidden><div class="gyo-wrap" data-week="'+wkNum+'"></div></div>'+
+    '</div>';
 }
 /* 주차 열기/닫기 — 열기 애니메이션이 끝나면 overflow를 풀어 상단 고정(sticky) 영상이 작동하게 한다 */
 function toggleWeek(w){
@@ -756,6 +768,25 @@ function toggleWeek(w){
     setTimeout(function(){ if(w.classList.contains('open') && body) body.style.overflow = 'visible'; }, 520);
   }
 }
+document.addEventListener('click', function(e){
+  var t = e.target.closest && e.target.closest('.ltab'); if(!t) return;
+  var lesson = t.closest('.lesson'); if(!lesson) return;
+  var which = t.getAttribute('data-lt');
+  lesson.querySelectorAll('.ltab').forEach(function(b){ b.classList.toggle('active', b===t); });
+  lesson.querySelectorAll('.lpanel').forEach(function(pn){ pn.hidden = (pn.getAttribute('data-lp')!==which); });
+  if(which==='book'){ var wrap = lesson.querySelector('.gyo-wrap');
+    if(wrap && !wrap.dataset.loaded){ wrap.dataset.loaded='1';
+      var ifr=document.createElement('iframe'); ifr.className='gyo-frame';
+      ifr.src='./gyojae-2geup.html?week='+wrap.getAttribute('data-week');
+      ifr.setAttribute('scrolling','no'); ifr.setAttribute('title','교재');
+      wrap.appendChild(ifr);
+    }
+  }
+});
+window.addEventListener('message', function(e){
+  var d=e.data; if(!d || d.type!=='gyojae:height') return;
+  document.querySelectorAll('.gyo-frame').forEach(function(f){ try{ if(f.contentWindow===e.source) f.style.height=(d.height+8)+'px'; }catch(err){} });
+});
 function weekHtml(prog, wk){
   var hasScript = SCRIPTS[prog.id] && SCRIPTS[prog.id][wk.w];
   return '<div class="week"><div class="week-head" onclick="toggleWeek(this.parentElement)">'+
