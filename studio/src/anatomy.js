@@ -468,7 +468,17 @@ export class AnatomyView {
       if (mesh.material.userData.rimIntensity) mesh.material.userData.rimIntensity.value = selected ? (.2 + level * .38 + (this.selectedStructure ? .22 : 0)) : .03;
       mesh.position.y = ({ nas: .5, oro: .12, aes: -.24, src: -.56 }[id]) * this.explodeAmount;
       if (mesh.morphTargetInfluences?.length) {
-        for (let i = 0; i < mesh.morphTargetInfluences.length; i++) mesh.morphTargetInfluences[i] = meta.sharedMembrane ? (/2$/.test(mesh.geometry.morphAttributes.position[i].name) ? this.levels.oro : this.levels.nas) / Math.max(1, this.levels.nas + this.levels.oro) : (meta.sharedMembrane ? (/2$/.test(mesh.geometry.morphAttributes.position[i].name) ? this.levels.oro : this.levels.nas) / Math.max(1, this.levels.nas + this.levels.oro) : (i === meta.targetIndex ? level : 0));
+        // Both display halves share the same authored membrane and must use
+        // identical weights at their shared vertices, including shared normals.
+        if (meta.sharedMembrane) {
+          const total = Math.max(1, this.levels.nas + this.levels.oro);
+          const names = mesh.geometry.morphAttributes.position;
+          for (let i = 0; i < mesh.morphTargetInfluences.length; i++) {
+            mesh.morphTargetInfluences[i] = (/2$/.test(names[i].name) ? this.levels.oro : this.levels.nas) / total;
+          }
+        } else {
+          for (let i = 0; i < mesh.morphTargetInfluences.length; i++) mesh.morphTargetInfluences[i] = i === meta.targetIndex ? level : 0;
+        }
       }
     }
     if (this.focusTransition && this.camera && this.controls?.target) {
