@@ -129,7 +129,7 @@ async function establishSession() {
     $('#branchSelect').innerHTML = session.branches.map(branch => `<option value="${e(branch.id)}">${e(branch.name)}</option>`).join(''); $('#branchSelect').value = S.branchId;
     $('#staffName').textContent = session.staff.name || session.staff.email; $('#staffRole').textContent = roles[session.staff.role] || '승인된 구성원'; $('#staffAvatar').textContent = (session.staff.name || session.staff.email || 'T').slice(0, 1);
     $('#previewNotice').hidden = !preview; $('#previewRole').value = session.staff.role; S.data = boot.dashboard; S.hq = boot.hq; $('#lastSynced').title = `초기 데이터 연결 ${((Date.now() - startedAt) / 1000).toFixed(2)}초`; $('#portal').inert = false; showScreen('portal'); $('#lastSynced').textContent = `${time(Date.now())} 서버에서 동기화`; renderNav(); render(); window.dispatchEvent(new CustomEvent('tv:session', { detail: session }));
-    if (!preview && owner() && S.session === session && S.data) { navigate('studio', { openStudio: false }); $('#studioStudent').value = ''; }
+    if (!preview && owner() && S.session === session && S.data) { navigate('studio'); }
   } catch (error) {
     if (epoch !== S.requestEpoch) return;
     clearBootCache(); S.session = null; S.data = null; S.hq = null; $('#mainContent').replaceChildren(); $('#portal').inert = false; $('#pendingEmail').textContent = S.user?.email || '로그인된 계정'; $('#pendingMessage').textContent = errorMessage(error); showScreen('pendingScreen'); loadBranchApplications();
@@ -173,7 +173,7 @@ function navigate(page, { openStudio = true } = {}) {
   window.dispatchEvent(new CustomEvent('tv:navigate', { detail: { page: S.page, branchId: S.branchId } }));
   if (S.page === 'studio') {
     $('#studioStudent').focus({ preventScroll: true });
-    if (openStudio && $('#studioStudent').value) void launchStudio($('#studioStudent').value).catch(error => toast(errorMessage(error), true));
+    if (openStudio) void launchStudio($('#studioStudent').value).catch(error => toast(errorMessage(error), true));
   } else { $('#mainContent').focus({ preventScroll: true }); requestAnimationFrame(() => window.scrollTo({ top: scrollY, behavior: 'instant' })); }
 }
 function render() {
@@ -404,8 +404,8 @@ function renderSettings() {
 function renderStudio() {
   const available = students().filter(student => student.active !== false && student.consent?.service === true && student.consent?.voice === true);
   const previous = $('#studioStudent').value;
-  const selected = available.some(student => student.id === previous) ? previous : available.length === 1 ? available[0].id : '';
-  $('#studioStudent').innerHTML = studentOptions(selected); $('#studioStudent').value = selected;
+  const selected = available.some(student => student.id === previous) ? previous : '';
+  $('#studioStudent').innerHTML = studentOptions(selected); $('#studioStudent').innerHTML=$('#studioStudent').innerHTML.replace(/(<option value=""[^>]*>)[^<]*/, '$1자유 사용 · 기록 안 함'); $('#studioStudent').value = selected;
   $('#studioBack').textContent = '← 운영 화면으로'; $('#studioStudent').setAttribute('aria-label', '코칭할 학생 선택');
   $('#studioLaunch').textContent = '스튜디오 열기';
   if (!$('#studioNewStudent')) {
@@ -414,20 +414,20 @@ function renderStudio() {
     $('#studioBack').after(add);
   }
   if (!$('#studioMount iframe')) {
-    $('#studioLaunch').hidden = !available.length;
-    $('#studioMount').innerHTML = `<div class="empty-state"><h2>코칭 스튜디오</h2><p>${available.length ? '검사할 학생을 선택해 주세요.' : '학생을 등록하고 첫 음성 검사를 시작하세요.'}</p><small>3D 발성체크 · 음성 검사 · 훈련 · 누적 기록</small><p>${button('새 학생 등록', 'student-new', '', 'primary')}${button('학생 정보 확인', 'studio-members', '', 'secondary')}</p></div>`;
+    $('#studioLaunch').hidden = false;
+    $('#studioMount').innerHTML = `<div class="empty-state"><h2>코칭 스튜디오</h2><p>학생 없이 바로 사용할 수 있습니다. 학생을 선택하면 기록이 저장됩니다.</p><small>3D 발성체크 · 음성 검사 · 훈련 · 누적 기록</small><p>${button('새 학생 등록', 'student-new', '', 'primary')}${button('학생 정보 확인', 'studio-members', '', 'secondary')}</p></div>`;
   }
 }
 async function launchStudio(studentId, { reload = false } = {}) {
-  const student = studentBy(studentId); if (!student) return toast('먼저 검사할 학생을 선택해 주세요.', true);
-  if (student.active === false || student.consent?.service !== true || student.consent?.voice !== true) return toast('활성 학생의 개인정보·음성 녹음 동의를 먼저 확인해 주세요.', true);
+  const student = studentId ? studentBy(studentId) : null; if (studentId && !student) return toast('접근할 수 없는 학생입니다.', true);
+  if (student && (student.active === false || student.consent?.service !== true || student.consent?.voice !== true)) return toast('활성 학생의 개인정보·음성 녹음 동의를 먼저 확인해 주세요.', true);
   if (S.page !== 'studio') {
     saveView(); const returnTo = { page: S.page, branchId: S.branchId, studentId, showDetail: $('#modal').open, hqStudent: S.modalRoute?.type === 'hq-student', views: structuredClone(S.pageState) };
-    closeModal(); if (student.branchId && student.branchId !== S.branchId) await changeBranch(student.branchId);
+    closeModal(); if (student?.branchId && student.branchId !== S.branchId) await changeBranch(student.branchId);
     S.studioReturn = returnTo;
   }
-  navigate('studio', { openStudio: false }); $('#studioStudent').value = student.id;
-  window.dispatchEvent(new CustomEvent('tv:open-studio', { detail: { student, branchId: student.branchId || S.branchId, reload } }));
+  navigate('studio', { openStudio: false }); $('#studioStudent').value = student?.id || '';
+  window.dispatchEvent(new CustomEvent('tv:open-studio', { detail: { student, branchId: student?.branchId || S.branchId, reload } }));
 }
 async function returnFromStudio() {
   const previous = S.studioReturn; if (!previous) return navigate('today');
@@ -746,7 +746,7 @@ document.querySelectorAll('[data-pending-mode]').forEach(button => button.addEve
 $('#previewApplicant').addEventListener('click', async () => { if (!preview) return; setPendingMode('branch'); const { setPreviewRole } = await import('./auth.js?v=parallel-20260911'); await setPreviewRole('applicant'); });
 $('#pendingPreviewBack').addEventListener('click', async () => { if (!preview) return; const { setPreviewRole } = await import('./auth.js?v=parallel-20260911'); await setPreviewRole('owner'); });
 $('#studioLaunch').addEventListener('click', () => launchStudio($('#studioStudent').value, { reload: true }).catch(error => toast(errorMessage(error), true)));
-window.addEventListener('tv:studio-select', event => { if (event.detail?.studentId) void launchStudio(event.detail.studentId).catch(error => toast(errorMessage(error), true)); });
+window.addEventListener('tv:studio-select', event => { void launchStudio(event.detail?.studentId || '').catch(error => toast(errorMessage(error), true)); });
 window.addEventListener('tv:data-refresh', () => { if (S.session) refresh({ quiet: true }); });
 $('#mainContent').addEventListener('dragstart', handleCalendarDragStart);
 $('#mainContent').addEventListener('dragover', handleCalendarDragOver);

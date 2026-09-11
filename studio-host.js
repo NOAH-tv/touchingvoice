@@ -28,8 +28,8 @@ function recordingNotice(){
     notice.append(label,stop);document.body.append(notice);
   }
   notice.hidden=!recording;notice.style.display=recording?'flex':'none';
-  notice.firstChild.textContent='● '+(context?.student?.name||'현재 학생')+' · 녹음 중';
-  notice.lastChild.disabled=false;
+  notice.firstChild.textContent='● '+(context?.student?.name||'자유 사용 · 기록 안 함')+' · 녹음 중';
+  notice.lastChild.textContent=context?.student?'녹음 종료 · 저장':'녹음 종료 · 분석';notice.lastChild.disabled=false;
 }
 function dispose(){
   clearTimeout(loadTimer);setExpanded(false);
@@ -43,18 +43,19 @@ function suspend(){
 }
 function watchLoading(){clearTimeout(loadTimer);loadTimer=setTimeout(()=>{if(waiting&&!suspended)showStatus('연결이 지연되고 있습니다. 잠시 기다리거나 다시 연결해 주세요.',false);},20000);}
 function openStudio(student,branchId,{reload=false}={}){
-  if(!student?.id||!branchId||student.branchId!==branchId||student.active===false||student.consent?.service!==true||student.consent?.voice!==true)return;
+  if(!branchId||student&&(!student.id||student.branchId!==branchId||student.active===false||student.consent?.service!==true||student.consent?.voice!==true))return;
+  const studentId=student?.id||'';
   const mount=document.querySelector('#studioMount');if(!mount)return;
   setWorkspace(true);
-  if(!reload&&frame&&context?.studentId===student.id&&context.branchId===branchId){
+  if(!reload&&frame&&context?.studentId===studentId&&context.branchId===branchId){
     if(suspended){suspended=false;waiting=true;showStatus('코칭 워크스페이스를 다시 연결하고 있습니다.');frame.contentWindow?.postMessage({type:'tv:studio-resume'},location.origin);watchLoading();}
     return;
   }
   dispose();mount.replaceChildren();
-  context={branchId,studentId:student.id,student};waiting=true;
+  context={branchId,studentId,student};waiting=true;
   // The child gate and every server action validate the signed-in instructor independently.
   // Do not repeat the full dashboard download before the child can start loading.
-  const url=new URL(config.studioUrl,location.href);url.searchParams.set('branchId',branchId);url.searchParams.set('studentId',student.id);
+  const url=new URL(config.studioUrl,location.href);url.searchParams.set('branchId',branchId);url.searchParams.set('studentId',studentId);
   frame=document.createElement('iframe');frame.title='선택 학생의 3D 발성 체크와 음성 검사';frame.src=url.href;frame.allow='microphone; camera; autoplay; fullscreen';frame.allowFullscreen=true;frame.className='coaching-workspace-frame';
   mount.append(frame);showStatus('코칭 워크스페이스를 준비하고 있습니다.');watchLoading();
 }
