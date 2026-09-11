@@ -1,4 +1,5 @@
 import {config} from './api.js';
+let recording=false;
 let frame,context,expanded=false,returnScroll=null,suspended=false,waiting=false,loadTimer;
 const view=()=>document.querySelector('#studioView');
 function setWorkspace(next){document.body.classList.toggle('studio-workspace-active',next===true);}
@@ -16,10 +17,24 @@ function setExpanded(next){
   expanded=next;document.body.classList.toggle('studio-game-expanded',next);
   if(!next&&returnScroll){window.scrollTo({...returnScroll,behavior:'instant'});returnScroll=null;}
 }
+function recordingNotice(){
+  let notice=document.querySelector('#backgroundRecordingNotice');
+  if(!notice&&!recording)return;
+  if(!notice){
+    notice=document.createElement('div');notice.id='backgroundRecordingNotice';notice.setAttribute('role','status');
+    notice.style.cssText='position:fixed;bottom:24px;right:24px;z-index:9999;background:#251439;color:#fff;border:1px solid #b07add;border-radius:14px;padding:16px;box-shadow:0 8px 30px #0006;display:flex;gap:16px;align-items:center';
+    const label=document.createElement('span'),stop=document.createElement('button');stop.className='button primary';stop.textContent='녹음 종료 · 저장';
+    stop.onclick=()=>{stop.disabled=true;frame?.contentWindow?.postMessage({type:'tv:studio-stop-recording'},location.origin);};
+    notice.append(label,stop);document.body.append(notice);
+  }
+  notice.hidden=!recording;notice.style.display=recording?'flex':'none';
+  notice.firstChild.textContent='● '+(context?.student?.name||'현재 학생')+' · 녹음 중';
+  notice.lastChild.disabled=false;
+}
 function dispose(){
   clearTimeout(loadTimer);setExpanded(false);
   if(frame){frame.contentWindow?.postMessage({type:'tv:studio-stop'},location.origin);frame.remove();frame=null;}
-  context=null;suspended=false;waiting=false;
+  context=null;suspended=false;waiting=false;recording=false;recordingNotice();
 }
 function closeWorkspace(){dispose();setWorkspace(false);}
 function suspend(){
@@ -54,6 +69,7 @@ window.addEventListener('tv:open-studio',event=>{
 });
 window.addEventListener('message',event=>{
   if(event.origin!==location.origin||event.source!==frame?.contentWindow||!context)return;
+  if(event.data?.type==='tv:recording-state'&&event.data.branchId===context.branchId&&event.data.studentId===context.studentId){recording=event.data.recording===true;recordingNotice();}
   if(event.data?.type==='tv:studio-ready'&&event.data.branchId===context.branchId&&event.data.studentId===context.studentId){waiting=false;clearTimeout(loadTimer);showStatus('',false);if(suspended)frame.contentWindow?.postMessage({type:'tv:studio-suspend'},location.origin);}
   if(event.data?.type==='tv:studio-error'){waiting=false;clearTimeout(loadTimer);showStatus(event.data.message||'코칭 연결을 확인해 주세요.',false);}
   if(event.data?.type==='tv:studio-reload-required'&&!suspended)openStudio(context.student,context.branchId,{reload:true});
