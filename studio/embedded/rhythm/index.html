@@ -1074,7 +1074,7 @@ async function initCatalog(){
   await hostBridge.waitForProfile();
   let tracks;
   try{
-    const response=await fetch(TRACK_ROOT+'tracks-manifest.json',{cache:'no-store'});if(!response.ok)throw new Error('manifest');
+    const response=await fetch(TRACK_ROOT+'tracks-manifest.json',{cache:'no-cache'});if(!response.ok)throw new Error('manifest');
     const manifest=await response.json();if(!Array.isArray(manifest.tracks)||!manifest.tracks.length)throw new Error('empty manifest');
     tracks=manifest.tracks.map(item=>{const meta=FALLBACK_TRACKS.find(x=>x.id===item.id)||{};return Object.assign({},meta,item,{source:'url',base:manifest.base||TRACK_BASE})});state.catalogName='트랙테스트 · 자동 연결';
   }catch(error){tracks=FALLBACK_TRACKS.map(item=>Object.assign({},item,{source:'url',base:TRACK_BASE}));state.catalogName=location.protocol==='file:'?'내장 목록 · 폴더 연결 필요':'내장 목록'}
@@ -1116,7 +1116,7 @@ async function getArrayBuffer(track,kind,file){
 }
 async function getTrackInfo(track){
   if(track.source==='file'){if(!track.infoFile)return {};try{return JSON.parse(await track.infoFile.text())}catch(e){return {}}}
-  try{const response=await fetch(trackFileUrl(track,track.info||'트랙정보.json'),{cache:'no-store'});return response.ok?await response.json():{}}catch(e){return {}}
+  try{const response=await fetch(trackFileUrl(track,track.info||'트랙정보.json'),{cache:'no-cache'});return response.ok?await response.json():{}}catch(e){return {}}
 }
 function setLoadState(type,label){$('loadLabel').textContent=label;$('loadLine').className='load-line '+type}
 const decodedTracks=new Map(),preparingTracks=new Map();
@@ -1157,6 +1157,21 @@ function prepareTrack(track,progress){
   if(key)preparingTracks.set(key,tracked);
   return tracked;
 }
+// Warm only the next visible track's compressed bytes; never decode an entire
+// catalogue or persist private audio. Host cache remains bounded and scoped.
+let nextTrackWarmTimer;
+function warmNextTrack(track){
+  clearTimeout(nextTrackWarmTimer);
+  const epoch=trackCacheEpoch;
+  nextTrackWarmTimer=setTimeout(()=>{
+    if(epoch!==trackCacheEpoch||document.hidden||!hostBridge.authorized)return;
+    const visible=state.catalog.filter(t=>state.filter==='all'||t.category===state.filter);
+    const next=visible[visible.indexOf(track)+1];
+    if(!next||next.source==='file')return;
+    const audio=Array.isArray(next.audio)?next.audio:[next.audio];
+    Promise.all([getArrayBuffer(next,'midi',next.midi),...audio.map(name=>getArrayBuffer(next,'audio',name))]).catch(()=>{});
+  },250);
+}
 async function selectTrack(track){
   if(state.session||state.starting)return;stopChallengeCamera(true);state.selected=track;state.asset=null;refreshChallengeUI();renderCatalog();updateSelectedCard(track);const token=++state.loadToken;setStartReady(false);
   const progress=label=>{if(token===state.loadToken){setLoadState('loading',label);$('startLabel').textContent=label;$('startButton').setAttribute('aria-busy','true');}};
@@ -1165,7 +1180,7 @@ async function selectTrack(track){
     const actual=await prepareTrack(track,progress);
     if(token!==state.loadToken)return;
     state.asset=actual;track.name=actual.name;track.description=actual.description||track.description;track.bpm=actual.bpm;track.noteCount=actual.notes.length;track.range=actual.range;track.duration=actual.duration;
-    updateSelectedCard(track,actual);renderCatalog();setLoadState('ready','플레이 준비 완료 · '+actual.notes.length+' 노트');$('loadLabel').title='실제 MIDI '+actual.notes.length+'개 · 오디오 '+fmtTime(actual.duration)+' 연결 완료';setStartReady(true);
+    updateSelectedCard(track,actual);renderCatalog();setLoadState('ready','플레이 준비 완료 · '+actual.notes.length+' 노트');$('loadLabel').title='실제 MIDI '+actual.notes.length+'개 · 오디오 '+fmtTime(actual.duration)+' 연결 완료';setStartReady(true);warmNextTrack(track);
   }catch(error){if(token!==state.loadToken)return;console.error(error);setLoadState('error',location.protocol==='file:'?'폴더 연결 버튼을 눌러 주세요':(error?.message||'트랙 연결 실패')+' · 곡을 다시 눌러 재시도하세요');setStartReady(false);$('startLabel').textContent='곡을 다시 선택해 주세요';$('sourceLabel').textContent='트랙 연결 재시도 필요';}
   finally{if(token===state.loadToken)$('startButton').removeAttribute('aria-busy');}
 }
