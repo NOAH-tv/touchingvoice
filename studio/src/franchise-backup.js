@@ -1,6 +1,6 @@
 import { call } from '../../api.js';
 import { getContext, postParent } from '../context.js';
-import { prepareUploadArtifacts, legacyUploadPayload, blobBase64, blobSha256, MAX_ARTIFACT_BYTES, UPLOAD_CHUNK_BYTES } from '../upload-data.js?v=pcm-upload-20260910';
+import { prepareUploadArtifacts, legacyUploadPayload, blobBase64, blobSha256, MAX_ARTIFACT_BYTES, UPLOAD_CHUNK_BYTES } from '../upload-data.js?v=flac-20260911';
 const retryableCodes=new Set(['RESULT_UNCERTAIN','CONNECTION_FAILED','HTTP_ERROR','BUSY','UPLOAD_BUSY','UPLOAD_CHECKSUM_PENDING','UPLOAD_VERIFICATION_PENDING','ARTIFACT_CHECKSUM_PENDING','EXAM_UPLOAD_INCOMPLETE','ANALYSIS_SHEET_PENDING','CHECKSUM_PENDING','UPLOAD_RETRY','UPLOAD_RESPONSE','UPLOAD_OFFSET']);
 const sameOwner=(a,b)=>a.uid===b.uid&&a.branchId===b.branchId&&a.student?.id===b.student?.id;
 const uploadError=(code,message)=>Object.assign(new Error(message),{code});
@@ -25,16 +25,17 @@ export class DriveBackupService {
     const manifest={studentId:artifacts.studentId,recordId:artifacts.recordId,metrics:artifacts.metrics,metadata:artifacts.metadata,audio:descriptor(artifacts.audio),analysis:descriptor(artifacts.analysis)};
     let state=await this.repeat(()=>this.request('exam.upload.begin',manifest,context,requestId+'-begin',entry));
     if(state?.complete&&typeof state.complete==='object')return this.verifyResult(state.complete,artifacts);
-    if(typeof state?.uploadId!=='string'||!state.uploadId||state.uploadId.length>200||state.chunkBytes!==UPLOAD_CHUNK_BYTES)throw uploadError('UPLOAD_PROTOCOL','서버 분할 전송 설정을 확인하지 못했습니다.');
-    const uploadId=state.uploadId,totalBytes=artifacts.audio.size+artifacts.analysis.size;
+    if(typeof state?.uploadId!=='string'||!state.uploadId||state.uploadId.length>200||![2*1024*1024,UPLOAD_CHUNK_BYTES].includes(state.chunkBytes))throw uploadError('UPLOAD_PROTOCOL','서버 분할 전송 설정을 확인하지 못했습니다.');
+    const chunkBytes=state.chunkBytes,uploadId=state.uploadId,totalBytes=artifacts.audio.size+artifacts.analysis.size;
     const checkedOffset=(value,kind)=>{const offset=value?.[kind]?.offset,size=value?.[kind]?.size;if(!Number.isInteger(offset)||offset<0||offset>artifacts[kind].size||size!==artifacts[kind].size)throw uploadError('UPLOAD_PROTOCOL','서버 전송 위치를 확인하지 못했습니다.');return offset;};
     const offsets={audio:checkedOffset(state,'audio'),analysis:checkedOffset(state,'analysis')};
     await this.progress(entry,{uploadId,transport:'chunked',totalBytes,sentBytes:offsets.audio+offsets.analysis,progress:Math.floor((offsets.audio+offsets.analysis)/totalBytes*100)});
+    if(state.parallelFiles===2)return this.parallelUpload(artifacts,context,requestId,entry,uploadId,offsets,chunkBytes,totalBytes,checkedOffset);
     for(const kind of ['audio','analysis']){
       const artifact=artifacts[kind];let stalled=0;
       while(offsets[kind]<artifact.size){
         this.checkOwner(context,entry);
-        const start=offsets[kind],chunk=artifact.blob.slice(start,Math.min(start+UPLOAD_CHUNK_BYTES,artifact.size));
+        const start=offsets[kind],chunk=artifact.blob.slice(start,Math.min(start+chunkBytes,artifact.size));
         const base64=await blobBase64(chunk),sha256=await blobSha256(chunk);
         this.checkOwner(context,entry);
         let next;
@@ -62,6 +63,25 @@ export class DriveBackupService {
     const result=await this.repeat(()=>this.request('exam.upload.complete',{uploadId},context,requestId+'-complete',entry));
     return this.verifyResult(result,artifacts);
   }
+  async parallelUpload(artifacts,context,requestId,entry,uploadId,offsets,chunkBytes,totalBytes,checkedOffset){
+    let stalled=0;
+    while(offsets.audio<artifacts.audio.size||offsets.analysis<artifacts.analysis.size){
+      this.checkOwner(context,entry);
+      const before=offsets.audio+offsets.analysis;
+      const chunks=await Promise.all(['audio','analysis'].filter(kind=>offsets[kind]<artifacts[kind].size).map(async kind=>{const offset=offsets[kind],blob=artifacts[kind].blob.slice(offset,Math.min(offset+chunkBytes,artifacts[kind].size));return {kind,offset,base64:await blobBase64(blob),sha256:await blobSha256(blob)};}));
+      let state;
+      try{state=await this.request('exam.upload.chunks',{uploadId,chunks},context,`${requestId}-batch-${before}`,entry);}
+      catch(error){if(!retryableCodes.has(error?.code))throw error;state=await this.repeat(()=>this.request('exam.upload.status',{uploadId},context,`${requestId}-batch-status-${before}`,entry));}
+      if(state?.complete&&typeof state.complete==='object')return this.verifyResult(state.complete,artifacts);
+      if(state?.uploadId!==uploadId)throw uploadError('UPLOAD_PROTOCOL','전송 번호가 일치하지 않습니다.');
+      for(const kind of ['audio','analysis'])offsets[kind]=checkedOffset(state,kind);
+      const sentBytes=offsets.audio+offsets.analysis;
+      if(sentBytes===before){if(++stalled>2)throw uploadError('RESULT_UNCERTAIN','전송 확인이 지연됩니다. 저장된 파일로 다시 이어서 보낼 수 있습니다.');await this.pause(stalled);}else stalled=0;
+      await this.progress(entry,{phase:'uploading',sentBytes,totalBytes,progress:Math.min(99,Math.floor(sentBytes/totalBytes*100))});
+    }
+    await this.progress(entry,{phase:'verifying',progress:99});
+    return this.verifyResult(await this.repeat(()=>this.request('exam.upload.complete',{uploadId},context,requestId+'-complete',entry)),artifacts);
+  }
   get active(){return this.jobs.some(j=>j.status==='uploading');}
   async status(){return {configured:true,reachable:true,manual:false};}
   async enqueue(entry){
@@ -82,20 +102,23 @@ export class DriveBackupService {
     if(this.active)throw new Error('진행 중인 서버 저장을 마친 뒤 다시 시도해 주세요.');
     if(entry.franchiseUpload?.state==='complete')return entry;
     const job={id:entry.id,status:'uploading'};this.jobs.push(job);
+    const legacy=!!entry.franchiseUpload&&!entry.uploadArtifacts;
     entry.franchiseUpload={state:'uploading',phase:'preparing',progress:0,startedAt:new Date().toISOString()};this.onChange();
     let sent=false;
     try {
       this.checkOwner(c,entry);
-      const artifacts=await(this.prepareArtifacts||prepareUploadArtifacts)(entry,c);
+      let artifacts=entry.uploadArtifacts;
+      if(artifacts){if(artifacts.ownerUid!==c.uid||artifacts.branchId!==c.branchId||artifacts.studentId!==c.student.id||artifacts.recordId!==entry.id)throw uploadError('UPLOAD_OWNER_CHANGED','기존 전송의 소유자를 확인해 주세요.');}
+      else {artifacts=await(this.prepareArtifacts||prepareUploadArtifacts)(entry,c,{legacy});artifacts.ownerUid=c.uid;artifacts.branchId=c.branchId;entry.uploadArtifacts=artifacts;}
       this.checkOwner(c,entry);
       await this.persist(entry);
       const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify([c.uid,c.branchId,c.student.id,entry.id])));
       const requestId=[...new Uint8Array(digest)].map(b=>b.toString(16).padStart(2,'0')).join('').slice(0,40);
       sent=true;
       let result;
-      if(artifacts.audio.size<=MAX_ARTIFACT_BYTES&&artifacts.analysis.size<=MAX_ARTIFACT_BYTES){
+      if(artifacts.audio.size<=MAX_ARTIFACT_BYTES&&artifacts.analysis.size<=MAX_ARTIFACT_BYTES&&artifacts.audio.size+artifacts.analysis.size<=MAX_ARTIFACT_BYTES){
         const payload=await legacyUploadPayload(artifacts);await this.progress(entry,{phase:'uploading',transport:'legacy',totalBytes:artifacts.audio.size+artifacts.analysis.size,sentBytes:0});
-        result=this.verifyResult(await this.request('exam.upload',payload,c,requestId,entry),artifacts);
+        try{result=this.verifyResult(await this.request('exam.upload',payload,c,requestId,entry),artifacts);}catch(error){if(!['ARTIFACT_TOO_LARGE','INVALID_ARTIFACT'].includes(error?.code)||Math.max(artifacts.audio.size,artifacts.analysis.size)<=8*1024*1024)throw error;result=await this.chunkedUpload(artifacts,c,requestId,entry);}
       }else result=await this.chunkedUpload(artifacts,c,requestId,entry);
       this.checkOwner(c,entry);
       entry.franchiseUpload={state:'complete',progress:100,examId:result.id,storage:result.storage,completedAt:new Date().toISOString(),artifact:{fileId:result.artifact.fileId,analysisFileId:result.artifact.analysisFileId,size:result.artifact.size,sha256:result.artifact.sha256,analysisSize:result.artifact.analysisSize,analysisSha256:result.artifact.analysisSha256}};

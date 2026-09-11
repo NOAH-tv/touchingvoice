@@ -23,7 +23,7 @@ import { ANALYZER_FIELDS } from './analyzer-metrics.js';
 import { mountParticipantIntake } from './participant-intake.js?v=practice-20260911';
 import { resolveParticipant } from './participant-data.js';
 import { mountMemberHistory } from './member-history.js';
-import { DriveBackupService } from './franchise-backup.js?v=practice-20260911';
+import { DriveBackupService } from './franchise-backup.js?v=flac-20260911';
 import { selectExamProgress } from './examination-workflow.js';
 
 const $ = id => document.getElementById(id);
@@ -687,7 +687,8 @@ fileAnalysisView=mountFileAnalysisView({getProfileId:()=>profileId,getSessions:(
 window.addEventListener('resize',()=>{if(tab==='analyzer')fileAnalysisView?.paint();if(tab==='sessions')memberHistory?.resize();});
 participantIntake=mountParticipantIntake({container:$('participantIntake'),getProfiles:()=>profiles,getProfileId:()=>profileId,getSessions:()=>sessions,isLocked:()=>sessionLocked()||busy,isRecording:()=>audioState.recording,commit:commitParticipant,onRecord:startAnalyzerRecording,onChooseFiles:()=>fileAnalysisView?.chooseFiles(),onHistory:async ownerId=>{if(sessionLocked()||busy)throw new Error('진행 중인 검사를 마친 뒤 차트를 열어 주세요.');if(ownerId!==profileId)await changeProfile(ownerId);if(profileId!==ownerId)return;setTab('sessions');requestAnimationFrame(()=>memberHistory?.resize());},onNewParticipant:()=>{fileAnalysisView?.clearSelection();renderExamWorkflow();},onDraftChange:()=>{fileAnalysisView?.clearSelection();renderExamWorkflow();},onError:error=>toast(error.message,true)});
 memberHistory=mountMemberHistory({container:$('memberHistory'),getProfileId:()=>profileId,getSessions:()=>sessions,onOpenRecord:entry=>{setTab('analyzer');fileAnalysisView?.select(entry);}});
-driveBackup=new DriveBackupService({persist:entry=>store.patch('sessions',entry.id,{franchiseUpload:entry.franchiseUpload},{profileId:entry.profileId}),onChange:()=>{renderSessions();renderDriveStatus();}});
+driveBackup=new DriveBackupService({persist:entry=>store.patch('sessions',entry.id,{franchiseUpload:entry.franchiseUpload,uploadArtifacts:entry.uploadArtifacts},{profileId:entry.profileId}),onChange:()=>{renderSessions();renderDriveStatus();}});
+window.addEventListener('online',()=>{if(franchiseContext.practice)return;for(const s of sessions)if(s.uploadArtifacts&&s.franchiseUpload?.state!=='complete')void driveBackup.enqueue(s).catch(e=>toast(e.message,true));});
 void checkDriveConnection();
 initPro();renderCards();renderTuning();renderTransport();renderSessions();renderTraining();bindCore();setTab('analyzer');requestAnimationFrame(paint);
 await (async()=>{
@@ -700,6 +701,7 @@ await (async()=>{
   sessions=(await store.all('sessions')).filter(s=>s.profileId===profileId).sort((a,b)=>b.createdAt.localeCompare(a.createdAt));
   renderProfileSelect();renderTuning();renderSessions();renderTraining();
   if(entry.calibrationAssessment?.testedRange){$('scalePattern').value='five-ascending';$('scaleRoot').value=String(Math.max(36,Math.min(76,Math.round(entry.calibrationAssessment.testedRange.minMidi))));}
+  if(!franchiseContext.practice)for(const s of sessions)if(s.uploadArtifacts&&s.franchiseUpload?.state!=='complete')void driveBackup.enqueue(s).catch(e=>toast(e.message,true));
   for(const s of sessions)if(s.blob?.size&&['queued','decoding','analyzing','saving'].includes(s.analysisStatus))queueFullAnalysis(s);
 })();
 export async function suspendStudio(){
