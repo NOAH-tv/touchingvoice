@@ -15,7 +15,7 @@ export async function uploadDirect({artifacts,context,request,requestId,entry,ch
  try{await Promise.all(['audio','analysis'].map(async kind=>{
   const artifact=artifacts[kind],target=ref(storage,access.paths[kind]);
   try{const m=await getMetadata(target);guard();if(m.size!==artifact.size||m.contentType!==artifact.mimeType||m.customMetadata?.uid!==context.uid||m.customMetadata?.sha256!==artifact.sha256)throw new Error('기존 전송 파일과 정보가 다릅니다.');sent[kind]=artifact.size;return;}catch(error){if(error.code!=='storage/object-not-found')throw storageFailure(error);}
-  guard();const task=uploadBytesResumable(target,artifact.blob,{contentType:artifact.mimeType,customMetadata:{uid:context.uid,sha256:artifact.sha256,firebaseStorageDownloadTokens:''}});tasks.add(task);
+  guard();const task=uploadBytesResumable(target,artifact.blob,{contentType:artifact.mimeType,customMetadata:{uid:context.uid,sha256:artifact.sha256}});tasks.add(task);
   await new Promise((resolve,reject)=>{const timer=setInterval(()=>{try{guard();}catch(error){task.cancel();clearInterval(timer);reject(error);}},500);task.on('state_changed',snap=>{sent[kind]=snap.bytesTransferred;if(Date.now()-lastProgress>500){lastProgress=Date.now();void progress({phase:'uploading',sentBytes:sent.audio+sent.analysis,totalBytes,progress:Math.min(95,Math.floor((sent.audio+sent.analysis)/totalBytes*95))}).catch(()=>{});}},error=>{clearInterval(timer);reject(storageFailure(error));},()=>{clearInterval(timer);tasks.delete(task);sent[kind]=artifact.size;resolve();});});
  }));}catch(error){for(const task of tasks)task.cancel();throw error;}
  guard();await progress({phase:'verifying',sentBytes:totalBytes,totalBytes,progress:96});
