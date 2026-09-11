@@ -66,6 +66,7 @@ export class DriveBackupService {
   async status(){return {configured:true,reachable:true,manual:false};}
   async enqueue(entry){
     const c=this.current();
+    if(c.practice)return entry;
     if(entry.profileId!==c.student.id)throw new Error('학생 기록 번호를 확인해 주세요.');
     if(!this.notified.has(entry.id)&&entry.fileAnalysis&&!entry.unsaved){this.notified.add(entry.id);this.post({type:'tv:exam-ready',branchId:c.branchId,studentId:c.student.id,recordId:entry.id,createdAt:entry.createdAt,duration:entry.duration,metricsAvailable:true});}
     this.onChange();
@@ -77,7 +78,7 @@ export class DriveBackupService {
     return tracked;
   }
   async retry(entry){
-    const current=this.current(),c={...current,student:{...current.student}};if(entry.profileId!==c.student.id)throw new Error('다른 학생의 기록은 저장할 수 없습니다.');
+    const current=this.current();if(current.practice)throw uploadError('STUDENT_REQUIRED','기록을 저장하려면 학생을 선택해 주세요.');const c={...current,student:{...current.student}};if(entry.profileId!==c.student.id)throw new Error('다른 학생의 기록은 저장할 수 없습니다.');
     if(this.active)throw new Error('진행 중인 서버 저장을 마친 뒤 다시 시도해 주세요.');
     if(entry.franchiseUpload?.state==='complete')return entry;
     const job={id:entry.id,status:'uploading'};this.jobs.push(job);

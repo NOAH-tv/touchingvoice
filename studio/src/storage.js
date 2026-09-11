@@ -1,6 +1,7 @@
 import { storageName, getContext } from '../context.js';
 const DB_NAME = storageName();
 let dbPromise;
+const temporary={profiles:new Map(),sessions:new Map(),references:new Map()};
 function openDB() {
   if (!dbPromise) dbPromise = new Promise((resolve, reject) => {
     if (!globalThis.indexedDB) { reject(new Error('이 환경에서는 기기 저장을 사용할 수 없습니다.')); return; }
@@ -16,6 +17,7 @@ function openDB() {
   return dbPromise;
 }
 async function transaction(store, mode, operation) {
+  if(getContext().practice){const table=temporary[store];if(!table)throw new Error('알 수 없는 저장소');let result;operation({getAll:()=>({result:result=Array.from(table.values(),v=>structuredClone(v))}),get:id=>({result:result=structuredClone(table.get(id))}),put:item=>{table.set(item.id,structuredClone(item));return {result:result=item.id};},delete:id=>{table.delete(id);return {result:undefined};}});return result;}
   const db = await openDB();
   return new Promise((resolve, reject) => {
     const tx = db.transaction(store, mode);
@@ -38,6 +40,7 @@ export const store = {
   },
   delete: (name, id) => transaction(name, 'readwrite', s => s.delete(id)),
   async patch(name, id, patch, {profileId} = {}) {
+    if(getContext().practice){const current=await this.get(name,id);if(!current||profileId!==undefined&&current.profileId!==profileId)throw new Error('기록을 확인하지 못했습니다.');const merged={...current,...patch,id};await this.put(name,merged);return merged;}
     const db = await openDB();
     return new Promise((resolve,reject) => {
       const tx=db.transaction(name,'readwrite'),table=tx.objectStore(name),request=table.get(id);let merged,error;
@@ -52,6 +55,7 @@ export const store = {
 };
 export const uid = () => globalThis.crypto?.randomUUID?.() || `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
 export async function downloadBlob(blob, name) {
+  if(getContext().practice)throw new Error('기록을 저장하려면 운영 화면에서 학생을 선택해 주세요.');
   if (window.Capacitor?.isNativePlatform?.()) {
     const base64 = await new Promise((resolve, reject) => {
       const reader = new FileReader();
