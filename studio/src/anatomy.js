@@ -268,7 +268,7 @@ export class AnatomyView {
           mesh.frustumCulled = false;
           mesh.renderOrder = shell ? 2 : 1;
           const targetIndex = combined && piece.layer === 'oro' ? usedTargets.findIndex((target) => /2$/.test(target.name)) : 0;
-          mesh.userData.anatomy = { shell, bone, color, targetIndex: Math.max(0, targetIndex), originalName: original.name };
+          mesh.userData.anatomy = { shell, bone, color, targetIndex: Math.max(0, targetIndex), originalName: original.name, sharedMembrane: combined };
           root.add(mesh); items.push(mesh);
         }
       }
@@ -468,7 +468,7 @@ export class AnatomyView {
       if (mesh.material.userData.rimIntensity) mesh.material.userData.rimIntensity.value = selected ? (.2 + level * .38 + (this.selectedStructure ? .22 : 0)) : .03;
       mesh.position.y = ({ nas: .5, oro: .12, aes: -.24, src: -.56 }[id]) * this.explodeAmount;
       if (mesh.morphTargetInfluences?.length) {
-        for (let i = 0; i < mesh.morphTargetInfluences.length; i++) mesh.morphTargetInfluences[i] = i === meta.targetIndex ? level : 0;
+        for (let i = 0; i < mesh.morphTargetInfluences.length; i++) mesh.morphTargetInfluences[i] = meta.sharedMembrane ? (/2$/.test(mesh.geometry.morphAttributes.position[i].name) ? this.levels.oro : this.levels.nas) / Math.max(1, this.levels.nas + this.levels.oro) : (meta.sharedMembrane ? (/2$/.test(mesh.geometry.morphAttributes.position[i].name) ? this.levels.oro : this.levels.nas) / Math.max(1, this.levels.nas + this.levels.oro) : (i === meta.targetIndex ? level : 0));
       }
     }
     if (this.focusTransition && this.camera && this.controls?.target) {
