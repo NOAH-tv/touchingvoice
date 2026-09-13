@@ -16,7 +16,7 @@ import { mountGuidedCalibration } from './guided-calibration-controller.js?v=mon
 import { mountCalibrationLibrary } from './calibration-library.js';
 import { CalibrationLibraryService, observationFromRecord } from './calibration-library-service.js';
 import { buildPersonalModel } from './personal-calibration.js?v=monitor-fix-20260913';
-import { mountStudioTools } from './studio-tools.js?v=monitor-fix-20260913';
+import { mountStudioTools } from './studio-tools.js?v=monitor-background-20260913';
 import { FileAnalysisService } from './file-analysis-service.js?v=monitor-fix-20260913';
 import { mountFileAnalysisView } from './file-analysis-view.js?v=practice-20260911';
 import { ANALYZER_FIELDS } from './analyzer-metrics.js?v=monitor-fix-20260913';
@@ -609,7 +609,7 @@ $('applySuggestionBtn').onclick=()=>{if(!suggestion||audioState.recording||compa
 $('loopBtn').onclick=()=>{loopPlayback=!loopPlayback;renderTransport();};$('seekBar').oninput=e=>safe(()=>engine.seek(Number(e.target.value)/1000*audioState.duration));
 for(const [id,key] of [['inputGain','inputGainDb'],['noiseGate','noiseGateDb']])$(id).addEventListener('input',e=>{if(audioState.recording||comparing)return;try{const next=copy(profile);next.global[key]=e.target.valueAsNumber;profile=sanitizeProfile(next);markDirty();clearSuggestion();}catch{}});
 $('helpBtn').onclick=()=>$('helpDialog').showModal();$('closeHelpBtn').onclick=()=>$('helpDialog').close();$('startFittingBtn').onclick=()=>{$('helpDialog').close();setTab('tuning');};
-document.addEventListener('visibilitychange',()=>{if(document.hidden&&!visibilityStopping){visibilityStopping=true;void guidedCalibration?.close();studioTools?.stopRhythm();stopDemo();cancelCapture();if(audioState.recording&&!coreRun){visibilityStopping=false;return;}if(coreRun)safe(()=>finishCore(false));else{const wasStarting=coreStarting;if(wasStarting){coreGeneration++;coreStarting=false;}if(audioState.mode==='mic'||wasStarting)engine.stop();else engine.pause();}visibilityStopping=false;}});
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&!visibilityStopping){visibilityStopping=true;void guidedCalibration?.close();studioTools?.stopRhythm();stopDemo();cancelCapture();if(!coreRun&&(audioState.recording||(audioState.mode==='mic'&&audioState.playing&&engine.monitorSettings.enabled))){visibilityStopping=false;return;}if(coreRun)safe(()=>finishCore(false));else{const wasStarting=coreStarting;if(wasStarting){coreGeneration++;coreStarting=false;}if(audioState.mode==='mic'||wasStarting)engine.stop();else engine.pause();}visibilityStopping=false;}});
 window.addEventListener('beforeunload',e=>{if(dirty||sessionLocked()||fileAnalyzer?.active||sessions.some(s=>s.unsaved||s.saving)||driveBackup?.active){e.preventDefault();e.returnValue='';}});
 
 studioTools=mountStudioTools({

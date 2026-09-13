@@ -1,15 +1,69 @@
 {
   "version": 1,
-  "updated": "2026-09-04",
+  "updated": "2026-09-13",
   "base": "트랙/",
   "tracks": [
+    {
+      "id": "scale-5tone-descending-female",
+      "gender": "female",
+      "category": "보컬 트레이닝",
+      "path": "scale_5tone_descending_Female",
+      "info": "트랙정보.json",
+      "midi": "scale_5tone_descending_Female.mid",
+      "audio": [
+        "scale_5tone_descending_Female.mp3"
+      ],
+      "name": "5음 스케일 하행 (여)",
+      "bpm": 100,
+      "description": "여성용 원본 반주와 MIDI",
+      "range": "F3–F5",
+      "noteCount": 162,
+      "duration": 93.75
+    },
+    {
+      "id": "scale-5tone-ascending-female",
+      "gender": "female",
+      "category": "보컬 트레이닝",
+      "path": "scale_5tone_ascending_Female",
+      "info": "트랙정보.json",
+      "midi": "scale_5tone_ascending_Female.mid",
+      "audio": [
+        "scale_5tone_ascending_Female.mp3"
+      ],
+      "name": "5음 스케일 상행 (여)",
+      "bpm": 100,
+      "description": "여성용 원본 반주와 MIDI",
+      "range": "F3–F5",
+      "noteCount": 162,
+      "duration": 93.75
+    },
+    {
+      "id": "vocal-chord-step-up-female",
+      "gender": "female",
+      "category": "보컬 트레이닝",
+      "path": "vocal_chord_step_up_Female",
+      "info": "트랙정보.json",
+      "midi": "vocal_chord_step_up_Female.mid",
+      "audio": [
+        "vocal_chord_step_up_Female.mp3"
+      ],
+      "name": "코드 스텝업 (여)",
+      "bpm": 140,
+      "description": "여성용 원본 반주와 MIDI",
+      "range": "F3–G5",
+      "noteCount": 260,
+      "duration": 144.15
+    },
     {
       "id": "scale-5tone-ascending",
       "category": "보컬 트레이닝",
       "path": "scale_5tone_ascending",
       "info": "트랙정보.json",
       "midi": "scale_5tone_ascending.mid",
-      "audio": ["scale_5tone_ascending.mp3"]
+      "audio": [
+        "scale_5tone_ascending.mp3"
+      ],
+      "gender": "male"
     },
     {
       "id": "scale-5tone-descending-male",
@@ -17,7 +71,10 @@
       "path": "scale_5tone_descending_male",
       "info": "트랙정보.json",
       "midi": "scale_5tone_descending_male.mid",
-      "audio": ["scale_5tone_descending_male.mp3"]
+      "audio": [
+        "scale_5tone_descending_male.mp3"
+      ],
+      "gender": "male"
     },
     {
       "id": "scale-1358-short-male",
@@ -25,7 +82,10 @@
       "path": "scale_1358_short_male",
       "info": "트랙정보.json",
       "midi": "scale_1358_short_male.mid",
-      "audio": ["scale_1358_short_male.mp3"]
+      "audio": [
+        "scale_1358_short_male.mp3"
+      ],
+      "gender": "male"
     },
     {
       "id": "scale-1358-long-male",
@@ -33,7 +93,10 @@
       "path": "scale_1358_long_male",
       "info": "트랙정보.json",
       "midi": "scale_1358_long_male.mid",
-      "audio": ["scale_1358_long_male.mp3"]
+      "audio": [
+        "scale_1358_long_male.mp3"
+      ],
+      "gender": "male"
     },
     {
       "id": "vocal-chord-step-up-male",
@@ -41,7 +104,10 @@
       "path": "vocal_chord_step_up_male",
       "info": "트랙정보.json",
       "midi": "vocal_chord_step_up_male.mid",
-      "audio": ["vocal_chord_step_up_male.mp3"]
+      "audio": [
+        "vocal_chord_step_up_male.mp3"
+      ],
+      "gender": "male"
     },
     {
       "id": "breath-foundation-basic",
@@ -49,7 +115,10 @@
       "path": "breath foundation_basic",
       "info": "트랙정보.json",
       "midi": "breath foundation_basic.mid",
-      "audio": ["breath foundation_basic.mp3"]
+      "audio": [
+        "breath foundation_basic.mp3"
+      ],
+      "gender": "common"
     },
     {
       "id": "breath-foundation-hold",
@@ -57,7 +126,10 @@
       "path": "breath foundation_hold",
       "info": "트랙정보.json",
       "midi": "breath foundation_hold.mid",
-      "audio": ["breath foundation_hold.mp3"]
+      "audio": [
+        "breath foundation_hold.mp3"
+      ],
+      "gender": "common"
     },
     {
       "id": "stage-01-dorian",
@@ -65,7 +137,10 @@
       "path": "Stage Mission/01 Dorian",
       "info": "트랙정보.json",
       "midi": "Dorian Scale.mid",
-      "audio": ["Dorian Track.mp3"]
+      "audio": [
+        "Dorian Track.mp3"
+      ],
+      "gender": "common"
     },
     {
       "id": "stage-02-mixo-lydian",
@@ -73,7 +148,10 @@
       "path": "Stage Mission/02 Mixo-Lydian",
       "info": "트랙정보.json",
       "midi": "Mixo-Lydian scale.mid",
-      "audio": ["Mixo-Lydian Track.mp3"]
+      "audio": [
+        "Mixo-Lydian Track.mp3"
+      ],
+      "gender": "common"
     },
     {
       "id": "stage-04-lydian",
@@ -81,7 +159,10 @@
       "path": "Stage Mission/04 Lydian",
       "info": "트랙정보.json",
       "midi": "Lydian Scale.mid",
-      "audio": ["Lydian Track.mp3"]
+      "audio": [
+        "Lydian Track.mp3"
+      ],
+      "gender": "common"
     },
     {
       "id": "stage-05-aeolian",
@@ -89,7 +170,10 @@
       "path": "Stage Mission/05 Aeolian",
       "info": "트랙정보.json",
       "midi": "Aeolian Scale.mid",
-      "audio": ["Aeolian Track.mp3"]
+      "audio": [
+        "Aeolian Track.mp3"
+      ],
+      "gender": "common"
     },
     {
       "id": "stage-06-phrygian",
@@ -97,7 +181,10 @@
       "path": "Stage Mission/06 Flygian",
       "info": "트랙정보.json",
       "midi": "flygian Scale.mid",
-      "audio": ["flygian Track.mp3"]
+      "audio": [
+        "flygian Track.mp3"
+      ],
+      "gender": "common"
     },
     {
       "id": "stage-07-locrian",
@@ -105,7 +192,10 @@
       "path": "Stage Mission/07 Locrian",
       "info": "트랙정보.json",
       "midi": "Locrian Scale.mid",
-      "audio": ["Locrian Track.mp3"]
+      "audio": [
+        "Locrian Track.mp3"
+      ],
+      "gender": "common"
     },
     {
       "id": "stage-08-pentatonic",
@@ -113,7 +203,10 @@
       "path": "Stage Mission/08 Pentatonic",
       "info": "트랙정보.json",
       "midi": "Pentatonic Scale.mid",
-      "audio": ["Pentatonic Track.mp3"]
+      "audio": [
+        "Pentatonic Track.mp3"
+      ],
+      "gender": "common"
     },
     {
       "id": "stage-09-blues",
@@ -121,7 +214,10 @@
       "path": "Stage Mission/09 Bluse",
       "info": "트랙정보.json",
       "midi": "Bluse Scale.mid",
-      "audio": ["Bluse Track.mp3"]
+      "audio": [
+        "Bluse Track.mp3"
+      ],
+      "gender": "common"
     }
   ]
 }
