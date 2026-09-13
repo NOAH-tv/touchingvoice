@@ -8,6 +8,7 @@ export const FOCUS_FEATURES = Object.freeze({
 export const FOCUS_KEYS = Object.freeze(Object.keys(FOCUS_FEATURES));
 // P10/P90 of voiced, gated frames (F0 below 600 Hz to exclude onset outliers) from the supplied habitual /a/ recording, computed
 // with the production 48 kHz / 4096 Blackman FFT. These are response limits.
+// Each cue responds independently; the four outputs are not class probabilities.
 export const FOCUS_DEFAULTS = Object.freeze({
   nas: ["upperFocus", -21.72, -8.87],
   oro: ["middleFocus", -21.21, -2.77],
@@ -34,3 +35,4 @@ export function spectralFocus(spectrum, sampleRate) {
   return Object.fromEntries([upper, middle, lower, friction].map((power, i) =>
     [FOCUS_KEYS[i], Math.max(-120, 10 * Math.log10(power / total))]));
 }
+
