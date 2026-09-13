@@ -1,3 +1,4 @@
+import { spectralFocus } from './spectral-focus.js';
 /** Local Web Audio engine. Raw capture stays separate from optional headphone monitoring. */
 import { BoothMonitor, DEFAULT_MONITOR_SETTINGS, sanitizeMonitorSettings } from './booth-monitor.js';
 import { PcmCaptureRecorder, PCM_MAX_SECONDS } from './pcm-capture.js?v=pcm24-20260910';
@@ -94,6 +95,7 @@ export function analyzeFrame(waveform, spectrum, sampleRate) {
   const valid = pitch.f0 >= 55 && pitch.f0 <= 1200 && pitch.clarity >= 0.7 && level > -90;
   const lo = Math.max(1.25 * pitch.f0, 260);
   const features = {
+    ...spectralFocus(spectrum, sampleRate),
     brilliance: band(4000, 8000) - band(lo, 4000),
     f1dom: band(lo, 1100) - band(1100, 3500),
     aesprom: band(2800, 3400, true) - (band(2200, 2800) + band(3400, 4000)) / 2,

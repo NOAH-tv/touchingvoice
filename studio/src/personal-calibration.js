@@ -1,7 +1,8 @@
+import { FOCUS_KEYS } from './spectral-focus.js';
 /** Personal, pitch-specific acoustic response. No anatomical inference or ML classifier. */
 export const PERSONAL_MODEL_VERSION = 1;
 export const PERSONAL_LAYERS = Object.freeze(['nas', 'oro', 'aes', 'src']);
-export const PERSONAL_FEATURES = Object.freeze(['brilliance', 'f1dom', 'aesprom', 'negh1h2', 'ring3k', 'lowmid', 'tilt', 'level']);
+export const PERSONAL_FEATURES = Object.freeze([...FOCUS_KEYS, 'brilliance', 'f1dom', 'aesprom', 'negh1h2', 'ring3k', 'lowmid', 'tilt', 'level']);
 export const PERSONAL_QUALITY = Object.freeze({ minimumClarity: 0.7, minimumFramesPerBin: 8,
   minimumSecondsPerBin: 0.24, minimumFrames: 30, maximumFrameGap: 0.1,
   maximumPitchSpan: 0.45, maximumGlideSemitonesPerSecond: 0.5, minimumSpreadDb: 0.5 });

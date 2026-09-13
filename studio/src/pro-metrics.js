@@ -1,8 +1,9 @@
+import { FOCUS_KEYS } from './spectral-focus.js';
 import { DEFAULT_PROFILE, sanitizeProfile } from './tuning.js';
 
 export const VOICE_METRIC_KEYS = Object.freeze([
   'f0', 'level', 'clarity', 'brilliance', 'f1dom', 'aesprom',
-  'negh1h2', 'ring3k', 'lowmid', 'tilt',
+  'negh1h2', 'ring3k', 'lowmid', 'tilt', ...FOCUS_KEYS,
 ]);
 const STAT_KEYS = ['count', 'mean', 'min', 'max', 'std', 'median'];
 const finite = value => typeof value === 'number' && Number.isFinite(value);

@@ -1,3 +1,4 @@
+import { FOCUS_FEATURES, FOCUS_DEFAULTS } from './spectral-focus.js';
 import { sanitizePersonalModel, personalResponseRange } from './personal-calibration.js';
 
 /**
@@ -13,6 +14,7 @@ export const LAYER_META = Object.freeze({
   src: { name: '성대', subtitle: '성문 · 음원', color: '#cf9dde' },
 });
 export const FEATURES = Object.freeze({
+  ...FOCUS_FEATURES,
   brilliance: { label: '상부 밝기', unit: 'dB', description: '4–8 kHz와 저·중역의 평균 스펙트럼 차이' },
   f1dom: { label: '저역 공명 우세', unit: 'dB', description: '기본음 위~1.1 kHz와 1.1–3.5 kHz의 차이' },
   aesprom: { label: '3 kHz 돌출', unit: 'dB', description: '2.8–3.4 kHz의 최고점과 양쪽 대역의 차이' },
@@ -27,8 +29,8 @@ const makeLayer = (feature, inputMin, inputMax) => ({
   enabled: true, feature, inputMin, inputMax, gain: 1, offset: 0,
   gamma: 1, attackMs: 100, releaseMs: 250, outputMin: 0, outputMax: 100,
 });
-// Original SEP_CAL score=(feature+c)/s: preserve exactly before smoothing.
-export const DEFAULT_PROFILE = Object.freeze({
+// Historical defaults stay available for saved profiles and explicit compatibility checks.
+export const LEGACY_PROFILE = Object.freeze({
   schemaVersion: 1, name: '기본 프로필',
   global: Object.freeze({ noiseGateDb: -48, inputGainDb: 0 }),
   layers: Object.freeze({
@@ -38,6 +40,23 @@ export const DEFAULT_PROFILE = Object.freeze({
     src: Object.freeze(makeLayer('negh1h2', -18, 6)),
   }),
 });
+
+// Habitual /a/ P10/P90 response limits. Four independent cues, not a classifier.
+export const DEFAULT_PROFILE = Object.freeze({
+  ...LEGACY_PROFILE, name: '테스트 기본값 · 2026-09-13',
+  layers: Object.freeze(Object.fromEntries(LAYER_KEYS.map(key =>
+    [key, Object.freeze(makeLayer(...FOCUS_DEFAULTS[key]))]))),
+});
+
+/** Upgrade only untouched historical defaults at active-profile load, never old recordings. */
+export function defaultProfileUpgrade(input) {
+  if (!input || input.personalModel) return null;
+  const matches = (value, expected) => value && Object.keys(value).length === Object.keys(expected).length
+    && Object.entries(expected).every(([key, item]) => value[key] === item);
+  if (!matches(input.global, LEGACY_PROFILE.global)
+    || !LAYER_KEYS.every(key => matches(input.layers?.[key], LEGACY_PROFILE.layers[key]))) return null;
+  return sanitizeProfile({ ...DEFAULT_PROFILE, name: input.name || DEFAULT_PROFILE.name });
+}
 
 export const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
 const isRecord = value => !!value && typeof value === 'object' && !Array.isArray(value);

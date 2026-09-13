@@ -4,8 +4,8 @@ import { getContext, postParent } from '../context.js';
 const franchiseContext=getContext();
 import { AnatomyView } from './anatomy.js?v=nasal-smooth-20260906';
 import { ANATOMY_REFERENCE } from './anatomy-reference.js';
-import { AudioEngine } from './audio.js?v=pcm24-20260910';
-import { DEFAULT_PROFILE, FEATURES, LAYER_KEYS, sanitizeProfile, processLayers, suggestCalibration } from './tuning.js?v=cumulative-20260910';
+import { AudioEngine } from './audio.js?v=focus-20260913';
+import { DEFAULT_PROFILE, defaultProfileUpgrade, FEATURES, LAYER_KEYS, sanitizeProfile, processLayers, suggestCalibration } from './tuning.js?v=focus-20260913';
 import { store, uid, downloadBlob } from './storage.js';
 import { icon, hydrateIcons } from './icons.js?v=magnifier-20260906';
 import { CORE_MODES, createSessionAccumulator, summarizeWeek } from './session-metrics.js';
@@ -17,7 +17,7 @@ import { mountCalibrationLibrary } from './calibration-library.js';
 import { CalibrationLibraryService, observationFromRecord } from './calibration-library-service.js';
 import { buildPersonalModel } from './personal-calibration.js';
 import { mountStudioTools } from './studio-tools.js?v=pcm24-20260910';
-import { FileAnalysisService } from './file-analysis-service.js?v=cumulative-20260910';
+import { FileAnalysisService } from './file-analysis-service.js?v=focus-20260913';
 import { mountFileAnalysisView } from './file-analysis-view.js?v=practice-20260911';
 import { ANALYZER_FIELDS } from './analyzer-metrics.js';
 import { mountParticipantIntake } from './participant-intake.js?v=practice-20260911';
@@ -697,6 +697,13 @@ await (async()=>{
   if(franchiseContext.preview){const notice=document.createElement('p');notice.className='franchise-preview-label';notice.textContent='로컬 시안 · 실제 Drive 전송 없음';document.querySelector('.workspace-label')?.after(notice);}
   profiles=(await store.all('profiles')).filter(p=>p.id===franchiseContext.student.id);
   if(!profiles.length){const first={id:franchiseContext.student.id,profile:copy(profile),refs:{},member:{type:'프랜차이즈 학생'},updatedAt:new Date().toISOString()};await store.put('profiles',first);profiles=[first];}
+  const activeEntry=profiles[0];
+  const upgrade=!(activeEntry.calibrationObservations?.length || activeEntry.calibrationAssessment || Object.keys(activeEntry.refs||{}).length)
+    && defaultProfileUpgrade(activeEntry.profile);
+  if(upgrade){
+    const updated={...activeEntry,profile:upgrade,previousDefaultProfile:copy(activeEntry.profile),updatedAt:new Date().toISOString()};
+    await store.put('profiles',updated);profiles[0]=updated;
+  }
   profileId=franchiseContext.student.id;const entry=profiles[0];profile=sanitizeProfile({...entry.profile,name:franchiseContext.student.name});saved=copy(profile);refs=copy(entry.refs||{});savedRefs=copy(refs);
   sessions=(await store.all('sessions')).filter(s=>s.profileId===profileId).sort((a,b)=>b.createdAt.localeCompare(a.createdAt));
   renderProfileSelect();renderTuning();renderSessions();renderTraining();
