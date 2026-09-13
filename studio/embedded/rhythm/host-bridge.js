@@ -81,9 +81,9 @@ const hostBridge = (() => {
     pcmModule ||= import('../../src/pcm-capture.js?v=pcm24-20260910');
     run.pcmModule=await pcmModule;await run.pcmModule.preparePcmCapture(ensureAudioContext());
     try {
-      metricsModules ||= Promise.all([import('../../src/audio.js'),import('../../src/pro-metrics.js')]);
+      metricsModules ||= Promise.all([import('../../src/audio.js?v=voice-20260913'),import('../../src/pro-metrics.js')]);
       const [audio,metrics] = await metricsModules;
-      run.analyzeFrame = audio.analyzeFrame;
+      run.analyzeFrame = audio.analyzeFrame;run.detectPitch=audio.detectPitch;
       run.accumulator = metrics.createVoiceMetricsAccumulator({...(run.profile?{profile:run.profile}:{}),profileId:run.profileId});
     } catch (error) {console.warn('실제 음향 분석 모듈을 불러오지 못했습니다.',error);}
   }
@@ -114,7 +114,7 @@ const hostBridge = (() => {
       targetMidi:target?.midi ?? null,cents:target&&detected.hz?pitchDifference(detected.hz,target.midi):null});
     if(run.rawAnalyser){try{
       run.rawAnalyser.getFloatTimeDomainData(run.waveform);run.rawAnalyser.getFloatFrequencyData(run.spectrum);
-      run.accumulator.add({features:run.analyzeFrame(run.waveform,run.spectrum,state.audioCtx.sampleRate)});
+      run.accumulator.add({features:run.analyzeFrame(run.waveform,run.spectrum,state.audioCtx.sampleRate,run.profile)});
     }catch(error){if(!run.metricsError)console.warn('음향 프레임 분석 오류',error);run.metricsError=true;}}
   }
   // Suspending the shared AudioContext pauses both accompaniment and PCM sample clock.
@@ -169,15 +169,16 @@ const hostBridge = (() => {
     if(!embedded || event.source!==window.parent || origin==='null' || event.origin!==origin)return;
     const message=event.data;if(!message || typeof message!=='object')return;
     if(message.type==='tv-host-profile'){
-      const previousId=profile.profileId;
-      profile=Object.freeze({profileId:typeof message.profileId==='string'?message.profileId:null,profileName:typeof message.profileName==='string'?message.profileName:''});
+      const previousId=profile.profileId,previousPreset=profile.voicePreset;
+      profile=Object.freeze({profileId:typeof message.profileId==='string'?message.profileId:null,profileName:typeof message.profileName==='string'?message.profileName:'',voicePreset:message.profile?.voicePreset==='female'?'female':message.profile?.voicePreset==='male'?'male':null});
       profileReceived=true;protectedAssets=message.protectedAssets===true;
       if (previousId!==profile.profileId || !authorized()) cancelAssetRequests(false);
       if(typeof rhythmAccess!=='undefined')rhythmAccess.setAuthorized(authorized());
       for(const waiter of profileWaiters){clearTimeout(waiter.timer);authorized()?waiter.resolve():waiter.reject(accessError());}profileWaiters.clear();
-      if((previousId!==profile.profileId || !authorized()) && typeof clearHostMemberView==='function')clearHostMemberView();
+      state.trackGender=profile.voicePreset==='female'?'female':'male';
+      if((previousId!==profile.profileId || previousPreset!==profile.voicePreset || !authorized()) && typeof clearHostMemberView==='function')clearHostMemberView();
       if(!authorized())void stop('host-unauthorized');
-      const label=document.getElementById('hostProfileLabel');if(label)label.textContent=profile.profileName?'현재 회원 · '+profile.profileName:'회원을 선택해 주세요';
+      const label=document.getElementById('hostProfileLabel');if(label)label.textContent=profile.profileName?'현재 회원 · '+profile.profileName+' · '+(profile.voicePreset==='female'?'여성 기준':profile.voicePreset==='male'?'남성 기준':'음성 기준 선택 필요'):'회원을 선택해 주세요';
       refreshSavedClipsButton();
     } else if(message.type==='tv-host-asset'){
       const request=assetRequests.get(message.requestId);if(!request)return;
@@ -197,5 +198,7 @@ const hostBridge = (() => {
   return {embedded,snapshot,requestStart,prepareMetrics,attachMicrophone,sample,pause,resume,stopRaw,publishResult,stateChanged,cancelRequests,stop,readAsset,waitForProfile,
     get protectedAssets(){return protectedAssets;},get production(){return production;},get authorized(){return authorized();},
     presentation(expanded){post('tv-rhythm-presentation',{expanded:Boolean(expanded)});},
+    selectVoicePreset(value){if(!['male','female'].includes(value))return;if(embedded)post('tv-rhythm-preset-request',{voicePreset:value});else{profile=Object.freeze({...profile,voicePreset:value});state.trackGender=value;setLibraryView(state.filter);}},
+    get voicePreset(){return profile.voicePreset;},get pitchSettings(){return profile.voicePreset==='female'?{pitchFloor:80,pitchCeiling:1600}:{pitchFloor:55,pitchCeiling:1200};},
     get inputDeviceId(){return inputDeviceId;},get profileId(){return profile.profileId;},get stopping(){return Boolean(stopPromise);},ready(){post('tv-rhythm-ready',{version:1});stateChanged();}};
 })();

@@ -1,4 +1,5 @@
-import { spectralFocus } from './spectral-focus.js';
+import { voiceSettings } from './voice-presets.js?v=voice-20260913';
+import { spectralFocus } from './spectral-focus.js?v=voice-20260913';
 /** Local Web Audio engine. Raw capture stays separate from optional headphone monitoring. */
 import { BoothMonitor, DEFAULT_MONITOR_SETTINGS, sanitizeMonitorSettings } from './booth-monitor.js';
 import { PcmCaptureRecorder, PCM_MAX_SECONDS } from './pcm-capture.js?v=pcm24-20260910';
@@ -9,7 +10,7 @@ const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 /** Pitch estimate using a downsampled YIN difference function.
  * Intended as a stable visual driver for a single voice, not clinical analysis.
  */
-export function detectPitch(waveform, sampleRate) {
+export function detectPitch(waveform, sampleRate, { pitchFloor = 55, pitchCeiling = 1200 } = {}) {
   if (!waveform?.length || !Number.isFinite(sampleRate) || sampleRate < 8000) return { f0: 0, clarity: 0, rms: 0 };
   let sum = 0, mean = 0;
   for (let i = 0; i < waveform.length; i++) {
@@ -28,8 +29,8 @@ export function detectPitch(waveform, sampleRate) {
     for (let j = 0; j < stride; j++) avg += waveform[i * stride + j] - mean;
     samples[i] = avg / stride;
   }
-  const minLag = Math.max(2, Math.floor(sr / 1200));
-  const maxLag = Math.min(Math.ceil(sr / 55), Math.floor(samples.length / 2));
+  const minLag = Math.max(2, Math.floor(sr / pitchCeiling));
+  const maxLag = Math.min(Math.ceil(sr / pitchFloor), Math.floor(samples.length / 2));
   if (maxLag <= minLag) return { f0: 0, clarity: 0, rms };
   const window = samples.length - maxLag;
   const diff = new Float32Array(maxLag + 1);
@@ -69,8 +70,9 @@ export function detectPitch(waveform, sampleRate) {
  * Mean-dB band formulas intentionally match the original anatomy prototype.
  * Non-finite or impossible frequency bands stay NaN; they are never scored.
  */
-export function analyzeFrame(waveform, spectrum, sampleRate) {
-  const pitch = detectPitch(waveform, sampleRate);
+export function analyzeFrame(waveform, spectrum, sampleRate, profile) {
+  const settings = voiceSettings(profile);
+  const pitch = detectPitch(waveform, sampleRate, settings);
   const level = pitch.rms > 0 ? Math.max(-120, 20 * Math.log10(pitch.rms)) : -120;
   const binHz = sampleRate / (2 * (spectrum?.length || FFT_SIZE / 2));
   function band(lo, hi, peak = false) {
@@ -92,10 +94,11 @@ export function analyzeFrame(waveform, spectrum, sampleRate) {
     const radius = Math.max(binHz, frequency * 0.07);
     return band(Math.max(1, frequency - radius), frequency + radius, true);
   };
-  const valid = pitch.f0 >= 55 && pitch.f0 <= 1200 && pitch.clarity >= 0.7 && level > -90;
+  const valid = pitch.f0 >= settings.pitchFloor && pitch.f0 <= settings.pitchCeiling && pitch.clarity >= 0.7 && level > -90;
   const lo = Math.max(1.25 * pitch.f0, 260);
   const features = {
-    ...spectralFocus(spectrum, sampleRate),
+    ...spectralFocus(spectrum, sampleRate, settings.resonanceScale),
+    pitchFloor: settings.pitchFloor, pitchCeiling: settings.pitchCeiling, resonanceScale: settings.resonanceScale,
     brilliance: band(4000, 8000) - band(lo, 4000),
     f1dom: band(lo, 1100) - band(1100, 3500),
     aesprom: band(2800, 3400, true) - (band(2200, 2800) + band(3400, 4000)) / 2,
@@ -120,7 +123,9 @@ const messageFor = error => {
 };
 
 export class AudioEngine {
-  constructor({ onFrame, onState, onError, onRecording, resumeTimeoutMs = 4000 } = {}) {
+  constructor({ onFrame, onState, onError, onRecording, getProfile = () => undefined, beforeStartMic = () => {}, resumeTimeoutMs = 4000 } = {}) {
+    this.getProfile = getProfile;
+    this.beforeStartMic = beforeStartMic;
     this.onFrame = onFrame || (() => {});
     this.onState = onState || (() => {});
     this.onError = onError || (() => {});
@@ -299,7 +304,7 @@ export class AudioEngine {
       if (!this.playing || !this.analyser || !this.context) return;
       this.analyser.getFloatTimeDomainData(this._waveform);
       this.analyser.getFloatFrequencyData(this._spectrum);
-      const features = analyzeFrame(this._waveform, this._spectrum, this.context.sampleRate);
+      const features = analyzeFrame(this._waveform, this._spectrum, this.context.sampleRate, this.getProfile());
       this.onFrame({ features, waveform: this._waveform.slice(), spectrum: this._spectrum.slice(),
         time: this.currentTime, playing: true });
     };
@@ -307,6 +312,7 @@ export class AudioEngine {
     tick();
   }
   async startMic(deviceId) {
+    this.beforeStartMic();
     const generation = ++this._generation;
     try {
       await this.stopRecording();

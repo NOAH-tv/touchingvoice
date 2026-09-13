@@ -1,4 +1,4 @@
-import { FOCUS_KEYS } from './spectral-focus.js';
+import { FOCUS_KEYS } from './spectral-focus.js?v=voice-20260913';
 /** Personal, pitch-specific acoustic response. No anatomical inference or ML classifier. */
 export const PERSONAL_MODEL_VERSION = 1;
 export const PERSONAL_LAYERS = Object.freeze(['nas', 'oro', 'aes', 'src']);
@@ -32,7 +32,7 @@ function date(value) {
 function compatibility(profile) {
   if (!plain(profile) || !plain(profile.global) || !plain(profile.layers)) fail('측정 프로필이 필요합니다.');
   const result = { noiseGateDb: num(profile.global.noiseGateDb, -96, -6, '무음 기준'),
-    inputGainDb: num(profile.global.inputGainDb, -24, 24, '입력 보정'), features: {} };
+    inputGainDb: num(profile.global.inputGainDb, -24, 24, '입력 보정'), ...(profile.voicePreset?{voicePreset:profile.voicePreset}:{}), features: {} };
   for (const key of PERSONAL_LAYERS) {
     const feature = profile.layers[key]?.feature;
     if (!PERSONAL_FEATURES.includes(feature)) fail('지원하지 않는 음향 특징입니다.');
@@ -41,11 +41,11 @@ function compatibility(profile) {
   return result;
 }
 function checkedCompatibility(input) {
-  if (!plain(input) || !plain(input.features)) fail('측정 조건이 올바르지 않습니다.');
-  return compatibility({ global: input, layers: Object.fromEntries(PERSONAL_LAYERS.map(key => [key, { feature: input.features[key] }])) });
+  if (!plain(input) || !plain(input.features) || (input.voicePreset!==undefined&&!['male','female'].includes(input.voicePreset))) fail('측정 조건이 올바르지 않습니다.');
+  return compatibility({ voicePreset: input.voicePreset, global: input, layers: Object.fromEntries(PERSONAL_LAYERS.map(key => [key, { feature: input.features[key] }])) });
 }
 function compatible(a, b, key) {
-  return a?.noiseGateDb === b?.noiseGateDb && a?.inputGainDb === b?.inputGainDb && a?.features?.[key] === b?.features?.[key];
+  return (a?.voicePreset||'male') === (b?.voicePreset||'male') && a?.noiseGateDb === b?.noiseGateDb && a?.inputGainDb === b?.inputGainDb && a?.features?.[key] === b?.features?.[key];
 }
 function fingerprint(value) {
   // Deterministic content identifier only, not a security or authentication hash.
@@ -326,7 +326,7 @@ function contrastAttenuation(model, layerKey, midi, features, profile, index) {
  * profile/global compatibility is checked every frame to honor manual changes. */
 export function personalResponseRange(model, layerKey, features, profile) {
   if (!model || model.version !== 1 || model.mode === 'off' || !PERSONAL_LAYERS.includes(layerKey)) return null;
-  const f = features || {}, current = { noiseGateDb: profile?.global?.noiseGateDb, inputGainDb: profile?.global?.inputGainDb,
+  const f = features || {}, current = { voicePreset: profile?.voicePreset, noiseGateDb: profile?.global?.noiseGateDb, inputGainDb: profile?.global?.inputGainDb,
     features: { [layerKey]: profile?.layers?.[layerKey]?.feature } };
   if (!compatible(model.compatibility, current, layerKey) || !profile.layers[layerKey].enabled
       || f.valid !== true || !finite(f.f0) || f.f0 <= 0 || !finite(f.clarity) || f.clarity < PERSONAL_QUALITY.minimumClarity

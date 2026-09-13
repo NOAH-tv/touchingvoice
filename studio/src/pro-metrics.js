@@ -1,5 +1,5 @@
-import { FOCUS_KEYS } from './spectral-focus.js';
-import { DEFAULT_PROFILE, sanitizeProfile } from './tuning.js';
+import { FOCUS_KEYS } from './spectral-focus.js?v=voice-20260913';
+import { DEFAULT_PROFILE, sanitizeProfile } from './tuning.js?v=voice-20260913';
 
 export const VOICE_METRIC_KEYS = Object.freeze([
   'f0', 'level', 'clarity', 'brilliance', 'f1dom', 'aesprom',

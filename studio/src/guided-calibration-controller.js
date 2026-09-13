@@ -146,7 +146,7 @@ export function mountGuidedCalibration({engine,getSnapshot,isBusy,prepareInput,s
   dialog.addEventListener('cancel',event=>{event.preventDefault();void safe(close);});
   return {
     get active(){return active();},
-    open(){if(active()||isBusy())throw new Error('진행 중인 녹음이나 훈련을 마친 뒤 개인 튜닝을 시작해 주세요.');snapshot={...clone(getSnapshot()),runId:crypto.randomUUID()};results={};records={};confirmed={};pending={};selected='nas';saved=false;closed=false;dialog.showModal();feedback('편한 시작 음을 고르고 이어폰을 착용하세요. 필요한 발성과 음역을 골라 측정하고, 확인한 기록을 누적하세요.');refresh();},
+    open(){if(active()||isBusy())throw new Error('진행 중인 녹음이나 훈련을 마친 뒤 개인 튜닝을 시작해 주세요.');snapshot={...clone(getSnapshot()),runId:crypto.randomUUID()};if(snapshot.profile?.voicePreset)el('gcRoot').value=String(snapshot.profile.voicePreset==='female'?60:48);results={};records={};confirmed={};pending={};selected='nas';saved=false;closed=false;dialog.showModal();feedback('편한 시작 음을 고르고 이어폰을 착용하세요. 필요한 발성과 음역을 골라 측정하고, 확인한 기록을 누적하세요.');refresh();},
     cancel,close,
     onFrame(frame){if(!run||phase!=='recording'||!guideState.playing)return;let peak=0;for(const value of frame.waveform||[])peak=Math.max(peak,Math.abs(value));run.samples.push({time:guide.currentTime,features:{...frame.features},peak});const now=performance.now();if(now-lastPaint>60){lastPaint=now;paint(frame.features);}},
     onState(state){if(run&&phase==='recording'&&!state.playing){void safe(cancel);feedback('마이크 입력이 중지되어 이번 측정을 취소했습니다.');}},

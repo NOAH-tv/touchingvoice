@@ -15,7 +15,7 @@ export const FOCUS_DEFAULTS = Object.freeze({
   aes: ["lowerFocus", -26.19, -15.15],
   src: ["frictionFocus", -36.41, -27.31],
 });
-export function spectralFocus(spectrum, sampleRate) {
+export function spectralFocus(spectrum, sampleRate, resonanceScale = 1) {
   const missing = () => Object.fromEntries(FOCUS_KEYS.map(key => [key, NaN]));
   if (!spectrum?.length || !Number.isFinite(sampleRate) || sampleRate / 2 < 7800) return missing();
   const binHz = sampleRate / (spectrum.length * 2);
@@ -26,9 +26,9 @@ export function spectralFocus(spectrum, sampleRate) {
     if (!Number.isFinite(db)) return missing();
     const hz = i * binHz, power = 10 ** (db / 10);
     total += power;
-    if (hz >= 1500 && hz < 2200 || hz >= 3500 && hz < 4100) upper += power;
-    if (hz >= 750 && hz < 1000) middle += power;
-    if (hz >= 2300 && hz < 2800) lower += power;
+    if (hz >= 1500 * resonanceScale && hz < 2200 * resonanceScale || hz >= 3500 * resonanceScale && hz < 4100 * resonanceScale) upper += power;
+    if (hz >= 750 * resonanceScale && hz < 1000 * resonanceScale) middle += power;
+    if (hz >= 2300 * resonanceScale && hz < 2800 * resonanceScale) lower += power;
     if (hz >= 6000) friction += power;
   }
   if (!(total > 0) || !Number.isFinite(total)) return missing();

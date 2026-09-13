@@ -1,6 +1,6 @@
 import { metricPriority } from '../research-policy.js';
-import { ANALYZER_FIELDS, ANALYZER_BANDS } from './analyzer-metrics.js';
-import { analysisJson, datasetCsv } from './file-analysis-service.js';
+import { ANALYZER_FIELDS, ANALYZER_BANDS } from './analyzer-metrics.js?v=voice-20260913';
+import { analysisJson, datasetCsv } from './file-analysis-service.js?v=voice-20260913';
 import { downloadBlob } from './storage.js';
 import { getContext } from '../context.js';
 import { coreMetricSummary } from '../../core-metrics.js?v=core-summary-20260910';

@@ -4,7 +4,7 @@
 const fields=[];
 const add=(key,label,unit,method,quality='derived')=>fields.push({key,label,unit,method,quality});
 const ranges=[[250,900],[800,3000],[2500,4200],[3800,5200],[4800,6200],[5800,7200],[6800,8500]];
-for(let i=0;i<7;i++)add('F'+(i+1),'F'+(i+1)+' 추정 피크','Hz',`원본 analyzer의 ${ranges[i].join('–')} Hz 고정 대역 · Gaussian 6-bin 평활 피크. LPC 포먼트 아님.`,'estimate');
+for(let i=0;i<7;i++)add('F'+(i+1),'F'+(i+1)+' 추정 피크','Hz',`원본 analyzer의 ${ranges[i].join('–')} Hz 기준 대역 × 프로필 공명 배율 · Gaussian 6-bin 평활 피크. LPC 포먼트 아님.`,'estimate');
 export const ANALYZER_BANDS=[['hz100',60,200,'100 Hz'],['hz300',200,500,'300 Hz'],['hz600',500,900,'600 Hz'],['hz1200',900,1800,'1.2 kHz'],['hz2500',1800,3500,'2.5 kHz'],['hz4000',3500,5000,'4 kHz'],['hz5500',5000,6200,'5.5 kHz'],['hz7000',6200,7500,'7 kHz'],['hz8000',7500,8500,'8 kHz']];
 for(const [key,lo,hi,label] of ANALYZER_BANDS){add(key,label+' 에너지','%',`${lo}≤f<${hi} Hz 전력 합 / 60–8500 Hz 전력 합. 원본의 최대 대역 대비 정규화와 구분.`);add(key+'_relative',label+' 상대 강도','%',`원본 호환: ${lo}–${hi} Hz 평균 진폭 / 프레임에서 가장 큰 대역 평균 진폭.`);}
 add('RMS','프레임 RMS','FS','DC 제거 PCM RMS');add('peak','피크 진폭','FS','프레임 PCM 절댓값 최대');add('crestDb','크레스트 팩터','dB','20 log10(peak / RMS)');add('zcr','영교차율','1/s','DC 제거 신호의 부호 변경 수 / 프레임 초');
@@ -15,7 +15,7 @@ add('HNR_legacy','원본 HNR 대역비','dB','원본 대역 평균 진폭 80–3
 add('JIT','Jitter 추정','%','F0 주기 ±25%인 보간 상향 영교차 간격의 연속 차이 / 평균. 지속 모음 참고값.','estimate');
 add('SHI','Shimmer 추정','%','위 주기에 대응하는 peak-to-peak 진폭의 연속 차이 / 평균. 지속 모음 참고값.','estimate');
 add('envelopeVariation','20ms 진폭 변화','%','원본 Shimmer 방식: 20ms 블록 피크의 연속 변화율. 주기 기반 Shimmer와 구분.','estimate');
-add('CPP','CPP 추정','dB','대칭 log magnitude의 real cepstrum, 55–1200 Hz quefrency 피크와 회귀 기저 차이 ×20/ln10. CPPS/Praat 동등성 미검증.','estimate');
+add('CPP','CPP 추정','dB','대칭 log magnitude의 real cepstrum, 프로필 음높이 탐색 범위의 quefrency 피크와 회귀 기저 차이 ×20/ln10. CPPS/Praat 동등성 미검증.','estimate');
 add('VTL','성도 길이 모델값','cm','F3–F5 추정 피크에 균일 폐관 1/4파장 모델(c=340m/s) 적용. 실제 해부학 길이 아님.','estimate');
 export const ANALYZER_FIELDS=Object.freeze(fields.map(Object.freeze));
 const finite=n=>Number.isFinite(n)?n:null;
@@ -37,14 +37,14 @@ export function extractAnalyzerFeatures({waveform,spectrum,sampleRate,features={
   const sub=sumBand(20,150),singer=sumBand(2800,3400);out.subBass=sub===null?null:100*sub/total;out.singerCluster=singer===null?null:100*singer/total;
   if(features.valid){
     const weights=Array.from({length:13},(_,i)=>Math.exp(-.5*((i-6)/6)**2));
-    ranges.forEach(([lo,hi],index)=>{if(hi>sampleRate/2)return;let best=0,at=-1;for(let i=aHz(lo);i<bHz(hi);i++){let sum=0,weight=0;for(let j=-6;j<=6;j++){const k=i+j;if(k>=0&&k<mag.length){sum+=mag[k]*weights[j+6];weight+=weights[j+6];}}sum/=weight;if(sum>best){best=sum;at=i;}}if(best>maxMag*1e-4&&at>aHz(lo)&&at<bHz(hi)-1)out['F'+(index+1)]=at*binHz;});
+    ranges.forEach(([baseLo,baseHi],index)=>{const scale=features.resonanceScale||1,lo=baseLo*scale,hi=baseHi*scale;if(hi>sampleRate/2)return;let best=0,at=-1;for(let i=aHz(lo);i<bHz(hi);i++){let sum=0,weight=0;for(let j=-6;j<=6;j++){const k=i+j;if(k>=0&&k<mag.length){sum+=mag[k]*weights[j+6];weight+=weights[j+6];}}sum/=weight;if(sum>best){best=sum;at=i;}}if(best>maxMag*1e-4&&at>aHz(lo)&&at<bHz(hi)-1)out['F'+(index+1)]=at*binHz;});
     const harm=meanBand(80,3000),noise=meanBand(7000,9000);out.HNR_legacy=harm>0&&noise>0?10*Math.log10(harm/noise)+8:null;
     const f0=features.f0,period=sampleRate/f0,low=Math.max(1,Math.floor(period*.95)),high=Math.min(waveform.length>>1,Math.ceil(period*1.05));let rho=-1;
     for(let lag=low;lag<=high;lag++){let xy=0,xx=0,yy=0;for(let i=0;i<waveform.length-lag;i++){const x=waveform[i]-mean,y=waveform[i+lag]-mean;xy+=x*y;xx+=x*x;yy+=y*y;}if(xx&&yy)rho=Math.max(rho,xy/Math.sqrt(xx*yy));}if(rho>0&&rho<=1.000001){rho=Math.min(rho,.999999);out.HNR=10*Math.log10(rho/(1-rho));}
     const cycles=[],amplitudes=[];let last=null;for(let i=1;i<waveform.length;i++){const left=waveform[i-1]-mean,right=waveform[i]-mean;if(left<0&&right>=0){const crossing=i-1-left/(right-left);if(last!==null){const length=crossing-last;if(length>=period*.75&&length<=period*1.25){cycles.push(length);let min=Infinity,max=-Infinity;for(let j=Math.ceil(last);j<=Math.floor(crossing);j++){min=Math.min(min,waveform[j]);max=Math.max(max,waveform[j]);}amplitudes.push(max-min);}else{cycles.length=0;amplitudes.length=0;}}last=crossing;}}
     out.JIT=relativeChange(cycles);out.SHI=relativeChange(amplitudes);
     const cre=new Float64Array(n),cim=new Float64Array(n);cre[0]=Math.log(Math.max(mag[0],1e-6));cre[n/2]=Math.log(Math.max(mag[mag.length-1],1e-6));for(let i=1;i<mag.length;i++)cre[i]=cre[n-i]=Math.log(Math.max(mag[i],1e-6));fft(cre,cim);
-    const qMin=Math.max(2,Math.floor(sampleRate/1200)),qMax=Math.min(n/2-1,Math.ceil(sampleRate/55));let sx=0,sy=0,sxy=0,sxx=0,k=0,peakValue=-Infinity,peakQ=0;for(let q=qMin;q<=qMax;q++){const value=cre[q]/n;sx+=q;sy+=value;sxy+=q*value;sxx+=q*q;k++;if(value>peakValue){peakValue=value;peakQ=q;}}const denominator=k*sxx-sx*sx;if(k>2&&denominator){const slope=(k*sxy-sx*sy)/denominator,intercept=(sy-slope*sx)/k;out.CPP=Math.max(0,(peakValue-slope*peakQ-intercept)*20/Math.LN10);}
+    const qMin=Math.max(2,Math.floor(sampleRate/(features.pitchCeiling||1200))),qMax=Math.min(n/2-1,Math.ceil(sampleRate/(features.pitchFloor||55)));let sx=0,sy=0,sxy=0,sxx=0,k=0,peakValue=-Infinity,peakQ=0;for(let q=qMin;q<=qMax;q++){const value=cre[q]/n;sx+=q;sy+=value;sxy+=q*value;sxx+=q*q;k++;if(value>peakValue){peakValue=value;peakQ=q;}}const denominator=k*sxx-sx*sx;if(k>2&&denominator){const slope=(k*sxy-sx*sy)/denominator,intercept=(sy-slope*sx)/k;out.CPP=Math.max(0,(peakValue-slope*peakQ-intercept)*20/Math.LN10);}
     const vtl=[3,4,5].map(i=>out['F'+i]>0?(2*i-1)*34000/(4*out['F'+i]):null).filter(x=>x!==null);out.VTL=vtl.length===3?vtl.reduce((a,b)=>a+b)/vtl.length:null;
   }
   const amplitudes=[],block=Math.round(sampleRate*.02);for(let i=0;i+block<=waveform.length;i+=block){let value=0;for(let j=i;j<i+block;j++)value=Math.max(value,Math.abs(waveform[j]-mean));if(value>1e-7)amplitudes.push(value);}out.envelopeVariation=relativeChange(amplitudes);

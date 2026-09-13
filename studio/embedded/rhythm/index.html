@@ -260,7 +260,7 @@ body[data-screen="play"] .zone-segment.active b{color:var(--zone);text-shadow:no
             <div><h2>플레이리스트</h2></div>
             <span class="count-badge" id="trackCount">0 TRACKS</span>
           </div>
-          <div class="filter-row" role="tablist" aria-label="트랙 분류">
+          <div class="filter-row" role="tablist" aria-label="트랙 성별"><button class="filter-button voice-filter active" data-voice-gender="male" role="tab" aria-selected="true">남성 트랙</button><button class="filter-button voice-filter" data-voice-gender="female" role="tab" aria-selected="false">여성 트랙</button></div><div class="filter-row" role="tablist" aria-label="트랙 분류">
             <button class="filter-button active" data-filter="all" role="tab">전체</button>
             <button class="filter-button" data-filter="보컬 트레이닝" role="tab">보컬 트레이닝</button>
             <button class="filter-button" data-filter="Stage Mission" role="tab">Stage Mission</button>
@@ -455,7 +455,7 @@ body[data-screen="play"] .zone-segment.active b{color:var(--zone);text-shadow:no
 </div>
 
 <script src="access.js"></script>
-<script src="host-bridge.js?v=pcm24-20260910"></script>
+<script src="host-bridge.js?v=voice-20260913"></script>
 <script src="presentation.js"></script>
 <script>
 'use strict';
@@ -1050,7 +1050,7 @@ const FALLBACK_TRACKS=[
 ];
 
 const $=id=>document.getElementById(id);
-const state={catalog:[],filter:'all',selected:null,asset:null,mode:'voice',loadToken:0,catalogName:'내장 트랙',audioCtx:null,session:null,micStream:null,micAnalyser:null,micBuffer:null,pitchHistory:[],lastPitchCheck:0,guideOn:readBool('tvGuide',true),octaveFree:readBool('tvOctaveFree',false),latency:readNumber('tvInputLatency',.2,0,.6),lookAhead:readNumber('tvLookAhead',0,0,10),visualDelay:readNumber('tvVisualDelay',-1,-1,.8),toastTimer:0,menuTime:0};
+const state={trackGender:'male',catalog:[],filter:'all',selected:null,asset:null,mode:'voice',loadToken:0,catalogName:'내장 트랙',audioCtx:null,session:null,micStream:null,micAnalyser:null,micBuffer:null,pitchHistory:[],lastPitchCheck:0,guideOn:readBool('tvGuide',true),octaveFree:readBool('tvOctaveFree',false),latency:readNumber('tvInputLatency',.2,0,.6),lookAhead:readNumber('tvLookAhead',0,0,10),visualDelay:readNumber('tvVisualDelay',-1,-1,.8),toastTimer:0,menuTime:0};
 const challenge={enabled:false,requesting:false,cameraToken:0,stream:null,recorder:null,take:null,url:null,recordCanvas:null,recordCtx:null,lastFrame:0,error:'',starting:false};
 const CLIP_DB_NAME='tv-stage-challenges-v1';
 const clipMemory=new Map();let clipDatabasePromise=null;
@@ -1081,8 +1081,16 @@ async function initCatalog(){
   state.catalog=tracks;setLibraryView(state.filter);$('catalogSignal').textContent=tracks.length+'개 트랙 연결';
   }finally{state.catalogLoading=false}
 }
+function trackGender(track){
+  const value=String(track.gender||track.voicePreset||'').toLowerCase();
+  if(['female','여성','여자','여'].includes(value))return 'female';
+  if(['male','남성','남자','남'].includes(value))return 'male';
+  return /(?:^|[\/_ -])female(?:$|[\/_ -])|여성|여자/.test(String(track.path||'').normalize('NFC').toLowerCase())?'female':'male';
+}
+function visibleTracks(filter=state.filter){return state.catalog.filter(t=>trackGender(t)===state.trackGender&&(filter==='all'||t.category===filter));}
 function renderCatalog(){
-  const list=$('trackList');list.textContent='';const visible=state.catalog.filter(t=>state.filter==='all'||t.category===state.filter);$('trackCount').textContent=pad2(visible.length)+' TRACKS';
+  document.querySelectorAll('[data-voice-gender]').forEach(button=>{const active=button.dataset.voiceGender===state.trackGender;button.classList.toggle('active',active);button.setAttribute('aria-selected',String(active));button.disabled=Boolean(state.starting||state.session||state.finalizing);});
+  const list=$('trackList');list.textContent='';const visible=visibleTracks();$('trackCount').textContent=pad2(visible.length)+' TRACKS';
   visible.forEach(track=>{
     const globalIndex=state.catalog.indexOf(track)+1,button=document.createElement('button');button.className='track-item';button.type='button';if(state.selected&&state.selected.id===track.id)button.classList.add('selected');
     button.setAttribute('aria-pressed',String(Boolean(state.selected&&state.selected.id===track.id)));button.setAttribute('aria-label',(track.name||track.path)+' · '+Math.round(track.bpm||0)+' BPM');
@@ -1092,18 +1100,18 @@ function renderCatalog(){
     const duration=document.createElement('small');duration.textContent=fmtTime(track.duration);bpm.appendChild(duration);
     button.append(idx,main,bpm);button.addEventListener('click',()=>{if(state.starting||state.session)return;revealTrackDetail();if(state.selected&&state.selected.id===track.id&&state.asset)return;selectTrack(track)});list.appendChild(button);
   });
-  if(!visible.length){const empty=document.createElement('p');empty.className='setup-note';empty.textContent='이 분류에는 트랙이 없습니다.';list.appendChild(empty)}
+  if(!visible.length){const empty=document.createElement('p');empty.className='setup-note';empty.textContent=state.trackGender==='female'?'여성용 트랙 준비 중입니다. 등록되면 이 목록에 표시됩니다.':'이 분류에는 남성용 트랙이 없습니다.';list.appendChild(empty)}
 }
 function revealTrackDetail(){const screen=$('libraryScreen');screen.classList.add('mobile-detail');document.querySelector('.setup-scroll').scrollTop=0;menuArtwork.dirty=true}
 function setLibraryView(filter){
   if(state.starting||state.session)return;stopChallengeCamera(true);state.filter=filter;
-  document.querySelectorAll('.filter-button').forEach(x=>{const active=x.dataset.filter===filter;x.classList.toggle('active',active);x.setAttribute('aria-selected',String(active))});
+  document.querySelectorAll('.filter-button[data-filter]').forEach(x=>{const active=x.dataset.filter===filter;x.classList.toggle('active',active);x.setAttribute('aria-selected',String(active))});
   document.querySelectorAll('[data-library-view]').forEach(x=>{x.classList.add('active');x.setAttribute('aria-current','page')});
   $('libraryHeading').textContent=filter==='all'?'오늘의 플레이':filter==='Stage Mission'?'스테이지 미션':'보컬 트레이닝';
   $('libraryScreen').classList.remove('mobile-detail');document.querySelector('.library-column').scrollTop=0;
-  const visible=state.catalog.filter(t=>filter==='all'||t.category===filter);renderCatalog();
-  if(visible.length&&!visible.some(t=>state.selected&&t.id===state.selected.id))selectTrack(visible[0]);
-  if(!visible.length){state.loadToken++;stopChallengeCamera(true);state.selected=null;state.asset=null;refreshChallengeUI();$('selectedTitle').textContent='아직 트랙이 없어요';$('selectedDescription').textContent='다른 트랙 폴더를 연결해 주세요.';$('sourceLabel').textContent='트랙 추가';$('coverCategory').textContent='YOUR NEXT STAGE';$('coverIndex').textContent='— / —';['metaBpm','metaNotes','metaRange','metaDuration'].forEach(id=>$(id).textContent='—');setLoadState('','이 분류에 연결된 트랙이 없습니다.');setStartReady(false);$('startLabel').textContent='재생할 트랙이 없어요'}
+  const visible=visibleTracks(filter);renderCatalog();
+  if(visible.length&&(!state.asset||!visible.some(t=>state.selected&&t.id===state.selected.id)))selectTrack(visible[0]);
+  if(!visible.length){state.loadToken++;stopChallengeCamera(true);state.selected=null;state.asset=null;refreshChallengeUI();$('selectedTitle').textContent='아직 트랙이 없어요';$('selectedDescription').textContent=state.trackGender==='female'?'여성용 트랙을 등록하면 이곳에서 연습할 수 있습니다.':'다른 트랙 폴더를 연결해 주세요.';$('sourceLabel').textContent='트랙 추가';$('coverCategory').textContent='YOUR NEXT STAGE';$('coverIndex').textContent='— / —';['metaBpm','metaNotes','metaRange','metaDuration'].forEach(id=>$(id).textContent='—');setLoadState('','이 분류에 연결된 트랙이 없습니다.');setStartReady(false);$('startLabel').textContent='재생할 트랙이 없어요'}
   refreshChallengeUI();setMode(state.mode);menuArtwork.dirty=true;
 }
 function trackFileUrl(track,file){return TRACK_ROOT+(track.base||TRACK_BASE)+track.path.split('/').map(encodeURIComponent).join('/')+'/'+encodeURIComponent(file)}
@@ -1165,7 +1173,7 @@ function warmNextTrack(track){
   const epoch=trackCacheEpoch;
   nextTrackWarmTimer=setTimeout(()=>{
     if(epoch!==trackCacheEpoch||document.hidden||!hostBridge.authorized)return;
-    const visible=state.catalog.filter(t=>state.filter==='all'||t.category===state.filter);
+    const visible=visibleTracks();
     const next=visible[visible.indexOf(track)+1];
     if(!next||next.source==='file')return;
     const audio=Array.isArray(next.audio)?next.audio:[next.audio];
@@ -1204,7 +1212,7 @@ async function ingestFolderRecords(records,folderName){
     const midiFiles=files.filter(x=>/\.midi?$/i.test(x.name)),audioFiles=files.filter(x=>/\.(mp3|wav|m4a|aac)$/i.test(x.name));if(!midiFiles.length||!audioFiles.length)continue;
     const infoRecord=files.find(x=>x.name.normalize('NFC')==='트랙정보.json')||files.find(x=>/\.json$/i.test(x.name));let info={};if(infoRecord){try{info=JSON.parse(await infoRecord.file.text())}catch(e){}}
     const leaf=path.split('/').pop(),stemMatch=midiFiles.find(x=>x.name.replace(/\.midi?$/i,'').toLowerCase()===leaf.toLowerCase()),selectedMidi=stemMatch||midiFiles[0];
-    tracks.push({id:'local-'+Date.now()+'-'+order++,category:(path.split('/').some(part=>part.toLowerCase()==='stage mission')||String(folderName).toLowerCase()==='stage mission')?'Stage Mission':'보컬 트레이닝',path,midi:selectedMidi.name,audio:audioFiles.map(x=>x.name),midiFile:selectedMidi.file,audioFiles:audioFiles.map(x=>x.file),infoFile:infoRecord&&infoRecord.file,source:'file',name:info['이름']||leaf,bpm:Number(info.bpm)||100,description:info['설명']||'로컬 폴더 트랙',range:info['실측']&&info['실측']['음역'],noteCount:info['실측']&&info['실측']['노트수'],duration:info['실측']&&info['실측']['오디오길이(초)']});
+    tracks.push({id:'local-'+Date.now()+'-'+order++,category:(path.split('/').some(part=>part.toLowerCase()==='stage mission')||String(folderName).toLowerCase()==='stage mission')?'Stage Mission':'보컬 트레이닝',path,midi:selectedMidi.name,audio:audioFiles.map(x=>x.name),midiFile:selectedMidi.file,audioFiles:audioFiles.map(x=>x.file),infoFile:infoRecord&&infoRecord.file,source:'file',gender:info.gender||info['성별']||state.trackGender,name:info['이름']||leaf,bpm:Number(info.bpm)||100,description:info['설명']||'로컬 폴더 트랙',range:info['실측']&&info['실측']['음역'],noteCount:info['실측']&&info['실측']['노트수'],duration:info['실측']&&info['실측']['오디오길이(초)']});
   }
   if(!tracks.length){showToast('MIDI와 오디오가 함께 있는 트랙 폴더를 찾지 못했습니다.');return}tracks.sort((a,b)=>a.category.localeCompare(b.category,'ko')||a.path.localeCompare(b.path,'ko'));state.catalog=tracks;state.catalogName=folderName||'선택한 폴더';setLibraryView('all');$('catalogSignal').textContent=tracks.length+'개 로컬 트랙 연결';showToast(tracks.length+'개 트랙의 MIDI와 오디오를 연결했습니다.');
 }
@@ -1244,7 +1252,7 @@ async function startMicrophone(startToken){
 function stopMicrophone(){if(state.micStream)state.micStream.getTracks().forEach(track=>track.stop());state.micStream=null;state.micAnalyser=null;state.micBuffer=null;state.pitchHistory=[];for(const node of state.micNodes||[])try{node.disconnect()}catch{}state.micNodes=[]}
 function detectPitch(){
   const analyser=state.micAnalyser,buffer=state.micBuffer;if(!analyser||!buffer)return {hz:0,confidence:0,rms:0};analyser.getFloatTimeDomainData(buffer);const n=buffer.length;let rms=0;for(let i=0;i<n;i++)rms+=buffer[i]*buffer[i];rms=Math.sqrt(rms/n);state.lastRms=rms;if(rms<.0015)return {hz:0,confidence:0,rms};
-  const sampleRate=state.audioCtx.sampleRate,minLag=Math.max(40,Math.floor(sampleRate/700)),maxLag=Math.min(Math.floor(sampleRate/75),n/2);let bestLag=0,best=-1;
+  const sampleRate=state.audioCtx.sampleRate,settings=hostBridge.pitchSettings,detector=state.session?.hostRun?.detectPitch;if(detector){const p=detector(buffer,sampleRate,settings);return {hz:p.clarity>=.7&&p.f0>=settings.pitchFloor&&p.f0<=settings.pitchCeiling?p.f0:0,confidence:p.clarity,rms:p.rms};}const minLag=Math.max(2,Math.floor(sampleRate/settings.pitchCeiling)),maxLag=Math.min(Math.floor(sampleRate/settings.pitchFloor),n/2);let bestLag=0,best=-1;
   for(let lag=minLag;lag<=maxLag;lag++){let corr=0,e0=0,e1=0;for(let i=0;i<n-lag;i+=2){const a=buffer[i],b=buffer[i+lag];corr+=a*b;e0+=a*a;e1+=b*b}const value=corr/Math.sqrt(e0*e1+1e-12);if(value>best){best=value;bestLag=lag}}
   if(best<.36||!bestLag)return {hz:0,confidence:best,rms};let hz=sampleRate/bestLag;state.pitchHistory.push(hz);if(state.pitchHistory.length>3)state.pitchHistory.shift();const sorted=[...state.pitchHistory].sort((a,b)=>a-b);hz=sorted[Math.floor(sorted.length/2)];return {hz,confidence:best,rms};
 }
@@ -1318,7 +1326,7 @@ function clearHostMemberView(){
   clearTrackCache();state.loadToken++;state.asset=null;setStartReady(false);
   $('clipPreview').pause();$('clipPreview').removeAttribute('src');$('savedClipsOverlay').classList.remove('on');$('savedClipsList').textContent='';$('savedClipsButton').hidden=true;
   if(challenge.url){URL.revokeObjectURL(challenge.url);challenge.url=null}challenge.take=null;
-  const reload=()=>{if(!hostBridge.authorized)return;if(state.catalog.length&&state.selected)void selectTrack(state.selected);else if(!state.catalog.length)void initCatalog().catch(()=>{})};
+  const reload=()=>{if(!hostBridge.authorized)return;if(state.catalog.length)setLibraryView(state.filter);else void initCatalog().catch(()=>{})};
   if(state.session||state.starting||state.finalizing)void hostBridge.stop('profile-change').then(reload);
   else reload();
 }
@@ -1733,7 +1741,7 @@ function renderFrame(timestamp){
   requestAnimationFrame(renderFrame);
 }
 
-document.querySelectorAll('.filter-button').forEach(button=>button.addEventListener('click',()=>setLibraryView(button.dataset.filter)));
+document.querySelectorAll('.filter-button[data-filter]').forEach(button=>button.addEventListener('click',()=>setLibraryView(button.dataset.filter)));
 document.querySelectorAll('[data-library-view]').forEach(button=>button.addEventListener('click',()=>setLibraryView(button.dataset.libraryView)));
 $('homeButton').addEventListener('click',event=>{event.preventDefault();setLibraryView('all')});
 $('featureStage').addEventListener('click',()=>setLibraryView('보컬 트레이닝'));
@@ -1778,6 +1786,7 @@ window.addEventListener('pageshow',()=>{refreshChallengeUI();setStartReady(Boole
 window.addEventListener('beforeunload',event=>{if(clipMemory.size||(state.session&&state.session.challenge)){event.preventDefault();event.returnValue=''}});
 
 rhythmPresentation.configure({onExit(){if(state.starting&&!state.session)cancelPendingStart();else if(state.session?.status==='playing')void pauseGame(true)},onResize:resizeCanvas});
+document.querySelectorAll('[data-voice-gender]').forEach(button=>button.onclick=()=>{if(state.session||state.starting||state.finalizing)return;hostBridge.selectVoicePreset(button.dataset.voiceGender);});
 resizeCanvas();requestAnimationFrame(renderFrame);initCatalog().catch(error=>{setStartReady(false);showToast(error.message)});refreshSavedClipsButton();hostBridge.ready();
 </script>
 </body>

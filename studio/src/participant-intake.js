@@ -1,11 +1,11 @@
 import { getContext } from '../context.js';
 /** Fixed server-owned student. Identity and consent are never edited in Studio. */
-export function mountParticipantIntake({container,getProfileId,isLocked,isRecording=()=>false,onRecord,onChooseFiles,onHistory,onError,onDraftChange=()=>{}}) {
+export function mountParticipantIntake({container,getProfileId,isLocked,isRecording=()=>false,onRecord,onChooseFiles,onHistory,onError,onDraftChange=()=>{},getVoicePreset=()=>undefined,onVoicePresetChange=()=>{}}) {
   const {student,branchId,practice}=getContext();
   container.className='participant-intake';
   container.innerHTML=`<section class="franchise-intake"><div class="franchise-person"><span class="intake-step">01</span><div><h2 id="franchiseStudentName"></h2><p>운영 화면에서 선택한 학생 · 개인정보·음성 동의 확인됨</p></div><span class="franchise-identity">학생 기록 연결</span></div>
     <details class="intake-examination"><summary>이번 검사 조건 <small>발성 과제 · 녹음 조건 · 메모</small></summary><div class="intake-grid">
-    <label>곡 · 발성 과제<input id="participantSong" maxlength="160" placeholder="예: /아/ 지속음"></label><label>검사 구간<input id="participantSection" maxlength="120" placeholder="훈련 전 · 훈련 후"></label>
+    <label>성별<select id="participantGender" aria-label="검사조건 성별"><option value="">선택</option><option value="male">남자</option><option value="female">여자</option></select></label><label>곡 · 발성 과제<input id="participantSong" maxlength="160" placeholder="예: /아/ 지속음"></label><label>검사 구간<input id="participantSection" maxlength="120" placeholder="훈련 전 · 훈련 후"></label>
     <label>녹음 조건<input id="participantConditions" maxlength="500" placeholder="마이크 · 거리 · 공간"></label><label>검사 메모<input id="participantNote" maxlength="1200" placeholder="오늘의 관찰 내용"></label></div><div class="intake-scores"><label>외향성 E<input id="participantScoreE" type="number" min="0" max="100" step="any" placeholder="선택 · 0–100"></label><label>성실성 C<input id="participantScoreC" type="number" min="0" max="100" step="any" placeholder="선택 · 0–100"></label><label>우호성 A<input id="participantScoreA" type="number" min="0" max="100" step="any" placeholder="선택 · 0–100"></label><label>정서 민감성 N<input id="participantScoreN" type="number" min="0" max="100" step="any" placeholder="선택 · 0–100"></label><label>개방성 O<input id="participantScoreO" type="number" min="0" max="100" step="any" placeholder="선택 · 0–100"></label><label>보컬특성 V<input id="participantScoreV" type="number" min="0" max="100" step="any" placeholder="선택 · 0–100"></label></div><p class="field-hint">별도 검사에서 받은 점수만 입력합니다. 목소리에서 성격을 추정하지 않습니다.</p></details>
 <details class="intake-examination"><summary>연구용 측정 조건 <small>같은 과제·장비로 비교하기 위한 기록</small></summary><p class="field-hint">일반 검사에는 선택 사항입니다. 항목을 입력해도 연구 동의·표준 측정 검증이 자동으로 완료되지는 않습니다.</p><div class="intake-grid">
 <label>측정 과제<select id="researchTask"><option value="unknown">미분류</option><option value="sustained_vowel">편안한 /아/ 지속 모음</option><option value="reading">고정 문장 읽기</option><option value="spontaneous">자유 발화</option><option value="range">최저·최고 음역 과제</option><option value="mpt">최대발성지속시간 과제</option><option value="singing">노래</option></select></label>
@@ -29,7 +29,7 @@ export function mountParticipantIntake({container,getProfileId,isLocked,isRecord
   if(practice){container.querySelector('.franchise-person p').textContent='녹음·분석·훈련을 바로 사용하세요. 학생을 선택하면 기록됩니다.';container.querySelector('.franchise-identity').textContent='기록 안 함';}
   function research(){const text=id=>$('research'+id).value;const number=id=>text(id)===''?null:Number(text(id));return {task:text('Task'),timepoint:text('Timepoint'),replicate:number('Replicate'),microphone:text('Microphone'),distanceCm:number('DistanceCm'),angleDeg:number('AngleDeg'),processing:text('Processing'),accompaniment:text('Accompaniment'),assessmentId:text('AssessmentId'),assessmentVersion:text('AssessmentVersion'),assessmentDate:text('AssessmentDate'),scoreUnit:text('ScoreUnit'),effort:number('Effort'),fatigue:number('Fatigue'),researchConsentRef:text('ConsentRef')};}
   function snapshot() {
-    return {profileId:student.id,participant:{id:student.id,name:student.name},examination:{research:research(),song:$('participantSong').value,section:$('participantSection').value,conditions:$('participantConditions').value,note:$('participantNote').value,big5:Object.fromEntries(['E','C','A','N','O','V'].map(key=>[key,$('participantScore'+key).value===''?null:Number($('participantScore'+key).value)])),branchId,consent:{service:student.consent.service===true,voice:student.consent.voice===true,drive:false,version:'tv-franchise-student-consent-v1',source:'server-student',checkedAt:student.updatedAt||student.createdAt||null}}};
+    return {profileId:student.id,participant:{id:student.id,name:student.name,gender:getVoicePreset()==='female'?'여자':getVoicePreset()==='male'?'남자':''},examination:{voicePreset:getVoicePreset()||null,research:research(),song:$('participantSong').value,section:$('participantSection').value,conditions:$('participantConditions').value,note:$('participantNote').value,big5:Object.fromEntries(['E','C','A','N','O','V'].map(key=>[key,$('participantScore'+key).value===''?null:Number($('participantScore'+key).value)])),branchId,consent:{service:student.consent.service===true,voice:student.consent.voice===true,drive:false,version:'tv-franchise-student-consent-v1',source:'server-student',checkedAt:student.updatedAt||student.createdAt||null}}};
   }
   async function prepare() {
     if(isLocked())throw new Error('진행 중인 음성 작업을 먼저 마쳐 주세요.');
@@ -41,11 +41,12 @@ export function mountParticipantIntake({container,getProfileId,isLocked,isRecord
   }
   const safe=fn=>Promise.resolve().then(fn).catch(onError);
   function updateLocks(recording=isRecording()) {
-    const locked=isLocked();container.querySelectorAll('input,select').forEach(input=>input.disabled=locked);
+    $('participantGender').value=getVoicePreset()||'';const locked=isLocked();container.querySelectorAll('input,select').forEach(input=>input.disabled=locked);
     $('participantRecord').disabled=locked&&!recording;$('participantRecord').textContent=recording?'녹음 종료 · 전체 분석':'녹음 시작';
     $('participantUpload').disabled=locked;$('participantHistory').disabled=locked;
     $('participantReadyState').textContent=recording?'녹음 중 · 종료하면 전체 구간을 분석합니다.':practice?'학생 없이 사용 중 · 기록은 저장되지 않습니다.':'선택한 학생의 고유 번호로 기록합니다.';
   }
+  $('participantGender').onchange=()=>{const value=$('participantGender').value;safe(async()=>{try{await onVoicePresetChange(value);}finally{updateLocks();}});};
   $('participantRecord').onclick=()=>safe(onRecord);
   $('participantUpload').onclick=()=>safe(async()=>{await prepare();await onChooseFiles();});
   $('participantHistory').onclick=()=>safe(()=>onHistory(student.id));

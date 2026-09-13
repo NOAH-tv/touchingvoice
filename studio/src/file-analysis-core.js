@@ -1,9 +1,9 @@
-import { analyzeFrame } from './audio.js';
+import { analyzeFrame } from './audio.js?v=voice-20260913';
 import { createVoiceMetricsAccumulator, VOICE_METRIC_KEYS } from './pro-metrics.js';
-import { ANALYZER_FIELDS, extractAnalyzerFeatures } from './analyzer-metrics.js';
-import { DEFAULT_PROFILE, LAYER_KEYS, processLayers, sanitizeProfile } from './tuning.js?v=focus-20260913';
+import { ANALYZER_FIELDS, extractAnalyzerFeatures } from './analyzer-metrics.js?v=voice-20260913';
+import { DEFAULT_PROFILE, LAYER_KEYS, processLayers, sanitizeProfile } from './tuning.js?v=voice-20260913';
 
-export const FILE_ANALYSIS_VERSION = 2;
+export const FILE_ANALYSIS_VERSION = 3;
 export const FILE_FFT_SIZE = 4096;
 export const FILE_TRACE_LIMIT = 1500;
 export const FILE_SPECTRUM_FLOOR_DB = -120;
@@ -15,7 +15,7 @@ const datasetFields = () => [
   { key: 'valid', label: '유효 음성', unit: '0/1', method: '기존 F0 검출 + 프로필 노이즈 게이트', quality: 'derived' },
   ...VOICE_METRIC_KEYS.map(key => ({ key, label: key,
     unit: key === 'f0' ? 'Hz' : key === 'clarity' ? '0–1' : key === 'level' ? 'dBFS' : 'dB',
-    method: `기존 analyzeFrame ${key} · 유효 음성 프레임만${key === 'level' ? ' · 입력 보정 1회 적용' : ''}`, quality: 'derived' })),
+    method: `저장된 프로필의 음성 기준을 적용한 analyzeFrame ${key} · 유효 음성 프레임만${key === 'level' ? ' · 입력 보정 1회 적용' : ''}`, quality: 'derived' })),
   ...ANALYZER_FIELDS.map(field => ({ ...field })),
   ...LAYER_KEYS.map(key => ({ key: `response_${key}`, label: `${key} 보정 시각 반응`, unit: '0–1',
     method: '저장된 프로필의 보정 및 attack/release 적용 시각 반응. 무효/게이트 미달 프레임은 0. 실제 근육·생리 활동의 직접 측정 아님.',
@@ -173,7 +173,7 @@ export function analyzePcm({ pcm, sampleRate, profile = DEFAULT_PROFILE, profile
     window.set(pcm.subarray(realStart, realEnd), realStart - windowStart);
     const spectrum = fft(window);
     const realWaveform = pcm.subarray(realStart, realEnd);
-    const features = analyzeFrame(realWaveform, spectrum, sampleRate);
+    const features = analyzeFrame(realWaveform, spectrum, sampleRate, snapshot);
     const accepted = accumulator.add({ features });
     const extra = extractAnalyzerFeatures({ waveform: realWaveform, spectrum, sampleRate,
       features: { ...features, valid: accepted } });

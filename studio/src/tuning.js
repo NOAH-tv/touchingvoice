@@ -1,5 +1,6 @@
-import { FOCUS_FEATURES, FOCUS_DEFAULTS } from './spectral-focus.js';
-import { sanitizePersonalModel, personalResponseRange } from './personal-calibration.js';
+import { VOICE_PRESETS } from './voice-presets.js?v=voice-20260913';
+import { FOCUS_FEATURES, FOCUS_DEFAULTS } from './spectral-focus.js?v=voice-20260913';
+import { sanitizePersonalModel, personalResponseRange } from './personal-calibration.js?v=voice-20260913';
 
 /**
  * TouchingVoice per-singer calibration. No network or browser dependencies.
@@ -111,6 +112,10 @@ export function sanitizeProfile(input = DEFAULT_PROFILE) {
     if (layer.inputMax - layer.inputMin < 0.01) fail(`${LAYER_META[key].name}: 입력 상한은 하한보다 최소 0.01 dB 커야 합니다.`);
     if (layer.outputMax < layer.outputMin) fail(`${LAYER_META[key].name}: 출력 상한은 하한 이상이어야 합니다.`);
     result.layers[key] = layer;
+  }
+  if (input.voicePreset !== undefined) {
+    if (!Object.hasOwn(VOICE_PRESETS, input.voicePreset)) fail('남성 또는 여성 음성 기준을 선택해 주세요.');
+    result.voicePreset = input.voicePreset;
   }
   if (input.personalModel !== undefined) result.personalModel = sanitizePersonalModel(input.personalModel);
   return result;

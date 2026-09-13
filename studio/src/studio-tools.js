@@ -1,7 +1,7 @@
 /** Local host integration: DAW monitoring + original rhythm game, one member per take. */
-export function mountStudioTools({engine,getProfile,getTab,isBusy,isRecordLocked,stopHostInput,onLocks,setTab,onTrainingResult,getLatestRecording,getRecordElapsed,playEntry,downloadEntry,toast,recordToggle,getTrainingAsset=null}) {
+export function mountStudioTools({engine,getProfile,getTab,isBusy,isRecordLocked,stopHostInput,onLocks,setTab,onTrainingResult,getLatestRecording,getRecordElapsed,playEntry,downloadEntry,toast,recordToggle,getTrainingAsset=null,beforeTrainingStart=()=>{},onVoicePresetChange=()=>{}}) {
   const $=id=>document.getElementById(id), origin=location.origin, frame=$('rhythmFrame');
-  let trainingActive=false,rhythmMode=true,latestFrame=null,devicesBusy=false,outputBusy=false,requestEpoch=0,rhythmReady=false;
+  let trainingActive=false,latestFrame=null,devicesBusy=false,outputBusy=false,requestEpoch=0,rhythmReady=false;
   const snapshots=new Map(),completed=new Set();
   const notify=()=>{onLocks();paint();};
   const run=async fn=>{try{return await fn();}catch(e){toast(e?.message||'오디오 작업을 완료하지 못했습니다.',true);}};
@@ -10,7 +10,7 @@ export function mountStudioTools({engine,getProfile,getTab,isBusy,isRecordLocked
   const sendProfile=()=>{if(rhythmReady)post({type:'tv-host-profile',...getProfile(),protectedAssets:typeof getTrainingAsset==='function'});};
   let rhythmExpanded=false,returnScroll=null;
   function setRhythmExpanded(expanded){
-    expanded=expanded===true&&getTab()==='training'&&rhythmMode&&!document.hidden;
+    expanded=expanded===true&&getTab()==='training'&&!document.hidden;
     if(expanded===rhythmExpanded)return;
     if(expanded)returnScroll={left:window.scrollX,top:window.scrollY};
     rhythmExpanded=expanded;document.body.classList.toggle('rhythm-expanded',expanded);
@@ -35,13 +35,12 @@ export function mountStudioTools({engine,getProfile,getTab,isBusy,isRecordLocked
   $('boothAnalysisBtn').onclick=()=>setTab('analyzer');$('boothArchiveBtn').onclick=()=>setTab('sessions');
   $('boothMRBtn').onclick=()=>{const query=$('boothMRQuery').value.trim();if(!query){$('boothMRQuery').focus();return;}window.open('https://www.youtube.com/results?search_query='+encodeURIComponent(query+' MR'),'_blank','noopener,noreferrer');};
   $('boothMRQuery').onkeydown=e=>{if(e.key==='Enter'){$('boothMRBtn').click();e.preventDefault();}};
-  function setTrainingMode(rhythm){rhythmMode=rhythm;if(!rhythm)stopRhythm();$('rhythmWorkspace').hidden=!rhythm;$('quickTraining').hidden=rhythm;$('rhythmModeBtn').setAttribute('aria-selected',String(rhythm));$('quickModeBtn').setAttribute('aria-selected',String(!rhythm));if(rhythm){ensureRhythm();sendProfile();post({type:'tv-host-resume'});}}
-  $('rhythmModeBtn').onclick=()=>setTrainingMode(true);$('quickModeBtn').onclick=()=>setTrainingMode(false);
   // The child announces readiness before its iframe load event may fire.
   // Only that handshake starts a new request generation; late DOM load must not cancel its downloads.
   frame.addEventListener('load',()=>{if(rhythmReady)sendProfile();});
   window.addEventListener('message',event=>{
     if(event.origin!==origin||event.source!==frame.contentWindow)return;const message=event.data;if(!message||typeof message.type!=='string')return;
+    if(message.type==='tv-rhythm-preset-request'){if(['male','female'].includes(message.voicePreset))run(async()=>{if(trainingActive||isRecordLocked()||isBusy())throw new Error('진행 중인 녹음·훈련을 마친 뒤 기준을 바꿔 주세요.');await onVoicePresetChange(message.voicePreset);sendProfile();});return;}
     if(message.type==='tv-rhythm-asset-request'){
       if(typeof message.requestId!=='string'||message.requestId.length>160)return;
       const reply=data=>post({type:'tv-host-asset',requestId:message.requestId,...data},data.bytes?[data.bytes]:[]);
@@ -57,12 +56,13 @@ export function mountStudioTools({engine,getProfile,getTab,isBusy,isRecordLocked
     if(message.type==='tv-rhythm-ready'){requestEpoch++;rhythmReady=true;setRhythmExpanded(false);trainingActive=false;sendProfile();if(getTab()!=='training')stopRhythm();notify();return;}
     if(message.type==='tv-rhythm-request-start')run(async()=>{
       const {requestId,runId}=message;const denied=reason=>post({type:'tv-host-start-ready',requestId,approved:false,message:reason});
-      if(getTab()!=='training'||!rhythmMode||document.hidden)return denied('훈련 화면에서 시작해 주세요.');
+      if(getTab()!=='training'||document.hidden)return denied('훈련 화면에서 시작해 주세요.');
       if(isRecordLocked()||isBusy())return denied('진행 중인 녹음을 마친 뒤 훈련을 시작해 주세요.');
       if(typeof runId!=='string'||runId.length>120)return denied('훈련 식별 정보를 다시 확인해 주세요.');
       const snapshot=structuredClone(getProfile());if(message.profileId!==snapshot.profileId){sendProfile();return denied('회원이 변경되었습니다. 현재 회원을 확인한 뒤 다시 시작해 주세요.');}
+      try{beforeTrainingStart();}catch(error){return denied(error.message);}
       const epoch=++requestEpoch;trainingActive=true;notify();
-      try{await stopHostInput();if(epoch!==requestEpoch||getTab()!=='training'||!rhythmMode||document.hidden){trainingActive=false;notify();return denied('훈련 시작을 취소했습니다.');}snapshots.set(runId,snapshot);if(snapshots.size>30)snapshots.delete(snapshots.keys().next().value);post({type:'tv-host-start-ready',requestId,approved:true,...snapshot});$('rhythmStatus').textContent=message.mode==='demo'?'미리 듣기 · 회원 기록에 포함하지 않습니다':`${snapshot.profileName} · 훈련 입력 사용 중`;}
+      try{await stopHostInput();if(epoch!==requestEpoch||getTab()!=='training'||document.hidden){trainingActive=false;notify();return denied('훈련 시작을 취소했습니다.');}snapshots.set(runId,snapshot);if(snapshots.size>30)snapshots.delete(snapshots.keys().next().value);post({type:'tv-host-start-ready',requestId,approved:true,...snapshot});$('rhythmStatus').textContent=message.mode==='demo'?'미리 듣기 · 회원 기록에 포함하지 않습니다':`${snapshot.profileName} · 훈련 입력 사용 중`;}
       catch(e){trainingActive=false;notify();denied(e.message||'입력을 준비하지 못했습니다.');}
     });
     if(message.type==='tv-rhythm-state'){trainingActive=Boolean(message.active);if(!trainingActive){setRhythmExpanded(false);$('rhythmStatus').textContent='곡을 선택해 시작하세요';sendProfile();}notify();}
