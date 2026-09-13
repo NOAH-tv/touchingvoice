@@ -1,6 +1,6 @@
-import { VOICE_PRESETS } from './voice-presets.js?v=female-a-20260913';
-import { FOCUS_FEATURES, FOCUS_DEFAULTS, FEMALE_FOCUS_PRESET, FEMALE_FOCUS_DEFAULTS } from './spectral-focus.js?v=female-a-20260913';
-import { sanitizePersonalModel, personalResponseRange } from './personal-calibration.js?v=female-a-20260913';
+import { VOICE_PRESETS } from './voice-presets.js?v=monitor-fix-20260913';
+import { FOCUS_FEATURES, FOCUS_DEFAULTS, FEMALE_FOCUS_PRESET, FEMALE_FOCUS_DEFAULTS } from './spectral-focus.js?v=monitor-fix-20260913';
+import { sanitizePersonalModel, personalResponseRange } from './personal-calibration.js?v=monitor-fix-20260913';
 
 /**
  * TouchingVoice per-singer calibration. No network or browser dependencies.

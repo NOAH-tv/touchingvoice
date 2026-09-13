@@ -1,7 +1,7 @@
-import { voiceSettings } from './voice-presets.js?v=female-a-20260913';
-import { spectralFocus } from './spectral-focus.js?v=female-a-20260913';
+import { voiceSettings } from './voice-presets.js?v=monitor-fix-20260913';
+import { spectralFocus } from './spectral-focus.js?v=monitor-fix-20260913';
 /** Local Web Audio engine. Raw capture stays separate from optional headphone monitoring. */
-import { BoothMonitor, DEFAULT_MONITOR_SETTINGS, sanitizeMonitorSettings } from './booth-monitor.js';
+import { BoothMonitor, DEFAULT_MONITOR_SETTINGS, sanitizeMonitorSettings } from './booth-monitor.js?v=monitor-fix-20260913';
 import { PcmCaptureRecorder, PCM_MAX_SECONDS } from './pcm-capture.js?v=pcm24-20260910';
 
 const FFT_SIZE = 4096;
@@ -323,7 +323,7 @@ export class AudioEngine {
       await this._ensureContext();
       if (generation !== this._generation) return;
       const constraints = { echoCancellation: false, noiseSuppression: false, autoGainControl: false,
-        sampleRate: 48000, channelCount: 1, ...(deviceId ? { deviceId: { exact: deviceId } } : {}) };
+        sampleRate: 48000, channelCount: 1, latency: { ideal: 0 }, ...(deviceId ? { deviceId: { exact: deviceId } } : {}) };
       const stream = await navigator.mediaDevices.getUserMedia({ audio: constraints, video: false });
       if (generation !== this._generation) { stream.getTracks().forEach(t => t.stop()); return; }
       this.stream = stream;

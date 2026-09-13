@@ -1,7 +1,7 @@
-import { analyzeFrame } from './audio.js?v=female-a-20260913';
+import { analyzeFrame } from './audio.js?v=monitor-fix-20260913';
 import { createVoiceMetricsAccumulator, VOICE_METRIC_KEYS } from './pro-metrics.js';
-import { ANALYZER_FIELDS, extractAnalyzerFeatures } from './analyzer-metrics.js?v=female-a-20260913';
-import { DEFAULT_PROFILE, LAYER_KEYS, processLayers, sanitizeProfile } from './tuning.js?v=female-a-20260913';
+import { ANALYZER_FIELDS, extractAnalyzerFeatures } from './analyzer-metrics.js?v=monitor-fix-20260913';
+import { DEFAULT_PROFILE, LAYER_KEYS, processLayers, sanitizeProfile } from './tuning.js?v=monitor-fix-20260913';
 
 export const FILE_ANALYSIS_VERSION = 4;
 export const FILE_FFT_SIZE = 4096;

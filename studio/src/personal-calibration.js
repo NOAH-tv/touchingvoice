@@ -1,5 +1,5 @@
-import { FEMALE_FOCUS_PRESET } from './spectral-focus.js?v=female-a-20260913';
-import { FOCUS_KEYS } from './spectral-focus.js?v=female-a-20260913';
+import { FEMALE_FOCUS_PRESET } from './spectral-focus.js?v=monitor-fix-20260913';
+import { FOCUS_KEYS } from './spectral-focus.js?v=monitor-fix-20260913';
 /** Personal, pitch-specific acoustic response. No anatomical inference or ML classifier. */
 export const PERSONAL_MODEL_VERSION = 1;
 export const PERSONAL_LAYERS = Object.freeze(['nas', 'oro', 'aes', 'src']);

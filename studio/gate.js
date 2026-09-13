@@ -81,7 +81,7 @@ async function authenticated() {
 }
 try {
   // Public shell only; protected assets and application execution remain gated.
-  const shellResponse = fetch('./app-shell.html?v=female-a-20260913').then(async response => {
+  const shellResponse = fetch('./app-shell.html?v=monitor-fix-20260913').then(async response => {
     if (!response.ok) throw new Error('코칭 화면을 불러오지 못했습니다.');
     return response.text();
   });
@@ -104,7 +104,7 @@ try {
   }
   const css=document.createElement('link');css.rel='stylesheet';css.href='./franchise.css?v=gender-click-20260913';document.head.append(css);
   document.body.replaceChildren(...Array.from(parsed.body.childNodes, node=>document.importNode(node,true)));
-  const app=await import('./src/app.js?v=female-a-20260913');appModule=app;shutdown=app.shutdownStudio;
+  const app=await import('./src/app.js?v=monitor-fix-20260913');appModule=app;shutdown=app.shutdownStudio;
   if(closed){await shutdown?.();throw new Error('코칭 연결이 종료되었습니다.');}
   if(suspended)await suspend();
   document.documentElement.style.visibility=suspended?'hidden':'';document.title='터칭보이스 · 코칭 스튜디오';

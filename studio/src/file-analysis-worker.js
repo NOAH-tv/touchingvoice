@@ -1,4 +1,4 @@
-import { analyzePcm } from './file-analysis-core.js?v=female-a-20260913';
+import { analyzePcm } from './file-analysis-core.js?v=monitor-fix-20260913';
 
 // Cancellation is Worker.terminate(): no queued job can keep computing after
 // the owning file/member changes. Every message carries its request identity.

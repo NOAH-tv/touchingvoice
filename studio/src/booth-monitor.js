@@ -1,7 +1,7 @@
 /** Headphone-only processing branch. Never feeds the raw analyser or recorder. */
 export const DEFAULT_MONITOR_SETTINGS = Object.freeze({
-  enabled: false, gainDb: 0, compressor: true, thresholdDb: -20,
-  reverb: true, mix: 0.25, seconds: 4.5, volume: 0.35,
+  enabled: false, gainDb: 0, compressor: false, thresholdDb: -20,
+  reverb: false, mix: 0.25, seconds: 4.5, volume: 0.35,
 });
 const clamp = (value, lo, hi) => Math.max(lo, Math.min(hi, value));
 const ranges = { gainDb: [-24, 12], thresholdDb: [-60, 0], mix: [0, 0.7], seconds: [0.2, 8], volume: [0, 1] };
@@ -82,13 +82,17 @@ export class BoothMonitor {
       this.nodes.wet = context.createGain();
       this.nodes.output = context.createGain();
       const { input, compressor, convolver, dry, wet, output } = this.nodes;
+      // Match raw capture: take input channel 1, then duplicate mono to L/R.
+      // Interfaces may still expose stereo despite getUserMedia's mono request.
+      input.channelCount = 1; input.channelCountMode = 'explicit'; input.channelInterpretation = 'discrete';
+      output.channelCount = 2; output.channelCountMode = 'explicit'; output.channelInterpretation = 'speakers';
       output.gain.value = 0;
       compressor.attack.value = 0.003;
       compressor.release.value = 0.25;
       compressor.knee.value = 6;
       compressor.ratio.value = 4;
       convolver.normalize = true;
-      convolver.buffer = makeMonitorImpulse(context, this.settings.seconds);
+      if (this.settings.reverb) convolver.buffer = makeMonitorImpulse(context, this.settings.seconds);
       convolver.connect(wet);
       dry.connect(output); wet.connect(output);
       this._route();
@@ -103,7 +107,8 @@ export class BoothMonitor {
     input.disconnect(); compressor.disconnect();
     const split = this.settings.compressor ? compressor : input;
     if (this.settings.compressor) input.connect(compressor);
-    split.connect(dry); split.connect(convolver);
+    split.connect(dry);
+    if (this.settings.reverb) split.connect(convolver);
   }
   _parameters(smooth = true) {
     const { input, compressor, dry, wet, output } = this.nodes;
@@ -119,8 +124,9 @@ export class BoothMonitor {
     this.settings = sanitizeMonitorSettings(settings, previous);
     if (!this.settings.enabled) { this.detach(); return; }
     if (!this.nodes) return;
-    if (previous.compressor !== this.settings.compressor) this._route();
-    if (previous.seconds !== this.settings.seconds) this.nodes.convolver.buffer = makeMonitorImpulse(this.context, this.settings.seconds);
+    if (this.settings.reverb && (!previous.reverb || previous.seconds !== this.settings.seconds)) this.nodes.convolver.buffer = makeMonitorImpulse(this.context, this.settings.seconds);
+    if (previous.compressor !== this.settings.compressor || previous.reverb !== this.settings.reverb) this._route();
+    if (!this.settings.reverb) this.nodes.convolver.buffer = null;
     this._parameters();
   }
   detach() {
