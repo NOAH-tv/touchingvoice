@@ -81,7 +81,7 @@ const hostBridge = (() => {
     pcmModule ||= import('../../src/pcm-capture.js?v=pcm24-20260910');
     run.pcmModule=await pcmModule;await run.pcmModule.preparePcmCapture(ensureAudioContext());
     try {
-      metricsModules ||= Promise.all([import('../../src/audio.js?v=voice-20260913'),import('../../src/pro-metrics.js')]);
+      metricsModules ||= Promise.all([import('../../src/audio.js?v=female-a-20260913'),import('../../src/pro-metrics.js')]);
       const [audio,metrics] = await metricsModules;
       run.analyzeFrame = audio.analyzeFrame;run.detectPitch=audio.detectPitch;
       run.accumulator = metrics.createVoiceMetricsAccumulator({...(run.profile?{profile:run.profile}:{}),profileId:run.profileId});

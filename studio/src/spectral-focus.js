@@ -15,7 +15,14 @@ export const FOCUS_DEFAULTS = Object.freeze({
   aes: ["lowerFocus", -26.19, -15.15],
   src: ["frictionFocus", -36.41, -27.31],
 });
-export function spectralFocus(spectrum, sampleRate, resonanceScale = 1) {
+// One supplied female speaker, /a/ only. Equal-file/equal-note P10/P90,
+// not population norms; keep the identifier in snapshots to preserve old replays.
+export const FEMALE_FOCUS_PRESET = 'female-a-20260913';
+export const FEMALE_FOCUS_DEFAULTS = Object.freeze({
+  nas: ['upperFocus', -51.24, -36.09], oro: ['middleFocus', -40.63, -27.83],
+  aes: ['lowerFocus', -55.16, -37.78], src: ['frictionFocus', -51.18, -38.88],
+});
+export function spectralFocus(spectrum, sampleRate, resonanceScale = 1, focusPreset) {
   const missing = () => Object.fromEntries(FOCUS_KEYS.map(key => [key, NaN]));
   if (!spectrum?.length || !Number.isFinite(sampleRate) || sampleRate / 2 < 7800) return missing();
   const binHz = sampleRate / (spectrum.length * 2);
@@ -26,6 +33,13 @@ export function spectralFocus(spectrum, sampleRate, resonanceScale = 1) {
     if (!Number.isFinite(db)) return missing();
     const hz = i * binHz, power = 10 ** (db / 10);
     total += power;
+    if (focusPreset === FEMALE_FOCUS_PRESET) {
+      if (hz >= 7200 && hz < 7600) upper += power;
+      if (hz >= 4600 && hz < 5300) middle += power;
+      if (hz >= 6100 && hz < 6700) lower += power;
+      if (hz >= 5400 && hz < 5800) friction += power;
+      continue;
+    }
     if (hz >= 1500 * resonanceScale && hz < 2200 * resonanceScale || hz >= 3500 * resonanceScale && hz < 4100 * resonanceScale) upper += power;
     if (hz >= 750 * resonanceScale && hz < 1000 * resonanceScale) middle += power;
     if (hz >= 2300 * resonanceScale && hz < 2800 * resonanceScale) lower += power;

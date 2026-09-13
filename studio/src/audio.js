@@ -1,5 +1,5 @@
-import { voiceSettings } from './voice-presets.js?v=voice-20260913';
-import { spectralFocus } from './spectral-focus.js?v=voice-20260913';
+import { voiceSettings } from './voice-presets.js?v=female-a-20260913';
+import { spectralFocus } from './spectral-focus.js?v=female-a-20260913';
 /** Local Web Audio engine. Raw capture stays separate from optional headphone monitoring. */
 import { BoothMonitor, DEFAULT_MONITOR_SETTINGS, sanitizeMonitorSettings } from './booth-monitor.js';
 import { PcmCaptureRecorder, PCM_MAX_SECONDS } from './pcm-capture.js?v=pcm24-20260910';
@@ -97,7 +97,7 @@ export function analyzeFrame(waveform, spectrum, sampleRate, profile) {
   const valid = pitch.f0 >= settings.pitchFloor && pitch.f0 <= settings.pitchCeiling && pitch.clarity >= 0.7 && level > -90;
   const lo = Math.max(1.25 * pitch.f0, 260);
   const features = {
-    ...spectralFocus(spectrum, sampleRate, settings.resonanceScale),
+    ...spectralFocus(spectrum, sampleRate, settings.resonanceScale, profile?.focusPreset),
     pitchFloor: settings.pitchFloor, pitchCeiling: settings.pitchCeiling, resonanceScale: settings.resonanceScale,
     brilliance: band(4000, 8000) - band(lo, 4000),
     f1dom: band(lo, 1100) - band(1100, 3500),

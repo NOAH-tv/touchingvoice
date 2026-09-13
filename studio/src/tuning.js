@@ -1,6 +1,6 @@
-import { VOICE_PRESETS } from './voice-presets.js?v=voice-20260913';
-import { FOCUS_FEATURES, FOCUS_DEFAULTS } from './spectral-focus.js?v=voice-20260913';
-import { sanitizePersonalModel, personalResponseRange } from './personal-calibration.js?v=voice-20260913';
+import { VOICE_PRESETS } from './voice-presets.js?v=female-a-20260913';
+import { FOCUS_FEATURES, FOCUS_DEFAULTS, FEMALE_FOCUS_PRESET, FEMALE_FOCUS_DEFAULTS } from './spectral-focus.js?v=female-a-20260913';
+import { sanitizePersonalModel, personalResponseRange } from './personal-calibration.js?v=female-a-20260913';
 
 /**
  * TouchingVoice per-singer calibration. No network or browser dependencies.
@@ -49,14 +49,28 @@ export const DEFAULT_PROFILE = Object.freeze({
     [key, Object.freeze(makeLayer(...FOCUS_DEFAULTS[key]))]))),
 });
 
+export function voiceDefaultProfile(voicePreset) {
+  return sanitizeProfile({ ...DEFAULT_PROFILE, voicePreset,
+    ...(voicePreset === 'female' ? { focusPreset: FEMALE_FOCUS_PRESET,
+      layers: Object.fromEntries(LAYER_KEYS.map(key => [key, makeLayer(...FEMALE_FOCUS_DEFAULTS[key])])) } : {}),
+  });
+}
+// Match the feature definition of this snapshot, including pre-calibration female profiles.
+export const responseDefaults = profile => profile?.focusPreset === FEMALE_FOCUS_PRESET
+  ? voiceDefaultProfile('female') : sanitizeProfile({ ...DEFAULT_PROFILE, voicePreset: profile?.voicePreset });
+
 /** Upgrade only untouched historical defaults at active-profile load, never old recordings. */
 export function defaultProfileUpgrade(input) {
-  if (!input || input.personalModel) return null;
+  if (!input || input.personalModel || input.focusPreset) return null;
   const matches = (value, expected) => value && Object.keys(value).length === Object.keys(expected).length
     && Object.entries(expected).every(([key, item]) => value[key] === item);
+  if (input.voicePreset === 'female' && matches(input.global, DEFAULT_PROFILE.global)
+    && LAYER_KEYS.every(key => matches(input.layers?.[key], DEFAULT_PROFILE.layers[key]))) {
+    return sanitizeProfile({ ...voiceDefaultProfile('female'), name: input.name });
+  }
   if (!matches(input.global, LEGACY_PROFILE.global)
     || !LAYER_KEYS.every(key => matches(input.layers?.[key], LEGACY_PROFILE.layers[key]))) return null;
-  return sanitizeProfile({ ...DEFAULT_PROFILE, name: input.name || DEFAULT_PROFILE.name });
+  return sanitizeProfile({ ...voiceDefaultProfile(input.voicePreset), name: input.name || DEFAULT_PROFILE.name });
 }
 
 export const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
@@ -80,6 +94,7 @@ export function sanitizeProfile(input = DEFAULT_PROFILE) {
   if (input.name !== undefined && typeof input.name !== 'string') fail('프로필 이름은 문자열이어야 합니다.');
   if (input.global !== undefined && !isRecord(input.global)) fail('전체 입력 설정 형식이 올바르지 않습니다.');
   if (input.layers !== undefined && !isRecord(input.layers)) fail('층위 설정 형식이 올바르지 않습니다.');
+  if (input.focusPreset !== undefined && (input.focusPreset !== FEMALE_FOCUS_PRESET || input.voicePreset !== 'female')) fail('지원하지 않는 음향 대역 기준입니다.');
   const global = input.global || {};
   const result = {
     schemaVersion: 1,
@@ -91,7 +106,7 @@ export function sanitizeProfile(input = DEFAULT_PROFILE) {
     layers: {},
   };
   for (const key of LAYER_KEYS) {
-    const base = DEFAULT_PROFILE.layers[key];
+    const base = input.focusPreset === FEMALE_FOCUS_PRESET ? makeLayer(...FEMALE_FOCUS_DEFAULTS[key]) : DEFAULT_PROFILE.layers[key];
     const source = input.layers?.[key] ?? {};
     if (input.layers && key in input.layers && !isRecord(input.layers[key])) fail(`${LAYER_META[key].name} 설정 형식이 올바르지 않습니다.`);
     if (source.feature !== undefined && (typeof source.feature !== 'string' || !Object.hasOwn(FEATURES, source.feature))) fail('지원하지 않는 음향 특징입니다.');
@@ -117,6 +132,7 @@ export function sanitizeProfile(input = DEFAULT_PROFILE) {
     if (!Object.hasOwn(VOICE_PRESETS, input.voicePreset)) fail('남성 또는 여성 음성 기준을 선택해 주세요.');
     result.voicePreset = input.voicePreset;
   }
+  if (input.focusPreset !== undefined) result.focusPreset = input.focusPreset;
   if (input.personalModel !== undefined) result.personalModel = sanitizePersonalModel(input.personalModel);
   return result;
 }

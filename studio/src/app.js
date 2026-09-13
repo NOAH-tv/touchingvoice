@@ -1,26 +1,26 @@
-import { requireVoicePreset } from './voice-presets.js?v=voice-20260913';
+import { requireVoicePreset } from './voice-presets.js?v=female-a-20260913';
 import {config as franchiseConfig} from '../../config.js';
 import {readProtectedAsset,clearProtectedAssetCache} from '../protected-assets.js?v=practice-20260911';
 import { getContext, postParent } from '../context.js';
 const franchiseContext=getContext();
 import { AnatomyView } from './anatomy.js?v=nasal-smooth-20260906';
 import { ANATOMY_REFERENCE } from './anatomy-reference.js';
-import { AudioEngine } from './audio.js?v=voice-20260913';
-import { DEFAULT_PROFILE, defaultProfileUpgrade, FEATURES, LAYER_KEYS, sanitizeProfile, processLayers, suggestCalibration } from './tuning.js?v=voice-20260913';
+import { AudioEngine } from './audio.js?v=female-a-20260913';
+import { DEFAULT_PROFILE, defaultProfileUpgrade, voiceDefaultProfile, responseDefaults, FEATURES, LAYER_KEYS, sanitizeProfile, processLayers, suggestCalibration } from './tuning.js?v=female-a-20260913';
 import { store, uid, downloadBlob } from './storage.js';
 import { icon, hydrateIcons } from './icons.js?v=magnifier-20260906';
 import { CORE_MODES, createSessionAccumulator } from './session-metrics.js';
 import { captureChunksToWav } from './pcm-capture.js?v=pcm24-20260910';
 import { createVoiceMetricsAccumulator, compareVoiceReports } from './pro-metrics.js';
-import { mountGuidedCalibration } from './guided-calibration-controller.js?v=voice-20260913';
+import { mountGuidedCalibration } from './guided-calibration-controller.js?v=female-a-20260913';
 import { mountCalibrationLibrary } from './calibration-library.js';
 import { CalibrationLibraryService, observationFromRecord } from './calibration-library-service.js';
-import { buildPersonalModel } from './personal-calibration.js?v=voice-20260913';
-import { mountStudioTools } from './studio-tools.js?v=voice-20260913';
-import { FileAnalysisService } from './file-analysis-service.js?v=voice-20260913';
+import { buildPersonalModel } from './personal-calibration.js?v=female-a-20260913';
+import { mountStudioTools } from './studio-tools.js?v=female-a-20260913';
+import { FileAnalysisService } from './file-analysis-service.js?v=female-a-20260913';
 import { mountFileAnalysisView } from './file-analysis-view.js?v=practice-20260911';
-import { ANALYZER_FIELDS } from './analyzer-metrics.js?v=voice-20260913';
-import { mountParticipantIntake } from './participant-intake.js?v=voice-20260913';
+import { ANALYZER_FIELDS } from './analyzer-metrics.js?v=female-a-20260913';
+import { mountParticipantIntake } from './participant-intake.js?v=female-a-20260913';
 import { resolveParticipant } from './participant-data.js';
 import { mountMemberHistory } from './member-history.js';
 import { DriveBackupService } from './franchise-backup.js?v=direct-20260911';
@@ -118,7 +118,7 @@ function renderTuning(){
   if($('guidedLatest'))$('guidedLatest').textContent=assessment?`최근 측정 ${new Date(assessment.createdAt).toLocaleDateString('ko-KR')} · 확인 음역 ${midiName(assessment.testedRange?.minMidi)} – ${midiName(assessment.testedRange?.maxMidi)} · 이 PC 저장`:'네 발성의 확인 음역과 음향 반응으로 개인 범위를 맞춥니다.';
   const l=profile.layers[selectedLayer];$('tuningLayerLabel').textContent=META[selectedLayer].name;
   document.querySelectorAll('#layerTabs button').forEach(e=>{e.classList.toggle('active',e.dataset.layer===selectedLayer);e.setAttribute('aria-selected',String(e.dataset.layer===selectedLayer));});
-  $('featureSelect').value=l.feature;$('featureSelect').title=FEATURES[l.feature].description+(profile.voicePreset==='female'?' · 상·중·하부 대역은 ×1.1 임시 배율, 마찰 대역은 공통':'');$('layerEnabled').checked=l.enabled;
+  $('featureSelect').value=l.feature;const femaleBand=profile.focusPreset&&{upperFocus:'7,200–7,600 Hz',middleFocus:'4,600–5,300 Hz',lowerFocus:'6,100–6,700 Hz',frictionFocus:'5,400–5,800 Hz'}[l.feature];$('featureSelect').title=femaleBand?femaleBand+' · 여성 아 녹음 특징 · 80–7,800 Hz 대비 전력':FEATURES[l.feature].description;$('layerEnabled').checked=l.enabled;
   $('tuningFields').replaceChildren();for(const [title,fields] of FIELDS){const section=document.createElement('div');section.className='field-section';const h=document.createElement('h3');h.textContent=title;section.append(h);const grid=document.createElement('div');grid.className='field-grid';for(const [key,label,unit,min,max,step] of fields){const lab=document.createElement('label');lab.append(document.createTextNode(label));const u=document.createElement('span');u.textContent=key.startsWith('input')?FEATURES[l.feature].unit:unit;lab.append(u);const input=document.createElement('input');Object.assign(input,{type:'number',min,max,step,value:l[key],id:'tune-'+key});input.dataset.field=key;input.setAttribute('aria-label',`${META[selectedLayer].name} ${label}`);input.addEventListener('input',()=>{if(audioState.recording||comparing)return;try{const next=copy(profile);next.layers[selectedLayer][key]=input.valueAsNumber;profile=sanitizeProfile(next);input.removeAttribute('aria-invalid');clearSuggestion();markDirty();}catch{input.setAttribute('aria-invalid','true');}});input.addEventListener('change',()=>changeLayerValue(key,input.valueAsNumber));lab.append(input);grid.append(lab);}section.append(grid);$('tuningFields').append(section);}
   $('inputGain').value=profile.global.inputGainDb;$('noiseGate').value=profile.global.noiseGateDb;$('profileName').value=profile.name;
   $('referenceName').textContent=refs[selectedLayer]?.fileName || '1:1 세션에서 녹음한 목소리를 연결하세요.';$('referencePlayBtn').disabled=!refs[selectedLayer]||audioState.recording||busy;
@@ -259,7 +259,9 @@ async function changeVoicePreset(next){
   if(next===profile.voicePreset)return;
   const prior=profiles.find(p=>p.id===profileId)||{},variants=copy(prior.voicePresetStates||{}),previous=profile.voicePreset||'male';
   variants[previous]={profile:copy(profile),refs:copy(refs),calibrationObservations:copy(prior.calibrationObservations||[]),calibrationAssessment:copy(prior.calibrationAssessment||null)};
-  const target=variants[next]||{profile:{...copy(DEFAULT_PROFILE),name:profile.name},refs:{},calibrationObservations:[],calibrationAssessment:null};
+  const target=variants[next]||{profile:{...voiceDefaultProfile(next),name:profile.name},refs:{},calibrationObservations:[],calibrationAssessment:null};
+  const upgraded=!(target.calibrationObservations?.length||target.calibrationAssessment||Object.keys(target.refs||{}).length)&&defaultProfileUpgrade({...target.profile,voicePreset:next});
+  if(upgraded){target.previousDefaultProfile=copy(target.profile);target.profile=upgraded;}
   const nextProfile=sanitizeProfile({...target.profile,voicePreset:next,name:profile.name});
   const updated={...prior,...target,id:profileId,profile:nextProfile,voicePresetStates:variants,updatedAt:new Date().toISOString()};
   await store.put('profiles',updated);
@@ -474,7 +476,7 @@ function paint(now){
   if(studioSuspended||document.hidden||(!stageVisible&&now-lastPaint<32))return;
   const dt=Math.min(now-lastPaint||1000/60,200);lastPaint=now;
   let f=lastFrame?.features || EMPTY,wave=lastFrame?.waveform;
-  if(demo){const t=now/1000;f={valid:true,level:-24,f0:220,rms:.06,clarity:.95};for(const [i,key] of LAYER_KEYS.entries()){const l=DEFAULT_PROFILE.layers[key];f[l.feature]=l.inputMin+(l.inputMax-l.inputMin)*(.5+.4*Math.sin(t*1.4+i*1.2));}wave=Float32Array.from({length:512},(_,i)=>.12*Math.sin(i*.25+t*2)*Math.sin(i*.013));}
+  if(demo){const t=now/1000;f={valid:true,level:-24,f0:220,rms:.06,clarity:.95};for(const [i,key] of LAYER_KEYS.entries()){const l=responseDefaults(profile).layers[key];f[l.feature]=l.inputMin+(l.inputMax-l.inputMin)*(.5+.4*Math.sin(t*1.4+i*1.2));}wave=Float32Array.from({length:512},(_,i)=>.12*Math.sin(i*.25+t*2)*Math.sin(i*.013));}
   const activeProfile=coreRun?.snapshot.profile||(audioState.recording&&recordingSnapshot?recordingSnapshot.profile:effectiveProfile());
   const result=processLayers(f,activeProfile,levels,dt);levels=result.levels;
   if(stageVisible){
@@ -490,7 +492,7 @@ function paint(now){
   // Keep history at its original cadence; the model follows display frames.
   if(now-lastHistoryPaint>=32){
     const historyDt=Math.min(Number.isFinite(lastHistoryPaint)?now-lastHistoryPaint:33,200);lastHistoryPaint=now;
-    originalLevels=processLayers(f,DEFAULT_PROFILE,originalLevels,historyDt).levels;
+    originalLevels=processLayers(f,responseDefaults(profile),originalLevels,historyDt).levels;
     for(const key of LAYER_KEYS){history[key].before.push(originalLevels[key]);history[key].after.push(levels[key]);if(history[key].after.length>150){history[key].after.shift();history[key].before.shift();}}
   }
   // Text panels and off-stage charts must not compete with the 3D render loop.
@@ -597,7 +599,7 @@ $('featureSelect').onchange=e=>changeLayerValue('feature',e.target.value);$('lay
 $('inputGain').onchange=e=>{if(audioState.recording||comparing)return;try{const next=copy(profile);next.global.inputGainDb=e.target.valueAsNumber;profile=sanitizeProfile(next);markDirty();clearSuggestion();renderTuning();}catch(err){toast(err.message,true);renderTuning();}};
 $('noiseGate').onchange=e=>{if(audioState.recording||comparing)return;try{const next=copy(profile);next.global.noiseGateDb=e.target.valueAsNumber;profile=sanitizeProfile(next);markDirty();clearSuggestion();renderTuning();}catch(err){toast(err.message,true);renderTuning();}};
 $('compareBtn').onclick=()=>{if(audioState.recording)return;cancelCapture();setComparing(!comparing);toast(comparing?'저장된 설정으로 반응을 비교합니다. 현재 편집값은 유지됩니다.':'현재 편집값으로 돌아왔습니다.');};
-$('resetLayerBtn').onclick=()=>{if(audioState.recording||comparing)return;profile.layers[selectedLayer]=copy(DEFAULT_PROFILE.layers[selectedLayer]);comparing=false;clearSuggestion();markDirty();renderTuning();toast(`${META[selectedLayer].name} 설정을 기본값으로 되돌렸습니다.`);};
+$('resetLayerBtn').onclick=()=>{if(audioState.recording||comparing)return;profile.layers[selectedLayer]=copy(responseDefaults(profile).layers[selectedLayer]);comparing=false;clearSuggestion();markDirty();renderTuning();toast(`${META[selectedLayer].name} 설정을 기본값으로 되돌렸습니다.`);};
 for(const id of ['saveProfileBtn','saveTuningBtn'])$(id).onclick=()=>safe(saveProfile);
 $('voicePresetSelect').onchange=e=>safe(()=>changeVoicePreset(e.target.value));
 $('profileSelect').onchange=e=>safe(()=>changeProfile(e.target.value));$('profileName').oninput=()=>{$('profileName').value=franchiseContext.student.name;};
