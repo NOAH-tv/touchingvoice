@@ -5,4 +5,4 @@
 body[data-tab=training]:not(.rhythm-expanded) #trainingPanel{min-height:0;overflow-y:auto}
 body[data-tab=training]:not(.rhythm-expanded) #rhythmWorkspace{min-height:420px}
 
-.voice-preset-choice{display:flex;align-items:center;gap:9px;color:#d2bd9a;font-size:12px}.voice-preset-choice select,.franchise-intake #participantGender{font:inherit;padding:9px 12px;background:#130a23;color:#F5EEE0;border:1px solid #81619f;border-radius:7px}.voice-preset-choice select:focus-visible,.franchise-intake #participantGender:focus-visible{outline:2px solid #A8925A;outline-offset:3px}
+.voice-preset-choice{pointer-events:auto;display:flex;align-items:center;gap:9px;color:#d2bd9a;font-size:12px}.voice-preset-choice select,.franchise-intake #participantGender{pointer-events:auto;cursor:pointer;min-height:44px;font:inherit;padding:9px 12px;background:#130a23;color:#F5EEE0;border:1px solid #81619f;border-radius:7px}.voice-preset-choice select:focus-visible,.franchise-intake #participantGender:focus-visible{outline:2px solid #A8925A;outline-offset:3px}

@@ -102,7 +102,7 @@ try {
     if(node.tagName==='SCRIPT') {if(document.querySelector('script[type="importmap"]'))continue;const map=document.createElement('script');map.type='importmap';map.textContent=node.textContent;document.head.append(map);}
     else document.head.append(document.importNode(node,true));
   }
-  const css=document.createElement('link');css.rel='stylesheet';css.href='./franchise.css?v=female-a-20260913';document.head.append(css);
+  const css=document.createElement('link');css.rel='stylesheet';css.href='./franchise.css?v=gender-click-20260913';document.head.append(css);
   document.body.replaceChildren(...Array.from(parsed.body.childNodes, node=>document.importNode(node,true)));
   const app=await import('./src/app.js?v=female-a-20260913');appModule=app;shutdown=app.shutdownStudio;
   if(closed){await shutdown?.();throw new Error('코칭 연결이 종료되었습니다.');}
