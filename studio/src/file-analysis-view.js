@@ -72,7 +72,7 @@ export function mountFileAnalysisView({getProfileId,getSessions,getJobs,upload,a
   $('batchPlayBtn').disabled=!entry.blob;$('batchCsvBtn').disabled=!entry.datasetBlob;$('batchSaveLabelsBtn').disabled=!!entry.serverOnly;
   $('batchJsonBtn').textContent=entry.serverOnly?'저장 지표 JSON':'전체 분석 JSON';
   const key=entry.id+report.analyzedAt+entry.analysisStatus+entry.unsaved;if(key===lastRenderKey){drawCharts(report);return;}lastRenderKey=key;
-  $('batchTaskLabel').value=entry.annotation?.task||'';$('batchConditionsLabel').value=entry.annotation?.conditions||'';$('batchFileName').textContent=entry.sourceFileName||entry.name;$('batchSaveBadge').textContent=getContext().practice?'분석 완료 · 기록 안 함':entry.unsaved?'기기 저장 실패 · 내보내기 필요':entry.saving?'저장 중':entry.analysisStatus==='error'?'저장된 결과 · 오류 내역 확인':entry.serverOnly?'서버 저장 기록 · 원음은 Drive 보관':'PC 분석 저장 완료';$('batchMethodLine').textContent=`${fmt(report.duration,2)}초 녹음 · 분석 완료 · ${fmt(report.sampleRate,0)} Hz 분석`;
+  $('batchTaskLabel').value=entry.annotation?.task||'';$('batchConditionsLabel').value=entry.annotation?.conditions||'';$('batchFileName').textContent=entry.sourceFileName||entry.name;$('batchSaveBadge').textContent=getContext().practice?'분석 완료 · 기록 안 함':entry.unsaved?'기기 저장 실패 · 내보내기 필요':entry.saving?'저장 중':entry.analysisStatus==='error'?'저장된 결과 · 오류 내역 확인':entry.serverOnly?(entry.franchiseUpload?.storage==='private_drive'?'서버 저장 기록 · 원음은 Drive 보관':'서버 저장 지표 · 원음 연결 없음'):'PC 분석 저장 완료';$('batchMethodLine').textContent=`${fmt(report.duration,2)}초 녹음 · 분석 완료 · ${fmt(report.sampleRate,0)} Hz 분석`;
   renderCore(entry);
   if(researchDetails?.open)renderResearch(entry);else for(const id of ['batchOriginalMetrics','batchDetails'])$(id).replaceChildren();
   drawCharts(report);
