@@ -104,7 +104,7 @@ try {
   }
   const css=document.createElement('link');css.rel='stylesheet';css.href='./franchise.css?v=gender-click-20260913';document.head.append(css);
   document.body.replaceChildren(...Array.from(parsed.body.childNodes, node=>document.importNode(node,true)));
-  const app=await import('./src/app.js?v=exam-20260916');appModule=app;shutdown=app.shutdownStudio;
+  const app=await import('./src/app.js?v=history-20260916');appModule=app;shutdown=app.shutdownStudio;
   if(closed){await shutdown?.();throw new Error('코칭 연결이 종료되었습니다.');}
   if(suspended)await suspend();
   document.documentElement.style.visibility=suspended?'hidden':'';document.title='터칭보이스 · 코칭 스튜디오';
