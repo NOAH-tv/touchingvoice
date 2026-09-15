@@ -155,12 +155,13 @@ export class AudioEngine {
     this.resumeTimeoutMs = Number.isFinite(resumeTimeoutMs) ? Math.max(1, resumeTimeoutMs) : 4000;
   }
   get duration() { return this.buffer?.duration || 0; }
+  get recordingDuration() { return this._recorder ? this._recorder.frames / this.context.sampleRate : 0; }
   get monitorSettings() { return { ...this._monitorSettings }; }
   get monitorStatus() {
     const context = this.context || (globalThis.AudioContext || globalThis.webkitAudioContext)?.prototype;
     const supported = BoothMonitor.supports(context);
     const connected = !!this._monitor?.connected;
-    const active = connected && this._monitorSettings.enabled && this._monitorSettings.volume > 0;
+    const active = connected && this.context?.state === 'running' && this._monitorSettings.enabled && this._monitorSettings.volume > 0;
     return { supported, connected, active, settings: this.monitorSettings,
       gainReductionDb: this._monitor?.gainReductionDb || 0,
       outputSupported: typeof context?.setSinkId === 'function', outputDeviceId: this._outputDeviceId,
@@ -234,7 +235,14 @@ export class AudioEngine {
   get state() {
     return { mode: this.mode, playing: this.playing, recording: this.recording,
       duration: this.duration, currentTime: this.currentTime, fileName: this.fileName,
+      contextState: this.context?.state || 'closed', recordingDuration: this.recordingDuration,
       recordingFormat: 'WAV · 24 bit · 48 kHz · mono', recordingLimitSeconds: PCM_MAX_SECONDS };
+  }
+  async resumeInput() {
+    if (this.mode !== 'mic' || !this.playing || !this.stream) return;
+    if (this.context?.state === 'closed') throw this._error(new Error('오디오 연결이 종료되었습니다. 마이크를 다시 연결해 주세요.'));
+    try { await this._ensureContext(); this._state(); }
+    catch (cause) { throw this._error(cause, '오디오가 일시 중단되었습니다. 마이크·헤드폰의 연결 복구 버튼을 눌러 주세요.'); }
   }
   _state() { this.onState(this.state); }
   _error(error, fallback) {

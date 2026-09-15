@@ -78,7 +78,41 @@ body[data-tab=analyzer] #audioDock{display:none!important}
   #analyzerPanel .intake-actions{padding:12px 18px}
 }
 
-body[data-tab=analyzer][data-exam-view=result][data-analysis-mode=batch] #boothPanel,
-body[data-tab=analyzer][data-exam-view=result][data-analysis-mode=batch] #analysisDropzone{display:none}
+
 #participantRecord{min-width:110px}
 #participantUpload{min-width:118px}
+
+/* Sequential PC examination: setup → capture → live composition → recorded results. */
+#analyzerPanel .intake-essentials{grid-template-columns:140px minmax(140px,1fr) minmax(180px,1.4fr);margin-bottom:12px}
+#analyzerPanel .intake-personality{margin:0}#analyzerPanel .franchise-person{margin-bottom:12px}
+#analyzerPanel .exam-audio-settings{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr) minmax(0,.8fr);gap:14px;align-items:start}
+#analyzerPanel .exam-audio-settings>.booth-module{padding:20px;margin:0;border:1px solid #ac7bda3d;border-radius:10px;background:#170e23}
+#analyzerPanel .exam-settings-content{grid-template-columns:repeat(2,minmax(0,1fr))}.exam-effect-note{grid-column:1/-1}
+#analyzerPanel .exam-settings-content .booth-module{padding:12px;min-width:0}
+#analyzerPanel .exam-audio-settings .booth-mr{display:flex;flex-wrap:wrap;gap:8px}
+#analyzerPanel .exam-audio-settings .booth-mr input{min-width:0;width:100%}
+#analyzerPanel .exam-audio-settings p{font-size:12px;line-height:1.8}
+#analyzerPanel .exam-input-summary{display:grid;grid-template-columns:minmax(220px,.8fr) minmax(0,1.4fr);gap:20px;align-items:center;margin:14px 0}
+#analyzerPanel .exam-input-summary>.booth-module{padding:14px 18px;margin:0;display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
+.exam-input-summary .booth-meter,.exam-input-summary .booth-meter-label{grid-column:1/-1;width:100%}.exam-input-summary .booth-level{font-size:20px;margin:0}.exam-input-summary .booth-module>p{display:none}
+.exam-input-info{font-size:12px;color:#c4aed8;line-height:1.8}.exam-input-info summary{cursor:pointer;color:#eadac8}.exam-input-info p{margin:5px 0}
+#examCaptureActions{padding:16px 20px;border:1px solid #af86e269;border-radius:12px;background:linear-gradient(110deg,#322044,#20112f);margin-bottom:26px}
+#examRecordingTime{display:block;font-size:12px;color:#ead6f9;font-variant-numeric:tabular-nums}
+#examCaptureActions .intake-actions{padding:10px 0 0;background:none;border:0;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+#examCaptureActions .intake-actions>div{flex:1;min-width:180px;line-height:1.7}#examCaptureActions .intake-actions small{display:block;color:#bca4cf;font-size:11px}
+#participantRecord.recording{background:#a52c60;border-color:#ffb0d0;color:white;box-shadow:0 0 18px #ed46832b}
+#liveAnalysisView{padding:24px 0;border-top:1px solid #b58dd437;margin-bottom:26px}
+#liveAnalysisView .pro-section-title h2,.saved-results-heading h2{font-size:23px;margin:8px 0}#liveAnalysisView .pro-section-title p,.saved-results-heading p{font-size:13px;line-height:1.7;color:#bea9cf}
+#voiceMetricCards{grid-template-columns:repeat(3,minmax(0,1fr));margin-top:16px}.metric-help summary{font-size:13px;color:#d7c0e8;cursor:pointer;line-height:1.6}.metric-help p{font-size:12px;color:#baa6cb;line-height:1.7;margin:8px 0}.metric-card .metric-number{font-size:27px}
+.live-chart-details>summary{cursor:pointer;padding:14px 0;font-size:13px;color:#c7b0d9}.live-chart-details .analysis-charts{margin-top:8px}
+.saved-results-heading{padding-top:25px;border-top:1px solid #b58dd44a;margin-bottom:18px}
+.exam-final-actions{display:flex;gap:12px;align-items:center;justify-content:flex-end;flex-wrap:wrap;margin:25px 0 8px;padding:20px;border:1px solid #ab83d444;border-radius:12px;background:#231431}.exam-final-actions p{font-size:12px;line-height:1.7;color:#baa7cd;flex:1;min-width:170px;order:-1}.exam-final-actions button{min-width:145px}
+.frequency-distribution{padding:22px;border:1px solid #b58ae447;border-radius:14px;background:radial-gradient(ellipse at 80% 0,#754b9e28,transparent 75%),#190f26;margin:18px 0}
+.frequency-heading{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}.frequency-heading h3{font-size:16px;color:#f5eee0;margin:0;line-height:1.7}.frequency-total{color:#e5c6ff;font-size:13px;white-space:nowrap;font-variant-numeric:tabular-nums}.frequency-note{font-size:12px;color:#c4b1d3;line-height:1.8;margin:7px 0 16px}
+.frequency-stack{display:flex;overflow:hidden;background:#362345;border-radius:6px;height:12px;margin-bottom:18px}.frequency-stack i{height:100%;transition:width .08s linear;flex:none}
+.frequency-grid{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:10px}.frequency-band{min-width:0}.frequency-band summary{cursor:pointer;list-style:none;padding:10px 8px;border-radius:8px;background:#30203d;border:1px solid #ba95d427}.frequency-band summary::-webkit-details-marker{display:none}.frequency-band summary>span:first-child{display:block;font-size:11px;line-height:1.7;color:#d8c5e7;white-space:nowrap}.frequency-band b{display:block;font-size:16px;font-weight:500;line-height:2;font-variant-numeric:tabular-nums;color:var(--band-color)}.frequency-track{display:block;height:4px;background:#ffffff16;border-radius:3px;overflow:hidden}.frequency-track i{display:block;height:100%;background:var(--band-color);transition:width .08s linear}
+.frequency-band p,.frequency-help p{font-size:12px;line-height:1.8;color:#c7b2d8}.frequency-help{margin-top:16px}.frequency-help summary{cursor:pointer;font-size:12px;color:#b89ecb}.frequency-band summary:focus-visible,.metric-help summary:focus-visible{outline:2px solid #dbc093;outline-offset:3px}
+.batch-secondary-core{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:18px}
+@media(max-width:1250px){#analyzerPanel .exam-audio-settings{grid-template-columns:1fr 1fr}#analyzerPanel .exam-audio-settings>.booth-module{grid-column:1/-1}.frequency-grid{grid-template-columns:repeat(5,minmax(0,1fr))}}
+@media(max-width:760px){#analyzerPanel .intake-essentials,#analyzerPanel .exam-audio-settings,#analyzerPanel .exam-input-summary{grid-template-columns:1fr}#voiceMetricCards,.batch-secondary-core{grid-template-columns:1fr}.frequency-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.frequency-distribution{padding:16px}#analyzerPanel .exam-settings-content{grid-template-columns:1fr 1fr}}
+@media(prefers-reduced-motion:reduce){.frequency-stack i,.frequency-track i{transition:none}}

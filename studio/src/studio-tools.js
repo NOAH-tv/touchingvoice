@@ -2,6 +2,7 @@
 export function mountStudioTools({engine,getProfile,getTab,isBusy,isRecordLocked,stopHostInput,onLocks,setTab,onTrainingResult,getLatestRecording,getRecordElapsed,playEntry,downloadEntry,toast,recordToggle,getTrainingAsset=null,beforeTrainingStart=()=>{},onVoicePresetChange=()=>{}}) {
   const $=id=>document.getElementById(id), origin=location.origin, frame=$('rhythmFrame');
   let trainingActive=false,latestFrame=null,devicesBusy=false,outputBusy=false,requestEpoch=0,rhythmReady=false;
+  let observedStream=null,inputBusy=false;
   const snapshots=new Map(),completed=new Set();
   const notify=()=>{onLocks();paint();};
   const run=async fn=>{try{return await fn();}catch(e){toast(e?.message||'오디오 작업을 완료하지 못했습니다.',true);}};
@@ -24,10 +25,36 @@ export function mountStudioTools({engine,getProfile,getTab,isBusy,isRecordLocked
   const effectIds=['boothMonitorOn','boothMonitorGain','boothCompOn','boothThreshold','boothReverbOn','boothMix','boothReverbSeconds','boothVolume'];
   function applyEffects(){engine.setMonitorSettings(settings());paint();}
   for(const id of effectIds)$(id).addEventListener('input',()=>run(applyEffects));
-  function fillDevices(el,items,label){const previous=el.value;el.replaceChildren();const o=document.createElement('option');o.value='';o.textContent=label;el.append(o);for(const [i,item] of items.entries()){if(!item.deviceId||item.deviceId==='default')continue;const option=document.createElement('option');option.value=item.deviceId;option.textContent=item.label||`장치 ${i+1} · 연결 후 이름 표시`;el.append(option);}if([...el.options].some(o=>o.value===previous))el.value=previous;}
-  async function refreshDevices(){if(devicesBusy)return;devicesBusy=true;paint();try{const list=await engine.listDevices();fillDevices($('boothInputSelect'),list.inputs,'시스템 기본 입력');fillDevices($('boothOutputSelect'),list.outputs,'시스템 기본 출력');$('boothOutputSelect').disabled=!list.outputSupported; $('boothOutputSelect').title=list.outputSupported?'헤드폰 출력 장치를 선택합니다.':'이 브라우저는 시스템 기본 출력을 사용합니다.';if(!list.supported)toast('장치 목록을 지원하지 않는 환경입니다.',true);}finally{devicesBusy=false;paint();}}
+  function fillDevices(el,items,label,activeId=''){
+    const previous=el.value,defaultDevice=items.find(item=>item.deviceId==='default');el.replaceChildren();
+    const o=document.createElement('option');o.value='';o.textContent=defaultDevice?.label||label;el.append(o);
+    for(const [i,item] of items.entries()){if(!item.deviceId||item.deviceId==='default')continue;const option=document.createElement('option');option.value=item.deviceId;option.textContent=item.label||`장치 ${i+1} · 마이크 연결 후 이름 표시`;el.append(option);}
+    const selected=activeId||previous;if([...el.options].some(o=>o.value===selected))el.value=selected;
+  }
+  async function refreshDevices(){
+    if(devicesBusy||document.hidden)return;devicesBusy=true;paint();
+    try{const list=await engine.listDevices(),track=engine.stream?.getAudioTracks?.()[0];
+      fillDevices($('boothInputSelect'),list.inputs,'기본 입력 · 연결 후 장치 이름 표시',track?.getSettings?.().deviceId);
+      fillDevices($('boothOutputSelect'),list.outputs,'시스템 기본 출력',engine.monitorStatus.outputDeviceId);
+      $('boothOutputSelect').disabled=!list.outputSupported;$('boothOutputSelect').title=list.outputSupported?'헤드폰 출력 장치를 선택합니다.':'이 브라우저는 시스템 기본 출력을 사용합니다.';
+      if(!list.supported)toast('장치 목록을 지원하지 않는 환경입니다.',true);
+    }finally{devicesBusy=false;paint();}
+  }
   $('boothRefreshDevices').onclick=()=>run(refreshDevices);
-  $('boothConnectBtn').onclick=()=>run(async()=>{if(isRecordLocked()||trainingActive||isBusy())throw new Error('진행 중인 기록이나 훈련을 마친 뒤 연결하세요.');if(engine.state.mode==='mic'&&engine.state.playing){engine.stop();return;}await stopHostInput();if(isBusy())throw new Error('코칭 화면을 다시 열어 주세요.');await engine.startMic($('boothInputSelect').value);await refreshDevices();if(engine.state.mode==='mic'&&$('boothOutputSelect').value&&engine.monitorStatus.outputSupported)await engine.setOutputDevice($('boothOutputSelect').value);paint();});
+  const deviceChanged=()=>{void run(refreshDevices);};
+  navigator.mediaDevices?.addEventListener?.('devicechange',deviceChanged);
+  async function connectSelected(){
+    if(inputBusy||isRecordLocked()||trainingActive||isBusy())throw new Error('녹음·훈련을 마친 뒤 입력 장치를 변경하세요.');inputBusy=true;paint();
+    try{
+    const monitor=engine.monitorSettings,device=$('boothInputSelect').value;
+    await stopHostInput();if(isBusy())throw new Error('코칭 화면을 다시 열어 주세요.');
+    await engine.startMic(device);if(monitor.enabled)engine.setMonitorSettings(monitor);
+    await refreshDevices();if(engine.state.mode==='mic'&&$('boothOutputSelect').value&&engine.monitorStatus.outputSupported)await engine.setOutputDevice($('boothOutputSelect').value);
+    }finally{inputBusy=false;notify();}
+  }
+  $('boothConnectBtn').onclick=()=>run(async()=>{if(isRecordLocked()||trainingActive||isBusy())throw new Error('진행 중인 녹음이나 훈련을 먼저 마쳐 주세요.');if(engine.state.mode==='mic'&&engine.state.playing){engine.stop();return;}await connectSelected();});
+  $('boothInputSelect').onchange=()=>run(async()=>{if(engine.state.mode==='mic'&&engine.state.playing)await connectSelected();});
+  $('boothResumeBtn').onclick=()=>run(()=>engine.resumeInput());
   $('boothOutputSelect').onchange=()=>run(async()=>{outputBusy=true;paint();try{await engine.setOutputDevice($('boothOutputSelect').value);}finally{outputBusy=false;paint();}});
   $('boothRecordBtn').onclick=()=>recordToggle();
   $('boothPlayBtn').onclick=()=>run(async()=>{const take=getLatestRecording();if(take)await playEntry(take);});
@@ -76,12 +103,15 @@ export function mountStudioTools({engine,getProfile,getTab,isBusy,isRecordLocked
   });
   function paint(){
     const s=engine.state,live=s.mode==='mic'&&s.playing,monitor=engine.monitorStatus;
+    if(engine.stream!==observedStream){observedStream=engine.stream;if(observedStream)void run(refreshDevices);}
+    $('boothResumeBtn').hidden=!live||s.contextState==='running';
     const set=(id,value)=>{if($(id).textContent!==value)$(id).textContent=value;};
     const seconds=s.recording?getRecordElapsed():engine.currentTime;
+    if($('examRecordingTime'))set('examRecordingTime',s.recording?`REC · ${Math.floor(seconds/60).toString().padStart(2,'0')}:${Math.floor(seconds%60).toString().padStart(2,'0')} / 05:00`:'최대 5분 · WAV 24bit / 48 kHz');
     set('boothTime',`${String(Math.floor(seconds/60)||0).padStart(2,'0')}:${String(Math.floor(seconds%60)||0).padStart(2,'0')}`);
     set('boothSource',s.recording?'REC · 원음 녹음 중':live?'마이크 연결됨 · '+(monitor.active?'헤드폰 모니터 ON':'모니터 OFF'):s.mode==='file'?'녹음 재생 · '+(s.fileName||'파일'):'마이크 연결 전');
-    $('boothConnectBtn').disabled=isRecordLocked()||trainingActive||isBusy()||devicesBusy;set('boothConnectBtn',live?'마이크 연결 해제':'선택한 마이크 연결');
-    $('boothInputSelect').disabled=live||isRecordLocked()||trainingActive||isBusy();$('boothRefreshDevices').disabled=devicesBusy;
+    $('boothConnectBtn').disabled=inputBusy||isRecordLocked()||trainingActive||isBusy()||devicesBusy;set('boothConnectBtn',inputBusy?'마이크 연결 중…':live?'마이크 연결 해제':'선택한 마이크 연결');
+    $('boothInputSelect').disabled=inputBusy||isRecordLocked()||trainingActive||isBusy()||devicesBusy;$('boothRefreshDevices').disabled=devicesBusy;
     $('boothOutputSelect').disabled=outputBusy||!monitor.outputSupported; $('boothMonitorOn').disabled=!live||!monitor.supported;
     $('boothMonitorOn').checked=monitor.settings.enabled;
     set('boothGainValue',`${monitor.settings.gainDb} dB`);set('boothThresholdValue',`${monitor.settings.thresholdDb} dB`);set('boothMixValue',`${Math.round(monitor.settings.mix*100)}%`);set('boothReverbValue',`${monitor.settings.seconds.toFixed(1)} s`);set('boothVolumeValue',`${Math.round(monitor.settings.volume*100)}%`);set('boothReduction',`${monitor.gainReductionDb.toFixed(1)} dB`);
@@ -92,5 +122,5 @@ export function mountStudioTools({engine,getProfile,getTab,isBusy,isRecordLocked
     if(getTab()==='analyzer'||getTab()==='booth')drawBooth(s.playing?latestFrame?.waveform:null,s.recording);
   }
   function drawBooth(wave,recording){const canvas=$('boothWave'),w=canvas.clientWidth,h=canvas.clientHeight;if(!w||!h)return;const scale=Math.min(devicePixelRatio||1,2);if(canvas.width!==Math.round(w*scale)||canvas.height!==Math.round(h*scale)){canvas.width=Math.round(w*scale);canvas.height=Math.round(h*scale);}const c=canvas.getContext('2d');if(!c)return;c.setTransform(scale,0,0,scale,0,0);c.clearRect(0,0,w,h);c.strokeStyle=recording?'#f599cd':'#bc93ff';c.lineWidth=1.4;c.beginPath();for(let x=0;x<w;x++){const sample=wave?.length?wave[Math.floor(x/w*wave.length)]:0,y=h/2+sample*h*.45;x?c.lineTo(x,y):c.moveTo(x,y);}c.stroke();if(!wave){c.fillStyle='#8e759f';c.font='12px Paperlogy';c.textAlign='center';c.fillText('마이크를 연결하면 원음 파형이 표시됩니다.',w/2,h/2-18);}}
-  return {resume(){sendProfile();if(frame.getAttribute('src'))post({type:'tv-host-resume'});},get trainingActive(){return trainingActive;},onFrame(frame){latestFrame=frame;},paint,profileChanged(){latestFrame=null;sendProfile();paint();},beforeTabChange(next){if(next==='training'){ensureRhythm();sendProfile();post({type:'tv-host-resume'});}else stopRhythm();if(next!=='booth'&&next!=='analyzer'&&next!=='studio'&&engine.monitorSettings.enabled)engine.setMonitorSettings({enabled:false});},stopRhythm};
+  return {get inputBusy(){return inputBusy;},refreshDevices:()=>run(refreshDevices),dispose(){navigator.mediaDevices?.removeEventListener?.('devicechange',deviceChanged);},resume(){sendProfile();if(frame.getAttribute('src'))post({type:'tv-host-resume'});},get trainingActive(){return trainingActive;},onFrame(frame){latestFrame=frame;},paint,profileChanged(){latestFrame=null;sendProfile();paint();},beforeTabChange(next){if(next==='training'){ensureRhythm();sendProfile();post({type:'tv-host-resume'});}else stopRhythm();if(next!=='booth'&&next!=='analyzer'&&next!=='studio'&&engine.monitorSettings.enabled)engine.setMonitorSettings({enabled:false});},stopRhythm};
 }

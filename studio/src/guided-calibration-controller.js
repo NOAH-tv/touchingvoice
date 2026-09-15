@@ -119,11 +119,14 @@ export function mountGuidedCalibration({engine,getSnapshot,isBusy,prepareInput,s
     }finally{if(current.epoch===generation){phase='idle';run=null;refresh();}}
   }
   async function cancel(){
+    // Only this controller's acquisition may release the shared microphone.
+    // Backgrounding the page also closes this dialog, even when never opened.
+    const ownsInput=Boolean(run||startPending);
     ++generation;const current=run;run=null;guide.stop();listening=false;phase='idle';
-    current?.recording?.abort();if(current||engine.state.mode==='mic')engine.stop();
+    current?.recording?.abort();if(ownsInput)engine.stop();
     feedback('측정을 중지했습니다. 완료된 발성 결과는 유지됩니다.');refresh();
   }
-  async function close(){if(phase==='saving')return;closed=true;await cancel();dialog.close();onLocks();}
+  async function close(){if(closed||phase==='saving')return;closed=true;await cancel();dialog.close();onLocks();}
   async function apply(){
     if(active()||saved||!Object.keys(pending).length)return;
     if(!sameOwner())throw new Error('개인 설정이 바뀌었습니다. 다시 측정한 뒤 적용해 주세요.');
