@@ -947,7 +947,7 @@ body::before{
         </div>
         <div class="tvr-opts">
           <label><input type="checkbox" class="tvr-ctl" id="tvr-auto" checked> 정지하면 자동 진행: 드라이브 저장 → 분석 → 리포트</label>
-          <label><input type="checkbox" class="tvr-ctl" id="tvr-auto-sms" checked> 번호가 있으면 문자 자동 발송 <span id="tvr-bridge" style="color:var(--gray-400)">(문자 브리지 확인 중…)</span></label>
+          <div><button type="button" id="tvr-sms-login" onclick="tvSmsLogin()">문자 발송용 구글 로그인</button> <button type="button" id="tvr-sms-logout" onclick="tvSmsLogout()" hidden>운영자 로그아웃</button> <span id="tvr-bridge" role="status" style="color:var(--gray-400)">문자 서버 연결 확인 중…</span><div style="margin-top:6px">결과 화면의 [결과 문자 보내기]를 누르면 전송됩니다. 링크가 포함된 장문 문자(LMS)로 발송됩니다.</div></div>
         </div>
         <div class="tvr-flow">
           <span class="tvr-step" id="tvr-s-save">☁️ 드라이브 저장</span>
@@ -3694,13 +3694,7 @@ body{background:#EEE8DE;color:var(--ink);font-size:12px;line-height:1.72;padding
     const order = ['bass','mid','top','breath','clarity','expr'];
     return order.map(k=>({key:k, score:(g[k]==null?50:g[k])})).sort((a,b)=>a.score-b.score).map(x=>Object.assign({score:x.score, stage:stageOf(x.score)[1]}, L[x.key]));
   }
-  window.renderTVReport5Page = function(){
-    const html = window.tvBuildReportHTML(Object.assign(window.tvGatherReportData(), {level:2}));
-    const w = window.open('', '_blank', 'width=920,height=1100');
-    if(!w){ alert('팝업이 차단되었습니다. 팝업 차단을 해제하고 다시 시도해주세요.'); return; }
-    w.document.write(html);
-    w.document.close();
-  };
+  window.renderTVReport5Page = function(){ return window.tvOpenCurrentServiceReport(); };
   window.__tvLegacyRender = function(){
     const big5 = {E:_v('i-E'), C:_v('i-C'), A:_v('i-A'), N:_v('i-N'), O:_v('i-O'), V:_v('i-V')};
     const f = {F0:_v('i-F0'), F1:_v('i-F1'), F2:_v('i-F2'), F3:_v('i-F3'),
@@ -3757,10 +3751,8 @@ body{background:#EEE8DE;color:var(--ink);font-size:12px;line-height:1.72;padding
       alert('아직 리포트가 준비되지 않았습니다. 참가자 정보와 녹음을 먼저 완료해 주세요.');
       return;
     }
-    const report=currentReport();
-    const w=window.open('','_blank','width=920,height=1100');
-    if(!w){ alert('팝업이 차단되었습니다. 팝업 차단을 해제하고 다시 시도해 주세요.'); return; }
-    w.document.write(report.html); w.document.close();
+    const report=currentReport(),link=tvReportLink(report.data),phone=(document.getElementById('i-phone')?.value||'').trim();
+    tvShowReport(report.html,link,tvSmsText(report.data.name,link),phone);
   };
   window.tvRenderServicePreview=function(){
     if(!reportReady()||typeof window.tvBuildReportHTML!=='function'||typeof window.tvGatherReportData!=='function') return;
@@ -3863,7 +3855,6 @@ body{background:#EEE8DE;color:var(--ink);font-size:12px;line-height:1.72;padding
    ════════════════════════════════════════════════════════════════ */
 const TV_API = 'https://script.google.com/macros/s/AKfycbx7Pq9FujnDsGZRDD85C39ml6AlikH935lL0BB2n-RwXzm2O_kM059nV4eV87AgLo16dg/exec';
 const TV_TOKEN = 'tv-scy-72a3da7c2fd012ec05e4e9d67e3b0bf396d4ea58';
-const TV_SMS_BRIDGE = 'http://127.0.0.1:7793';
 const TV_REPORT_BASE = 'https://touchingvoice.app/touchingvoice_analyzer.html';
 const TVR = {ac:null,stream:null,src:null,inGain:null,comp:null,conv:null,dry:null,wet:null,mon:null,an:null,sp:null,
              pcm:[],len:0,rec:false,sec:0,timer:null,raf:null,blob:null,armed:false,busy:false,bridge:false,
@@ -4097,46 +4088,20 @@ function tvShowReport(html, link, smsText, phone){
     ov=document.createElement('div'); ov.id='tvo'; ov.className='tvo';
     ov.innerHTML='<div class="tvo-bar"><span class="t">📄 발성심리 리포트</span>'+
       '<button onclick="tvoPrint()">🖨 인쇄 / PDF</button><button onclick="tvoCopyLink()">🔗 링크 복사</button>'+
-      '<button class="gold" id="tvo-sms" onclick="tvoSendSms()">📱 문자 발송</button><button onclick="tvoOpenNew()">↗ 새 창</button>'+
+      '<button class="gold" id="tvo-sms" onclick="tvoSendSms()">결과 문자 보내기</button><button id="tvo-sms-check" onclick="tvSmsCheck()" hidden>발송 상태 확인</button><button onclick="tvoOpenNew()">↗ 새 창</button>'+
       '<button class="red" onclick="document.getElementById(\'tvo\').classList.remove(\'on\')">✕ 닫기</button></div>'+
       '<div class="tvo-note" id="tvo-note"></div><iframe id="tvo-frame"></iframe>';
     document.body.appendChild(ov);
   }
-  TVR.last.reportUrl=link||''; TVR.last.smsText=smsText||''; TVR.last.phone=phone||''; TVR.last.html=html;
+  TVR.last.smsConsent=!!$g('tvc-req')?.checked; TVR.last.reportUrl=link||''; TVR.last.smsText=smsText||''; TVR.last.phone=phone||''; TVR.last.html=html;
   $g('tvo-note').textContent=(link?('링크: '+link.slice(0,90)+(link.length>90?'…':'')):'')+(phone?('   ·  수신번호: '+phone):'');
   $g('tvo-sms').style.display=phone?'':'none';
+  $g('tvo-sms-check').hidden=true; if(TVSMS.fingerprint!==tvNormPhone(phone)+'|'+(link||'').split('#r=')[1]){TVSMS.record=null;TVSMS.fingerprint='';TVSMS.requestId='';}
   $g('tvo-frame').srcdoc=html; ov.classList.add('on');
 }
 function tvoPrint(){ const f=$g('tvo-frame'); try{ f.contentWindow.focus(); f.contentWindow.print(); }catch(e){ alert('인쇄 창을 열 수 없습니다: '+e.message); } }
 function tvoCopyLink(){ const l=TVR.last.reportUrl; if(!l) return; (navigator.clipboard?navigator.clipboard.writeText(l):Promise.reject()).then(()=>tvrLog('링크 복사됨'),()=>prompt('링크를 복사하세요',l)); }
 function tvoOpenNew(){ const w=window.open('','_blank'); if(!w){ alert('팝업이 차단되었습니다.'); return; } w.document.write(TVR.last.html||''); w.document.close(); }
-async function tvoSendSms(){ const ok=await tvSendSms(TVR.last.phone,TVR.last.smsText); if(ok) tvrStep('sms','ok','📱 문자 발송됨'); }
-
-/* ── 문자 발송: 브리지(맥 Messages) → 없으면 sms: 링크 ── */
-async function tvBridgePing(){
-  try{ const ctl=new AbortController(); setTimeout(()=>ctl.abort(),1500);
-    const r=await fetch(TV_SMS_BRIDGE+'/ping',{signal:ctl.signal}); const j=await r.json(); TVR.bridge=!!j.ok; }
-  catch(_){ TVR.bridge=false; }
-  const el=$g('tvr-bridge'); if(el){ el.textContent=TVR.bridge?'(맥 문자 브리지 연결됨 · 자동 발송 가능)':'(브리지 없음 · 발송 버튼을 누르면 문자 앱이 열립니다)'; el.style.color=TVR.bridge?'var(--t-C)':'var(--gray-400)'; }
-  return TVR.bridge;
-}
-function tvNormPhone(p){ let d=String(p||'').replace(/\D/g,''); if(d.startsWith('82')) d='0'+d.slice(2); return d; }
-async function tvSendSms(phone, text){
-  const ph=tvNormPhone(phone); if(!ph||ph.length<10){ tvrLog('문자: 수신번호가 없거나 형식이 틀립니다'); tvrStep('sms','err','📱 번호 없음'); return false; }
-  if(TVR.bridge || await tvBridgePing()){
-    try{
-      const r=await fetch(TV_SMS_BRIDGE+'/send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:ph,text})});
-      const j=await r.json(); if(j.ok){ tvrLog('문자 발송 접수(맥 Messages): '+ph); return true; }
-      throw new Error(j.error||'bridge error');
-    }catch(e){ tvrLog('브리지 발송 실패: '+e.message+' → 문자 앱으로 대체'); }
-  }
-  try{ await navigator.clipboard.writeText(text); }catch(_){}
-  window.location.href='sms:'+ph+'&body='+encodeURIComponent(text);
-  tvrLog('문자 앱 열림(본문은 클립보드에도 복사됨): '+ph);
-  tvrStep('sms','run','📱 문자 앱에서 전송 버튼');
-  return false;
-}
-
 /* ── 자동 파이프라인: 정지 → 드라이브 저장 ∥ 분석 → 리포트 → 시트 → 문자 ── */
 function tvWaitAnalysisApplied(maxMs){
   return new Promise(res=>{ const t0=Date.now(); (function poll(){ const done=$g('audio-result')&&$g('audio-result').style.display!=='none'; const failed=/실패/.test(($g('audio-progress-title')||{}).textContent||''); if(done||failed||Date.now()-t0>maxMs) return res(done); setTimeout(poll,300); })(); });
@@ -4174,8 +4139,7 @@ async function tvrPipeline(blob){
   catch(e){ tvrStep('sheet','err','📊 시트 실패'); tvrLog('시트 기록 실패: '+e.message); }
   // 5) 문자
   if(phone && link){
-    if($g('tvr-auto-sms').checked && TVR.bridge){ tvrStep('sms','run','📱 문자 발송 중…'); const ok=await tvSendSms(phone, tvSmsText(name,link)); tvrStep('sms',ok?'ok':'err',ok?'📱 문자 발송됨':'📱 문자 확인 필요'); }
-    else { tvrStep('sms','run','📱 리포트 창의 [문자 발송] 버튼'); }
+    tvrStep('sms','run','리포트 창에서 수신번호 확인 후 [결과 문자 보내기]');
   } else { tvrStep('sms','', phone?'📱 문자':'📱 번호 없음 · 건너뜀'); }
   TVR.busy=false; $g('tvr-rec').disabled=false;
   tvrLog('완료 — 다음 참가자는 [입력 비우기] 후 이름 입력 → 녹음');
@@ -4185,6 +4149,7 @@ async function tvrPipeline(blob){
 (function(){
   const h=location.hash||'';
   function boot(){
+    if(h.startsWith('#sms=')){tvSmsOpenResult(h.slice(5));return;}
     if(h.startsWith('#r=')){
       try{
         const d=tvUnpackReport(h.slice(3));
@@ -4193,7 +4158,7 @@ async function tvrPipeline(blob){
         return;
       }catch(e){ console.error('report link decode failed',e); }
     }
-    tvBridgePing(); if(navigator.mediaDevices) tvrRefreshDevices();
+    tvSmsStatus(); if(navigator.mediaDevices) tvrRefreshDevices();
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else setTimeout(boot,0);
 })();
@@ -4315,5 +4280,6 @@ function tvdDrawLane(){
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
 })();
 </script>
+<script src="./analyzer-sms.js?v=20260918"></script>
 </body>
 </html>
