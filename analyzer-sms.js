@@ -13,7 +13,7 @@ function tvSmsNotice(text){const el=document.getElementById('tvr-bridge');if(el)
 function tvSmsClear(){TVSMS.ready=false;TVSMS.record=null;TVSMS.fingerprint='';TVSMS.requestId='';}
 async function tvSmsInit(){
   TVSMS.setup ||= (async()=>{
-    TVSMS.auth=await import('./auth.js');
+    TVSMS.auth=await import('./auth.js?v=20260919c');
     await TVSMS.auth.initAuth(user=>{
       TVSMS.user=user;tvSmsClear();
       const login=document.getElementById('tvr-sms-login'),logout=document.getElementById('tvr-sms-logout');
