@@ -68,10 +68,16 @@ export async function signIn(provider) {
   const credentialProvider=provider==='google' ? new sdk.GoogleAuthProvider() : new sdk.OAuthProvider('apple.com');
   if (provider==='google') credentialProvider.setCustomParameters({prompt:'select_account'});
   else { credentialProvider.addScope('email'); credentialProvider.addScope('name'); }
-  // Redirect instead of popup: works with any popup-blocker setting on any machine, at the
-  // cost of a full page reload (the page's in-progress form/recording state is lost on this hop).
-  await sdk.signInWithRedirect(auth,credentialProvider);
-  return null;
+  // Popup first (works reliably across domains). Redirect only as a fallback when the popup is
+  // blocked — Chrome partitions third-party storage, so the redirect return leg via firebaseapp.com
+  // can silently lose the sign-in result.
+  try {
+    const result=await sdk.signInWithPopup(auth,credentialProvider);
+    return result.user;
+  } catch (e) {
+    if (e && e.code === 'auth/popup-blocked') { await sdk.signInWithRedirect(auth,credentialProvider); return null; }
+    throw e;
+  }
 }
 
 export async function signOut() {
