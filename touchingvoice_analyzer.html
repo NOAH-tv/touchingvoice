@@ -894,7 +894,8 @@ body::before{
       </div>
 
       <div class="ed-label">Personality · BIG5 성격 점수 (0~100)</div>
-      <div class="ed-row c6">
+      <label style="display:flex;gap:8px;align-items:center;font-size:12px;color:var(--cream,#F5EEE0);margin-bottom:8px;cursor:pointer"><input type="checkbox" id="i-noBig5" onchange="tvToggleBig5Fields()" style="accent-color:#E05CFF;width:15px;height:15px"> 성격검사 결과 없음 — 목소리만으로 리포트 발급 (성격×목소리 비교 없이, 목소리 관찰 패턴만 표시)</label>
+      <div class="ed-row c6" id="tvBig5Fields">
         <div class="fld"><label>외향성 E</label><input type="number" id="i-E" value="" placeholder="0–100"></div>
         <div class="fld"><label>성실성 C</label><input type="number" id="i-C" value="" placeholder="0–100"></div>
         <div class="fld"><label>우호성 A</label><input type="number" id="i-A" value="" placeholder="0–100"></div>
@@ -902,6 +903,10 @@ body::before{
         <div class="fld"><label>개방성 O</label><input type="number" id="i-O" value="" placeholder="0–100"></div>
         <div class="fld"><label>보컬특성 V</label><input type="number" id="i-V" value="" placeholder="0–100"></div>
       </div>
+      <script>
+      function tvToggleBig5Fields(){var c=document.getElementById('i-noBig5'),box=document.getElementById('tvBig5Fields');if(!c||!box)return;box.style.display=c.checked?'none':'';}
+      function tvNoBig5(){var c=document.getElementById('i-noBig5');return !!(c&&c.checked);}
+      </script>
 
 
 
@@ -3622,10 +3627,86 @@ body{background:#EEE8DE;color:var(--ink);font-size:12px;line-height:1.72;padding
     const q = {b100:_v('i-b100'), b300:_v('i-b300'), b600:_v('i-b600'), b1200:_v('i-b1200'), b2500:_v('i-b2500'),
                b4000:_v('i-b4000'), b5500:_v('i-b5500'), b7000:_v('i-b7000'), b8000:_v('i-b8000')};
     const adv = (typeof audioAnalysisResult !== 'undefined' && audioAnalysisResult && audioAnalysisResult.advanced) ? audioAnalysisResult.advanced : null;
-    return {name:_t('i-name'), meta:_t('i-meta'), song:_t('i-song'), big5, f, q, adv};
+    const noPersonality = !!(document.getElementById('i-noBig5') && document.getElementById('i-noBig5').checked);
+    return {name:_t('i-name'), meta:_t('i-meta'), song:_t('i-song'), big5, f, q, adv, noPersonality};
   };
+  // 성격검사 없이 목소리만으로 만드는 간이 리포트 (비교·격차·코칭처방 없음, 관찰용)
+  function buildVoiceOnlyReportHTML(d){
+    const f = Object.assign({}, d.f||{}), q = Object.assign({}, d.q||{});
+    const esc = v => String(v==null?'':v).replace(/[<>&"']/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c])).slice(0,80);
+    const name = esc(d.name) || '대상자';
+    const song = esc(d.song) || '응급실';
+    let meta = esc(d.meta);
+    if(!meta) meta = `측정 구간 ${song}(1절) · ${new Date().getFullYear()}.${String(new Date().getMonth()+1).padStart(2,'0')}`;
+    const voice = projectVoice({}, f, q);
+    const gauges = computeGauges({E:50,C:50,A:50,N:50,O:50}, voice, f, q, d.adv||null);
+    const traitNames={E:'외향성',C:'성실성',A:'우호성',N:'정서 민감성',O:'개방성'};
+    const traitColor={E:'#6E5DC6',C:'#2E9E6B',A:'#4A7FD0',N:'#D05B57',O:'#D9A23F'};
+    const traitDesc={
+      E:v=>v>=65?'목소리에서 에너지와 전달력이 두드러집니다.':v<=35?'목소리가 차분하고 힘을 아끼는 톤입니다.':'에너지와 차분함이 고르게 섞여 있습니다.',
+      C:v=>v>=65?'음정·박자가 안정적으로 유지됩니다.':v<=35?'오늘 구간은 흔들림이 다소 있었습니다.':'대체로 안정적인 흐름입니다.',
+      A:v=>v>=65?'따뜻하고 부드러운 톤이 느껴집니다.':v<=35?'또렷하고 직선적인 톤입니다.':'따뜻함과 또렷함이 균형을 이룹니다.',
+      N:v=>v>=65?'오늘 구간에서 긴장이 다소 실렸습니다.':v<=35?'힘을 뺀 편안한 발성입니다.':'보통 수준의 긴장감입니다.',
+      O:v=>v>=65?'음색 변화와 색깔이 다채롭습니다.':v<=35?'한 가지 톤을 일관되게 유지합니다.':'톤 변화가 무난한 수준입니다.',
+    };
+    const bars = ['E','C','A','N','O'].map(k=>{
+      const val = voice[k]==null?50:voice[k];
+      return `<div class="vo-row"><div class="vo-top"><span class="vo-dot" style="background:${traitColor[k]}"></span><span class="vo-name">${traitNames[k]}</span><span class="vo-val">${val}</span></div><div class="vo-bar"><i style="width:${val}%;background:${traitColor[k]}"></i></div><p class="vo-desc">${traitDesc[k](val)}</p></div>`;
+    }).join('');
+    const gaugeNames={bass:'저음 공명',mid:'중역 선명도',top:'상단 광채',breath:'호흡 흐름',clarity:'톤 안정도'};
+    const stageColor={s1:'#B5AC9C',s2:'#CC7F5E',s3:'#B0883E',s4:'#2E9E6B',s5:'#43227D'};
+    const gaugeRows = Object.keys(gaugeNames).map(k=>{
+      const score = gauges[k]==null?50:gauges[k];
+      const st = stageOf(score);
+      return `<div class="vo-row"><div class="vo-top"><span class="vo-name">${gaugeNames[k]}</span><span class="vo-val">${score}</span><span class="vo-stage" style="background:${stageColor[st[0]]}">${st[1]}</span></div><div class="vo-bar"><i style="width:${score}%;background:${stageColor[st[0]]}"></i></div></div>`;
+    }).join('');
+    return `<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><title>${name}님의 보이스 리포트 · TouchingVoice</title>
+<style>
+@font-face{font-family:'NanumSquare';src:url('https://cdn.jsdelivr.net/gh/moonspam/NanumSquare/NanumSquareR.ttf');font-weight:400;}
+@font-face{font-family:'NanumSquare';src:url('https://cdn.jsdelivr.net/gh/moonspam/NanumSquare/NanumSquareB.ttf');font-weight:700;}
+@font-face{font-family:'NanumSquare';src:url('https://cdn.jsdelivr.net/gh/moonspam/NanumSquare/NanumSquareEB.ttf');font-weight:800;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'NanumSquare',sans-serif;background:#EEE8DE;color:#20152F;font-size:13px;line-height:1.7;padding:28px 16px 48px;max-width:640px;margin:0 auto;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.card{background:#FFFCF7;border:1px solid rgba(67,34,125,.10);border-radius:22px;padding:30px 26px;box-shadow:0 16px 44px rgba(43,25,62,.08);position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,#43227D,#A66BFF 62%,#D8B45E)}
+.mast{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.logo{font-size:11px;letter-spacing:.2em;font-weight:800;color:#43227D}.logo b{color:#A8925A}
+.badge{font-size:8px;letter-spacing:.15em;font-weight:800;color:#fff;background:#43227D;border-radius:999px;padding:5px 9px}
+.kick{color:#A8925A;letter-spacing:.2em;font-size:9px;font-weight:700}
+h1{font-size:24px;line-height:1.3;margin:6px 0 4px;color:#28163E}
+.meta{font-size:11px;color:#857990;margin-bottom:14px}
+.note{font-size:11px;color:#51475E;background:#EFE7FA;border-radius:10px;padding:11px 13px;line-height:1.6;margin-bottom:18px}
+.sec-t{font-weight:800;font-size:13px;margin:20px 0 10px;color:#28163E}
+.vo-row{margin-bottom:12px}
+.vo-top{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+.vo-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.vo-name{font-weight:700;font-size:12px}
+.vo-val{margin-left:auto;font-weight:800;font-size:13px}
+.vo-stage{font-size:8.5px;font-weight:700;color:#fff;border-radius:9px;padding:2px 7px}
+.vo-bar{height:9px;background:#F1E9DB;border-radius:5px;overflow:hidden}
+.vo-bar i{display:block;height:100%;border-radius:5px}
+.vo-desc{font-size:10.5px;color:#51475E;margin-top:4px}
+.cta{margin-top:20px;text-align:center;padding:14px;background:#F5EEE0;border-radius:12px;font-size:11px;color:#51475E}
+.foot{margin-top:16px;font-size:9px;color:#8A8195;line-height:1.6;text-align:center;border-top:1px dashed #E3D9C8;padding-top:10px}
+</style></head><body>
+<div class="card">
+  <div class="mast"><div class="logo">TOUCHING<b>VOICE</b></div><div class="badge">VOICE ONLY</div></div>
+  <div class="kick">2026 SEORIPUL MUSIC FESTIVAL · AI VOICE LAB</div>
+  <h1>${name}님의 목소리에서<br>관찰된 성향</h1>
+  <div class="meta">${meta}</div>
+  <div class="note">이 리포트는 <b>성격검사 없이 목소리 음향 분석만으로</b> 만든 참고용 결과입니다. 확정된 성격 진단이 아니라 오늘 이 구간에서 관찰된 패턴이며, 컨디션·곡·마이크에 따라 달라질 수 있습니다.</div>
+  <div class="sec-t">오늘 목소리에서 읽은 성향</div>
+  ${bars}
+  <div class="sec-t">보이스 발달 지표</div>
+  ${gaugeRows}
+  <div class="cta">성격검사(약 5분)까지 함께 받으시면, 성향과 목소리를 비교하는 <b>상세 리포트</b>를 받으실 수 있어요.</div>
+  <div class="foot">본 리포트는 음향 측정값 기반 참고 자료이며, 임상 진단이나 채용·인사 평가의 근거가 아닙니다. · TouchingVoice 보이스매트릭스 · ${new Date().getFullYear()}</div>
+</div>
+</body></html>`;
+  }
   // 리포트 데이터 → 완성 HTML
   window.tvBuildReportHTML = function(d){
+    if(d.noPersonality) return buildVoiceOnlyReportHTML(d);
     const big5 = Object.assign({}, d.big5||{});
     const f = Object.assign({}, d.f||{}), q = Object.assign({}, d.q||{});
     const esc = v => String(v==null?'':v).replace(/[<>&"']/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c])).slice(0,80);
@@ -3739,7 +3820,8 @@ body{background:#EEE8DE;color:var(--ink);font-size:12px;line-height:1.72;padding
   function currentLevel(){ return document.getElementById('tvc-research')&&document.getElementById('tvc-research').checked?2:1; }
   function reportReady(){
     const filled=id=>String((document.getElementById(id)||{}).value||'').trim()!=='';
-    const big5Ready=['i-E','i-C','i-A','i-N','i-O'].every(filled);
+    const noBig5=document.getElementById('i-noBig5')&&document.getElementById('i-noBig5').checked;
+    const big5Ready=noBig5||['i-E','i-C','i-A','i-N','i-O'].every(filled);
     const acoustic=['i-F1','i-F2','i-F3','i-RMS','i-DR','i-HNR','i-b100','i-b300','i-b600','i-b1200','i-b2500','i-b4000'].filter(filled).length;
     return big5Ready&&acoustic>=3;
   }
@@ -4259,7 +4341,8 @@ function tvdDrawLane(){
     if(steps.some(x=>!x)) return;
     const ready=()=>{
       const filled=id=>String(($g(id)||{}).value||'').trim()!=='';
-      const profile=filled('i-name')&&['i-E','i-C','i-A','i-N','i-O'].every(filled)&&!!($g('tvc-req')&&$g('tvc-req').checked);
+      const noBig5=$g('i-noBig5')&&$g('i-noBig5').checked;
+      const profile=filled('i-name')&&(noBig5||['i-E','i-C','i-A','i-N','i-O'].every(filled))&&!!($g('tvc-req')&&$g('tvc-req').checked);
       const reportDone=!!($g('tvr-s-rep')&&$g('tvr-s-rep').classList.contains('ok'));
       if(reportDone) return 4;
       if(TVR.blob||TVR.busy||($g('tvr-s-ana')&&/run|ok|err/.test($g('tvr-s-ana').className))) return 3;
