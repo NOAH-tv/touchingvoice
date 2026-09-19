@@ -42,10 +42,13 @@ function tvNormPhone(p){return String(p||'').replace(/[\s()-]/g,'').replace(/^\+
 function tvSmsDisplay(r){
   const labels={prepared:'보내기 전',sending:'접수 확인 중 · 다시 발송하지 마세요',accepted:'발송 접수됨 · 수신 결과 확인 가능',delivered:'전달 완료',rejected:'접수 거절 · 발신번호와 잔액 확인',failed:'전달 실패 · 발송 내역 확인',uncertain:'결과 미확인 · 중복 발송 차단',revoked:'결과 링크 종료됨'};
   const message='문자 '+(labels[r.status]||'상태 확인 필요');
-  tvrStep('sms',['accepted','delivered'].includes(r.status)?'ok':['rejected','failed','uncertain'].includes(r.status)?'err':'run',message);
+  const ok=['accepted','delivered'].includes(r.status), err=['rejected','failed','uncertain'].includes(r.status);
+  tvrStep('sms',ok?'ok':err?'err':'run',message);
   const note=document.getElementById('tvo-note');if(note)note.textContent='수신번호: '+r.phone+' · '+message;
   const check=document.getElementById('tvo-sms-check');if(check)check.hidden=false;
-  return ['accepted','delivered'].includes(r.status);
+  const btn=document.getElementById('tvo-sms');
+  if(btn){btn.textContent=ok?'✓ 문자 전송 완료':err?'⚠ 발송 실패 · 다시 누르세요':'결과 문자 보내기';btn.classList.toggle('tvo-sms-ok',ok);btn.classList.toggle('tvo-sms-err',err);}
+  return ok;
 }
 async function tvSendSms(phone){
   if(TVSMS.busy)return false;
