@@ -1,4 +1,4 @@
-import { initAuth, signIn, signOut } from './auth.js?v=parallel-20260911';
+import { initAuth, signIn, signOut } from './auth.js?v=redirect-20260919';
 import { call, config } from './api.js?v=parallel-20260911';
 import { coreMetricSummary } from './core-metrics.js?v=core-summary-20260910';
 
@@ -757,8 +757,8 @@ $('#refreshButton').innerHTML = icon('refresh'); $('#refreshButton').addEventLis
 $('#pendingRetry').addEventListener('click', establishSession);
 function setPendingMode(mode) { document.querySelectorAll('[data-pending-mode]').forEach(button => button.classList.toggle('active', button.dataset.pendingMode === mode)); $('#applyForm').hidden = mode === 'branch'; $('#branchApplyForm').hidden = mode !== 'branch'; }
 document.querySelectorAll('[data-pending-mode]').forEach(button => button.addEventListener('click', () => setPendingMode(button.dataset.pendingMode)));
-$('#previewApplicant').addEventListener('click', async () => { if (!preview) return; setPendingMode('branch'); const { setPreviewRole } = await import('./auth.js?v=parallel-20260911'); await setPreviewRole('applicant'); });
-$('#pendingPreviewBack').addEventListener('click', async () => { if (!preview) return; const { setPreviewRole } = await import('./auth.js?v=parallel-20260911'); await setPreviewRole('owner'); });
+$('#previewApplicant').addEventListener('click', async () => { if (!preview) return; setPendingMode('branch'); const { setPreviewRole } = await import('./auth.js?v=redirect-20260919'); await setPreviewRole('applicant'); });
+$('#pendingPreviewBack').addEventListener('click', async () => { if (!preview) return; const { setPreviewRole } = await import('./auth.js?v=redirect-20260919'); await setPreviewRole('owner'); });
 $('#studioLaunch').addEventListener('click', () => launchStudio($('#studioStudent').value, { reload: true }).catch(error => toast(errorMessage(error), true)));
 window.addEventListener('tv:studio-select', event => { void launchStudio(event.detail?.studentId || '').catch(error => toast(errorMessage(error), true)); });
 window.addEventListener('tv:data-refresh', () => { if (S.session) refresh({ quiet: true }); });
@@ -798,7 +798,7 @@ $('#branchApplyForm').addEventListener('submit', async event => {
 });
 $('#previewRole').addEventListener('change', async event => {
   if (!preview) return; const select = event.target; select.disabled = true;
-  try { const { setPreviewRole } = await import('./auth.js?v=parallel-20260911'); await setPreviewRole(select.value); } catch (error) { toast(errorMessage(error), true); } finally { select.disabled = false; }
+  try { const { setPreviewRole } = await import('./auth.js?v=redirect-20260919'); await setPreviewRole(select.value); } catch (error) { toast(errorMessage(error), true); } finally { select.disabled = false; }
 });
 document.querySelectorAll('[data-provider]').forEach(button => {
   button.addEventListener('click', async () => {
@@ -815,4 +815,4 @@ if (preview) {
 }
 const branchDeepLink = new URLSearchParams(location.search).get('apply') === 'branch';
 if (branchDeepLink) setPendingMode('branch');
-try { if (preview && branchDeepLink) { const { setPreviewRole } = await import('./auth.js?v=parallel-20260911'); await setPreviewRole('applicant'); } await initAuth(onAuth); } catch (error) { clearPrivateState(); showScreen('loginScreen'); loginError(error); }
+try { if (preview && branchDeepLink) { const { setPreviewRole } = await import('./auth.js?v=redirect-20260919'); await setPreviewRole('applicant'); } await initAuth(onAuth); } catch (error) { clearPrivateState(); showScreen('loginScreen'); loginError(error); }
