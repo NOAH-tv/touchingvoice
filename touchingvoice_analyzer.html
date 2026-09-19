@@ -554,6 +554,8 @@ input::placeholder{color:#6C5F8F}
 .tvo{background:rgba(10,4,24,.82)}
 .tvo-bar{background:linear-gradient(90deg,#1B0B3A,#2A1258)}
 .tvo-bar button.gold{background:var(--gold);border-color:var(--gold);color:#1A0F35}
+.tvo-bar button#tvo-sms.tvo-sms-ok{background:#2E9E6B;border-color:#5AD08A;color:#fff}
+.tvo-bar button#tvo-sms.tvo-sms-err{background:#D05B57;border-color:#FF7A76;color:#fff}
 .tvo-note{background:#0F0722;color:#BDB0D6}
 .tvd{background:radial-gradient(1000px 500px at 20% -10%,rgba(123,59,255,.25),transparent 60%),#0F0722;color:var(--cream)}
 .tvd-top{background:rgba(27,11,58,.85);border-bottom-color:rgba(162,107,255,.3);box-shadow:0 6px 30px rgba(123,59,255,.2)}
@@ -4095,7 +4097,7 @@ function tvShowReport(html, link, smsText, phone){
   }
   TVR.last.smsConsent=!!$g('tvc-req')?.checked; TVR.last.reportUrl=link||''; TVR.last.smsText=smsText||''; TVR.last.phone=phone||''; TVR.last.html=html;
   $g('tvo-note').textContent=(link?('링크: '+link.slice(0,90)+(link.length>90?'…':'')):'')+(phone?('   ·  수신번호: '+phone):'');
-  $g('tvo-sms').style.display=phone?'':'none';
+  const smsBtn=$g('tvo-sms'); smsBtn.style.display=phone?'':'none'; smsBtn.textContent='결과 문자 보내기'; smsBtn.classList.remove('tvo-sms-ok','tvo-sms-err');
   $g('tvo-sms-check').hidden=true; if(TVSMS.fingerprint!==tvNormPhone(phone)+'|'+(link||'').split('#r=')[1]){TVSMS.record=null;TVSMS.fingerprint='';TVSMS.requestId='';}
   $g('tvo-frame').srcdoc=html; ov.classList.add('on');
 }
