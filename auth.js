@@ -34,6 +34,9 @@ async function initialize() {
   auth = sdk.getAuth(app);
   await sdk.setPersistence(auth, sdk.browserSessionPersistence);
   await auth.authStateReady();
+  // Completes a signInWithRedirect() round trip (no-op if this load isn't one). Errors are
+  // surfaced to the caller's next signIn() rather than thrown here, since nobody awaits this page load.
+  try { await sdk.getRedirectResult(auth); } catch (_) { /* swallow: e.g. account-exists-with-different-credential */ }
   sdk.onAuthStateChanged(auth, notify);
 }
 
@@ -65,8 +68,10 @@ export async function signIn(provider) {
   const credentialProvider=provider==='google' ? new sdk.GoogleAuthProvider() : new sdk.OAuthProvider('apple.com');
   if (provider==='google') credentialProvider.setCustomParameters({prompt:'select_account'});
   else { credentialProvider.addScope('email'); credentialProvider.addScope('name'); }
-  const result=await sdk.signInWithPopup(auth,credentialProvider);
-  return result.user;
+  // Redirect instead of popup: works with any popup-blocker setting on any machine, at the
+  // cost of a full page reload (the page's in-progress form/recording state is lost on this hop).
+  await sdk.signInWithRedirect(auth,credentialProvider);
+  return null;
 }
 
 export async function signOut() {
