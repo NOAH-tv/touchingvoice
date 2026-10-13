@@ -474,7 +474,8 @@ function cloudStateSnapshot(){const o={};for(const k of CLOUD_STATE_KEYS){try{co
 async function cloudPushState(){if(!cloudReady())return;try{await SemiCloud.pushState(cloudStateSnapshot());localPut('pilsa-cloud-last',Date.now());}catch(e){console.warn('cloud state',e?.code||e?.message);}}
 // 로그인 직후: 클라우드에만 있는 기록은 내려받고, 이 기기에만 있는 기록은 올린다. 이 기기가 비어 있으면 설정·날씨 기록도 받아온다
 async function cloudRestore(){cloudRestoring=true;let got=0;
- try{const fresh=!records.length&&!localGet('pilsa-care-days',[]).length,st=await SemiCloud.pullState();
+ // 이 기기에서 이 계정의 설정을 받아 온 적이 있으면 다시 받지 않는다(새로고침이 반복되지 않게)
+ try{const flag='pilsa-cloud-restored-'+cloudUser.uid,done=(()=>{try{return localStorage.getItem(flag)==='1';}catch{return true;}})(),fresh=!done&&!records.length&&!localGet('pilsa-care-days',[]).length,st=await SemiCloud.pullState();try{localStorage.setItem(flag,'1');}catch{}
   if(st&&fresh){for(const [k,v] of Object.entries(st.data||{}))if(CLOUD_STATE_KEYS.includes(k))try{localStorage.setItem(k,v);}catch{}}
   const remote=await SemiCloud.listRecords(),have=new Set(records.map(r=>r.id)),map=cloudMap();
   for(const r of remote){map[r.id]={audio:!!r.cloudAudio,at:Date.now()};if(have.has(r.id))continue;const {cloudAudio,...rec}=r;if(cloudAudio){try{rec.audio=await SemiCloud.fetchAudio(cloudAudio);}catch{}}await putRecord(rec);syncReadingRecord(rec);got++;}

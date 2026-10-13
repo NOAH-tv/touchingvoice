@@ -1,4 +1,4 @@
-const CACHE='pilsa-v67-login-open';
+const CACHE='pilsa-v68-no-reload-loop';
 const ASSETS=['./','index.html','device-voice.js','voice-care.js','semi-cloud.js','device-analysis-worker.js','device-speech.js','device-speech-worker.js','bible-speech.js','beta-voice.js','voice.css','beta-access.js','beta-config.js','mouth-worker.js','data/bible.json','assets/Paperlogy-4Regular.ttf','assets/Paperlogy-6SemiBold.ttf','assets/NanumMyeongjo-Regular.ttf','assets/brand/semiqolon-icon-white.png','assets/brand/semiqolon-icon-black.png','assets/brand/semiqolon-wordmark-white.png','assets/brand/semiqolon-wordmark-black.png','favicon.svg','manifest.webmanifest'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('pilsa-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
