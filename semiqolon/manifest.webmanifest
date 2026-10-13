@@ -1,0 +1,25 @@
+{
+  "name": "SEMIQOLON",
+  "short_name": "SEMIQOLON",
+  "lang": "ko",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#080a0b",
+  "theme_color": "#080a0b",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/brand/semiqolon-icon-black.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "description": "SEMI · 성경 버전 BETA — 말씀과 목소리를 기록합니다."
+}

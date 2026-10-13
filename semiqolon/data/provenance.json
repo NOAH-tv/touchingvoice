@@ -1,0 +1,14 @@
+{
+  "source": "https://github.com/crizin/bible-db",
+  "file": "data/krv/krv_holybible.jsonl",
+  "retrieved": "2026-09-24",
+  "sha256": "fd40780326e24efe9e16efb775db39ddf6f5d0980a97344de618533d5a6663c1",
+  "verses": 31101,
+  "comparisonWithBskoreaSnapshot": {
+    "exactMatch": 28743,
+    "different": 2119,
+    "additional": 239,
+    "onlyBskoreaSnapshot": 200
+  },
+  "note": "Source text preserved without substitutions. Structure checked, not a new human proofreading of every verse."
+}
