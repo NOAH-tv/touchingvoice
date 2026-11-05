@@ -644,6 +644,7 @@ R.info=()=>({top:{back:()=>go("landing"),label:"시작 정보"},html:`
 <div class="card">
   <label class="chk"><input type="checkbox" id="c1"><span>만 14세 이상이에요</span></label>
   <p class="small">녹음과 검사 결과는 이 기기에서 분석해요. 목소리 인상을 살펴보는 연습용 검사예요.</p>
+  <p class="small">이름과 녹음은 저장하지 않아요. 성별·나이·하는 일과 측정 숫자만 이름 없이 모아 검사를 더 정확하게 만드는 데 써요.</p>
 </div>
 <p class="err" id="err" role="alert"></p>
 <button class="btn pri block" id="next">녹음 준비하기</button>`,
@@ -732,11 +733,6 @@ R.prep=()=>({top:{back:()=>go("info"),label:"녹음 준비"},html:`
 <div><div class="kicker">녹음 준비</div><h1 class="title">조용한 곳에서,<br>폰과 입 사이를 한 뼘</h1></div>
 <div class="card"><p>먼저 2초 동안 주변 소리를 확인해요. 그동안은 말하지 말아 주세요.</p><p class="muted" id="nmsg">주변 소리가 작을수록 결과가 정확해져요.</p><p class="muted">에어팟 같은 이어폰은 빼고, 폰 마이크로 녹음해 주세요. 이어폰 마이크는 음질이 낮아 결과가 흐려져요.</p>
 </div>
-<section class="card"><label class="chk"><input type="checkbox" id="devConsent" autocomplete="off" aria-describedby="devTerms"><span><strong>[선택] 녹음을 터칭보이스 자체 서비스 개발과 상업적 이용에 제공할게요.</strong></span></label>
-  <div id="devTerms"><p class="small">터칭보이스가 자체 유료 음성 분석·훈련 서비스를 개발하고 개선하는 데 사용해요. 선택하지 않아도 목소리 유형과 Big Five 비교를 모두 볼 수 있어요.</p>
-  <p class="small"><strong>보관 기간은 수집 후 최대 3년이에요. 동의를 철회하면 조기에 삭제해요.</strong></p><details><summary>수집 항목과 삭제 요청 방법</summary><p class="small">문장과 ‘아—’ 녹음 2개, 음성 측정값과 목소리 유형, 이름 또는 별명·성별·나이·직업(입력한 경우)을 저장해요. Big Five 답변은 이 기기에만 남아요.</p>
-  <p class="small">이용 목적을 먼저 달성하면 그때 삭제해요. 철회·삭제는 <a href="mailto:lubere12@naver.com">lubere12@naver.com</a>으로 요청할 수 있어요.</p></details></div>
-</section>
 <button class="btn pri block" id="noise">주변 소리 확인</button>
 <button class="btn ghost block" id="again2" hidden>주변 소리 다시 확인</button>`,
  /* 11/5 대표: 주변 소리 확인이 끝나면 같은 버튼이 '녹음하기'로 바뀐다 */
@@ -744,9 +740,7 @@ R.prep=()=>({top:{back:()=>go("info"),label:"녹음 준비"},html:`
   startRec().then(()=>later(()=>{const r=stopRec();resample(r.x,r.sr).then(x=>{const db=[];frameDb(x,SR,882,441,v=>db.push(v));db.sort((a,c)=>a-c);S.noiseDb=db.length?db[Math.floor(db.length*.5)]:-70;
    $("#nmsg").textContent=S.noiseDb>-45?`주변이 조금 시끄러워요(${S.noiseDb.toFixed(0)} dB). 더 조용한 곳이면 결과가 정확해져요.`:`좋아요. 조용합니다(${S.noiseDb.toFixed(0)} dB).`;done(S.noiseDb>-45)})},2000))
   .catch(()=>{$("#nmsg").textContent="마이크를 쓸 수 없어요. 다음 화면에서 녹음 파일로 해 볼 수 있어요.";S.noiseDb=null;done(false)})};
-  const consent=$("#devConsent");consent.checked=false;
-  b.onclick=()=>{if(!ready){check();return}
-    S.developmentConsent=consent.checked?{version:"voice-dev-2026-11-05",acceptedAt:new Date().toISOString(),retentionYears:3}:null;
+    b.onclick=()=>{if(!ready){check();return}
     go("rec1")};ag.onclick=check;}});
 R.rec1=err=>({top:{back:()=>go("prep"),label:"녹음 1 / 2"},html:`
 <div><div class="kicker">녹음 1 · 문장 읽기${sitKey()==="intro"?"":" · "+SITS[sitKey()][0]}</div><h1 class="title">${SITS[sitKey()][3]}</h1></div>
@@ -1096,29 +1090,13 @@ const SAVE_URL="https://script.google.com/macros/s/AKfycbyTH-Q1YT90015gFUapUB1SB
 /* 11/5 대표: 녹음 품질 기록 — 마이크가 실제로 받은 샘플레이트. 블루투스 이어폰(에어팟 등)은 16~24kHz라 48kHz로 저장해도 음질이 안 오른다 → 시트 '녹음 품질'에 남겨 거를 수 있게. 파일로 했으면 '파일' */
 function recQ(){const rs=[REC.r1,REC.r2].filter(Boolean);if(!rs.length)return"";if(rs.some(r=>r.file))return"파일";const hz=Math.min(...rs.map(r=>r.micHz||r.sr)),k=+(hz/1000).toFixed(1)+"kHz";return hz>=44100?k:k+" 낮음(이어폰 추정)"}
 function serverRecord(){const m=S.m,J=S.J,s=m.s,v=m.v,A=attrScore(m),n=(x,d)=>x==null||!isFinite(x)?null:+(+x).toFixed(d);
- return{type:"voicetype",ver:2,src:"web",developmentConsent:S.developmentConsent,sit:sitKey(),sitName:SITS[sitKey()][0],at:new Date().toISOString(),name:S.name||"",sex:S.sex,age:S.age,job:S.job||"",code:J.code,
+ return{type:"voicetype",ver:3,src:"web",sit:sitKey(),sitName:SITS[sitKey()][0],at:new Date().toISOString(),sex:S.sex,age:S.age,job:S.job||"",code:J.code,
   f0:n(s.f0,1),stRel:n(J.stRel,2),rangeSt:n(s.rangeSt,2),sdSt:n(s.sdSt,2),rate:n(s.rate,2),syl:s.syl,speakDur:n(s.speakDur,2),dbsd:n(s.dbsd,2),dyn:n(s.dyn,1),snr:n(s.snr,1),endSlope:n(s.endSlope,2),bands:s.bands.map(b=>n(b,1)),
   mpt:n(v.mpt,2),hnr:n(v.hnr,2),regs4:s.regs4?s.regs4.map(x=>n(x,1)):null,vspace:n(s.vspace,0),sylc:n(s.sylc,1),pauses:s.pauses,voiceOnly:true,cpp:n(v.cpp,3),trem:n(v.trem,3),noiseDb:n(m.noiseDb,1),cond:m.c||null,
   score:J.sc,total:J.total,voice:J.voice,voiceAge:n(J.age,1),attr:A.pct,attrParts:Object.fromEntries(Object.entries(A.parts).map(([k,x])=>[k,n(x,2)])),recQ:recQ()}}
-/* 11/4 대표: 녹음도 저장 — 문장·'아—' 두 녹음을 wav로 같은 요청에 실어 보낸다(실패하면 숫자만) — 11/5부터 48kHz(최소 44.1kHz) 원음 */
-const b64of=blob=>blob.arrayBuffer().then(buf=>{const u=new Uint8Array(buf);let t="";for(let i=0;i<u.length;i+=0x8000)t+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));return btoa(t)});
-/* 11/5 대표: 저장 녹음은 최소 44.1kHz, 가능하면 48kHz — 기기가 48kHz·44.1kHz로 녹음하면 그대로 쓰고(폰은 대부분 48kHz), 그 밖(블루투스 16kHz·오디오 인터페이스 96kHz 등)은 48kHz로 맞춘다(96kHz 원본은 저장소 한도를 넘음).
-   잡음 제거·에코 제거·자동 음량(=게이트·컴프 역할)은 마이크 설정에서 모두 끄고, 저장 전에도 아무 처리 없이 16비트 PCM WAV로 담는다(분석용 22.05kHz 변환은 분석에만) */
-function resampleTo(x,sr,to){const OC=window.OfflineAudioContext||window.webkitOfflineAudioContext,oc=new OC(1,Math.ceil(x.length*to/sr),to),b=oc.createBuffer(1,x.length,sr);b.getChannelData(0).set(x);const s=oc.createBufferSource();s.buffer=b;s.connect(oc.destination);s.start(0);
-  const p=oc.startRendering();return p&&p.then?p.then(r=>r.getChannelData(0)):new Promise(res=>{oc.oncomplete=e=>res(e.renderedBuffer.getChannelData(0))})}
-async function audioPayload(){const o={};for(const [k,r] of [["sent",REC.r1],["ah",REC.r2]]){if(!r)continue;const to=r.sr===44100?44100:48000;o[k]=await b64of(wavBlob(r.sr===to?r.x:await resampleTo(r.x,r.sr,to),to))}return o}
-function sendRecord(){
-  const run=S;
-  if(!SAVE_URL||run.demo||run.sent||run.developmentConsent?.version!=="voice-dev-2026-11-05"||!run.developmentConsent.acceptedAt)return;
-  const record=serverRecord();
-  const end=new Date(record.at);end.setUTCFullYear(end.getUTCFullYear()+run.developmentConsent.retentionYears);
-  record.expiresAt=end.toISOString();run.sent=true;save();
-  audioPayload().then(audio=>{
-    if(S!==run||!audio.sent||!audio.ah)return;
-    record.audio=audio;
-    return fetch(SAVE_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(record)});
-  }).catch(()=>{if(S===run){run.sent=false;save()}});
-}
+/* 11/5 대표: 웹 검사는 이름·녹음 없이 측정 숫자만 익명으로 보낸다(기준 보정용). 녹음은 앱에서 동의(구독 할인)로 */
+function sendRecord(){const run=S;if(!SAVE_URL||run.demo||run.sent)return;let rec;try{rec=serverRecord()}catch(e){return}run.sent=true;save();
+ fetch(SAVE_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(rec)}).catch(()=>{if(S===run){run.sent=false;save()}})}
 function copy(t){const ok=()=>toast("복사했어요");if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(ok,()=>toast("복사가 막혀 있어요. 길게 눌러 직접 복사해 주세요."));else toast("길게 눌러 직접 복사해 주세요.")}
 /* ===== 8. 공유 카드 ===== */
 function loadImg(src){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=src})}
