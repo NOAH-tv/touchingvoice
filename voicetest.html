@@ -1020,7 +1020,7 @@ ${condCard()}
 ${S.demo?"":`<section class="card"><div class="kicker">내 결과 알리기</div><h2>친구에게도 "너는 어떤 목소리야?"</h2><p class="small">공유 이미지 아래 QR을 찍으면 친구도 바로 검사하고 나와 비교해요.</p>${shareRow()}</section>`}
 ${S.demo?"":goalCTA()}
 ${friendCard()}
-${S.demo?`<section class="card"><h2>다른 유형 구경하기 <small>(예시)</small></h2><div class="rgrid">${Object.keys(TYPES).map(c=>`<button class="rt ${c===J.code?"pick":""}" data-c="${c}"><span><img src="${img.char(c)}" alt="${TYPES[c][1]}" loading="lazy"></span><b>${c}</b><small>${nmLN(c)}</small></button>`).join("")}</div></section>`:""}
+<section class="card"><h2>다른 유형 구경하기${S.demo?" <small>(예시)</small>":""}</h2>${S.demo?"":`<p class="small">16가지 목소리 캐릭터를 눌러서 살펴보세요.</p>`}<div class="rgrid">${Object.keys(TYPES).map(c=>`<button class="rt ${c===J.code?(S.demo?"pick":"me"):""}" data-c="${c}"><span><img src="${img.char(c)}" alt="${TYPES[c][1]}" loading="lazy"></span><b>${c}${c===J.code&&!S.demo?" · 나":""}</b><small>${nmLN(c)}</small></button>`).join("")}</div></section>
 ${S.demo?"":`<button class="btn block" id="rerec">다시 녹음하기</button>`}
 <button class="btn ghost block" id="again">처음부터 다시 하기</button>
 <p class="fine">목소리 인상은 진단이 아니라 자기 이해를 돕는 참고 자료예요. 녹음 환경에 따라 결과가 달라질 수 있어요.</p>
@@ -1029,7 +1029,7 @@ ${BIZ}`,
   bindShare(view);const gl=$("#goal");if(gl)gl.onclick=()=>go("goal");const hm=$("#hearMe");if(hm)mountPlayer(hm,REC.r1);
   const mi=$("#mine");if(mi)mi.onclick=()=>{newRun();go("info")};
   $("#again").onclick=()=>{newRun();go("landing")};const rr=$("#rerec");if(rr)rr.onclick=reRecord;
-  view.querySelectorAll(".rgrid .rt").forEach(p=>p.onclick=()=>startDemo(p.dataset.c,true))}}};
+  view.querySelectorAll(".rgrid .rt").forEach(p=>p.onclick=()=>S.demo?startDemo(p.dataset.c,true):typeSheet(p.dataset.c))}}};
 function wavBlob(x,sr){const n=x.length,b=new ArrayBuffer(44+n*2),v=new DataView(b),w=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i))};w(0,"RIFF");v.setUint32(4,36+n*2,true);w(8,"WAVE");w(12,"fmt ");v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,sr,true);v.setUint32(28,sr*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);w(36,"data");v.setUint32(40,n*2,true);for(let i=0;i<n;i++){const s=Math.max(-1,Math.min(1,x[i]));v.setInt16(44+i*2,s<0?s*0x8000:s*0x7fff,true)}return new Blob([b],{type:"audio/wav"})}
 /* 재생 바 — 재생·일시정지·위치 옮기기 */
 const IC_PLAY='<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>',IC_PAUSE='<svg viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>';
