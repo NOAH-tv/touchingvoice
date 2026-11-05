@@ -400,15 +400,11 @@ p,li,small,.fine,.muted{text-wrap:pretty}
 .card p,.card li,.card small{line-height:1.65}
 .fine{line-height:1.7}
 .list{gap:10px}.list small.sub{line-height:1.55;margin-top:2px}
-.axes{grid-template-columns:1fr;gap:10px}
-.axis{padding:14px 16px;gap:4px}
-.axis-top{justify-content:flex-start;gap:10px;font-size:13px}
-.axis-top strong{flex:1;min-width:0;font-size:17px;color:var(--fg)}
-.axis p{font-size:15px;color:var(--fg);opacity:.9;line-height:1.55}
-.axis small{font-size:13px}
+.card .axis p{line-height:1.45}.card .axis small{line-height:1.6}/* 네 가지 축은 처음 모양(2×2) 그대로 */
 .tn{gap:12px}.tn small{font-size:12px}
 .cond{gap:8px}.cond div{padding:11px 14px}
 .fun2>div{padding:16px 14px 14px}
+.ap em{font-style:normal;font-size:11.5px;line-height:1.4;color:var(--muted);margin-top:2px}
 </style>
 </head>
 <body>
@@ -857,13 +853,13 @@ function attrScore(m){const s=m.s,v=m.v,bb=bandBalance(s.bands),aref=ART_REF[S.s
  const steady=1-0.6*lin(v.trem,.2,.6)-0.4*lin(s.dbsd,3,9);
  const artic=s.vspace==null?0.5+0.5*steady:0.5*Math.pow(cl(s.vspace/aref,0,1),0.6)+0.3*(s.sylc==null?0.6:lin(s.sylc,4,11))+0.2*steady;
  const rg=s.regs4,parts={breath:cl(breath,0,1),artic:cl(artic,0,1),balance:rg?0.5*regScore(rg)+0.5*bb.score:bb.score};
- const W={breath:.35,artic:.30,balance:.35},NAME={breath:"호흡",artic:"발음",balance:"소리 비중"};
+ const W={breath:.35,artic:.30,balance:.35},NAME={breath:"편안한 숨",artic:"또렷한 발음",balance:"고른 소리"},DESC={breath:"숨이 새거나 눌리지 않게",artic:"입 열고 모음을 분명하게",balance:"낮은·높은 소리가 골고루"};
  let sum=0;Object.keys(W).forEach(k=>sum+=W[k]*parts[k]);const pct=Math.round(55+42*cl(sum,0,1));
  const weak=Object.keys(W).sort((a,b)=>parts[a]-parts[b])[0];
  const TIP={breath:v.mpt<mptRef()*0.6?"숨을 먼저 깊게 채우고, '아—'를 한 음으로 길게 이어 보세요":v.hnr<12?"소리를 앞으로 모아 숨이 새지 않게 말해 보세요":v.hnr>19?"첫마디에 숨을 살짝 섞어 부드럽게 시작해 보세요":"쉼표에서 한 번 숨을 쉬고 이어 말해 보세요",
   artic:"입을 조금 더 크게 열고, 모음 하나하나를 또렷하게 말해 보세요",
   balance:(rg?regKind(rg)==="high":bb.kind==="high")?"어깨와 턱 힘을 빼고 가슴 울림을 느끼며 편하게 말해 보세요":rg&&regKind(rg)==="stuck"?"문장 끝을 편하게 내려놓으며 말해 보세요":rg&&regKind(rg)==="low"?"질문하듯 억양을 조금 더 띄우고, 숨을 살짝 섞어 부드럽게 말해 보세요":"입을 조금 더 열고, '음~' 허밍으로 찾은 코끝 울림을 살려 소리를 앞으로 보내 보세요"};
- return{pct,label:"목소리 호감도",tip:TIP[weak],line:pct>=88?"듣는 사람이 끌리는 목소리예요":pct>=75?"부드럽고 호감 가는 목소리예요":"편안한 목소리예요 — 연습하면 더 올라가요",parts,names:NAME,W}}
+ return{pct,label:"목소리 호감도",tip:TIP[weak],line:pct>=88?"듣는 사람이 끌리는 목소리예요":pct>=75?"부드럽고 호감 가는 목소리예요":"편안한 목소리예요 — 연습하면 더 올라가요",parts,names:NAME,descs:DESC,W}}
 function ageBand(a){const d=Math.floor(a/10)*10,r=a-d;return d+"대 "+(r<4?"초반":r<7?"중반":"후반")}
 function weakest(sc){const w=[["breath",sc.breath,"숨"],["clear",sc.clear,"맑기"],["tune",sc.tune,"억양 폭"],["steady",sc.steady,"크기 안정"]];w.sort((a,b)=>a[1]-b[1]);return w}
 function pr(d,w){const map={"억양":"tune","음색":"clear","속도":"breath","높이":"steady"},k=map[d.ax];for(let i=0;i<w.length;i++)if(w[i][0]===k)return 4-i;return 0}
@@ -1000,24 +996,25 @@ ${S.demo?`<section class="card cta" style="flex-direction:row;align-items:center
   ${codeMeanHTML(J.code,"on-dark")}
   <p class="hc-line">“${LINES[J.code]}”</p>
 </section>
-${S.demo?"":shareRow()}
+${shareRow()}
 <section class="card cmp-card">
   ${S.guess?`<div class="cmp"><div><img src="${img.char(S.guess)}" alt=""><small>① 내가 생각한 목소리</small><b>${S.guess}</b><small>${codeShort(S.guess)}</small></div><div class="muted" style="font-size:22px">→</div><div><img src="${img.char(J.code)}" alt=""><small>② 듣는 사람이 느끼는</small><b>${J.code}</b><small>${codeShort(J.code)}</small></div></div>
   <p style="text-align:center">${S.guess===J.code?"예상한 그대로예요! 내 목소리를 잘 알고 있어요.":`나는 <b>${G[1]}</b>처럼 생각했지만, ${who} <b>${T[1]}</b>처럼 들려요.`}</p>`:`<p style="text-align:center">${who} <b>${T[1]}</b>처럼 들려요.</p>`}
   ${(()=>{const k=sitKey(),b=lsGet(BASE_KEY);return k==="intro"?"":`<p class="small" style="text-align:center">${SITS[k][1]} 내 목소리예요.${TYPES[b]?` 자기소개할 때는 <b>${b} ${TYPES[b][1]}</b>였어요.`:""} 기본 유형이 바뀐 게 아니라, 이 상황에서는 이렇게 들린다는 뜻이에요.</p>`})()}
   ${REC.r1?pbarHTML("hearMe","방금 녹음한 내 목소리",REC.r1):""}
 </section>
-<section class="card"><h2>네 가지 축</h2><div class="axes">${J.code.split("").map(L=>`<div class="axis"><div class="axis-top"><span>${LET[L].ax}</span><strong>${LET[L].ax==="높이"&&Math.abs(J.stRel)<1?(L==="H"?"평균보다 조금 높은":"평균보다 조금 낮은"):LET[L].nm}</strong><b>${EN[L]}</b></div><p>${LET[L].imp}</p><small class="num">${axisVal(L,m,J)}</small></div>`).join("")}</div></section>
+<section class="card"><h2>네 가지 축</h2><div class="axes">${J.code.split("").map(L=>`<div class="axis"><div class="axis-top">${LET[L].ax}<b>${EN[L]}</b></div><strong>${LET[L].ax==="높이"&&Math.abs(J.stRel)<1?(L==="H"?"평균보다 조금 높은":"평균보다 조금 낮은"):LET[L].nm}</strong><small class="num">${axisVal(L,m,J)}</small><p>${LET[L].imp}</p></div>`).join("")}</div></section>
 ${m.s.regs4?regCard(m.s.regs4,m.s):""}
 ${toneCard(b)}
 <section class="card"><div class="kicker">재미로 보는 두 가지</div>
   <div class="fun2"><div><small>목소리 나이</small><div class="big-num"><span id="ageN">0</span><small style="font-size:18px;color:var(--fg)">세</small></div><p class="small">${ageBand(J.age)} · ${ageMsg}</p></div>
   <div><small>${A.label}</small><div class="big-num" style="color:var(--fam-ui)"><span id="attrN">0</span><small style="font-size:18px;color:var(--fg)">%</small></div><p class="small">${A.line}</p></div></div>
-  <div class="ap">${Object.keys(A.W).map(k=>`<div><small>${A.names[k]}</small><b class="num">${Math.round(100*A.parts[k])}</b><i><s style="width:${Math.round(100*A.parts[k])}%"></s></i></div>`).join("")}</div>
+  <p class="small"><b style="color:var(--fg)">호감도를 만드는 세 가지</b> · 100점 만점</p>
+  <div class="ap">${Object.keys(A.W).map(k=>`<div><small>${A.names[k]}</small><b class="num">${Math.round(100*A.parts[k])}</b><i><s style="width:${Math.round(100*A.parts[k])}%"></s></i><em>${A.descs[k]}</em></div>`).join("")}</div>
   <div class="target stack"><span>이렇게 하면 더 좋아요!</span><b>${A.tip}</b></div>
-  <small>목소리 호감도 = 호흡 35% · 발음 30% · 소리 비중 35%. 사람마다 취향이 달라요.</small></section>
+  <small>점수는 참고용이에요. 사람마다 끌리는 목소리는 달라요.</small></section>
 ${condCard()}
-${S.demo?"":`<section class="card"><div class="kicker">내 결과 알리기</div><h2>친구에게도 "너는 어떤 목소리야?"</h2><p class="small">공유 이미지 아래 QR을 찍으면 친구도 바로 검사하고 나와 비교해요.</p>${shareRow()}</section>`}
+${`<section class="card"><div class="kicker">내 결과 알리기</div><h2>친구에게도 "너는 어떤 목소리야?"</h2><p class="small">공유 이미지 아래 QR을 찍으면 친구도 바로 검사하고 나와 비교해요.</p>${shareRow()}</section>`}
 ${S.demo?"":goalCTA()}
 ${friendCard()}
 <section class="card"><h2>다른 유형 구경하기${S.demo?" <small>(예시)</small>":""}</h2>${S.demo?"":`<p class="small">16가지 목소리 캐릭터를 눌러서 살펴보세요.</p>`}<div class="rgrid">${Object.keys(TYPES).map(c=>`<button class="rt ${c===J.code?(S.demo?"pick":"me"):""}" data-c="${c}"><span><img src="${img.char(c)}" alt="${TYPES[c][1]}" loading="lazy"></span><b>${c}${c===J.code&&!S.demo?" · 나":""}</b><small>${nmLN(c)}</small></button>`).join("")}</div></section>
