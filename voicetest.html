@@ -160,6 +160,8 @@ pre{white-space:pre-wrap;font-size:12px;background:var(--bg2);border-radius:12px
 .d0,.d6{width:48px;height:48px}.d1,.d5{width:40px;height:40px}.d2,.d4{width:32px;height:32px}.d3{width:24px;height:24px}
 .d0,.d1,.d2{border-color:var(--pri)}.d3{border-color:var(--line2)}.d4,.d5,.d6{border-color:var(--gold)}
 .d0.on,.d1.on,.d2.on{background:var(--pri)}.d3.on{background:var(--line2)}.d4.on,.d5.on,.d6.on{background:var(--gold)}
+.scale-choice{flex:1;min-width:0;min-height:44px;border:1px solid var(--line2);border-radius:12px;background:var(--card);color:var(--fg);font:inherit;cursor:pointer}.scale-choice[aria-pressed="true"]{background:var(--pri);color:var(--bg)}
+.trait-ends{display:flex;justify-content:space-between;gap:12px;font-size:13px;color:var(--muted)}.trait-ends span:last-child{text-align:right}.axis meter{width:100%;accent-color:var(--pri)}
 .likert-lab{display:flex;justify-content:space-between;font-size:14px;font-weight:600}
 .likert-lab span:first-child{color:var(--pri)}.likert-lab span:last-child{color:var(--gold)}
 .opts{display:grid;gap:10px}
@@ -487,11 +489,9 @@ if(typeof module!=='undefined')module.exports=VoiceCare;
 (()=>{
 "use strict";
 /* 터칭보이스 목소리 유형 테스트 — 독립 웹 테스트. 앱(voicetype_app_v3.html)과 따로 기획한다(11/4 대표).
-   흐름: 정보 → 질문 → 녹음 2번 → 유형 결과 → 결과 카드 공유. 유형 파악까지만 하고, 1,000원 리포트·앱 안내는 뺐다(백업: 설계/웹테스트_시안_2026-10-24/). (정본: 서비스기획 통합본 v3)
-   분석은 기기 안에서 하고, 측정 숫자와 녹음 2개(48kHz 원음 wav, 11/5)는 SAVE_URL 저장소로 보낸다(11/4). */
+   녹음 결과를 기기에서 제공하고, 원하는 사람만 Big Five를 진행한다. 개발용 전송은 녹음별 선택 동의를 확인한다. */
 /* ===== 데이터 (유형·문항은 voicetype_test.html과 같음, 직업 이름 1차본) ===== */
 const TIPI=["외향적이고, 열정적이다","비판적이고, 다투기를 잘한다","믿음직하고, 자기 관리가 철저하다","걱정이 많고, 쉽게 속상해한다","새로운 경험에 열려 있고, 생각이 깊고 복잡하다","내성적이고, 조용하다","남을 잘 공감하고, 따뜻하다","정리를 잘 못하고, 덤벙댄다","차분하고, 감정이 안정되어 있다","틀에 박혀 있고, 창의적이지 않다"];
-const GUESS=[["h","내 목소리 높이는?",[["L","낮은 편","↓"],["H","높은 편","↑"]]],["s","말하는 속도는?",[["A","빠른 편","»"],["U","여유로운 편","~"]]],["t","소리의 결은?",[["D","또렷한 편","◆"],["B","숨결이 섞인 편","○"]]],["i","억양은?",[["T","오르내림이 큰 편","♪"],["F","한결같은 편","—"]]]];
 const TYPES={
 LADT:["라디티","천의 얼굴 성우","낮고 빠르고 또렷하게, 선율까지 — 목소리 하나로 열 사람을 연기한다"],
 LADF:["라디프","든든한 헬스 트레이너","낮고 빠르고 또렷하게, 흔들림 없이 — 끝까지 버티게 해 준다"],
@@ -531,13 +531,18 @@ D:{ax:"음색",nm:"또렷한",imp:"분명하고 정확하게 들려요",pro:"명
 B:{ax:"음색",nm:"숨결이 섞인",imp:"부드럽고 친밀하게 들려요",pro:"편안함 — 가까이에서 말하듯 다정하게 들려요",con:"멀리까지 덜 닿고, 오래 말하면 쉽게 지칠 수 있어요",fix:"소리를 앞으로 모아 또렷하게",ex:"'음~' 허밍으로 코끝 울림 찾기 → 이어서 '아~'",good:["상담","1:1 대화"],care:["큰 강의실","시끄러운 곳"]},
 T:{ax:"억양",nm:"선율이 살아 있는",imp:"생기 있고 표현력 있게 들려요",pro:"몰입 — 듣는 사람이 끝까지 집중해요",con:"지나치면 들떠 보이거나 진지함이 덜할 수 있어요",fix:"중요한 결론은 낮고 평평하게 정리하기",ex:"결론 문장을 한 음 높이로 차분히 읽기",good:["이야기","수업 도입"],care:["사과","엄숙한 자리"]},
 F:{ax:"억양",nm:"한결같은",imp:"차분하고 단단하게, 내용이 먼저 들려요",pro:"신뢰 — 흔들림 없이 결론이 분명해요",con:"감정이 덜 보여 차갑거나 지루하게 들릴 수 있어요",fix:"질문 문장에서 음높이를 크게 움직이기",ex:"도레미파솔 오르내리듯 질문 문장을 노래하듯 읽기",good:["설명","협상"],care:["긴 강의","아이와의 대화"]}};
-const TRAITS=[["E","외향성","소통·주도력"],["A","친화성","협업·관계력"],["C","성실성","실행·신뢰력"],["S","정서 안정","압박 내성"],["O","개방성","창의·적응력"]];
-const GAPTIP={
-E:["내가 답한 것보다 조용하게 들려요 → 크기와 억양 폭을 키워 보세요","내가 답한 것보다 활발하게 들려요 → 장점이에요. 중요한 순간엔 속도를 늦춰 무게를 더하세요"],
-A:["내가 답한 것보다 차갑게 들려요 → 문장 끝을 살짝 올리고 첫마디에 숨결을 섞어 보세요","내가 답한 것보다 더 다정하게 들려요 → 장점이에요"],
-C:["내가 답한 것보다 덜 꼼꼼하게 들려요 → 속도를 조금 늦추고 끝까지 또렷하게 말해 보세요","내가 답한 것보다 더 믿음직하게 들려요 → 장점이에요"],
-S:["내가 답한 것보다 긴장한 듯 들려요 → 숨을 먼저 채우고 '아~'를 한 음으로 길게 내는 연습을 해 보세요","내가 답한 것보다 더 침착하게 들려요 → 장점이에요. 긴장한 날에도 목소리가 지켜 줘요"],
-O:["내가 답한 것보다 닫혀 들려요 → 질문할 때 음높이를 크게 움직여 보세요","내가 답한 것보다 더 열린 사람처럼 들려요 → 장점이에요"]};
+const TRAITS=[
+  ["E","외향성","조용히 지내는 편","사람들과 활발히 어울리는 편",0,5],
+  ["A","친화성","의견 차이를 직접 표현하는 편","상대에게 공감하고 배려하는 편",6,1],
+  ["C","성실성","즉흥적으로 움직이는 편","계획을 세우고 지키는 편",2,7],
+  ["S","정서 안정성","감정의 변화를 자주 느끼는 편","대체로 차분함을 유지하는 편",8,3],
+  ["O","개방성","익숙한 방식을 선호하는 편","새로운 경험을 즐기는 편",4,9]
+];
+function selfReport(answers){
+  if(!Array.isArray(answers)||answers.length!==TIPI.length||
+     !Array.from(answers).every(v=>Number.isInteger(v)&&v>=1&&v<=7))return null;
+  return Object.fromEntries(TRAITS.map(([key,,,,direct,reverse])=>[key,(answers[direct]+8-answers[reverse])/2]));
+}
 const FAM={LA:["라 가족","이끄는 목소리","#43227D","#2B1459"],LU:["루 가족","울리는 목소리","#7A2E46","#4F1A2C"],HA:["하 가족","깨우는 목소리","#B98A2E","#7A5A18"],HU:["후 가족","다독이는 목소리","#D07A66","#9C4D3B"]};
 /* 11/4 대표: '안녕하세요' 없이 말하는 목적이 다른 문장 5개(37~40음절). 첫 검사는 자기소개로 기본 유형을 정하고, 다시 할 때 상황을 고른다.
    상황 문장 결과는 '이 상황에서는 이렇게 들린다'로 보여 준다(기본 유형이 바뀐 게 아님). 앱에서는 더 세분화하고 문장마다 훈련법을 달리한다(앱 기획).
@@ -575,8 +580,8 @@ const lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
 const runs=()=>+lsGet(RUNS_KEY)||0;
 const sitKey=()=>SITS[S.sit]?S.sit:"intro";
 /* 11/4 대표: 한 번 끝낸 사람은 정보·질문 없이 '다시 녹음하기'로 바로 다시 잰다(상황 문장은 녹음 화면에서 바꿀 수 있다) */
-function reRecord(){const keep={};["friend","name","sex","age","job","teacher","tipi","guess","g","voiceOnly","sit"].forEach(k=>{if(S[k]!==undefined)keep[k]=S[k]});S=keep;REC.r1=REC.r2=null;save();go("prep")}
-function newRun(){const keep=S.demo?{}:{name:S.name,sex:S.sex,age:S.age,job:S.job},n=runs();S={friend:S.friend,...keep,sit:n?SIT_ORDER[n%SIT_ORDER.length]:"intro"};save()}
+function reRecord(){const keep={};["friend","name","sex","age","job","teacher","sit"].forEach(k=>{if(S[k]!==undefined)keep[k]=S[k]});S={...keep,tipi:[]};REC.r1=REC.r2=REC.t=null;save();go("prep")}
+function newRun(){const keep=S.demo?{}:{name:S.name,sex:S.sex,age:S.age,job:S.job},n=runs();REC.r1=REC.r2=REC.t=null;S={friend:S.friend,...keep,tipi:[],sit:n?SIT_ORDER[n%SIT_ORDER.length]:"intro"};save()}
 const $=s=>document.querySelector(s);
 const view=$("#view");
 const later=(fn,ms)=>{const t=setTimeout(fn,ms);timers.push(t);return t};
@@ -609,72 +614,89 @@ R.landing=()=>{const f=TYPES[S.friend]?S.friend:null;return{html:`
   <div class="kicker">터칭보이스 · 목소리 유형 테스트</div>
   <h1 class="display bi">${words("나는 어떤 유형의 목소리일까?")}</h1>
   <p class="lead">간단한 목소리 검사로<br>16가지 목소리 유형 중 나를 찾아요.</p>
-  <p class="muted" style="margin-top:-6px">내가 생각하는 내 목소리와 남에게 들리는 내 목소리는 생각보다 달라요.</p>
+  <p class="muted" style="margin-top:-6px">문장 하나와 ‘아—’ 소리를 녹음하면 내 목소리 캐릭터가 나와요.</p>
   ${f?`<div class="friend"><img src="${img.char(f)}" alt="${TYPES[f][1]}"><div style="min-width:0"><small>친구의 목소리는</small><br><b>${f} · ${TYPES[f][1]}</b><br><small>나는 어떤 목소리일까요?</small></div></div>`:`<div class="orb glass"><img class="float" src="${img.egg}" alt="목소리 알"></div>`}
   <button class="btn pri block shine" id="start">내 목소리 유형 알아보기</button>
 </section>
 <!-- 11/5 대표: 첫 화면은 안내만. 예시 결과·16가지 캐릭터는 보여 주지 않고, 결과는 검사 마지막에 -->
 <section class="card"><h2>검사는 이렇게 진행돼요</h2>
-  <ol class="list"><li><b>나에 대해 간단히</b><small class="sub">이름 · 성별 · 나이</small></li><li><b>내 목소리 예상해 보기</b><small class="sub">짧은 질문 몇 개 — 건너뛸 수도 있어요</small></li><li><b>녹음 두 번</b><small class="sub">문장 하나 읽기 · '아—' 길게</small></li><li><b>마지막에 내 목소리 유형 공개</b><small class="sub">약 3분이면 끝나요</small></li></ol></section>
+  <ol class="list"><li><b>녹음 두 번</b><small class="sub">문장 하나 읽기 · ‘아—’ 길게 내기</small></li><li><b>내 목소리 유형 확인</b><small class="sub">캐릭터와 함께 높이·속도·음색·억양을 확인해요.</small></li><li><b>원하면 내 성격과 비교</b><small class="sub">Big Five 10문항에 답하고 내 성향과 녹음을 함께 살펴봐요.</small></li></ol></section>
 <p class="fine">건강 진단이 아니라 내 목소리가 남에게 어떻게 들리는지 알아보는 자기 이해·연습용 테스트예요. 직업 이름은 목소리 인상을 빗댄 별명이에요(적성검사가 아니에요).</p>
 ${BIZ}`,
  bind(){$("#start").onclick=()=>{newRun();go("info")}}}};
 function typeSheet(c){const T=TYPES[c];openSheet(`<img src="${img.char(c)}" alt="" style="width:200px;border-radius:24px;margin:0 auto"><div style="text-align:center"><div class="kicker">${c}</div><h2 style="font-size:22px;margin-top:4px">${nmNW(c)}</h2><p style="margin-top:6px;font-weight:700;color:var(--pri)">“${LINES[c]}”</p><p class="muted" style="margin-top:6px">${T[2]}</p></div>${codeMeanHTML(c)}<button class="btn block" id="sx">닫기</button>`,()=>$("#sx").onclick=closeSheet)}
 
 /* ===== 2. 시작 정보 ===== */
-R.info=()=>({top:{back:()=>go("landing"),step:0,total:14},html:`
+R.info=()=>({top:{back:()=>go("landing"),label:"시작 정보"},html:`
 <div><div class="kicker">시작 전에</div><h1 class="title">나에 대해 조금만 알려 주세요</h1></div>
 <div class="card">
-  <div class="lbl">이름 <small>결과에서 이름을 불러 드려요</small></div>
+  <label class="lbl" for="nm">이름 또는 별명 <small>결과에서 이렇게 불러 드려요</small></label>
   <input class="inp" id="nm" type="text" maxlength="20" autocomplete="name" placeholder="예: 홍길동" value="${esc(S.name||"")}">
   <div class="lbl" style="margin-top:6px">성별 <small>목소리 높이를 같은 성별 기준으로 비교해요</small></div>
   <div class="seg" id="sex">${[["f","여"],["m","남"],["x","말하지 않음"]].map(o=>`<button data-v="${o[0]}" class="${S.sex===o[0]?"on":""}">${o[1]}</button>`).join("")}</div>
-  <div class="lbl" style="margin-top:6px">나이 <small>목소리 나이와 비교해요</small></div>
+  <label class="lbl" for="age">나이 <small>목소리 나이와 비교해요</small></label>
   <input class="inp" id="age" type="number" inputmode="numeric" min="14" max="100" placeholder="예: 38" value="${S.age||""}">
   <div class="lbl" style="margin-top:6px">하는 일 <small>선택 · 결과 문장에 반영돼요</small></div>
   <div class="chips" id="job">${JOBS.map(j=>`<button class="chip ${S.job===j[0]?"on":""}" data-v="${j[0]}">${j[1]}</button>`).join("")}</div>
 </div>
 <div class="card">
   <label class="chk"><input type="checkbox" id="c1"><span>만 14세 이상이에요</span></label>
-  <label class="chk"><input type="checkbox" id="c2"><span>분석은 이 폰 안에서 해요. 이름·성별·나이·하는 일, 측정 숫자, 녹음 2개(문장 읽기 · '아—')는 결과 제공과 서비스 개선을 위해 터칭보이스에 저장돼요. 지우고 싶으면 언제든 고객센터로 알려 주세요. 건강 진단이 아닌 목소리 인상 테스트라는 걸 확인했어요.</span></label>
+  <p class="small">녹음과 검사 결과는 이 기기에서 분석해요. 목소리 인상을 살펴보는 연습용 검사예요.</p>
 </div>
-<p class="err" id="err"></p>
-<button class="btn pri block" id="next">질문 시작하기</button>
-<button class="btn ghost block" id="vonly">성격 질문 없이 목소리만 검사하기</button>`,
+<p class="err" id="err" role="alert"></p>
+<button class="btn pri block" id="next">녹음 준비하기</button>`,
  bind(){$("#sex").onclick=e=>{const b=e.target.closest("button");if(!b)return;S.sex=b.dataset.v;$("#sex").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b))};
   $("#job").onclick=e=>{const b=e.target.closest("button");if(!b)return;S.job=S.job===b.dataset.v?"":b.dataset.v;$("#job").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x.dataset.v===S.job))};
-  const ok=()=>{const age=+$("#age").value,nm=$("#nm").value.trim();if(!nm){$("#err").textContent="이름을 넣어 주세요.";return false}S.name=nm;if(!S.sex||!age||age<14||age>100){$("#err").textContent="성별과 나이(14~100)를 넣어 주세요.";return false}
-   if(!$("#c1").checked||!$("#c2").checked){$("#err").textContent="두 칸을 모두 확인해 주세요.";return false}
+  const ok=()=>{const age=+$("#age").value,nm=$("#nm").value.trim();if(!nm){$("#err").textContent="이름이나 별명을 넣어 주세요.";$("#nm").focus();return false}S.name=nm;if(!S.sex||!age||age<14||age>100){$("#err").textContent="성별과 나이(14~100)를 확인해 주세요.";$(S.sex?"#age":"#sex button").focus();return false}
+   if(!$("#c1").checked){$("#err").textContent="만 14세 이상인지 확인해 주세요.";$("#c1").focus();return false}
    S.age=age;S.teacher=S.job==="teacher";return true};
-  $("#next").onclick=()=>{if(!ok())return;S.voiceOnly=false;S.tipi=S.tipi||[];save();go("tipi",0)};
-  /* 11/4 대표: 성격 질문을 건너뛰고 목소리만 검사할 수 있게 */
-  $("#vonly").onclick=()=>{if(!ok())return;S.voiceOnly=true;S.tipi=[];S.g={};delete S.guess;save();go("prep")}}});
+  $("#next").onclick=()=>{if(ok())go("prep")}}});
 
-/* ===== 3. 성격 10문항 (한 화면 한 문항) ===== */
-R.tipi=i=>({top:{back:()=>i?go("tipi",i-1):go("info"),step:i,total:14},html:`
+/* 결과를 확인한 뒤 선택하는 Big Five 설문 */
+const scaleLabels=["전혀 그렇지 않다","그렇지 않다","약간 그렇지 않다","보통이다","약간 그렇다","그렇다","매우 그렇다"];
+const nextQuestion=()=>TIPI.findIndex((_,i)=>!scaleLabels[(S.tipi||[])[i]-1]);
+R.tipi=(i=0)=>({top:{back:()=>i?go("tipi",i-1):go("result"),step:i+1,total:TIPI.length},html:`
 <div class="q-wrap">
-  <div class="kicker">성격 질문 ${i+1} / 10</div>
-  <p class="muted">나는 나 자신을 이렇게 생각한다</p>
-  <h1 class="q bi">${words(TIPI[i])}</h1>
-  <div><div class="likert">${[7,6,5,4,3,2,1].map((v,k)=>`<button class="dot d${k} ${S.tipi[i]===v?"on":""}" data-v="${v}" aria-label="${v}점"></button>`).join("")}</div>
-  <div class="likert-lab" style="margin-top:10px"><span>그렇다</span><span>아니다</span></div></div>
+  <div class="kicker">Big Five · 평소의 나</div>
+  <p class="muted">평소 나와 얼마나 비슷한가요?</p>
+  <h1 class="q bi" tabindex="-1" id="question">${words(TIPI[i])}</h1>
+  <div class="likert" role="group" aria-labelledby="question">${[7,6,5,4,3,2,1].map(v=>`<button class="scale-choice" aria-label="${v}점 · ${scaleLabels[v-1]}" aria-pressed="${S.tipi?.[i]===v}" data-v="${v}">${v}</button>`).join("")}</div>
+  <div class="likert-lab"><span>매우 그렇다</span><span>보통</span><span>전혀 그렇지 않다</span></div>
 </div>
-<p class="fine" style="text-align:center">TIPI(Gosling 외, 2003) 간이 성격 문항 · 번역 임시본</p>`,
- bind(){view.querySelectorAll(".dot").forEach(d=>d.onclick=()=>{view.querySelectorAll(".dot").forEach(x=>x.classList.remove("on"));d.classList.add("on");S.tipi[i]=+d.dataset.v;save();
-  later(()=>i<9?go("tipi",i+1):go("guess",0),260)})}});
+<button class="btn ghost block" id="leaveSurvey">목소리 결과로 돌아가기</button>
+<p class="fine" style="text-align:center">TIPI · Gosling 외(2003) · 한국어 임시 번역</p>`,
+ bind(){
+   $("#question").focus({preventScroll:true});
+   $("#leaveSurvey").onclick=()=>go("result");
+   view.querySelectorAll(".scale-choice").forEach(button=>button.onclick=()=>{
+     S.tipi=S.tipi||[];S.tipi[i]=Number(button.dataset.v);
+     go(i+1<TIPI.length?"tipi":"insight",i+1);
+   });
+ }});
 
-/* ===== 4. 내 목소리 예상 4문항 ===== */
-R.guess=i=>{const q=GUESS[i];S.g=S.g||{};return{top:{back:()=>i?go("guess",i-1):go("tipi",9),step:10+i,total:14},html:`
-<div class="q-wrap" style="text-align:left">
-  <div class="kicker">① 내 목소리 인식 · ${i+1} / 4</div>
-  <h1 class="q bi" style="text-align:left">${words(q[1])}</h1>
-  <p class="muted">나중에 실제 측정과 나란히 비교해요.</p>
-  <div class="opts">${q[2].map(o=>`<button class="opt ${S.g[q[0]]===o[0]?"on":""}" data-v="${o[0]}"><i>${o[2]}</i>${o[1]}</button>`).join("")}</div>
-</div>`,
- bind(){view.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{view.querySelectorAll(".opt").forEach(x=>x.classList.remove("on"));b.classList.add("on");S.g[q[0]]=b.dataset.v;
-  if(i===3)S.guess=GUESS.map(g=>S.g[g[0]]).join("");save();later(()=>i<3?go("guess",i+1):go("prep"),260)})}}};
+R.insight=()=>{
+  const scores=selfReport(S.tipi);
+  if(!scores)return R.tipi(Math.max(0,nextQuestion()));
+  const code=S.J.code,rate=S.m.s.rate.toFixed(1),range=S.m.s.rangeSt.toFixed(1);
+  const social=scores.E>4?"사람들과 활발히 어울린다고":scores.E<4?"조용히 지내는 편이라고":"상황에 따라 조용하거나 활발하다고";
+  const speed=code[1]==="A"?"빠른":"여유로운";
+  const tune=code[3]==="T"?"음높이 변화가 큰":"음높이 변화가 작은";
+  return{top:{back:()=>go("result"),label:"심화 결과"},html:`
+  <div><div class="kicker">Big Five × 목소리</div><h1 class="title">평소의 나와 이번 목소리</h1></div>
+  <section class="card"><h2>${nmNW(code)}</h2>
+    <p>평소에는 ${social} 답했어요. 이번 녹음에서는 ${speed} 속도로 말했고 ${tune} 편이었어요.</p>
+    <div class="target"><span>말속도</span><b>초당 ${rate}음절</b></div>
+    <div class="target"><span>억양의 폭</span><b>${range}반음</b></div>
+    ${REC.r1?pbarHTML("compareAudio","내 목소리 다시 듣기",REC.r1):""}
+    <p class="small">목소리는 그날 읽은 한 문장의 특징이에요. 평소 사람들과 이야기할 때와 비교해 보세요.</p>
+  </section>
+  <section class="card"><h2>내가 답한 다섯 가지 성향</h2><p class="small">성향마다 두 답변을 1~7점으로 정리했어요. 4점은 두 설명의 가운데예요.</p>
+    ${TRAITS.map(([key,name,low,high])=>`<div class="axis"><div class="axis-top"><strong>${name}</strong><span>${scores[key]} / 7</span></div><meter min="1" max="7" value="${scores[key]}" aria-label="${name}"></meter><div class="trait-ends"><span>${low}</span><span>${high}</span></div></div>`).join("")}
+  </section><button class="btn block" id="backResult">목소리 결과로 돌아가기</button>`,
+  bind(){if(REC.r1)mountPlayer($("#compareAudio"),REC.r1);$("#backResult").onclick=()=>go("result")}};
+};
 
-/* ===== 5. 녹음 ===== */
+/* ===== 5. 녹음/* ===== 5. 녹음 ===== */
 const AC=window.AudioContext||window.webkitAudioContext;let ctx=null,rec=null;
 function ensureCtx(){if(!ctx)ctx=new AC();if(ctx.state==="suspended")ctx.resume();return ctx}
 function startRec(){const c=ensureCtx();if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)return Promise.reject(new Error("no mic"));
@@ -697,24 +719,33 @@ function bindMic({maxSec,minSec=1.5,onDone,onDemo}){const mic=$("#mic"),msg=$("#
   const draw=()=>{g.clearRect(0,0,cv.width,cv.height);const n=56,w=cv.width/n;for(let i=0;i<n;i++){const v=lv[lv.length-n+i]||0,h=Math.max(6,v*cv.height*2.6);g.fillStyle=col;g.globalAlpha=.35+.65*(i/n);g.beginPath();const x=i*w+w*.2,y=(cv.height-h)/2;if(g.roundRect)g.roundRect(x,y,w*.6,Math.min(h,cv.height),6);else g.rect(x,y,w*.6,Math.min(h,cv.height));g.fill()}g.globalAlpha=1};draw();
   const loop=()=>{if(!rec)return;const a=new Float32Array(rec.an.fftSize);rec.an.getFloatTimeDomainData(a);let s=0;for(const v of a)s+=v*v;lv.push(Math.sqrt(s/a.length));document.documentElement.style.setProperty("--lv",Math.min(1,Math.sqrt(s/a.length)*9).toFixed(3));if(lv.length>200)lv=lv.slice(-120);draw();
     const sec=(performance.now()-t0)/1000;tm.textContent=sec.toFixed(1)+"초";if(sec>maxSec){finish();return}raf=requestAnimationFrame(loop)};
-  const finish=()=>{cancelAnimationFrame(raf);document.documentElement.style.setProperty("--lv","0");const r=stopRec();mic.classList.remove("on");mic.innerHTML=MIC_SVG;if(!r)return;const dur=r.x.length/r.sr;
+  const finish=()=>{cancelAnimationFrame(raf);document.documentElement.style.setProperty("--lv","0");const r=stopRec();mic.classList.remove("on");mic.innerHTML=MIC_SVG;mic.setAttribute("aria-label","녹음 시작");if(!r)return;const dur=r.x.length/r.sr;
     if(dur<minSec){msg.textContent="너무 짧아요. 다시 녹음해 주세요.";return}msg.textContent=r.peak>0.98?"소리가 너무 커서 찌그러졌을 수 있어요. 다음엔 폰을 조금 멀리 두세요.":"좋아요!";onDone(r)};
   const fail=()=>{msg.textContent=onDemo?"마이크를 쓸 수 없어요. 녹음 파일을 고르거나 데모 값으로 진행해 주세요.":"마이크를 쓸 수 없어요. 아래에서 녹음 파일을 골라 주세요.";if(onDemo)$("#micdemo").hidden=false};
-  mic.onclick=()=>{if(rec){finish();return}msg.textContent="준비 중…";startRec().then(()=>{t0=performance.now();lv=[];mic.classList.add("on");mic.innerHTML=STOP_SVG;msg.textContent="다 했으면 다시 누르세요";loop()}).catch(fail)};
+  mic.onclick=()=>{if(rec){finish();return}msg.textContent="준비 중…";startRec().then(()=>{t0=performance.now();lv=[];mic.classList.add("on");mic.innerHTML=STOP_SVG;mic.setAttribute("aria-label","녹음 중지");msg.textContent="다 했으면 다시 누르세요";loop()}).catch(fail)};
   $("#file").onchange=e=>{const f=e.target.files[0];if(!f)return;msg.textContent="파일 읽는 중…";decodeFile(f).then(r=>{tm.textContent=(r.x.length/r.sr).toFixed(1)+"초";onDone(r)}).catch(()=>msg.textContent="이 파일은 읽을 수 없어요. wav나 m4a로 해 주세요.")};
   if(onDemo)$("#micdemo").onclick=onDemo}
 
-R.prep=()=>({top:{back:()=>S.voiceOnly?go("info"):go("guess",3),step:14,total:14},html:`
+R.prep=()=>({top:{back:()=>go("info"),label:"녹음 준비"},html:`
 <div><div class="kicker">녹음 준비</div><h1 class="title">조용한 곳에서,<br>폰과 입 사이를 한 뼘</h1></div>
 <div class="card"><p>먼저 2초 동안 주변 소리를 확인해요. 그동안은 말하지 말아 주세요.</p><p class="muted" id="nmsg">주변 소리가 작을수록 결과가 정확해져요.</p><p class="muted">에어팟 같은 이어폰은 빼고, 폰 마이크로 녹음해 주세요. 이어폰 마이크는 음질이 낮아 결과가 흐려져요.</p>
-<button class="btn pri block" id="noise">주변 소리 확인</button></div>
+</div>
+<section class="card"><label class="chk"><input type="checkbox" id="devConsent" autocomplete="off" aria-describedby="devTerms"><span><strong>[선택] 녹음을 터칭보이스 자체 서비스 개발과 상업적 이용에 제공할게요.</strong></span></label>
+  <div id="devTerms"><p class="small">터칭보이스가 자체 유료 음성 분석·훈련 서비스를 개발하고 개선하는 데 사용해요. 선택하지 않아도 목소리 유형과 Big Five 비교를 모두 볼 수 있어요.</p>
+  <p class="small"><strong>보관 기간은 수집 후 최대 3년이에요. 동의를 철회하면 조기에 삭제해요.</strong></p><details><summary>수집 항목과 삭제 요청 방법</summary><p class="small">문장과 ‘아—’ 녹음 2개, 음성 측정값과 목소리 유형, 이름 또는 별명·성별·나이·직업(입력한 경우)을 저장해요. Big Five 답변은 이 기기에만 남아요.</p>
+  <p class="small">이용 목적을 먼저 달성하면 그때 삭제해요. 철회·삭제는 <a href="mailto:lubere12@naver.com">lubere12@naver.com</a>으로 요청할 수 있어요.</p></details></div>
+</section>
+<button class="btn pri block" id="noise">주변 소리 확인</button>
 <button class="btn ghost block" id="again2" hidden>주변 소리 다시 확인</button>`,
  /* 11/5 대표: 주변 소리 확인이 끝나면 같은 버튼이 '녹음하기'로 바뀐다 */
  bind(){let ready=false;const b=$("#noise"),ag=$("#again2"),done=loud=>{ready=true;b.textContent="녹음하기";b.disabled=false;ag.hidden=!loud};const check=()=>{b.disabled=true;ag.hidden=true;ready=false;$("#nmsg").textContent="확인 중… (말하지 마세요)";
   startRec().then(()=>later(()=>{const r=stopRec();resample(r.x,r.sr).then(x=>{const db=[];frameDb(x,SR,882,441,v=>db.push(v));db.sort((a,c)=>a-c);S.noiseDb=db.length?db[Math.floor(db.length*.5)]:-70;
    $("#nmsg").textContent=S.noiseDb>-45?`주변이 조금 시끄러워요(${S.noiseDb.toFixed(0)} dB). 더 조용한 곳이면 결과가 정확해져요.`:`좋아요. 조용합니다(${S.noiseDb.toFixed(0)} dB).`;done(S.noiseDb>-45)})},2000))
   .catch(()=>{$("#nmsg").textContent="마이크를 쓸 수 없어요. 다음 화면에서 녹음 파일로 해 볼 수 있어요.";S.noiseDb=null;done(false)})};
-  b.onclick=()=>ready?go("rec1"):check();ag.onclick=check}});
+  const consent=$("#devConsent");consent.checked=false;
+  b.onclick=()=>{if(!ready){check();return}
+    S.developmentConsent=consent.checked?{version:"voice-dev-2026-11-05",acceptedAt:new Date().toISOString(),retentionYears:3}:null;
+    go("rec1")};ag.onclick=check;}});
 R.rec1=err=>({top:{back:()=>go("prep"),label:"녹음 1 / 2"},html:`
 <div><div class="kicker">녹음 1 · 문장 읽기${sitKey()==="intro"?"":" · "+SITS[sitKey()][0]}</div><h1 class="title">${SITS[sitKey()][3]}</h1></div>
 ${runs()?`<div class="card"><div class="lbl">이번엔 어떤 상황의 내 목소리를 들어 볼까요?</div><div class="chips" id="sit">${SIT_ORDER.map(k=>`<button class="chip ${sitKey()===k?"on":""}" data-v="${k}">${SITS[k][0]}</button>`).join("")}</div></div>`:""}
@@ -809,12 +840,8 @@ function judge(m){const s=m.s,v=m.v,ref=S.age>0&&S.age<13?REF_KID:REF_F0[S.sex]|
   const zr=z(s.rate,"rate"),zg=z(s.rangeSt,"range"),zd=z(s.dyn,"dyn"),zh=z(v.hnr,"hnr"),zs=z(s.dbsd,"dbsd"),zt=z(v.trem,"trem"),ze=z(s.endSlope,"end");
   const P=a=>Math.round(cl(50+15*mean(a),0,100));
   const voice={E:P([zr,zg,zd]),S:P([zh,-zs,-zt]),A:P([zg*0.5,ze,-zh*0.5]),C:P([1-Math.min(2,Math.abs(zr)),zh,-zs]),O:P([zg,zd])};
-  const t=S.tipi||[],hasT=t.filter(Number.isFinite).length===10;let self=null,gaps={},match=null;
-  if(hasT){self={E:(t[0]+(8-t[5]))/2,A:((8-t[1])+t[6])/2,C:(t[2]+(8-t[7]))/2,S:((8-t[3])+t[8])/2,O:(t[4]+(8-t[9]))/2};
-   Object.keys(self).forEach(k=>self[k]=Math.round((self[k]-1)/6*100));
-   let sum=0;TRAITS.forEach(tr=>{const g=self[tr[0]]-voice[tr[0]];gaps[tr[0]]=g;sum+=Math.abs(g)});match=Math.round(100-sum/5)}
   let age=35-(s.rate-4.8)*4-st(s.f0,AGE_REF[S.sex]||AGE_REF.x)*(S.sex==="f"?1.6:0.6)+(v.trem-0.35)*15-(v.hnr-16)*0.4;age=cl(age,15,75);
-  return{code,stRel,sc,total,target,voice,self,gaps,match,age}}
+  return{code,stRel,sc,total,target,voice,age}}
 /* 소리 균형 — 10/29 대표 기준 "저·중·고음이 한쪽으로 크게 쏠리지 않고 고르게 퍼진 목소리가 좋다"를 좋은 목소리 녹음으로 맞췄다.
    대표 글 읽기 36개(스튜디오·아이폰)는 낮은 소리(저음+중저음) : 높은 소리(중고음+고음) ≈ 66 : 34,
    일반인 자기소개 52개는 남 82 : 18 · 여 89 : 11로 낮은 쪽에 몰려 있었다. 네 칸 25%씩 고르기(엔트로피)는 둘을 가르지 못해 버렸다.
@@ -894,7 +921,7 @@ R.wait=()=>({html:`<div class="reveal"><div class="rv-stage" style="width:min(20
 function finishTest(){const J=judge(S.m);S.J=J;setFam(J.code);save();if(!S.demo){try{localStorage.setItem(RUNS_KEY,String(runs()+1));if(sitKey()==="intro")localStorage.setItem(BASE_KEY,J.code)}catch(e){}}sendRecord()}
 R.reveal=()=>{const J=S.J,T=TYPES[J.code];return{html:`
 <div class="reveal">
-  <div class="kicker">② 듣는 사람이 느끼는 내 목소리는</div>
+  <div class="kicker">이번 녹음에서 찾은 내 목소리는</div>
   <div class="rv-stage"><img id="rvEgg" class="wobble" src="${img.egg}" alt=""><img id="rvChar" src="${img.char(J.code)}" alt="${T[1]}" hidden><div class="rv-flash" id="rvF"></div></div>
   <div class="code" id="rvCode" hidden style="--x:0">${J.code.split("").map((l,i)=>`<span style="animation-delay:${i*120}ms;background:var(--fam-deep);color:#fff">${l}</span>`).join("")}</div>
   <div id="rvTxt" hidden><h1 class="hc-name bi">${nmWords(J.code,500)}</h1>${codeMeanHTML(J.code)}</div>
@@ -1017,9 +1044,11 @@ ${S.demo?`<section class="card cta" style="flex-direction:row;align-items:center
   ${codeMeanHTML(J.code,"on-dark")}
   <p class="hc-line">“${LINES[J.code]}”</p>
 </section>
+<section class="card"><h2>내 성격과 목소리</h2><p class="small">평소의 내 성향과 이번 녹음의 말속도·억양을 함께 살펴봐요.</p>
+<button class="btn pri block" id="bigFive">${selfReport(S.tipi)?"내 심화 결과 보기":nextQuestion()>0?"Big Five 이어서 답하기":"Big Five 10문항으로 비교하기"}</button></section>
 <section class="card cmp-card">
   ${S.guess?`<div class="cmp"><div><img src="${img.char(S.guess)}" alt=""><small>① 내가 생각한 목소리</small><b>${S.guess}</b><small>${codeShort(S.guess)}</small></div><div class="muted" style="font-size:22px">→</div><div><img src="${img.char(J.code)}" alt=""><small>② 듣는 사람이 느끼는</small><b>${J.code}</b><small>${codeShort(J.code)}</small></div></div>
-  <p style="text-align:center">${S.guess===J.code?"예상한 그대로예요! 내 목소리를 잘 알고 있어요.":`나는 <b>${G[1]}</b>처럼 생각했지만, ${who} <b>${T[1]}</b>처럼 들려요.`}</p>`:`<p style="text-align:center">${who} <b>${T[1]}</b>처럼 들려요.</p><p class="small" style="text-align:center">성격 질문까지 하면 '내가 생각한 목소리'와도 나란히 비교해 볼 수 있어요.</p>`}
+  <p style="text-align:center">${S.guess===J.code?"예상한 그대로예요! 내 목소리를 잘 알고 있어요.":`나는 <b>${G[1]}</b>처럼 생각했지만, ${who} <b>${T[1]}</b>처럼 들려요.`}</p>`:`<p style="text-align:center">${who} <b>${T[1]}</b>처럼 들려요.</p>`}
   ${(()=>{const k=sitKey(),b=lsGet(BASE_KEY);return k==="intro"?"":`<p class="small" style="text-align:center">${SITS[k][1]} 내 목소리예요.${TYPES[b]?` 자기소개할 때는 <b>${b} ${TYPES[b][1]}</b>였어요.`:""} 기본 유형이 바뀐 게 아니라, 이 상황에서는 이렇게 들린다는 뜻이에요.</p>`})()}
   ${REC.r1?pbarHTML("hearMe","방금 녹음한 내 목소리",REC.r1):""}
 </section>
@@ -1042,6 +1071,7 @@ ${S.demo?"":`<button class="btn block" id="rerec">다시 녹음하기</button>`}
 <p class="fine">목소리 인상과 성격은 진단이 아니라 자기 이해를 돕는 참고 자료예요. 녹음 환경에 따라 결과가 달라질 수 있어요.</p>
 ${BIZ}`,
  bind(){later(()=>{view.querySelectorAll(".band i").forEach(i=>i.style.height=i.dataset.h+"%");countUp($("#ageN"),0,J.age,1200);countUp($("#attrN"),0,A.pct,1200)},250);
+  $("#bigFive").onclick=()=>{const i=nextQuestion();if(i<0)go("insight");else go("tipi",i)};
   $("#share").onclick=shareSheet;const gl=$("#goal");if(gl)gl.onclick=()=>go("goal");const hm=$("#hearMe");if(hm)mountPlayer(hm,REC.r1);
   const mi=$("#mine");if(mi)mi.onclick=()=>{newRun();go("info")};
   $("#again").onclick=()=>{newRun();go("landing")};const rr=$("#rerec");if(rr)rr.onclick=reRecord;
@@ -1064,10 +1094,10 @@ const SAVE_URL="https://script.google.com/macros/s/AKfycbyTH-Q1YT90015gFUapUB1SB
 /* 11/5 대표: 녹음 품질 기록 — 마이크가 실제로 받은 샘플레이트. 블루투스 이어폰(에어팟 등)은 16~24kHz라 48kHz로 저장해도 음질이 안 오른다 → 시트 '녹음 품질'에 남겨 거를 수 있게. 파일로 했으면 '파일' */
 function recQ(){const rs=[REC.r1,REC.r2].filter(Boolean);if(!rs.length)return"";if(rs.some(r=>r.file))return"파일";const hz=Math.min(...rs.map(r=>r.micHz||r.sr)),k=+(hz/1000).toFixed(1)+"kHz";return hz>=44100?k:k+" 낮음(이어폰 추정)"}
 function serverRecord(){const m=S.m,J=S.J,s=m.s,v=m.v,A=attrScore(m),n=(x,d)=>x==null||!isFinite(x)?null:+(+x).toFixed(d);
- return{type:"voicetype",ver:1,src:"web",sit:sitKey(),sitName:SITS[sitKey()][0],at:new Date().toISOString(),name:S.name||"",sex:S.sex,age:S.age,job:S.job||"",code:J.code,guess:S.guess||"",tipi:S.tipi||[],
+ return{type:"voicetype",ver:2,src:"web",developmentConsent:S.developmentConsent,sit:sitKey(),sitName:SITS[sitKey()][0],at:new Date().toISOString(),name:S.name||"",sex:S.sex,age:S.age,job:S.job||"",code:J.code,
   f0:n(s.f0,1),stRel:n(J.stRel,2),rangeSt:n(s.rangeSt,2),sdSt:n(s.sdSt,2),rate:n(s.rate,2),syl:s.syl,speakDur:n(s.speakDur,2),dbsd:n(s.dbsd,2),dyn:n(s.dyn,1),snr:n(s.snr,1),endSlope:n(s.endSlope,2),bands:s.bands.map(b=>n(b,1)),
-  mpt:n(v.mpt,2),hnr:n(v.hnr,2),regs4:s.regs4?s.regs4.map(x=>n(x,1)):null,vspace:n(s.vspace,0),sylc:n(s.sylc,1),pauses:s.pauses,voiceOnly:!!S.voiceOnly,cpp:n(v.cpp,3),trem:n(v.trem,3),noiseDb:n(m.noiseDb,1),cond:m.c||null,
-  score:J.sc,total:J.total,voice:J.voice,self:J.self,match:J.match,voiceAge:n(J.age,1),attr:A.pct,attrParts:Object.fromEntries(Object.entries(A.parts).map(([k,x])=>[k,n(x,2)])),recQ:recQ()}}
+  mpt:n(v.mpt,2),hnr:n(v.hnr,2),regs4:s.regs4?s.regs4.map(x=>n(x,1)):null,vspace:n(s.vspace,0),sylc:n(s.sylc,1),pauses:s.pauses,voiceOnly:true,cpp:n(v.cpp,3),trem:n(v.trem,3),noiseDb:n(m.noiseDb,1),cond:m.c||null,
+  score:J.sc,total:J.total,voice:J.voice,voiceAge:n(J.age,1),attr:A.pct,attrParts:Object.fromEntries(Object.entries(A.parts).map(([k,x])=>[k,n(x,2)])),recQ:recQ()}}
 /* 11/4 대표: 녹음도 저장 — 문장·'아—' 두 녹음을 wav로 같은 요청에 실어 보낸다(실패하면 숫자만) — 11/5부터 48kHz(최소 44.1kHz) 원음 */
 const b64of=blob=>blob.arrayBuffer().then(buf=>{const u=new Uint8Array(buf);let t="";for(let i=0;i<u.length;i+=0x8000)t+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));return btoa(t)});
 /* 11/5 대표: 저장 녹음은 최소 44.1kHz, 가능하면 48kHz — 기기가 48kHz·44.1kHz로 녹음하면 그대로 쓰고(폰은 대부분 48kHz), 그 밖(블루투스 16kHz·오디오 인터페이스 96kHz 등)은 48kHz로 맞춘다(96kHz 원본은 저장소 한도를 넘음).
@@ -1075,8 +1105,18 @@ const b64of=blob=>blob.arrayBuffer().then(buf=>{const u=new Uint8Array(buf);let 
 function resampleTo(x,sr,to){const OC=window.OfflineAudioContext||window.webkitOfflineAudioContext,oc=new OC(1,Math.ceil(x.length*to/sr),to),b=oc.createBuffer(1,x.length,sr);b.getChannelData(0).set(x);const s=oc.createBufferSource();s.buffer=b;s.connect(oc.destination);s.start(0);
   const p=oc.startRendering();return p&&p.then?p.then(r=>r.getChannelData(0)):new Promise(res=>{oc.oncomplete=e=>res(e.renderedBuffer.getChannelData(0))})}
 async function audioPayload(){const o={};for(const [k,r] of [["sent",REC.r1],["ah",REC.r2]]){if(!r)continue;const to=r.sr===44100?44100:48000;o[k]=await b64of(wavBlob(r.sr===to?r.x:await resampleTo(r.x,r.sr,to),to))}return o}
-function sendRecord(){if(!SAVE_URL||S.demo||S.sent)return;let rec;try{rec=serverRecord()}catch(e){return}S.sent=true;save();
- audioPayload().catch(()=>null).then(a=>{if(a&&(a.sent||a.ah))rec.audio=a;return fetch(SAVE_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(rec)})}).catch(()=>{S.sent=false;save()})}
+function sendRecord(){
+  const run=S;
+  if(!SAVE_URL||run.demo||run.sent||run.developmentConsent?.version!=="voice-dev-2026-11-05"||!run.developmentConsent.acceptedAt)return;
+  const record=serverRecord();
+  const end=new Date(record.at);end.setUTCFullYear(end.getUTCFullYear()+run.developmentConsent.retentionYears);
+  record.expiresAt=end.toISOString();run.sent=true;save();
+  audioPayload().then(audio=>{
+    if(S!==run||!audio.sent||!audio.ah)return;
+    record.audio=audio;
+    return fetch(SAVE_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(record)});
+  }).catch(()=>{if(S===run){run.sent=false;save()}});
+}
 function copy(t){const ok=()=>toast("복사했어요");if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(ok,()=>toast("복사가 막혀 있어요. 길게 눌러 직접 복사해 주세요."));else toast("길게 눌러 직접 복사해 주세요.")}
 /* ===== 8. 공유 카드 ===== */
 function loadImg(src){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=src})}
@@ -1124,7 +1164,7 @@ const codeShort=c=>`${c[0]==="L"?"낮고":"높고"} ${c[1]==="A"?"빠른":"여�
 const codeMeanHTML=(c,cls="")=>`<div class="cm ${cls}">${codeParts(c).map(p=>`<span><b>${p[0]}</b><em>${p[1]}</em></span>`).join("")}</div>`;
 
 /* ===== 예시(데모) ===== */
-function startDemo(code,stay){const tc=Q.has("teacher");S={demo:true,friend:S.friend,sex:"f",age:38,job:tc?"teacher":"",teacher:tc,tipi:[5,3,5,3,5,3,6,3,5,3],guess:code==="HUDT"?"HUDF":"HUDT"};
+function startDemo(code,stay){const tc=Q.has("teacher");S={demo:true,friend:S.friend,sex:"f",age:38,job:tc?"teacher":"",teacher:tc,tipi:[]};
  const L=code[0]==="L",A=code[1]==="A",D=code[2]==="D",T=code[3]==="T",ref=REF_F0[S.sex],stRel=L?-2.6:2.2,f0=ref*Math.pow(2,stRel/12);
  S.m={s:{f0,rangeSt:T?9.1:5.2,sdSt:T?2.4:1.4,rate:A?5.5:4.1,speakDur:A?7.1:9.5,syl:sylOf(SENT),dbsd:D?4.4:5.6,dyn:T?19:15.5,snr:31,endSlope:L?-1.2:0.6,bands:L?(D?[33,39,22,6]:[31,37,22,10]):(D?[22,37,33,8]:[20,35,32,13]),regs4:L?[6,32,54,8]:[5,22,57,16],voicedSec:5.2},
   v:{mpt:D?15.2:11.4,hnr:D?19.6:13.8,cpp:D?0.62:0.41,trem:0.28,f0},noiseDb:-62};
@@ -1135,11 +1175,11 @@ function startDemo(code,stay){const tc=Q.has("teacher");S={demo:true,friend:S.fr
 /* 시작 — ?f=코드(친구 링크) · 시안 확인용 ?demo=HUDT&view=result&teacher&shot */
 if(Q.has("shot"))document.documentElement.classList.add("noanim");
 {const qf=(Q.get("f")||"").toUpperCase(),qd=(Q.get("demo")||"").toUpperCase();if(TYPES[qf]){S.friend=qf;save()}
- if(TYPES[qd]){startDemo(qd,true);const v=Q.get("view")||"result";go(v,v==="tipi"||v==="guess"?+Q.get("i")||0:undefined)}
+ if(TYPES[qd]){startDemo(qd,true);const v=Q.get("view")||"result";go(v==="guess"||!Object.hasOwn(R,v)?"result":v,v==="tipi"?cl(parseInt(Q.get("i"),10)||0,0,9):undefined)}
  /* 11/5 대표: 예시 결과를 먼저 보여 주지 않는다 — 예전에 예시를 열어 둔 기기도 첫 화면부터 */
  else if(S.J&&!S.demo){setFam(S.J.code);go("result")}else{if(S.demo)newRun();go("landing")}}
-})();
 document.fonts&&document.fonts.ready.then(()=>fitLn(document));
+})();
 </script>
 </body>
 </html>
