@@ -407,6 +407,8 @@ p,li,small,.fine,.muted{text-wrap:pretty}
 .ap em{font-style:normal;font-size:11.5px;line-height:1.4;color:var(--muted);margin-top:2px}
 /* 11/5 쉬운 말: 톤 칸 이름·결과 말이 한 줄에 들어가게 */
 .tn{grid-template-columns:104px minmax(0,1fr) 70px}.tn em{white-space:nowrap}
+/* 11/5 쉬운 말: 칸 이름(빠르기·소리 색깔·오르내림)이 한 줄에 */
+.trial-row,.ax-line{grid-template-columns:72px minmax(0,1fr)}.trial-row b,.ax-line b{white-space:nowrap}
 </style>
 </head>
 <body>
@@ -544,7 +546,7 @@ L:{ax:"높이",nm:"낮은",imp:"힘 있고 듬직하게 들려요",pro:"믿음�
 H:{ax:"높이",nm:"높은",imp:"밝고 다정하게 들려요",pro:"밝은 에너지 — 분위기를 띄우고 다가가기 쉬워요",con:"긴장하면 더 높아져 날카롭거나 어려 보일 수 있어요",fix:"문장 끝을 살짝 내려 안정감 주기",ex:"'~습니다'로 끝나는 문장을 끝음만 살짝 내려 말하기",good:["첫 만남","안내"],care:["무거운 결정 전달"]},
 A:{ax:"속도",nm:"빠르고 활발한",imp:"힘차고 신나게 들려요",pro:"효율 — 짧은 시간에 많은 내용을 전해요",con:"중요한 말까지 빨리 지나가 조급하거나 압박감을 줄 수 있어요",fix:"핵심 앞에서 반 박자 쉬기",ex:"쉼표마다 숨 한 번 쉬고 문장 읽기",good:["회의 진행","소식 전달"],care:["위로","어르신과의 대화"]},
 U:{ax:"속도",nm:"천천히 말하는",imp:"차분해서 믿음이 가요",pro:"안정감 — 듣는 사람이 편안하게 따라와요",con:"길어지면 느리고 지루하게 들릴 수 있어요",fix:"강조할 단어에서 크기 올리기",ex:"한 문장 안에서 핵심 단어 하나만 크고 힘 있게",good:["강의","낭독"],care:["짧은 발표"]},
-D:{ax:"음색",nm:"또렷한",imp:"한 글자 한 글자 잘 들려요",pro:"명확함 — 말끝까지 또렷해 뒤에서도 잘 들려요",con:"단단한 소리가 차갑거나 딱딱하게 들릴 수 있어요",fix:"첫마디에 숨결 살짝 섞기(미소 발성)",ex:"미소 지은 채 '음~' 허밍 3초 → '안녕하세요'",good:["안내 방송","교실 수업"],care:["상담","위로"]},
+D:{ax:"음색",nm:"또렷한",imp:"한 글자 한 글자 잘 들려요",pro:"명확함 — 말끝까지 또렷해 뒤에서도 잘 들려요",con:"단단한 소리가 차갑거나 딱딱하게 들릴 수 있어요",fix:"웃는 얼굴로 첫 글자를 부드럽게 시작하기",ex:"미소 지은 채 '음~' 허밍 3초 → '안녕하세요'",good:["안내 방송","교실 수업"],care:["상담","위로"]},
 B:{ax:"음색",nm:"바람이 섞인",imp:"부드럽고 포근하게 들려요",pro:"편안함 — 가까이에서 말하듯 다정하게 들려요",con:"멀리까지 덜 닿고, 오래 말하면 쉽게 지칠 수 있어요",fix:"소리를 앞으로 모아 또렷하게",ex:"'음~' 허밍으로 코끝 울림 찾기 → 이어서 '아~'",good:["상담","1:1 대화"],care:["큰 강의실","시끄러운 곳"]},
 T:{ax:"억양",nm:"노래하듯 말하는",imp:"이야기처럼 재미있게 들려요",pro:"몰입 — 듣는 사람이 끝까지 집중해요",con:"지나치면 들떠 보이거나 진지함이 덜할 수 있어요",fix:"중요한 결론은 낮고 평평하게 정리하기",ex:"결론 문장을 한 음 높이로 차분히 읽기",good:["이야기","수업 도입"],care:["사과","엄숙한 자리"]},
 F:{ax:"억양",nm:"흔들림 없는",imp:"차분해서 하는 말이 귀에 잘 들어와요",pro:"신뢰 — 흔들림 없이 결론이 분명해요",con:"감정이 덜 보여 차갑거나 지루하게 들릴 수 있어요",fix:"질문 문장에서 음높이를 크게 움직이기",ex:"도레미파솔 오르내리듯 질문 문장을 노래하듯 읽기",good:["설명","협상"],care:["긴 강의","아이와의 대화"]}};
@@ -919,24 +921,24 @@ function friendCard(){const f=S.friend,me=S.J.code;if(!TYPES[f])return"";const d
 /* ===== 11/5 대표: 결과 → ③ 원하는 목소리 정하기 → ④ 1분 체험 → 앱(지금은 대기예약) =====
    APP_LINK에 앱 주소를 넣으면 대기예약 대신 '앱 받기'로 바뀐다 */
 const APP_LINK="";
-const TO_TIP={L:"문장 끝을 편하게 내려놓고 조금 낮게 — 반음 1~2개만",H:"첫마디를 밝게 띄우고 조금 높게 — 반음 1~2개만",A:"한 문장을 한 호흡에, 조금 더 빠르고 힘 있게",U:"쉼표마다 숨 한 번 쉬고 천천히",D:"소리를 앞으로 모아 또렷하게, 끝까지 힘 있게",B:"첫마디에만 숨을 살짝 섞어 부드럽게",T:"질문하듯, 노래하듯 오르내림을 크게",F:"결론 말하듯 한 높이로 차분하게"};
+const TO_TIP={L:"문장 끝을 편하게 내려놓고, 아주 조금만 낮게",H:"첫 글자를 밝게 띄우고, 아주 조금만 높게",A:"한 문장을 한 숨에, 조금 더 빠르고 힘 있게",U:"쉼표마다 숨 한 번 쉬고 천천히",D:"소리를 입 앞으로 모아 또렷하게, 끝까지 힘 있게",B:"첫 글자에만 숨을 살짝 섞어 부드럽게",T:"질문하듯, 노래하듯 크게 오르내리며",F:"한 높이로 차분하게, 흔들림 없이"};
 function axisPlan(my,to){return my.split("").map((a,i)=>{const b=to[i],o={i,ax:AX_N[i],from:a,to:b};if(a===b)return{...o,st:"same"};
- if(i===0)return{...o,st:"soft",note:"높이는 조금만 — 반음 2개까지(목 보호)"};if(i===2&&b==="B")return{...o,st:"soft",note:"첫마디에만 숨결 — 늘 숨 섞인 소리는 목이 쉽게 지쳐요"};
+ if(i===0)return{...o,st:"soft",note:"높이는 아주 조금만 바꿔요 — 목을 지키려고요"};if(i===2&&b==="B")return{...o,st:"soft",note:"첫 글자에만 바람 소리를 — 계속 섞으면 목이 쉽게 지쳐요"};
  return{...o,st:"goal",note:"연습으로 잘 바뀌어요"}})}
 const goalCTA=()=>`<section class="card"><div class="kicker">다음 단계</div><h2>되고 싶은 목소리로 1분 바꿔 보기</h2><p class="muted">원하는 목소리를 고르고 한 문장을 다시 읽으면, 처음과 달라진 내 목소리를 바로 비교해 들을 수 있어요.</p><button class="btn pri block shine" id="goal">원하는 목소리 정하기</button></section>`;
 R.goal=sel=>{const J=S.J,my=J.code,cur=sel||S.target||null,plan=cur?axisPlan(my,cur):null;
  return{top:{back:()=>go("result"),label:"③ 원하는 목소리"},html:`
 <div><div class="kicker">③ 내가 원하는 목소리</div><h1 class="title">어떤 목소리로<br>들리고 싶나요?</h1></div>
 <section class="megoal"><div><div class="av"><img src="${img.char(my)}" alt=""></div><small>지금 나</small><br><b>${my}</b></div><div class="muted" style="font-size:26px">→</div><div><div class="av goal">${cur?`<img src="${img.char(cur)}" alt="">`:"?"}</div><small>되고 싶은 목소리</small><br><b>${cur||"골라 주세요"}</b></div></section>
-${plan?`<section class="card"><div class="kicker">${cur===my?"지금 내 목소리 그대로":nmNW(cur)}</div>${cur===my?"<p>지금 목소리의 장점은 살리고, 더 또렷하게 다듬어요.</p>":plan.map(p=>`<div class="ax-line ${p.st}"><b>${p.ax}</b><span>${p.st==="same"?`${LET[p.from].nm} — 같아요 ✓`:`${LET[p.from].nm} → ${LET[p.to].nm}`}</span>${p.st==="same"?"":`<small>${p.note}</small>`}</div>`).join("")}</section>`:""}
+${plan?`<section class="card"><div class="kicker">${cur===my?"지금 내 목소리 그대로":nmNW(cur)}</div>${cur===my?"<p>지금 목소리의 장점은 살리고, 더 또렷하게 다듬어요.</p>":plan.map(p=>`<div class="ax-line ${p.st}"><b>${AXD[p.ax]}</b><span>${p.st==="same"?`${LET[p.from].nm} — 같아요 ✓`:`${LET[p.from].nm} → ${LET[p.to].nm}`}</span>${p.st==="same"?"":`<small>${p.note}</small>`}</div>`).join("")}</section>`:""}
 <section class="card"><div class="fam-legend">${Object.keys(FAM).map(k=>`<span style="--c:${FAM[k][2]}"><i></i>${FAM[k][0]} · ${FAM[k][1]}</span>`).join("")}</div>
  <div class="rgrid">${Object.keys(TYPES).map(c=>`<button class="rt ${c===cur?"pick":""} ${c===my?"me":""}" data-c="${c}"><span><img src="${img.char(c)}" alt="${TYPES[c][1]}"></span><b>${c}${c===my?" · 나":""}</b><small>${nmLN(c)}</small></button>`).join("")}</div></section>
-<p class="fine">목소리 인상을 연습하는 것이지 성격을 바꾸는 게 아니에요. 높이는 목을 지키기 위해 조금만 움직여요.</p>
+<p class="fine">성격을 바꾸는 게 아니라, 남에게 들리는 내 목소리를 연습하는 거예요. 목을 지키려고 높이는 아주 조금만 바꿔요.</p>
 <div class="sticky-cta"><button class="btn pri block" id="ok" ${cur?"":"disabled"}>${cur?(cur===my?"지금 내 목소리로 1분 체험하기":"이 목소리로 1분 체험하기"):"목소리를 하나 골라 주세요"}</button></div>`,
  bind(){view.querySelectorAll(".rt").forEach(b=>b.onclick=()=>go("goal",b.dataset.c));
   const ok=$("#ok");if(ok&&cur)ok.onclick=()=>{S.target=cur;S.trial=null;save();go("try")}}}};
-const tryTips=()=>{const J=S.J,t=S.target||J.code;if(t===J.code){const k=J.code.split("").map(l=>LET[l]);return[["또렷하게",k[2].fix||TO_TIP.D]]}
- return axisPlan(J.code,t).filter(p=>p.st!=="same").map(p=>[p.ax,TO_TIP[p.to]])};
+const tryTips=()=>{const J=S.J,t=S.target||J.code;if(t===J.code){const k=J.code.split("").map(l=>LET[l]);return[["이것만",k[2].fix||TO_TIP.D]]}
+ return axisPlan(J.code,t).filter(p=>p.st!=="same").map(p=>[AXD[p.ax],TO_TIP[p.to]])};
 R.try=err=>{const t=S.target||S.J.code,sent=SITS[sitKey()][2];return{top:{back:()=>go("goal"),label:"④ 1분 체험"},html:`
 <div><div class="kicker">④ 1분 체험 · 매일 훈련 맛보기</div><h1 class="title">${t===S.J.code?"지금 내 목소리를<br>더 또렷하게":nmNW(t)+"처럼<br>읽어 볼까요?"}</h1></div>
 <section class="card"><div class="kicker">이렇게 바꿔 읽어요</div><ul class="tips">${tryTips().map(x=>`<li><b>${x[0]}</b> — ${x[1]}</li>`).join("")}</ul></section>
@@ -946,29 +948,29 @@ ${micHTML("버튼을 누르고 위처럼 바꿔 읽어 보세요")}`,
   resample(r.x,r.sr).then(x=>{const nd=S.m&&S.m.noiseDb!=null?S.m.noiseDb:noiseFloor(x),a=analyzeSentence(x,nd,sylOf(sent));S.trial={f0:a.f0,rate:a.rate,rangeSt:a.rangeSt};save();go("tryres")})
   .catch(e=>go("try",(e&&e.message?e.message:"듣지 못했어요")+" — 다시 해 볼까요?"))}})}}};
 function trialRows(){const J=S.J,b=S.m.s,a=S.trial,t=S.target||J.code,out=[];
- const add=(ax,txt,to,ok)=>out.push({ax,txt,to,ok});
- const want=i=>t[i]!==J.code[i]?t[i]:null;
- {const d=12*Math.log2(a.f0/b.f0),w=want(0);add("높이",Math.abs(d)<0.1?"처음과 같은 높이":`처음보다 ${Math.abs(d).toFixed(1)}반음 ${d>=0?"높게":"낮게"}`,w,w==="H"?d>0.3:w==="L"?d<-0.3:Math.abs(d)<1.5)}
- {const w=want(1);add("속도",`1초에 ${b.rate.toFixed(1)} → ${a.rate.toFixed(1)}음절`,w,w==="A"?a.rate>b.rate+0.2:w==="U"?a.rate<b.rate-0.2:Math.abs(a.rate-b.rate)<0.6)}
- {const w=want(3);add("억양",`폭 ${b.rangeSt.toFixed(1)} → ${a.rangeSt.toFixed(1)}반음`,w,w==="T"?a.rangeSt>b.rangeSt+0.5:w==="F"?a.rangeSt<b.rangeSt-0.5:Math.abs(a.rangeSt-b.rangeSt)<1.5)}
+ const add=(ax,txt,num,to,ok)=>out.push({ax,txt,num,to,ok});
+ const want=i=>t[i]!==J.code[i]?t[i]:null,much=(x,c)=>Math.abs(x)<c?"조금 ":"많이 ";
+ {const d=12*Math.log2(a.f0/b.f0),w=want(0);add("높이",Math.abs(d)<0.3?"처음과 거의 같은 높이예요":`처음보다 ${much(d,2)}${d>=0?"높아졌어요":"낮아졌어요"}`,Math.abs(d)<0.1?"처음과 같은 높이":`처음보다 ${Math.abs(d).toFixed(1)}반음 ${d>=0?"높게":"낮게"}`,w,w==="H"?d>0.3:w==="L"?d<-0.3:Math.abs(d)<1.5)}
+ {const d=a.rate-b.rate,w=want(1);add("속도",Math.abs(d)<0.2?"처음과 비슷한 빠르기예요":`처음보다 ${much(d,1)}${d>0?"빨라졌어요":"천천히 말했어요"}`,`1초에 ${b.rate.toFixed(1)} → ${a.rate.toFixed(1)}음절`,w,w==="A"?a.rate>b.rate+0.2:w==="U"?a.rate<b.rate-0.2:Math.abs(a.rate-b.rate)<0.6)}
+ {const d=a.rangeSt-b.rangeSt,w=want(3);add("억양",Math.abs(d)<0.5?"처음과 비슷하게 오르내렸어요":`처음보다 ${much(d,3)}${d>0?"크게 오르내렸어요":"잔잔해졌어요"}`,`폭 ${b.rangeSt.toFixed(1)} → ${a.rangeSt.toFixed(1)}반음`,w,w==="T"?a.rangeSt>b.rangeSt+0.5:w==="F"?a.rangeSt<b.rangeSt-0.5:Math.abs(a.rangeSt-b.rangeSt)<1.5)}
  return out}
-const trialSummary=()=>S.trial?trialRows().map(r=>`${r.ax} ${r.txt}${r.to?(r.ok?" ✓":" ·"):""}`).join(" / "):"";
+const trialSummary=()=>S.trial?trialRows().map(r=>`${r.ax} ${r.num}${r.to?(r.ok?" ✓":" ·"):""}`).join(" / "):"";
 R.tryres=()=>{const J=S.J,t=S.target||J.code,rows=trialRows(),goal=rows.filter(r=>r.to),hit=goal.filter(r=>r.ok).length;
  const head=!goal.length?"내 목소리, 한 번 더 또렷해졌어요":hit===goal.length?"한 번 만에 가까워졌어요!":hit?"한 걸음 가까워졌어요":"처음엔 원래 버릇이 나와요";
- const tail=t===J.code?"매일 3분이면 지금 목소리의 장점이 더 단단해져요.":`매일 3분이면 '${TYPES[t][1]}' 목소리까지 데려다 드려요.`;
+ const tail=t===J.code?"하루 3분이면 나도 지금보다 더 또렷한 목소리가 될 수 있어요.":`하루 3분이면 나도 '${TYPES[t][1]}'의 목소리가 될 수 있어요.`;
  return{top:{back:()=>go("try"),label:"④ 1분 체험"},html:`
 <div class="win"><img class="popin" src="${img.char(t)}" alt="" style="width:132px;border-radius:28px;margin:0 auto"><div class="kicker" style="text-align:center">체험 결과</div><h1 class="title" style="text-align:center">${head}</h1></div>
-<section class="card">${rows.map(r=>`<div class="trial-row"><b>${r.ax}</b><span class="num">${r.txt}</span><small class="${r.to?(r.ok?"ok":"no"):"no"}">${r.to?(r.ok?`${LET[r.to].nm} 쪽으로 ✓`:`${LET[r.to].nm} 쪽으로 조금 더`):"그대로"}</small></div>`).join("")}
- ${t[2]!==J.code[2]?`<small>음색(숨결·또렷함)은 '아—'로 재요 — 앱에서 매일 확인해요.</small>`:""}</section>
+<section class="card">${rows.map(r=>`<div class="trial-row"><b>${AXD[r.ax]}</b><span class="num">${r.txt}</span><small class="${r.to?(r.ok?"ok":"no"):"no"}">${r.to?(r.ok?`${LET[r.to].nm} 쪽으로 ✓`:`${LET[r.to].nm} 쪽으로 조금 더`):r.ok?"원래대로 ✓":"원래대로 해 봐요"}</small></div>`).join("")}
+ ${t[2]!==J.code[2]?`<small>소리 색깔(바람·또렷함)은 '아—' 소리로 재요. 앱에서 매일 확인할 수 있어요.</small>`:""}</section>
 ${REC.r1?pbarHTML("hearA","처음 테스트 목소리",REC.r1):""}${REC.t?pbarHTML("hearB","방금 체험한 목소리",REC.t):""}
-<section class="card"><div class="kicker">${APP_LINK?"앱에서 이어 하기":"앱 대기예약"}</div><h2>${tail}</h2><p class="muted">목풀기 5음계 · 문장 읽기 · 발음 체크를 내 목소리에 맞춰, 병아리와 함께 매일 3분.</p>
- ${APP_LINK?`<a class="btn pri block shine" href="${APP_LINK}">앱 받고 매일 3분 이어 하기</a>`:S.waitlisted?`<div class="target"><span>대기예약</span><b>완료했어요 ✓ 앱이 나오면 알려 드릴게요</b></div>`:`<button class="btn pri block shine" id="wl">앱 나오면 알림 받기 (대기예약)</button>`}</section>
+<section class="card"><div class="kicker">${APP_LINK?"앱에서 이어 하기":"앱 대기예약"}</div><h2>${tail}</h2><p class="muted">병아리와 함께 목 풀기 · 문장 읽기 · 발음 연습을 내 목소리에 맞춰 해요.</p>
+ ${APP_LINK?`<a class="btn pri block shine" href="${APP_LINK}">앱 받고 하루 3분 이어 하기</a>`:S.waitlisted?`<div class="target"><span>대기예약</span><b>완료했어요 ✓ 앱이 나오면 알려 드릴게요</b></div>`:`<button class="btn pri block shine" id="wl">앱 나오면 알림 받기 (대기예약)</button>`}</section>
 <button class="btn block" id="again">한 번 더 체험하기</button>
 <button class="btn ghost block" id="back">결과로 돌아가기</button>`,
  bind(){const a=$("#hearA");if(a)mountPlayer(a,REC.r1);const b=$("#hearB");if(b)mountPlayer(b,REC.t);const w=$("#wl");if(w)w.onclick=()=>go("waitlist");$("#again").onclick=()=>go("try");$("#back").onclick=()=>go("result")}}};
 R.waitlist=()=>({top:{back:()=>go(S.trial?"tryres":"result"),label:"앱 대기예약"},html:`
 <div><div class="kicker">앱 대기예약</div><h1 class="title">앱이 나오면<br>가장 먼저 알려 드릴게요</h1></div>
-<section class="card"><p>매일 3분, 병아리와 함께 원하는 목소리까지. 목풀기·문장 읽기·발음 체크를 내 목소리에 맞춰 연습해요.</p>
+<section class="card"><p>하루 3분, 병아리와 함께 연습하면 나도 원하는 목소리가 될 수 있어요. 목 풀기·문장 읽기·발음 연습을 내 목소리에 맞춰 해요.</p>
  <label class="lbl">이름<input class="inp" id="wn" maxlength="20" value="${esc(S.name||"")}"></label>
  <label class="lbl">휴대폰 번호<small>출시 알림 문자를 한 번 보내요</small><input class="inp" id="wp" type="tel" inputmode="numeric" maxlength="13" placeholder="010-1234-5678" autocomplete="tel"></label>
  <label class="chk"><input type="checkbox" id="wc"><span>앱 출시 알림을 위해 이름과 휴대폰 번호를 터칭보이스에 저장하는 데 동의해요. 알림을 보낸 뒤에는 지워요.</span></label>
