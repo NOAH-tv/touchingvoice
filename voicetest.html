@@ -1129,7 +1129,8 @@ function startDemo(code,stay){const tc=Q.has("teacher");S={demo:true,friend:S.fr
 if(Q.has("shot"))document.documentElement.classList.add("noanim");
 {const qf=(Q.get("f")||"").toUpperCase(),qd=(Q.get("demo")||"").toUpperCase();if(TYPES[qf]){S.friend=qf;save()}
  if(TYPES[qd]){startDemo(qd,true);const v=Q.get("view")||"result";go(v,v==="tipi"||v==="guess"?+Q.get("i")||0:undefined)}
- else if(S.J){setFam(S.J.code);go("result")}else go("landing")}
+ /* 11/5 대표: 예시 결과를 먼저 보여 주지 않는다 — 예전에 예시를 열어 둔 기기도 첫 화면부터 */
+ else if(S.J&&!S.demo){setFam(S.J.code);go("result")}else{if(S.demo)newRun();go("landing")}}
 })();
 document.fonts&&document.fonts.ready.then(()=>fitLn(document));
 </script>
