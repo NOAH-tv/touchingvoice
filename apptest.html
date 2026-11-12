@@ -388,6 +388,7 @@ mark{background:color-mix(in oklab,var(--gold) 38%,transparent);color:inherit;bo
 .rd-line{font-size:clamp(19px,4.4cqi + 4px,28px)!important;line-height:2.05!important}
 .ed-row{display:flex;align-items:center;gap:10px;align-self:stretch}.ed-row span{flex:1;font-weight:600}.ed-row b{min-width:3.2em;text-align:center;font-variant-numeric:tabular-nums}
 .ai-wait{opacity:.6}
+.icb.cplay{margin-top:8px;flex-direction:row;gap:6px;padding:6px 12px;width:auto}
 .cs-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid rgba(128,128,128,.22)}.cs-row>div{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;color:var(--ink);font-size:15px}.cs-row small{font-weight:500;color:var(--muted)}
 .cs-dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 14px;margin:0;align-self:stretch;text-align:left;font-size:14px;line-height:1.5}.cs-dl dt{font-weight:700;color:var(--muted);white-space:nowrap}.cs-dl dd{margin:0}.cs-gift{font-weight:700;color:var(--ink)}
 .ed-l{display:flex;flex-direction:column;gap:6px;align-self:stretch;font-size:13px;font-weight:600;color:var(--muted)}#ed-text{min-height:200px}
@@ -608,7 +609,7 @@ button svg,.ftag svg,.srch svg{flex:none}
 .mis .c{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;flex:none;background:var(--pri-grad);color:var(--pri-fg)}.mis .c svg{width:20px;height:20px}
 .mis b{display:block;font-size:15px}.mis small{font-size:12.5px;color:var(--muted)}.mis.now{box-shadow:0 0 0 2px var(--brand)}
 .mis.done{display:inline-flex;align-items:center;gap:6px;width:auto;margin-top:8px;padding:0;border:0;background:none;font-size:13px;color:var(--good)}.mis.done svg{width:16px;height:16px}
-.chat-dock{position:sticky;bottom:calc(92px + env(safe-area-inset-bottom,0px));z-index:5;display:grid;grid-template-columns:40px minmax(0,1fr) 46px;align-items:center;gap:8px;padding:7px 8px;border-radius:999px;background:color-mix(in oklab,var(--card-solid) 46%,transparent)}
+.chat-dock{position:sticky;bottom:calc(92px + env(safe-area-inset-bottom,0px));z-index:5;display:grid;grid-template-columns:40px 40px minmax(0,1fr) 46px;align-items:center;gap:4px;padding:7px 8px;border-radius:999px;background:color-mix(in oklab,var(--card-solid) 46%,transparent)}
 .dock-kb{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:none;border:0;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;color:var(--muted);cursor:pointer}.dock-kb svg{width:19px;height:19px}
 .dock-hint{border:0;background:none;font:inherit;font-size:15.5px;color:var(--muted);text-align:left;padding:10px 4px;cursor:pointer;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
@@ -1333,7 +1334,7 @@ function recInner(r,full){const d=new Date(r.at),when=d.toLocaleDateString(SPK()
   <button type="button" class="icb" data-play="1" aria-label="처음 녹음 듣기"${r.w1?"":" disabled"}>${ICON.play1}<small>${r.m2?"처음":"듣기"}</small></button>${r.m2?`<button type="button" class="icb" data-play="2" aria-label="다시 읽은 녹음 듣기"${r.w2?"":" disabled"}>${ICON.play2}<small>다시</small></button>`:""}
   <button type="button" class="icb" data-rdel aria-label="이 기록 지우기">${ICON.trash}</button>${full?`<button type="button" class="go" data-redo aria-label="이 글 다시 연습하기">${ICON.mic}</button>`:""}</span></div>
   ${full?`<p class="rec-t">${paras(r.text)}</p>`:""}<p class="rec-n">${r.m2?`빠르기 ${r.m1.rate.toFixed(1)} → ${r.m2.rate.toFixed(1)}글자/초 · 쉼 ${r.m1.pauses} → ${r.m2.pauses}번`:r.m1?`빠르기 ${r.m1.rate.toFixed(1)}글자/초 · 쉼 ${r.m1.pauses}번${r.m1.match!=null?` · 발음 ${r.m1.match}%`:""}${r.use?` · 소리 낸 시간 ${useT(r.use)}`:""}`:r.dur?`${useT(r.dur)} 읽음`:""}</p>`}
-function renderRecs(){$("recs").innerHTML=RECS.length?RECS.map(r=>`<article class="day" data-rid="${r.id}">${recInner(r,true)}</article>`).join(""):`${say("아직 기록이 없어. 오늘의 읽기를 연습하면 녹음이 여기 쌓여!",{pop:false})}`}
+function renderRecs(){const RL=RECS.filter(r=>r.kind!=="chat");$("recs").innerHTML=RL.length?RL.map(r=>`<article class="day" data-rid="${r.id}">${recInner(r,true)}</article>`).join(""):`${say("아직 기록이 없어. 오늘의 읽기를 연습하면 녹음이 여기 쌓여!",{pop:false})}`}
 
 function armDel(b){if(b.dataset.armed)return true;b.dataset.armed=1;b.classList.add("armed");const h=b.innerHTML;b.innerHTML=ICON.trash+"<small>지울까요?</small>";
  setTimeout(()=>{if(b.isConnected&&b.dataset.armed){delete b.dataset.armed;b.classList.remove("armed");b.innerHTML=h}},3000);return false}
@@ -1636,7 +1637,7 @@ const TR={t:null,au:null,notes:[],run:false,raf:0,demo:false,mic:null,url:null,t
 let TRK_OFF=0.15;try{const v=parseFloat(localStorage.getItem("tv_trk_off"));if(Number.isFinite(v))TRK_OFF=v}catch(e){}
 const midiHz=m=>440*Math.pow(2,(m-69)/12);
 const NN=["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"],noteNm=m=>NN[((m%12)+12)%12]+(Math.floor(m/12)-1);
-async function openTrk(t){GEN=null;closeTrkAudio();Object.assign(TR,{t,notes:[],run:false,demo:false,done:false,trail:[],sp:null});$("tr").hidden=false;document.body.style.overflow="hidden";
+async function openTrk(t){trPend();GEN=null;closeTrkAudio();Object.assign(TR,{t,notes:[],run:false,demo:false,done:false,trail:[],sp:null});$("tr").hidden=false;document.body.style.overflow="hidden";
  $("tr-title").textContent=t.my?"내 트랙":TRK_G[t.g][0]+" · "+nn(t);$("tr-body").innerHTML=`<p class="cue-l">불러오는 중…</p>`;$("tr-act").innerHTML="";
  try{
   TR.notes=t.n?t.n.map(([a,d,m])=>({t:a,dur:d,midi:m})):parseMidi(t.my?new Uint8Array(t.midi):new Uint8Array(await(await fetch(trkURL(t,"m"))).arrayBuffer()),t.bpm||120);if(!TR.notes.length)throw new Error("미디에 음표가 없어요");
@@ -1702,8 +1703,11 @@ async function trkEnd(){if(TR.done)return;TR.done=true;trkProf();rollFocus("tr",
  const nx=TR.t.my?null:trkLevels(TR.t.g).find(x=>x.lv>TR.t.lv);
  $("tr-body").innerHTML=`<div class="pm-kick">${TR.t.my?"내 트랙":esc(TRK_G[TR.t.g][0])+" · "+nn(TR.t)}</div><div class="grade">${gradeOf(q)}</div>${say(q>=75?"완벽해! 다음 단계로 가자.":q>=60?"단계 완료! 정말 잘했어.":"조금만 더! 반주를 한 번 먼저 들어 보고 다시 해 보자.",{size:"s"})}<h2 class="verdict" id="tr-h" style="text-align:center">${q}% 맞혔어요</h2>
   <p class="cue-l">음표 ${N}개 중 ${hit}개${prev?` · 이전 최고 ${prev.best}%`:""}${q>=60?" · 이 단계 완료!":" · 60% 넘으면 이 단계 완료"}${TR.demo?" (데모)":""}</p>`;
- $("tr-act").innerHTML=`<div class="rrow"><button type="button" class="rb" id="tr-again" aria-label="다시 하기"><span class="c">${ICON.again}</span><span class="t">다시</span></button>${nx?`<button type="button" class="rb pri" id="tr-next" aria-label="다음 단계"><span class="c">${ICON.next}</span><span class="t">${nn(nx)}. ${esc(nx.name)}</span></button>`:""}<button type="button" class="rb" id="tr-list" aria-label="목록으로"><span class="c">${ICON.list}</span><span class="t">목록</span></button></div>`;
- $("tr-again").onclick=()=>{TR.au.currentTime=0;trkReady()};if(nx)$("tr-next").onclick=()=>openTrk(nx);$("tr-list").onclick=closeTrk;if(TR.brk&&!TR.demo){const b=TR.brk;setTimeout(()=>brkOffer(b),400)}}
+ $("tr-act").innerHTML=`<div class="rrow"><button type="button" class="rb" id="tr-again" aria-label="다시 하기"><span class="c">${ICON.again}</span><span class="t">다시</span></button>${nx?`<button type="button" class="rb pri" id="tr-next" aria-label="다음 단계"><span class="c">${ICON.next}</span><span class="t">${nn(nx)}. ${esc(nx.name)}</span></button>`:""}<button type="button" class="rb pri" id="tr-done" aria-label="완료"><span class="c">${ICON.check}</span><span class="t">완료</span></button></div>`;
+ $("tr-again").onclick=()=>{TR.au.currentTime=0;trkReady()};if(nx)$("tr-next").onclick=()=>openTrk(nx);$("tr-done").onclick=trDone;if(TR.brk&&!TR.demo){const b=TR.brk;setTimeout(()=>brkOffer(b),400)}}
+
+function trPend(){if(typeof CHAT==="object"&&CHAT&&!CHAT.pend&&typeof coachSnap==="function"){CHAT.pend={mid:"train",snap:coachSnap()};chatSave()}}
+function trDone(){closeTrk();tab("today");setTimeout(()=>{const l=$("chat-log");if(l&&l.lastElementChild)l.lastElementChild.scrollIntoView({block:"end",behavior:"smooth"})},700)}
 function closeTrkAudio(){cancelAnimationFrame(TR.raf);TR.run=false;if(TR.au){TR.au.pause();TR.au.onended=null}if(TR.url&&TR.t&&TR.t.my)URL.revokeObjectURL(TR.url);if(TR.mic){TR.mic.st.getTracks().forEach(x=>x.stop()),micDone();TR.mic.ac.close().catch(()=>{});TR.mic=null}}
 function closeTrk(){let pend=null;if(GEN){if(GEN.run&&SC_PEEK){pend=SC_PEEK().brk;GEN.quiet=true;if(SC_STOP)SC_STOP()}GEN=null}else if(TR.t&&!TR.demo&&!TR.done){pend=TR.brk||null;if(TR.notes.some(n=>n.lit)){TR.done=true;trkProf();const q=Math.round(TR.notes.filter(n=>n.lit).length/TR.notes.length*100),k=trkKey(TR.t),prev=TRK.best[k];
    dbPut("trk",{id:k,best:Math.max(q,prev?prev.best:0),plays:(prev?prev.plays:0)+1,hist:[...((prev&&prev.hist)||[]),q].slice(-8),last:Date.now(),demo:false}).then(loadTrk).then(()=>{renderTrain();renderTracks()})}}
@@ -1899,7 +1903,7 @@ $("sheet").addEventListener("click",e=>{if(e.target===e.currentTarget)$("sheet")
 $("ad-show").onclick=()=>{$("setsheet").hidden=true;openAd()};
 
 
-const SC=[0,2,4,5,7,5,4,2,0],SC_D=0.8,SC_GAP=1.2,SOL=LANG==="en"?["Do","Re","Mi","Fa","Sol"]:["도","레","미","파","솔"];
+const SC=[0,2,4,5,7,5,4,2,0],SC_D=0.8,SC_GAP=0,SOL=LANG==="en"?["Do","Re","Mi","Fa","Sol"]:["도","레","미","파","솔"];
 const hzOf=x=>440*Math.pow(2,x/12);
 let scCtx=null,scRec=null,scRaf=0,SC_SHIFT=0;try{SC_SHIFT=+localStorage.getItem("tv_sc_shift")||0}catch(e){}
 const scEnsure=()=>{if(!scCtx)scCtx=new(window.AudioContext||window.webkitAudioContext)();if(scCtx.state==="suspended")scCtx.resume();return scCtx};
@@ -1973,7 +1977,7 @@ function scaleRun(cv,o,onEnd){const c=scEnsure(),P=o.pat||SC,b=o.base!=null?o.ba
   if(!silent)onEnd({hits,notes:R.notes.map(n=>n.lit),n:P.length,brk,stopped:!!stopped,at:cur})};
  SC_STOP=()=>done(true);SC_PEEK=()=>({brk,at:at()});SC_ABORT=()=>done(true,true);
  const loop=()=>{if(fin)return;const now=c.currentTime;R.now=now;R.cur=null;
-  if(now<singAt-SC_GAP)o.msg(up?"가이드를 들어요 ♪ (한 옥타브 위 소리예요)":"가이드를 들어요 ♪");else if(now<singAt)o.msg("이제 따라 불러요 · "+Math.ceil(singAt-now));else if(now<end)o.msg(`따라 불러요 — '${vw}' · 가이드 음이 같이 나와요`);
+  if(now<singAt-SC_D)o.msg(up?"가이드를 들어요 ♪ (한 옥타브 위 소리예요)":"가이드를 들어요 ♪");else if(now<singAt)o.msg("이어서 바로 따라 불러요!");else if(now<end)o.msg(`따라 불러요 — '${vw}' · 가이드 음이 같이 나와요`);
   if(now>=singAt&&now<end){let hz=null;const nt=R.notes.find(n=>now>=n.a&&now<n.b);if(nt!==cn){cn=nt;okN=0;jT=0;qT=0}
    if(demo){if(nt){const i=R.notes.indexOf(nt),miss=i%4===3;hz=hzOf(b+nt.st+(miss?1.3:0)+(Math.random()-.5)*0.3+Math.sin(now*9)*0.12);if(o.crackAt===i&&now>nt.a+0.3)hz*=1.5}}
    else if(scRec&&scRec.an){if(!buf||buf.length!==scRec.an.fftSize)buf=new Float32Array(scRec.an.fftSize);scRec.an.getFloatTimeDomainData(buf);hz=VoiceCare.pitch(buf,scRec.sr)}
@@ -2014,15 +2018,15 @@ function genCards(){const rc=profRec(),rows=Object.keys(GEN_G).map(g=>{const [nm
  return bk+`<article class="d3card trk-card"><div class="trk-h"><span class="trk-ic">${ICON.wave}</span><div><b>음역 연습</b><small>반주 없이, 내 말소리 높이를 기준으로 저음·중음·고음을 따로 연습해요</small></div></div><ol class="lv-list">${rows}</ol><p class="meta" style="margin:0">${rc?`내 목소리 프로필 기준: ${rc[1]} → ${GEN_G[rc[0]][0]}부터 해 보세요 · `:""}소리가 뒤집히거나 끊기면 그 음을 기준으로 연습 순서를 짜 드려요</p></article>`}
 
 let GEN=null;
-function openGen(plan,i){closeTrkAudio();GEN={plan,i:Math.max(0,Math.min(plan.steps.length-1,i||0)),run:false};$("tr").hidden=false;document.body.style.overflow="hidden";renderGen()}
+function openGen(plan,i){trPend();closeTrkAudio();GEN={plan,i:Math.max(0,Math.min(plan.steps.length-1,i||0)),run:false};$("tr").hidden=false;document.body.style.overflow="hidden";renderGen()}
 function renderGen(res){const p=GEN.plan,s=p.steps[GEN.i],N=p.steps.length;$("tr-title").textContent=p.title;
  $("tr-body").innerHTML=`<div class="pm-kick">${esc(p.kick)} · ${GEN.i+1}/${N}</div><h2 class="pm-title" id="tr-h">${esc(s.name)} · '${s.vowel}'로</h2>
   <div class="roll-card"><canvas id="g-roll" width="760" height="520"></canvas><div class="roll-msg" id="g-msg">${res?esc(res.msg):"가이드를 듣고, 같은 빠르기로 따라 불러요"}</div></div>
   ${res?say(res.talk,{size:"s",pop:false}):`<p class="hint">${esc(s.tip)} · 시작 음 ${noteLabel(s.base)}</p>`}`;
  const cv=$("g-roll");rollPreview(cv,s.pat);
  if(res){const back=!res.pass&&p.id==="brk"&&GEN.i>0,next=res.pass&&GEN.i<N-1,plan=res.b&&p.id!=="brk";
-  $("tr-act").innerHTML=`<div class="rrow"><button type="button" class="rb" id="g-again" aria-label="다시 하기"><span class="c">${ICON.again}</span><span class="t">다시</span></button>${back?`<button type="button" class="rb pri" id="g-prev" aria-label="한 단계 아래로"><span class="c">${ICON.back}</span><span class="t">한 단계 아래</span></button>`:""}${next?`<button type="button" class="rb pri" id="g-next" aria-label="다음 단계"><span class="c">${ICON.next}</span><span class="t">다음 단계</span></button>`:""}<button type="button" class="rb" id="g-list" aria-label="목록으로"><span class="c">${ICON.list}</span><span class="t">목록</span></button></div>${plan?`<button type="button" class="lockline" id="g-brk">${ICON.stairs}${noteLabel(res.b.st)} 기준으로 연습 순서 보기</button>`:""}`;
-  $("g-again").onclick=()=>renderGen();$("g-list").onclick=closeTrk;if(back)$("g-prev").onclick=()=>{GEN.i--;renderGen()};if(next)$("g-next").onclick=()=>{GEN.i++;renderGen()};if(plan)$("g-brk").onclick=()=>brkOffer(res.b);return}
+  $("tr-act").innerHTML=`<div class="rrow"><button type="button" class="rb" id="g-again" aria-label="다시 하기"><span class="c">${ICON.again}</span><span class="t">다시</span></button>${back?`<button type="button" class="rb pri" id="g-prev" aria-label="한 단계 아래로"><span class="c">${ICON.back}</span><span class="t">한 단계 아래</span></button>`:""}${next?`<button type="button" class="rb pri" id="g-next" aria-label="다음 단계"><span class="c">${ICON.next}</span><span class="t">다음 단계</span></button>`:""}<button type="button" class="rb pri" id="g-done" aria-label="완료"><span class="c">${ICON.check}</span><span class="t">완료</span></button></div>${plan?`<button type="button" class="lockline" id="g-brk">${ICON.stairs}${noteLabel(res.b.st)} 기준으로 연습 순서 보기</button>`:""}`;
+  $("g-again").onclick=()=>renderGen();$("g-done").onclick=trDone;if(back)$("g-prev").onclick=()=>{GEN.i--;renderGen()};if(next)$("g-next").onclick=()=>{GEN.i++;renderGen()};if(plan)$("g-brk").onclick=()=>brkOffer(res.b);return}
  $("tr-act").innerHTML=`<button type="button" class="mic" id="g-run" aria-label="연습 시작">${MIC}</button><p class="hint">누르면 가이드 → 따라 부르기 · 도중에 멈추려면 한 번 더 눌러요</p><button type="button" class="link" id="g-demo">마이크 없이 데모로 보기</button>`;
  const run=demo=>{GEN.run=true;rollFocus("tr",cv,true,()=>LAST_ROLL&&drawRoll(...LAST_ROLL));const b=$("g-run");b.classList.add("rec");b.innerHTML=STOP;b.setAttribute("aria-label","멈추기");$("g-demo").hidden=true;
   scaleRun(cv,{demo,base:s.base,pat:s.pat,vowel:s.vowel,crackAt:GEN.crackAt,msg:t=>{const m=$("g-msg");if(m)m.textContent=t}},r=>{const g=GEN;rollFocus("tr",$("g-roll"),false,()=>LAST_ROLL&&drawRoll(...LAST_ROLL));if(!g)return;g.run=false;if(g.quiet){g.quiet=false;return}genEnd(r,demo)})};
@@ -2604,7 +2608,7 @@ const chatPush=(w,t,mid,ch)=>{CHAT.list.push(Object.assign({w,t},mid?{mid}:{},ch
 const giveMission=(lead,avoid)=>{const m=coachPick(avoid);chatPush("c",(lead?lead+"<br>":"")+m.say,m.id)};
 
 function coachSnap(){const t=today(),st=t?.steps||{};return{d3:D3.filter(x=>st[x[0]]).length,plays:Object.fromEntries(Object.entries(TRK.best).map(([k,v])=>[k,v.plays||0])),brk:BRK?BRK.step||0:null,vc:VCHKS.length,rec:RECS.length,mine:MINE.length}}
-function coachReview(){const p=CHAT.pend;if(!p)return;CHAT.pend=null;if(flowReview(p)){renderCoach();return}const a=coachSnap(),b=p.snap,out=[];resCards(b).forEach(h=>chatPush("c",h));
+function coachReview(){const p=CHAT.pend;if(!p)return;CHAT.pend=null;if(flowReview(p)){renderCoach();return}const a=coachSnap(),b=p.snap,out=[],rc=resCards(b);rc.forEach(h=>chatPush("c",h));
  if(a.d3>b.d3)out.push(a.d3>=4?`오늘의 3분 끝! 👏 벌써 ${dayN()}일째야${streak()>1?` · ${streak()}일 연속`:""}.`:`오늘의 3분 ${a.d3}단계까지 했어.`);
  for(const[k,v]of Object.entries(TRK.best))if((v.plays||0)>(b.plays[k]||0)){out.push(k.startsWith("gen-")||k.startsWith("brk")?`음역 연습 최고 ${v.best}%${v.best>=60?" — 통과!":""}`:`반주 연습 최고 ${v.best}%${v.best>=60?" — 다음 단계 열렸어!":""}`);break}
  if(a.brk!=null&&b.brk!=null&&a.brk>b.brk)out.push(`걸린 음 연습 한 단계 올라갔어 (${a.brk}/${BRK_STEPS.length}).`);
@@ -2613,6 +2617,7 @@ function coachReview(){const p=CHAT.pend;if(!p)return;CHAT.pend=null;if(flowRevi
  if(a.rec>b.rec)out.push("읽기 기록 남겼어. 기록 탭에서 다시 들어 볼 수 있어.");
  if(a.mine>b.mine)out.push("대본 넣었어! 다음엔 이걸로 같이 읽어 보자.");
  if(p.mid==="boost"&&BST.done){const o=BST_OPT.find(x=>x[0]===BST.k);out.push(`'${o[1]}' 쪽을 들어 봤지? 그 소리에 가까워지려면 <b>${o[6]}</b>가 좋아.`);COACH.want=o[7]}
+ if(p.mid==="train"&&!out.length&&!rc.length){renderCoach();return}
  chatPush("c",out.length?out.join("<br>"):"도중에 멈췄네. 괜찮아, 준비되면 이어서 하자.");
  if(out.length)COACH.skip=0;giveMission(out.length?"다음은 이거 어때?":"",out.length?p.mid:null);renderCoach()}
 
@@ -2660,12 +2665,14 @@ function renderCoach(){const e=$("coach");if(!e||!COACH)return;
  e.innerHTML=`<div class="chat" id="chat-log" aria-live="polite">${CHAT.list.map((m,i)=>m.w==="u"?`<p class="msg me">${m.t}</p>`
   :`<div class="msg c">${i===0||CHAT.list[i-1].w!=="c"?`<img class="say-img" src="${charSrc($("tgt").value)}" alt="">`:`<span class="say-img" style="visibility:hidden"></span>`}<div class="bubble">${i===0||CHAT.list[i-1].w!=="c"?`<b class="msg-n">${esc(coachName())}</b>`:""}${m.t}${m.ch&&!m.done?`<div class="chs">${m.ch.map(([id,l])=>`<button type="button" data-ch="${id}" data-i="${i}">${l}</button>`).join("")}</div>`:""}${m.mid?(()=>{const x=L.find(q=>q.id===m.mid);return x?`<button type="button" class="mis${i===lastM?" now":""}" data-m="${m.mid}"><span class="c">${ICON[x.ico]||ICON.play}</span><span><b>${x.name}</b><small>약 ${x.min} · 누르면 시작</small></span></button>`:m.mid==="d3"?`<span class="mis done">${ICON.check} 했어요</span>`:""})():""}</div></div>`).join("")}</div>
   <div class="chips coach-chips" role="group" aria-label="빠른 대답">${["지금 내 목소리 들어 봐","오늘 컨디션 어제랑 비교해 줘","내 목소리 미리 들어볼래","오늘 뭐 할까?","이번 주 어땠어?","목이 좀 쉬었어"].map(x=>`<button type="button" data-q="${x}">${x}</button>`).join("")}</div>
-  <div class="chat-dock${COACH.kb?" kb":""}" id="chat-dock"><button type="button" class="dock-kb" id="chat-kb" aria-label="${COACH.kb?"목소리로 말하기로":"글로 쓰기"}" aria-pressed="${!!COACH.kb}">${COACH.kb?ICON.wave:ICON.pen}</button>
+  <div class="chat-dock${COACH.kb?" kb":""}" id="chat-dock"><button type="button" class="dock-kb" id="chat-file" aria-label="음성 파일 올리기">${ICON.file}</button><input type="file" id="chat-fin" accept=".m4a,.mp3,.wav,.aac,.ogg,.webm,.caf,audio/mpeg,audio/mp4,audio/x-m4a,audio/wav,audio/aac,audio/webm" hidden><button type="button" class="dock-kb" id="chat-kb" aria-label="${COACH.kb?"목소리로 말하기로":"글로 쓰기"}" aria-pressed="${!!COACH.kb}">${COACH.kb?ICON.wave:ICON.pen}</button>
    <form class="chat-in" id="chat-in"><input id="chat-tx" enterkeyhint="send" autocomplete="off" placeholder="${esc(coachName())}에게 물어보기…" aria-label="선생님에게 물어보기"><button type="submit" class="chat-send" aria-label="보내기">${ICON.next}</button></form>
    <button type="button" class="dock-hint" id="chat-say">눌러서 말하기…</button>
    <button type="button" class="chat-mic" id="chat-mic" aria-label="눌러서 말하기">${MIC}</button></div>`;
  const lg=$("chat-log");lg.scrollTop=lg.scrollHeight;requestAnimationFrame(()=>{const c=lg.lastElementChild;if(c&&!$("v-today").hidden&&c.getBoundingClientRect().bottom>innerHeight)c.scrollIntoView({block:"end"})})}
-$("coach").addEventListener("click",e=>{const c=e.target.closest("[data-ch]");if(c){flowChoice(c.dataset.ch,c.textContent,+c.dataset.i);return}const m=e.target.closest("[data-m]");if(m){coachAsk(m.dataset.m);return}const q=e.target.closest("[data-q]");if(q){if(q.dataset.q==="지금 내 목소리 들어 봐"){chatPush("u",q.dataset.q);renderCoach();chatCheck()}else coachReply(q.dataset.q)}if(e.target.closest("[data-vchk]"))chatCheck();if(e.target.closest("#chat-mic,#chat-say"))voiceTalk();if(e.target.closest("#chat-kb")){COACH.kb=!COACH.kb;renderCoach();if(COACH.kb)$("chat-tx").focus()}});
+$("coach").addEventListener("click",e=>{const c=e.target.closest("[data-ch]");if(c){flowChoice(c.dataset.ch,c.textContent,+c.dataset.i);return}const m=e.target.closest("[data-m]");if(m){coachAsk(m.dataset.m);return}const q=e.target.closest("[data-q]");if(q){if(q.dataset.q==="지금 내 목소리 들어 봐"){chatPush("u",q.dataset.q);renderCoach();chatCheck()}else coachReply(q.dataset.q)}if(e.target.closest("[data-vchk]"))chatCheck();if(e.target.closest("#chat-mic,#chat-say"))voiceTalk();if(e.target.closest("#chat-file"))$("chat-fin").click();
+ {const pb=e.target.closest("[data-cplay]");if(pb){const[s,id]=pb.dataset.cplay.split(":");dbAll(s==="v"?"vchk":"rec").then(L=>{const r=L.find(x=>x.id===+id),bl=r&&(s==="v"?r.w:r.w1);if(bl)playBlob(bl,pb);else pb.outerHTML="<small class=\"meta\">녹음이 지워졌어요</small>"})}}if(e.target.closest("#chat-kb")){COACH.kb=!COACH.kb;renderCoach();if(COACH.kb)$("chat-tx").focus()}});
+$("coach").addEventListener("change",e=>{if(e.target.id==="chat-fin"){const f=e.target.files&&e.target.files[0];e.target.value="";chatFile(f)}});
 $("coach").addEventListener("submit",e=>{e.preventDefault();const i=$("chat-tx"),v=i.value;i.value="";coachReply(v);const n=$("chat-tx");if(n&&v.trim())n.focus()});
 
 {const OV=["pm","d3","tr","vc","rd","tp","sc"],mo=new MutationObserver(()=>{if(CHAT.pend&&OV.every(id=>$(id).hidden))setTimeout(()=>{if(CHAT.pend&&OV.every(id=>$(id).hidden))coachReview()},500)});OV.forEach(id=>$(id)&&mo.observe($(id),{attributes:true,attributeFilter:["hidden"]}))}
@@ -2699,7 +2706,7 @@ async function chatCheck(){if(VT.on||REC.on)return;VT.on=true;const ov=document.
  const fin=async()=>{if(!VT.on)return;close();const t=recStop();
   if(!t||t.x.length<t.sr){chatPush("c","너무 짧았어. 한 번 더 '아~' 5초 들려줘!<button type=\"button\" class=\"mis now\" data-vchk><span class=\"c\">"+ICON.mic+"</span><span><b>다시 들려주기</b><small>누르면 바로 들어요</small></span></button>");renderCoach();return}
   VC={ctx:"평소",res:null,min:0,load:null,trend:null};const nd=VoiceCare.noiseDb(t.x.subarray(0,Math.round(t.sr*.3)),t.sr);
-  await vcResult(VoiceCare.analyze(t.x,t.sr,{noise:nd}),nd,false,t);chatPush("c",vcChat(VC.res));renderCoach()};
+  await vcResult(VoiceCare.analyze(t.x,t.sr,{noise:nd}),nd,false,t);chatPush("c",vcChat(VC.res)+(VC.res.w?playBtn("v",VC.res.id):""));renderCoach()};
  VT.stop=fin;$("vt-x").onclick=fin;$("vt-orb").onclick=fin;REC.quiet=1.2;REC.max=6500;const t0=Date.now();
  try{await recStart(()=>{const e=$("vt-t");if(e)e.textContent=`듣고 있어 · ${Math.min(5,(Date.now()-t0)/1000|0)}초`},()=>{if(REC.on)fin()})}
  catch(e){close();chatPush("c","마이크를 쓸 수 없어. 브라우저에서 마이크를 허락해 줘.");renderCoach()}}
@@ -2730,11 +2737,12 @@ async function aiReply(v){const msgs=aiHist();chatPush("c",'<span class="ai-wait
   it.t=esc(String(j.text).replace(/\[\[[^\]]*\]\]/g,"").trim()).replace(/\n/g,"<br>");if(mm&&aiMissions().some(x=>x.id===mm[1]))it.mid=mm[1]}
  catch(e){it.t=AI_ERR[e.message]||"지금은 AI 선생님과 연결이 안 돼. 잠시 뒤에 다시 말해 줘."}chatSave();renderCoach()}
 
-async function wav16b64(t){const n=Math.ceil(t.x.length*16000/t.sr),oc=new OfflineAudioContext(1,n,16000),b=oc.createBuffer(1,t.x.length,t.sr);b.copyToChannel(t.x,0);const s=oc.createBufferSource();s.buffer=b;s.connect(oc.destination);s.start();
+async function wav16b64(t){const b=await wav16blob(t);return new Promise(r=>{const f=new FileReader();f.onload=()=>r(String(f.result).split(",")[1]);f.readAsDataURL(b)})}
+async function wav16blob(t){const n=Math.ceil(t.x.length*16000/t.sr),oc=new OfflineAudioContext(1,n,16000),b=oc.createBuffer(1,t.x.length,t.sr);b.copyToChannel(t.x,0);const s=oc.createBufferSource();s.buffer=b;s.connect(oc.destination);s.start();
  const x=(await oc.startRendering()).getChannelData(0),buf=new ArrayBuffer(44+x.length*2),d=new DataView(buf),w=(o,q)=>[...q].forEach((ch,i)=>d.setUint8(o+i,ch.charCodeAt(0)));
  w(0,"RIFF");d.setUint32(4,36+x.length*2,true);w(8,"WAVEfmt ");d.setUint32(16,16,true);d.setUint16(20,1,true);d.setUint16(22,1,true);d.setUint32(24,16000,true);d.setUint32(28,32000,true);d.setUint16(32,2,true);d.setUint16(34,16,true);w(36,"data");d.setUint32(40,x.length*2,true);
  for(let i=0;i<x.length;i++)d.setInt16(44+i*2,Math.max(-1,Math.min(1,x[i]))*32767,true);
- return new Promise(r=>{const f=new FileReader();f.onload=()=>r(String(f.result).split(",")[1]);f.readAsDataURL(new Blob([buf]))})}
+ return new Blob([buf],{type:"audio/wav"})}
 
 async function voiceParts(t){let s=null,q={};try{SEX=$("sex").value;const x=await resample(t.x,t.sr);s=analyzeSentence(x,noiseFloor(x),1)}catch(e){}
  try{const nd=VoiceCare.noiseDb(t.x.subarray(0,Math.round(t.sr*.3)),t.sr),m=VoiceCare.analyze(t.x,t.sr,{noise:nd});if(m.voiced>=1)q=chkScores(m)}catch(e){}
@@ -2748,17 +2756,28 @@ async function voiceParts(t){let s=null,q={};try{SEX=$("sex").value;const x=awai
   +rBars("소리 성분","소리 에너지가 어느 높이에 모였는지(합 100%)",B.map((b,k)=>({l:BN[k],v:Math.min(100,b*2),t:Math.round(b)+"%"})));
  const line=`방금 말한 목소리(휴대폰 참고값): 높이 ${hW}(${note} 근처), 억양 폭 ${rW}, 크기 변화 ${dW}${q.clear!=null?`, 맑음 ${W(q.clear)}`:""}${q.flow!=null?`, 이어짐 ${W(q.flow)}`:""}, 소리 성분 ${B.map((b,k)=>BN[k]+" "+Math.round(b)+"%").join(" · ")}`;
  return{card,line}}
+
+async function chatClip(t){try{const id=Date.now();await dbPut("rec",{id,at:new Date().toISOString(),kind:"chat",text:"",m1:null,m2:null,up:0,demo:false,w1:await wav16blob(t)});return id}catch(e){return null}}
+const playBtn=(src,id)=>id?`<button type="button" class="icb cplay" data-cplay="${src}:${id}">${ICON.play1}<small>내 목소리 듣기</small></button>`:"";
+
+async function voiceTake(t,useAI,tag){const sec=Math.round(t.x.length/t.sr);
+  chatPush("u",`${tag} ${sec}초${useAI?' <span class="ai-wait">· 글자로 바꾸는 중…</span>':""}`);const me=CHAT.list[CHAT.list.length-1];
+  chatPush("c",'<span class="ai-wait">목소리 듣는 중…</span>');const pc=CHAT.list[CHAT.list.length-1];renderCoach();
+  await new Promise(r=>setTimeout(r,30));const P=await voiceParts(t),cid=await chatClip(t);pc.t=(P?P.card:"목소리가 충분히 잡히지 않았어. 조용한 곳에서 조금 더 길게 말해 줄래?")+playBtn("r",cid);chatSave();renderCoach();
+  if(!useAI){chatPush("c","목소리는 이렇게 들었어. 하고 싶은 말은 글로 써 줘!");renderCoach();return}
+  let x="";try{const j=await aiCall("stt",{audio:await wav16b64(t)});x=(j.text||"").trim()}catch(e){if(AI_ERR[e.message]){me.t=`${tag} ${sec}초`;chatPush("c",AI_ERR[e.message]);renderCoach();return}}
+  me.t=x?esc(x):`${tag} ${sec}초 (글자로는 못 바꿨어요)`;chatSave();renderCoach();
+  aiReply(P?P.line+(x?"":"\n사용자가 글 대신 목소리만 보냈다(글자 변환 안 됨). 들은 목소리 성분을 보고 짧게 피드백하고 연습 하나를 권해라."):(x?"":"목소리가 잘 안 잡혔다."))}
+
+async function chatFile(f){if(!f)return;if(f.size>40e6){chatPush("c","파일이 너무 커. 3분 안쪽 녹음으로 올려 줘.");renderCoach();return}
+ let t;try{const ab=await f.arrayBuffer(),ac=new OfflineAudioContext(1,1,44100),bf=await ac.decodeAudioData(ab),mx=bf.sampleRate*120;let x=bf.getChannelData(0);if(x.length>mx)x=x.subarray(0,mx);t={x:new Float32Array(x),sr:bf.sampleRate}}
+ catch(e){chatPush("c","이 파일은 열 수 없어. 녹음 앱의 m4a · mp3 · wav 파일로 올려 줘.");renderCoach();return}
+ if(t.x.length<t.sr){chatPush("c","너무 짧아. 1초 넘는 녹음으로 올려 줘.");renderCoach();return}
+ const tag="📎 "+esc(f.name.length>24?f.name.slice(0,24)+"…":f.name);if(aiCan())aiOK().then(ok=>voiceTake(t,ok,tag));else voiceTake(t,false,tag)}
 async function voiceAI(useAI){if(VT.on||REC.on)return;VT.on=true;const ov=document.createElement("div");ov.className="vt";
  ov.innerHTML=`<div class="vt-edge"></div><button type="button" class="vt-orb" id="vt-orb" aria-label="다 말했어요"><i></i><i></i><i></i></button><p class="vt-t" id="vt-t" aria-live="polite">말해 줘, 듣고 있어…</p><button type="button" class="vt-x" id="vt-x">${ICON.stop} 다 말했어요</button>`;document.body.appendChild(ov);
  const close=()=>{VT.on=false;ov.classList.add("out");setTimeout(()=>ov.remove(),300)};
- const fin=async()=>{if(!VT.on)return;close();const t=recStop();if(!t||t.x.length<t.sr*.6)return;const sec=Math.round(t.x.length/t.sr);
-  chatPush("u",`🎙 ${sec}초 말함${useAI?' <span class="ai-wait">· 글자로 바꾸는 중…</span>':""}`);const me=CHAT.list[CHAT.list.length-1];
-  chatPush("c",'<span class="ai-wait">목소리 듣는 중…</span>');const pc=CHAT.list[CHAT.list.length-1];renderCoach();
-  await new Promise(r=>setTimeout(r,30));const P=await voiceParts(t);pc.t=P?P.card:"목소리가 충분히 잡히지 않았어. 조용한 곳에서 조금 더 길게 말해 줄래?";chatSave();renderCoach();
-  if(!useAI){chatPush("c","목소리는 이렇게 들었어. 하고 싶은 말은 글로 써 줘!");renderCoach();return}
-  let x="";try{const j=await aiCall("stt",{audio:await wav16b64(t)});x=(j.text||"").trim()}catch(e){if(AI_ERR[e.message]){me.t=`🎙 ${sec}초 말함`;chatPush("c",AI_ERR[e.message]);renderCoach();return}}
-  me.t=x?esc(x):`🎙 ${sec}초 말함 (글자로는 못 바꿨어요)`;chatSave();renderCoach();
-  aiReply(P?P.line+(x?"":"\n사용자가 글 대신 목소리만 보냈다(글자 변환 안 됨). 들은 목소리 성분을 보고 짧게 피드백하고 연습 하나를 권해라."):(x?"":"목소리가 잘 안 잡혔다."))};
+ const fin=async()=>{if(!VT.on)return;close();const t=recStop();if(!t||t.x.length<t.sr*.6)return;voiceTake(t,useAI,"🎙")};
  VT.stop=fin;$("vt-x").onclick=fin;$("vt-orb").onclick=fin;REC.quiet=1.5;REC.max=30000;
  try{await recStart(()=>{},()=>{if(REC.on)fin()})}catch(e){close();chatPush("c","마이크를 쓸 수 없어. 브라우저에서 마이크를 허락해 줘.");renderCoach()}}
 
