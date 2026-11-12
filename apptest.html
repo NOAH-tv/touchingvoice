@@ -1635,8 +1635,8 @@ function parseMidi(data,fallbackBpm){
 const TR={t:null,au:null,notes:[],run:false,raf:0,demo:false,mic:null,url:null,trail:[],now:0};
 let TRK_OFF=0.15;try{const v=parseFloat(localStorage.getItem("tv_trk_off"));if(Number.isFinite(v))TRK_OFF=v}catch(e){}
 const midiHz=m=>440*Math.pow(2,(m-69)/12);
-const NN=LANG==="en"?["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]:["도","도#","레","레#","미","파","파#","솔","솔#","라","라#","시"],noteNm=m=>NN[((m%12)+12)%12]+(Math.floor(m/12)-1);
-async function openTrk(t){GEN=null;closeTrkAudio();Object.assign(TR,{t,notes:[],run:false,demo:false,done:false,trail:[]});$("tr").hidden=false;document.body.style.overflow="hidden";
+const NN=["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"],noteNm=m=>NN[((m%12)+12)%12]+(Math.floor(m/12)-1);
+async function openTrk(t){GEN=null;closeTrkAudio();Object.assign(TR,{t,notes:[],run:false,demo:false,done:false,trail:[],sp:null});$("tr").hidden=false;document.body.style.overflow="hidden";
  $("tr-title").textContent=t.my?"내 트랙":TRK_G[t.g][0]+" · "+nn(t);$("tr-body").innerHTML=`<p class="cue-l">불러오는 중…</p>`;$("tr-act").innerHTML="";
  try{
   TR.notes=t.n?t.n.map(([a,d,m])=>({t:a,dur:d,midi:m})):parseMidi(t.my?new Uint8Array(t.midi):new Uint8Array(await(await fetch(trkURL(t,"m"))).arrayBuffer()),t.bpm||120);if(!TR.notes.length)throw new Error("미디에 음표가 없어요");
@@ -1673,7 +1673,8 @@ function trkLoop(){if(!TR.run)return;const raw=TR.au.currentTime,tl=raw-(TR.demo
  if(act.length&&!TR.demo){const n=act[0];$("tr-msg").textContent=`${noteNm(n.midi)} · ${TR.cur==null?"소리를 내 주세요":Math.abs(TR.cur-n.midi)<=tol?"좋아요!":TR.cur<n.midi?"조금 더 높게":"조금 더 낮게"}`}
  drawTrk();TR.raf=requestAnimationFrame(trkLoop)}
 
-function rollPage(now,t0,t1,w){const span=Math.max(1,t1-t0);if(span<=12)return{a:t0,pxs:w/span};const P=8,s=P*.8;return{a:t0+Math.max(0,Math.floor((now-t0)/s))*s,pxs:w/P}}
+
+const rollFlow=(now,w,P)=>({a:now-.28*P,pxs:w/P});
 
 function rollSpan(v){let a=Math.min(...v)-2,b=Math.max(...v)+2;if(b-a<12){const c=Math.round((a+b)/2);a=c-6;b=c+6}return[a,b]}
 function rollKeys(g,lo,hi,y,kw,cur,lab){const h=Math.abs(y(lo)-y(lo+1));g.save();g.textAlign="left";g.textBaseline="middle";g.font=`600 ${Math.round(Math.max(9,Math.min(18,h*.7)))}px Paperlogy,sans-serif`;
@@ -1682,7 +1683,7 @@ function rollKeys(g,lo,hi,y,kw,cur,lab){const h=Math.abs(y(lo)-y(lo+1));g.save()
   if(on){g.fillStyle="#F2C35B";g.fillRect(0,yy-h/2+.5,kw,Math.max(1,h-1))}
   if(l){g.fillStyle="#43227D";g.fillText(l,5,yy)}}g.restore()}
 function drawTrk(){const cv=$("tr-roll");if(!cv)return;const g=cv.getContext("2d"),f=+cv.dataset.f||1,W=cv.width/f,H=cv.height/f,now=TR.now;g.setTransform(f,0,0,f,0,0);g.clearRect(0,0,W,H);
- const big=!!cv.dataset.f,KW=big?58:46,end=(TR.au&&TR.au.duration)||TR.t.dur||Math.max(...TR.notes.map(n=>n.t+n.dur)),pg=rollPage(now,0,end,W-KW-14),X=t=>KW+(t-pg.a)*pg.pxs,px0=Math.max(KW,X(now)),pe=pg.a+(W-KW-14)/pg.pxs,vm=TR.notes.filter(n=>n.t+n.dur>pg.a&&n.t<pe).map(n=>n.midi),[lo,hi]=rollSpan(vm.length?vm:[TR.lo,TR.hi]),top=66,bot=H-40,y=m=>bot-(m-lo)/(hi-lo)*(bot-top),bh=Math.max(10,Math.min(big?44:26,(bot-top)/(hi-lo)*0.9));
+ const big=!!cv.dataset.f,KW=big?58:46,end=(TR.au&&TR.au.duration)||TR.t.dur||Math.max(...TR.notes.map(n=>n.t+n.dur)),pg=rollFlow(now,W-KW-14,7),X=t=>KW+(t-pg.a)*pg.pxs,px0=Math.max(KW,X(now)),pe=pg.a+(W-KW-14)/pg.pxs,vm=TR.notes.filter(n=>n.t+n.dur>pg.a&&n.t<pe).map(n=>n.midi),tg=rollSpan(vm.length?vm:[TR.lo,TR.hi]),sp=TR.sp=TR.sp?[TR.sp[0]+(tg[0]-TR.sp[0])*.06,TR.sp[1]+(tg[1]-TR.sp[1])*.06]:tg,lo=sp[0],hi=sp[1],top=66,bot=H-40,y=m=>bot-(m-lo)/(hi-lo)*(bot-top),bh=Math.max(10,Math.min(big?44:26,(bot-top)/(hi-lo)*0.9));
  g.textBaseline="middle";g.font="600 15px Paperlogy,sans-serif";g.textAlign="left";
  for(let m=Math.ceil(lo);m<=hi;m++){const yy=y(m),c=((m%12)+12)%12===0;g.strokeStyle=c?"rgba(245,238,224,.16)":"rgba(255,255,255,.035)";g.lineWidth=1;g.beginPath();g.moveTo(KW,yy);g.lineTo(W,yy);g.stroke()}
  TR.notes.forEach(n=>{const x1=Math.max(KW,X(n.t)),x2=X(n.t+n.dur)-3;if(x2<=x1||x1>W)return;const on=now>=n.t&&now<n.t+n.dur,past=n.t+n.dur<now;
@@ -1929,7 +1930,7 @@ function dayVowel(){const r=F.res;if(!r||!r.w||["noisy","miss"].includes(r.w)){c
 function scaleVowel(){if(F.vi)return["이","소리를 키우지 말고 '이'로 위쪽 울림에 모아, 높은 음을 가볍게 유지해요"];const dv=dayVowel();if(dv)return dv;const g=F.res&&(F.res.mv||F.res.m||{}).reg;return["아",g?"저음·중음·고음이 고르게 울려요 — '아'로 입을 편하게 열고 넓게 내요":"입을 편하게 열고 넓고 균형 있게 내요"]}
 function noteLabel(x){const N=["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"],k=x+57;return N[((k%12)+12)%12]+Math.floor(k/12)}
 function scaleInfo(){const d=hDir(),n=scaleSteps();return`내 목소리 <b>${noteLabel(mySt())}</b>을 ${d<0?"3번째 음(미)":"첫 음(도)"}에 두고 시작해요`+(d?` · 목표 쪽으로 반음씩 ${d<0?"내려가요":"올라가요"} (${n}/3)`:"")}
-function tone(hz,t,d){const c=scEnsure(),out=c.createGain();out.gain.value=.3;out.connect(c.destination);[1,.55,.34,.22,.14,.09].forEach((a,i)=>{const k=i+1,o=c.createOscillator(),e=c.createGain();o.type="sine";o.frequency.value=hz*k*(1+.0006*k*k);const peak=a*.9,decay=Math.max(.18,1.1/Math.sqrt(k));e.gain.setValueAtTime(0,t);e.gain.linearRampToValueAtTime(peak,t+.006);e.gain.exponentialRampToValueAtTime(peak*.35,t+decay*.35);e.gain.exponentialRampToValueAtTime(.0008,t+Math.max(d,decay));o.connect(e);e.connect(out);o.start(t);o.stop(t+Math.max(d,decay)+.05)})}
+function tone(hz,t,d,gn){const c=scEnsure(),out=c.createGain();out.gain.value=gn||.3;out.connect(c.destination);[1,.55,.34,.22,.14,.09].forEach((a,i)=>{const k=i+1,o=c.createOscillator(),e=c.createGain();o.type="sine";o.frequency.value=hz*k*(1+.0006*k*k);const peak=a*.9,decay=Math.max(.18,1.1/Math.sqrt(k));e.gain.setValueAtTime(0,t);e.gain.linearRampToValueAtTime(peak,t+.006);e.gain.exponentialRampToValueAtTime(peak*.35,t+decay*.35);e.gain.exponentialRampToValueAtTime(.0008,t+Math.max(d,decay));o.connect(e);e.connect(out);o.start(t);o.stop(t+Math.max(d,decay)+.05)})}
 const CHICK=new Image();let LAST_ROLL=null;CHICK.onload=()=>{if(LAST_ROLL)drawRoll(LAST_ROLL[0],LAST_ROLL[1])};CHICK.src="voicetype_assets/stage/baby.webp";
 
 let ROLL_FIT=null;addEventListener("resize",()=>{if(ROLL_FIT)ROLL_FIT()});
@@ -1937,7 +1938,7 @@ function rollFocus(ov,cv,on,redraw){$(ov).classList.toggle("focus",on);if(!cv){R
  if(on){ROLL_FIT=()=>{const r=cv.getBoundingClientRect();if(!r.width||!r.height)return;const d=Math.min(3,window.devicePixelRatio||1);cv.width=Math.round(r.width*d);cv.height=Math.round(r.height*d);cv.dataset.f=cv.width/Math.max(480,Math.min(900,r.width*1.4));if(redraw)redraw()};ROLL_FIT();return}
  ROLL_FIT=null;delete cv.dataset.f;cv.width=760;cv.height=cv.id==="roll"?560:520;if(redraw)redraw()}
 function drawRoll(cv,R){LAST_ROLL=[cv,R];const g=cv.getContext("2d"),f=+cv.dataset.f||1,W=cv.width/f,H=cv.height/f,now=R.now;g.setTransform(f,0,0,f,0,0);g.clearRect(0,0,W,H);
- const top=96,bot=H-70,y=x=>Math.max(top-14,Math.min(bot+14,bot-(x+1)*(bot-top)/9)),big=!!cv.dataset.f,KW=big?64:52,all=[...R.guide,...R.notes],t0=all.length?Math.min(...all.map(n=>n.a))-.3:0,t1=all.length?Math.max(...all.map(n=>n.b))+.3:4,pg=rollPage(now,t0,t1,W-KW-14),X=t=>KW+(t-pg.a)*pg.pxs,px0=Math.max(KW,X(now));
+ const top=96,bot=H-70,y=x=>Math.max(top-14,Math.min(bot+14,bot-(x+1)*(bot-top)/9)),big=!!cv.dataset.f,KW=big?64:52,all=[...R.guide,...R.notes],t0=all.length?Math.min(...all.map(n=>n.a))-.3:0,t1=all.length?Math.max(...all.map(n=>n.b))+.3:4,pg=rollFlow(now,W-KW-14,6),X=t=>KW+(t-pg.a)*pg.pxs,px0=Math.max(KW,X(now));
  g.textBaseline="middle";g.lineWidth=1;
  for(let i=0;i<=11;i++){const x=KW+i*(W-KW)/11;g.strokeStyle="rgba(255,255,255,.05)";g.beginPath();g.moveTo(x,top-34);g.lineTo(x,bot+24);g.stroke()}
  const sp=(bot-top)/9;g.font=`600 ${big?Math.round(Math.min(26,Math.max(18,sp*.3))):18}px Paperlogy,sans-serif`;g.textAlign="left";
@@ -1948,7 +1949,7 @@ function drawRoll(cv,R){LAST_ROLL=[cv,R];const g=cv.getContext("2d"),f=+cv.datas
  R.notes.forEach((n,i)=>{const q=bar(n.a,n.b,n.st,n.lit?"#F2C35B":"rgba(214,200,250,.55)",n.lit);if(q){g.fillStyle=n.lit?"#F2C35B":"rgba(245,238,224,.45)";g.fillText(String(i+1),(q[0]+q[1])/2,H-30)}});
  g.strokeStyle="rgba(255,255,255,.8)";g.lineWidth=4;g.lineCap="round";g.lineJoin="round";g.beginPath();let last=null;
  R.trail.forEach(q=>{const x=X(q.t);if(q.t<pg.a||x<KW||x>px0+2){last=null;return}const yy=y(q.s);if(last&&q.t-last.t<0.12)g.lineTo(x,yy);else g.moveTo(x,yy);last=q});g.stroke();
- rollKeys(g,-1,8,y,KW,R.cur,m=>({0:SOL[0],2:SOL[1],4:SOL[2],5:SOL[3],7:SOL[4]})[m]||"");
+ const B0=R.base!=null?R.base:scaleBase();rollKeys(g,-1,8,y,KW,R.cur,m=>[0,2,4,5,7].includes(m)?noteLabel(B0+m):"");
  g.strokeStyle="rgba(245,238,224,.45)";g.lineWidth=2;g.setLineDash([4,6]);g.beginPath();g.moveTo(px0,top-34);g.lineTo(px0,bot+18);g.stroke();g.setLineDash([]);
  // 병아리 — 내 소리 높이(없으면 지금 음·첫 음) 위에 앉는다
  let cy=R.cur;if(cy==null){const n=[...R.guide,...R.notes].find(n=>now>=n.a&&now<n.b)||R.guide[0]||R.notes[0];cy=n?n.st:null}
@@ -1958,8 +1959,10 @@ function rollPreview(cv,P){P=P||SC;drawRoll(cv,{now:-0.4,guide:P.map((x,i)=>({st
 
 let SC_STOP=null,SC_PEEK=null,SC_ABORT=null;
 function scaleRun(cv,o,onEnd){const c=scEnsure(),P=o.pat||SC,b=o.base!=null?o.base:scaleBase(),up=hzOf(b)<110?12:0,t0=c.currentTime+0.6,singAt=t0+P.length*SC_D+SC_GAP,end=singAt+P.length*SC_D+0.4;
- const R={now:c.currentTime,guide:P.map((x,i)=>({st:x,a:t0+i*SC_D,b:t0+(i+1)*SC_D})),notes:P.map((x,i)=>({st:x,a:singAt+i*SC_D,b:singAt+(i+1)*SC_D,v:0,ok:0,lit:false})),trail:[],cur:null};
+ const R={base:b,now:c.currentTime,guide:P.map((x,i)=>({st:x,a:t0+i*SC_D,b:t0+(i+1)*SC_D})),notes:P.map((x,i)=>({st:x,a:singAt+i*SC_D,b:singAt+(i+1)*SC_D,v:0,ok:0,lit:false})),trail:[],cur:null};
  P.forEach((x,i)=>tone(hzOf(b+x+up),t0+i*SC_D,SC_D*0.9));
+ 
+ P.forEach((x,i)=>tone(hzOf(b+x+up),singAt+i*SC_D,0.3,.13));
  let demo=!!o.demo,buf=null,oct=null,cn=null,okN=0,jT=0,qT=0,brk=null,fin=false;
  if(!demo){const no=()=>{if(!demo){demo=true;o.msg("마이크를 쓸 수 없어 데모로 그려요")}};micOpen().then(st=>{st.getTracks().forEach(t=>t.stop()),micDone()}).catch(no);
   setTimeout(()=>{if(!fin&&!demo)scStart().catch(no)},Math.max(0,(singAt-c.currentTime-0.9)*1000))}
@@ -1970,11 +1973,12 @@ function scaleRun(cv,o,onEnd){const c=scEnsure(),P=o.pat||SC,b=o.base!=null?o.ba
   if(!silent)onEnd({hits,notes:R.notes.map(n=>n.lit),n:P.length,brk,stopped:!!stopped,at:cur})};
  SC_STOP=()=>done(true);SC_PEEK=()=>({brk,at:at()});SC_ABORT=()=>done(true,true);
  const loop=()=>{if(fin)return;const now=c.currentTime;R.now=now;R.cur=null;
-  if(now<singAt-SC_GAP)o.msg(up?"가이드를 들어요 ♪ (한 옥타브 위 소리예요)":"가이드를 들어요 ♪");else if(now<singAt)o.msg("이제 따라 불러요 · "+Math.ceil(singAt-now));else if(now<end)o.msg(`따라 불러요 — '${vw}'`);
+  if(now<singAt-SC_GAP)o.msg(up?"가이드를 들어요 ♪ (한 옥타브 위 소리예요)":"가이드를 들어요 ♪");else if(now<singAt)o.msg("이제 따라 불러요 · "+Math.ceil(singAt-now));else if(now<end)o.msg(`따라 불러요 — '${vw}' · 가이드 음이 같이 나와요`);
   if(now>=singAt&&now<end){let hz=null;const nt=R.notes.find(n=>now>=n.a&&now<n.b);if(nt!==cn){cn=nt;okN=0;jT=0;qT=0}
    if(demo){if(nt){const i=R.notes.indexOf(nt),miss=i%4===3;hz=hzOf(b+nt.st+(miss?1.3:0)+(Math.random()-.5)*0.3+Math.sin(now*9)*0.12);if(o.crackAt===i&&now>nt.a+0.3)hz*=1.5}}
    else if(scRec&&scRec.an){if(!buf||buf.length!==scRec.an.fftSize)buf=new Float32Array(scRec.an.fftSize);scRec.an.getFloatTimeDomainData(buf);hz=VoiceCare.pitch(buf,scRec.sr)}
-   if(hz){const raw=12*Math.log2(hz/hzOf(b)),x=fold(raw);R.trail.push({t:now,s:x});R.cur=x;qT=0;
+   const ping=!demo&&nt&&now-nt.a<0.3;
+   if(ping){}else if(hz){const raw=12*Math.log2(hz/hzOf(b)),x=fold(raw);R.trail.push({t:now,s:x});R.cur=x;qT=0;
     if(nt){nt.v++;const d=((x-nt.st)%12+18)%12-6;if(Math.abs(d)<=0.6)nt.ok++;if(nt.v>=3&&nt.ok/nt.v>=0.45)nt.lit=true;
      if(oct==null&&Math.abs(d)<=1)oct=Math.round((raw-nt.st)/12);
      if(oct!=null&&!brk){const dev=Math.abs(raw-nt.st-12*oct);if(dev<=1.2){okN++;jT=0}else if(dev>=4&&okN>=3){if(!jT)jT=now;else if(now-jT>=0.08)brk={st:b+nt.st+12*oct,kind:"flip"}}}}}
