@@ -544,6 +544,23 @@ button svg,.ftag svg,.srch svg{flex:none}
 .qcard li b.up{color:var(--good)}.qcard li b.dn{color:var(--bad)}
 .qcard ul.qc-week{flex-direction:row;justify-content:space-between}.qc-week li{flex-direction:column;align-items:center;gap:2px;font-size:12px;color:var(--muted)}
 .qcard .pair-ch{margin:0 auto}
+
+.pm .pm-top,.pm .pm-kick,.pm .pm-title,.pm .pm-src,.pm .pm-text,.pm .say,#rd .sc-ban,#rd .rd-line{transition:opacity .45s ease,color .45s ease}
+
+.pm:has(.mic.rec) .sc-ban,.pm:has(.mic.rec) .pm-top,.pm:has(.mic.rec) .pm-kick,.pm:has(.mic.rec) .pm-title,.pm:has(.mic.rec) .pm-src,.pm:has(.mic.rec) .say{opacity:.16}
+.pm:has(.mic.rec) .pm-text{color:var(--ink);font-weight:600}.pm:has(.mic.rec) .lvl,.pm:has(.mic.rec) .link[id$=demo]{display:none}
+.pm:has(.mic.rec) .rd-line{color:var(--ink);font-weight:600}
+.pm:has(.mic.rec)::after{content:"";position:absolute;inset:auto 0 0;height:34%;z-index:-1;pointer-events:none;background:radial-gradient(ellipse 75% 100% at 50% 100%,rgba(183,156,240,calc(.14 + var(--lv,0)*.5)),rgba(242,154,196,calc(.05 + var(--lv,0)*.2)) 45%,transparent 72%);animation:michalo 1.7s ease-in-out infinite alternate}
+#rd .hint b,#pm .hint b{font-variant-numeric:tabular-nums;margin-left:6px;color:var(--ink)}
+
+.wd-x{text-decoration:underline wavy #E8A33D;text-decoration-thickness:1.5px;text-underline-offset:7px;position:relative}
+.wd-x[data-h]::before{content:attr(data-h);position:absolute;left:50%;bottom:100%;transform:translateX(-50%);font-size:.46em;line-height:1;font-weight:700;white-space:nowrap;color:#E8A33D;pointer-events:none}
+.rd-res li span small{display:block;font-size:12px;color:var(--muted);font-weight:500;margin-top:2px}.rd-res li{align-items:center}
+.rd-res .chips button{padding:6px 13px;font-size:13px}.rd-res .meta{margin:0}
+
+.rd-ta{field-sizing:content;display:block;width:100%;box-sizing:border-box;border:0;resize:none;background:transparent;color:inherit;font-family:inherit;padding:0;margin:0;overflow:hidden;outline:1px dashed var(--glass-line);outline-offset:10px;border-radius:2px}
+#ed-text.rd-ta{min-height:0;box-shadow:none;background:none;-webkit-backdrop-filter:none;backdrop-filter:none}.rd-ta:focus{outline-color:color-mix(in oklab,var(--brand) 55%,transparent)}
+.rd-ti{font:inherit;font-size:17px;font-weight:600;color:var(--ink);background:transparent;border:0;border-bottom:1px dashed var(--glass-line);padding:4px 0;width:100%;outline:0}
 .qcard li.spk-row{flex-direction:column;align-items:stretch;gap:2px;padding:8px 0;border-top:1px solid var(--glass-line)}.qcard li.spk-row:first-child{border-top:0}
 .spk-row>div{display:flex;justify-content:space-between;gap:10px}.spk{display:block;width:100%;height:64px;overflow:visible}
 .spk-l{fill:none;stroke:var(--brand);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.spk-d{fill:var(--brand);opacity:.55}
@@ -873,8 +890,8 @@ const VoiceCare=(()=>{
  // ---------- 신호 처리 ----------
  function fft(re,im){const n=re.length;for(let i=1,j=0;i<n;i++){let bit=n>>1;for(;j&bit;bit>>=1)j^=bit;j^=bit;if(i<j){let t=re[i];re[i]=re[j];re[j]=t;t=im[i];im[i]=im[j];im[j]=t;}}
   for(let len=2;len<=n;len<<=1){const a=-2*Math.PI/len,wr=Math.cos(a),wi=Math.sin(a),h=len>>1;for(let i=0;i<n;i+=len){let cr=1,ci=0;for(let j=0;j<h;j++){const k=i+j,q=k+h,tr=cr*re[q]-ci*im[q],ti=cr*im[q]+ci*re[q];re[q]=re[k]-tr;im[q]=im[k]-ti;re[k]+=tr;im[k]+=ti;const t=cr*wr-ci*wi;ci=cr*wi+ci*wr;cr=t;}}}}
- // 앱과 같은 YIN(실시간 음높이)
- function pitch(input,sampleRate){const step=Math.max(1,Math.floor(sampleRate/8000)),rate=sampleRate/step,n=Math.floor(input.length/step),x=new Float32Array(n);let mean=0,power=0;for(let i=0;i<n;i++){let sum=0;for(let j=0;j<step;j++)sum+=input[i*step+j];x[i]=sum/step;mean+=x[i];}mean/=n;for(let i=0;i<n;i++){x[i]-=mean;power+=x[i]*x[i];}if(Math.sqrt(power/n)<.0009)return null;{const k=1-Math.exp(-2*Math.PI*900/rate);for(let pass=0;pass<2;pass++){let y=0;for(let i=0;i<n;i++){y+=k*(x[i]-y);x[i]=y;}}}const lo=Math.floor(rate/800),hi=Math.ceil(rate/65),w=Math.min(384,n-hi-2);if(w<160)return null;const d=new Float32Array(hi+2);for(let t=1;t<=hi+1;t++){let sum=0;for(let j=0;j<w;j++){const a=x[j]-x[j+t];sum+=a*a;}d[t]=sum;}let run=0;d[0]=1;for(let t=1;t<=hi+1;t++){run+=d[t];d[t]=run?d[t]*t/run:1;}let best=-1;for(let t=lo;t<=hi;t++){if(d[t]<.15){while(t<hi&&d[t+1]<d[t])t++;best=t;break;}}if(best<0){let m=lo;for(let t=lo;t<=hi;t++)if(d[t]<d[m])m=t;if(d[m]<.28&&m>lo&&m<hi)best=m;}if(best<0)return null;const a=d[best-1],b=d[best],z=d[best+1],den=a-2*b+z,hz=rate/(best+(den?.5*(a-z)/den:0));return hz>=65&&hz<=800?hz:null;}
+ // 앱과 같은 YIN(실시간 음높이) · 11/12 하한 65→50Hz: 낮은 도(C2) 아래 저음도 잡히게(남성 말소리 실측 정확도 68→71%)
+ function pitch(input,sampleRate){const step=Math.max(1,Math.floor(sampleRate/8000)),rate=sampleRate/step,n=Math.floor(input.length/step),x=new Float32Array(n);let mean=0,power=0;for(let i=0;i<n;i++){let sum=0;for(let j=0;j<step;j++)sum+=input[i*step+j];x[i]=sum/step;mean+=x[i];}mean/=n;for(let i=0;i<n;i++){x[i]-=mean;power+=x[i]*x[i];}if(Math.sqrt(power/n)<.0009)return null;{const k=1-Math.exp(-2*Math.PI*900/rate);for(let pass=0;pass<2;pass++){let y=0;for(let i=0;i<n;i++){y+=k*(x[i]-y);x[i]=y;}}}const lo=Math.floor(rate/800),hi=Math.ceil(rate/50),w=Math.min(384,n-hi-2);if(w<160)return null;const d=new Float32Array(hi+2);for(let t=1;t<=hi+1;t++){let sum=0;for(let j=0;j<w;j++){const a=x[j]-x[j+t];sum+=a*a;}d[t]=sum;}let run=0;d[0]=1;for(let t=1;t<=hi+1;t++){run+=d[t];d[t]=run?d[t]*t/run:1;}let best=-1;for(let t=lo;t<=hi;t++){if(d[t]<.15){while(t<hi&&d[t+1]<d[t])t++;best=t;break;}}if(best<0){let m=lo;for(let t=lo;t<=hi;t++)if(d[t]<d[m])m=t;if(d[m]<.28&&m>lo&&m<hi)best=m;}if(best<0)return null;const a=d[best-1],b=d[best],z=d[best+1],den=a-2*b+z,hz=rate/(best+(den?.5*(a-z)/den:0));return hz>=50&&hz<=800?hz:null;}
  const db=v=>10*Math.log10(v+1e-12);
  function rmsDb(x,from=0,to=x.length){let s=0;for(let i=from;i<to;i++)s+=x[i]*x[i];return db(s/Math.max(1,to-from));}
  function quantile(values,p){const a=values.filter(Number.isFinite).sort((a,b)=>a-b);if(!a.length)return null;const at=(a.length-1)*p,i=Math.floor(at);return a[i]+(a[Math.min(i+1,a.length-1)]-a[i])*(at-i);}
@@ -1110,7 +1127,7 @@ const MIC=ICON.mic,STOP=ICON.stop;
 const PM={};
 function openPractice(src){Object.keys(PM).forEach(k=>delete PM[k]);Object.assign(PM,src,{step:1,demo:false});
  PM.plain=strip(PM.text);{const n=sylOf(PM.plain);REC.quiet=n>80?3:1.8;REC.max=Math.min(300,Math.max(40,n/2.5+15))*1000}$("pm").hidden=false;document.body.style.overflow="hidden";renderPM()}
-function closePractice(){recCancel();stopPlay();stopAud();$("pm").hidden=true;document.body.style.overflow=$("rd").hidden&&$("sc").hidden?"":"hidden"}
+function closePractice(){pmRecOff();recCancel();stopPlay();stopAud();$("pm").hidden=true;document.body.style.overflow=$("rd").hidden&&$("sc").hidden?"":"hidden"}
 function dots(n){[...$("pm-dots").children].forEach((d,i)=>d.classList.toggle("on",i<n));$("pm-n").textContent=n+" / 5"}
 function renderPM(){const s=PM.step;dots(s);const B=$("pm-body"),A=$("pm-act"),tgt=$("tgt").value;
  const srcLine=PM.src?`<div class="pm-src">— ${esc(PM.src)}</div>`:"";
@@ -1137,17 +1154,19 @@ function renderPM(){const s=PM.step;dots(s);const B=$("pm-body"),A=$("pm-act"),t
   if(PM.flow){A.insertAdjacentHTML("beforeend",`<button type="button" class="big" id="pm-flow">다음: 마무리 한마디 ${ICON.next}</button>`);$("pm-flow").onclick=()=>{closePractice();saveDay({steps:{read:1}});openD3(4)}}}
  $("pm-body").scrollTop=0}
 function recUI(h){return`<button type="button" class="mic" id="mic" aria-label="녹음 시작">${MIC}</button><div class="lvl" aria-hidden="true"><s id="lv"></s></div><p class="hint" id="rh">${h}</p><button type="button" class="link" id="demo">마이크 없이 데모로 보기</button>`}
+let PM_TM=0;function pmRecOff(){clearInterval(PM_TM);PM_TM=0}
 function bindRec(which){const b=$("mic");
  b.onclick=async()=>{if(REC.on){b.disabled=true;finishTake(which);return}
   if(asrNew()){askAsr(()=>b.click(),true);return}
   try{await recStart(v=>{const l=$("lv");if(l)l.style.width=Math.min(100,v*260)+"%"},()=>{if(REC.on)finishTake(which)},true);
-   b.classList.add("rec");b.innerHTML=STOP;b.setAttribute("aria-label","녹음 끝내기");$("rh").textContent="듣고 있어요… 다 읽으면 눌러 주세요"}
+   b.classList.add("rec");b.innerHTML=STOP;b.setAttribute("aria-label","녹음 끝내기");const t0=Date.now();
+   $("rh").innerHTML='듣고 있어요 · 다 읽으면 눌러 주세요<b id="pm-tm">0:00</b>';clearInterval(PM_TM);PM_TM=setInterval(()=>{const e=$("pm-tm"),t=(Date.now()-t0)/1e3|0;if(!e||!REC.on){pmRecOff();return}e.textContent=(t/60|0)+":"+String(t%60).padStart(2,"0")},500)}
   catch(e){$("rh").textContent="마이크를 쓸 수 없어요. 아래 '데모로 보기'로 흐름을 볼 수 있어요."}};
  $("demo").onclick=()=>demoTake(which)}
-async function finishTake(which){const take=recStop();$("rh").textContent="분석하는 중…";
+async function finishTake(which){pmRecOff();const take=recStop();$("rh").textContent="분석하는 중…";
  try{const heard=PM.asr?await PM.asr:"";const m=await measure(take,PM.plain,heard);PM["take"+which]=take;PM["m"+which]=m;PM.step=which===1?2:5;renderPM()}
  catch(e){$("rh").textContent=(e.message||"분석하지 못했어요")+" — 다시 읽어 주세요.";const b=$("mic");b.disabled=false;b.classList.remove("rec");b.innerHTML=MIC}}
-function demoTake(which){recCancel();PM.demo=true;const syl=sylOf(PM.plain),tgt=$("tgt").value;
+function demoTake(which){pmRecOff();recCancel();PM.demo=true;const syl=sylOf(PM.plain),tgt=$("tgt").value;
  if(which===1)PM.m1={rate:6.0,pauses:0,range:7.4,end:0.8,clear:5.6,match:null};
  else{const want=PM.coach?PM.coach.wantP:2;PM.m2={rate:tgt[1]==="A"?5.4:4.6,pauses:want,range:pole(tgt)==="B"?8.0:11.6,end:-0.9,clear:8.2,match:null}}
  PM.step=which===1?2:5;renderPM()}
@@ -1229,7 +1248,7 @@ async function measure(take,text,heard){if(PM.asrStop)PM.asrStop();if(!take||tak
  if(s.rate>9.5)throw new Error("글을 끝까지 읽지 않은 것 같아요");
  if(match!=null&&match<25&&a.length>=6)throw new Error(`읽은 말이 글과 많이 달라요 (알아들은 비율 ${match}%)`);
  profAdd({f0:s.f0,bands:s.bands,regs4:s.regs4,vsp:s.vspace,rng:s.rangeSt});
- return{rate:s.rate,pauses:s.pauses,range:s.rangeSt,end:s.endSlope,clear:s.sylc,match}}
+ return{rate:s.rate,pauses:s.pauses,range:s.rangeSt,end:s.endSlope,clear:s.sylc,match,f0:s.f0}}
 
 
 let GOAL=null,NOWP=null;
@@ -1295,10 +1314,10 @@ async function saveRec(){const R=PM.result,note=t=>{const e=$("svd");if(e)e.inne
   note(PM.demo?"기록에 저장했어요 (데모라 녹음은 없어요)":"기록에 저장했어요 · 아래 '기록'에서 다시 들을 수 있어요");await loadAll()}
  catch(e){note("이 기기에서는 기록을 저장하지 못했어요")}}
 function recInner(r,full){const d=new Date(r.at),when=d.toLocaleDateString(SPK(),{month:"numeric",day:"numeric"})+" "+d.toLocaleTimeString(SPK(),{hour:"numeric",minute:"2-digit"});
- return`<div class="rec-h"><span class="dn">${when}</span><span class="way">${r.up}가지 좋아짐</span>${r.demo?'<span class="meta">데모</span>':""}<span class="acts">
-  <button type="button" class="icb" data-play="1" aria-label="처음 녹음 듣기"${r.w1?"":" disabled"}>${ICON.play1}<small>처음</small></button><button type="button" class="icb" data-play="2" aria-label="다시 읽은 녹음 듣기"${r.w2?"":" disabled"}>${ICON.play2}<small>다시</small></button>
+ return`<div class="rec-h"><span class="dn">${when}</span><span class="way">${r.m2?r.up+"가지 좋아짐":"읽기 녹음"}</span>${r.demo?'<span class="meta">데모</span>':""}<span class="acts">
+  <button type="button" class="icb" data-play="1" aria-label="처음 녹음 듣기"${r.w1?"":" disabled"}>${ICON.play1}<small>처음</small></button>${r.m2?`<button type="button" class="icb" data-play="2" aria-label="다시 읽은 녹음 듣기"${r.w2?"":" disabled"}>${ICON.play2}<small>다시</small></button>`:""}
   <button type="button" class="icb" data-rdel aria-label="이 기록 지우기">${ICON.trash}</button>${full?`<button type="button" class="go" data-redo aria-label="이 글 다시 연습하기">${ICON.mic}</button>`:""}</span></div>
-  ${full?`<p class="rec-t">${paras(r.text)}</p>`:""}<p class="rec-n">빠르기 ${r.m1.rate.toFixed(1)} → ${r.m2.rate.toFixed(1)}글자/초 · 쉼 ${r.m1.pauses} → ${r.m2.pauses}번</p>`}
+  ${full?`<p class="rec-t">${paras(r.text)}</p>`:""}<p class="rec-n">${r.m2?`빠르기 ${r.m1.rate.toFixed(1)} → ${r.m2.rate.toFixed(1)}글자/초 · 쉼 ${r.m1.pauses} → ${r.m2.pauses}번`:`빠르기 ${r.m1.rate.toFixed(1)}글자/초 · 쉼 ${r.m1.pauses}번${r.m1.match!=null?` · 발음 ${r.m1.match}%`:""}${r.use?` · 소리 낸 시간 ${useT(r.use)}`:""}`}</p>`}
 function renderRecs(){$("recs").innerHTML=RECS.length?RECS.map(r=>`<article class="day" data-rid="${r.id}">${recInner(r,true)}</article>`).join(""):`${say("아직 기록이 없어. 오늘의 읽기를 연습하면 녹음이 여기 쌓여!",{pop:false})}`}
 
 function armDel(b){if(b.dataset.armed)return true;b.dataset.armed=1;b.classList.add("armed");const h=b.innerHTML;b.innerHTML=ICON.trash+"<small>지울까요?</small>";
@@ -2051,38 +2070,88 @@ addEventListener("resize",()=>{if(!$("v-rec").hidden)drawVB()});
 
 let RD=null;
 let RD_MK=false;
-function openRd(i){if(i<0)return;RD=i;RD_MK=false;$("rd").hidden=false;document.body.style.overflow="hidden";renderRd();if(!posGo($("rd-body"),MINE[i].id,"rd"))$("rd-body").scrollTop=0}
-function closeRd(){RD_SAVE();$("rd").hidden=true;document.body.style.overflow="";RD=null;renderSents()}
-function rdBody(g,i,mk){let j=0;const n=g.ss.reduce((a,x)=>a+x.split(/\s+/).length,0);return g.ss.map(x=>`<span class="sn">${x.split(/\s+/).map(w=>{const k=j++,q=g.ps[k]||0;
- if(!mk)return`${g.on.has(k)?`<b class="w on">${esc(w)}</b>`:esc(w)}${k<n-1?(q?` <span class="gap-v">${q===2?"//":"/"}</span> `:" "):""}`;
+function openRd(i){if(i<0)return;RD=i;RD_MK=false;RD_ED=false;RD_RES=null;$("rd").hidden=false;document.body.style.overflow="hidden";renderRd();if(!posGo($("rd-body"),MINE[i].id,"rd"))$("rd-body").scrollTop=0}
+function closeRd(){rdRecOff();stopPlay();RD_ED=false;RD_RES=null;RD_SAVE();$("rd").hidden=true;document.body.style.overflow="";RD=null;renderSents()}
+const rdW=(x,df,k)=>df&&k in df?`<span class="wd-x"${df[k]?` data-h="${esc(df[k])}"`:""}>${x}</span>`:x;
+function rdBody(g,i,mk,df){let j=0;const n=g.ss.reduce((a,x)=>a+x.split(/\s+/).length,0);return g.ss.map(x=>`<span class="sn">${x.split(/\s+/).map(w=>{const k=j++,q=g.ps[k]||0;
+ if(!mk)return`${rdW(g.on.has(k)?`<b class="w on">${esc(w)}</b>`:esc(w),df,k)}${k<n-1?(q?` <span class="gap-v">${q===2?"//":"/"}</span> `:" "):""}`;
  return`<button type="button" class="w${g.on.has(k)?" on":""}" data-i="${i}" data-j="${k}" aria-pressed="${g.on.has(k)}">${esc(w)}</button>${k<n-1?`<button type="button" class="gap g${q}" data-i="${i}" data-g="${k}" aria-label="${["쉼 넣기","짧게 쉼","크게 쉼"][q]}">${["·","/","//"][q]}</button><wbr>`:""}`}).join("")}</span>`).join("")}
-function renderRd(talk){const g=MINE[RD];if(!g){closeRd();return}$("rd-top").textContent=tagTxt(g)||"내 글";
+function renderRd(talk){const g=MINE[RD];if(!g){closeRd();return}if(RD_ED){rdEdit();return}$("rd-top").textContent=tagTxt(g)||"내 글";
  $("rd-body").innerHTML=`<div class="pm-kick">${esc(tagTxt(g)||"내 글")} · ${g.ss.length}줄 · ${sylOf(g.ss.join(""))}글자</div><h2 class="pm-title" id="rd-h">${esc(gTitle(g))}</h2>${talk?say(talk,{size:"s"}):""}${(()=>{const si=scInfo(g);return si.ok?`<div class="d3card sc-ban"><div><b>대본으로 읽었어요</b><small>등장인물 ${si.roles.length}명 · 대사 ${si.lines}줄</small></div><button type="button" class="ib pri" id="rd-sc" data-pro aria-label="대본 연습">${ICON.script}대본 연습</button></div>`:""})()}
-  <div class="sent"><p class="line rd-line">${rdBody(g,RD,RD_MK)}</p></div>${RD_MK?`<p class="meta" style="margin:0">말을 누르면 <b>강조</b> · 말 사이 흐린 <b>·</b>을 누르면 <b>쉼</b> (/ → // → 없음)</p>`:""}`;
- $("rd-act").innerHTML=`<div class="iconrow"><button data-pro type="button" class="ib" id="rd-tp" aria-label="프롬프터">${ICON.prompt}프롬프터</button><button data-pro type="button" class="ib pri" id="rd-split" aria-label="${RD_MK?"AI 문장구분 — 문장마다 줄을 나누고 강조·쉼 추천":"나누기 — 강조·쉼 표시하기"}">${RD_MK?ICON.spark:ICON.split}${RD_MK?"AI 문장구분":"나누기"}</button><button data-pro type="button" class="ib" id="rd-clr" aria-label="표시 모두 지우기">${ICON.erase}지우기</button><button data-pro type="button" class="ib" id="rd-edit" aria-label="수정">${ICON.pen}수정</button><button data-pro type="button" class="ib" id="rd-go" aria-label="연습">${ICON.mic}연습</button></div>`;
+  <div class="sent"><p class="line rd-line">${rdBody(g,RD,RD_MK,RD_RES&&RD_RES.diff)}</p></div>${RD_RES?rdResHtml(g):""}${RD_MK?`<p class="meta" style="margin:0">말을 누르면 <b>강조</b> · 말 사이 흐린 <b>·</b>을 누르면 <b>쉼</b> (/ → // → 없음)</p>`:""}`;
+ if(RD_RES){rdResAct(g);return}
+ $("rd-act").innerHTML=`<div class="iconrow"><button data-pro type="button" class="ib" id="rd-tp" aria-label="프롬프터">${ICON.prompt}프롬프터</button><button data-pro type="button" class="ib pri" id="rd-split" aria-label="${RD_MK?"AI 문장구분 — 문장마다 줄을 나누고 강조·쉼 추천":"나누기 — 강조·쉼 표시하기"}">${RD_MK?ICON.spark:ICON.split}${RD_MK?"AI 문장구분":"나누기"}</button><button data-pro type="button" class="ib" id="rd-clr" aria-label="표시 모두 지우기">${ICON.erase}지우기</button><button data-pro type="button" class="ib" id="rd-edit" aria-label="수정">${ICON.pen}수정</button><button data-pro type="button" class="ib" id="rd-go" aria-label="녹음">${ICON.mic}녹음</button></div>`;
  $("rd-split").onclick=()=>{if(!RD_MK){RD_MK=true;renderRd("말을 누르면 강조, 말 사이 점을 누르면 쉼이야. <b>AI 문장구분</b>을 누르면 알아서 정리해 줄게!");return}g.ss=splitLines(g.ss.join("\n"));const r=recommend(g);g.on=r.on;g.ps=r.ps;saveG(g);renderRd("읽기 편하게 문장마다 줄을 나누고, 힘줄 말과 쉴 곳도 표시했어!")};
  const scb=$("rd-sc");if(scb)scb.onclick=()=>openSc(g);
- $("rd-clr").onclick=()=>{g.on=new Set();g.ps={};saveG(g);renderRd()};$("rd-edit").onclick=()=>openEdit(RD,false);
- $("rd-tp").onclick=()=>openTP(g);$("rd-go").onclick=()=>openPractice({text:markupOf(g),src:"",mid:g.id,bold:g.on})}
+ $("rd-clr").onclick=()=>{g.on=new Set();g.ps={};saveG(g);renderRd()};$("rd-edit").onclick=rdEdit;
+ $("rd-tp").onclick=()=>openTP(g);$("rd-go").onclick=rdRec}
 $("rd-body").addEventListener("click",e=>{const t=e.target.closest("button");if(!t)return;const g=MINE[+t.dataset.i];if(!g)return;
  if(t.classList.contains("w")){const j=+t.dataset.j,on=!g.on.has(j);on?g.on.add(j):g.on.delete(j);t.classList.toggle("on",on);t.setAttribute("aria-pressed",on);saveG(g)}
  else if(t.classList.contains("gap")){const k=+t.dataset.g,q=((g.ps[k]||0)+1)%3;if(q)g.ps[k]=q;else delete g.ps[k];t.className="gap g"+q;t.textContent=["·","/","//"][q];t.setAttribute("aria-label",["쉼 넣기","짧게 쉼","크게 쉼"][q]);saveG(g)}});
 $("rd-back").onclick=closeRd;$("rd-home").onclick=goHome;
 
-function openEdit(i,fromTP){const g=MINE[i];if(!g)return;const etags=[...tagsOf(g)];
- $("sheet").innerHTML=`<div role="dialog" aria-modal="true" aria-labelledby="ed-h"><h2 class="sh-h" id="ed-h">수정</h2>
-  <label class="ed-l">제목<input id="ed-title" class="inp" value="${esc(g.title||"")}" placeholder="${esc(gTitle(g))}"></label>
+let RD_ED=false,RD_REC=0,RD_RES=null;
+function rdEdit(){const g=MINE[RD];if(!g)return;rdRecOff();stopPlay();RD_ED=true;RD_RES=null;const et=[...tagsOf(g)];
+ $("rd-body").innerHTML=`<div class="pm-kick">글 고치기 · 바로 고치고 저장을 눌러 주세요</div><input id="ed-title" class="rd-ti" value="${esc(g.title||"")}" placeholder="${esc(gTitle(g))}" aria-label="제목">
+  <div class="sent"><textarea id="ed-text" class="line rd-line rd-ta" aria-label="글 고치기" spellcheck="false">${esc(g.ss.join("\n"))}</textarea></div><p class="note sp" id="ed-sp" role="status" hidden></p>
   <div class="ed-l">태그<div class="tagbox" id="ed-tags"></div><div class="chips tg-sug" id="ed-tagsug" aria-label="태그 추천"></div></div>
-  <label class="ed-l">글 — 단어와 줄을 고칠 수 있어요<textarea id="ed-text">${esc(g.ss.join("\n"))}</textarea></label>
-  <p class="note sp" id="ed-sp" role="status" hidden></p>
-  <p class="meta" style="margin:0;align-self:stretch">글을 고치면 강조·쉼 표시는 지워져요. 다시 <b>나누기</b>를 누르면 새로 표시해 줘요.</p>
-  <div class="rrow"><button type="button" class="rb" id="ed-x" aria-label="닫기"><span class="c">${ICON.close}</span><span class="t">닫기</span></button><button type="button" class="rb pri" id="ed-ok" aria-label="저장"><span class="c">${ICON.check}</span><span class="t">저장</span></button></div></div>`;
- $("sheet").hidden=false;
- const ete=mountTags($("ed-tags"),$("ed-tagsug"),etags);spAttach($("ed-text"),$("ed-sp"));
- $("ed-x").onclick=()=>{$("sheet").hidden=true};
- $("ed-ok").onclick=()=>{const nss=$("ed-text").value.replace(/\r/g,"").split(/\n+/).map(x=>x.trim()).filter(Boolean);if(!nss.length)return;
-  const words=a=>a.join(" ").split(/\s+/).join(" ");if(words(nss)!==words(g.ss)){g.on=new Set();g.ps={}}g.ss=nss;g.title=$("ed-title").value.trim();ete.flush();g.tags=etags;delete g.cat;saveG(g);renderSents();$("sheet").hidden=true;
-  renderRd("고쳤어! 다시 <b>나누기</b>를 누르면 읽기 편하게 정리해 줄게.")}}
+  <p class="meta" style="margin:0">글을 고치면 강조·쉼 표시는 지워져요. 다시 <b>나누기</b>를 누르면 새로 표시해 줘요.</p>`;
+ $("rd-act").innerHTML=`<div class="iconrow"><button type="button" class="ib" id="ed-x" aria-label="고치기 취소">${ICON.close}취소</button><button type="button" class="ib pri" id="ed-ok" aria-label="고친 글 저장">${ICON.check}저장</button></div>`;
+ const ta=$("ed-text"),fit=()=>{ta.style.height="auto";ta.style.height=ta.scrollHeight+"px"};ta.addEventListener("input",fit);fit();requestAnimationFrame(fit);
+ const ete=mountTags($("ed-tags"),$("ed-tagsug"),et);spAttach(ta,$("ed-sp"));
+ $("ed-x").onclick=()=>{RD_ED=false;renderRd()};
+ $("ed-ok").onclick=()=>{const nss=ta.value.replace(/\r/g,"").split(/\n+/).map(x=>x.trim()).filter(Boolean);if(!nss.length){ta.focus();return}
+  const words=a=>a.join(" ").split(/\s+/).join(" ");if(words(nss)!==words(g.ss)){g.on=new Set();g.ps={}}g.ss=nss;g.title=$("ed-title").value.trim();ete.flush();g.tags=et;delete g.cat;saveG(g);renderSents();
+  RD_ED=false;renderRd("고쳤어! 다시 <b>나누기</b>를 누르면 읽기 편하게 정리해 줄게.")}}
+
+
+const RD_GOAL={강의:{r:[4.3,5.3],st:[9,14],t:[0,2]},설교:{r:[3.8,4.8],st:[10,15],t:[-1,1]},발표:{r:[4.5,5.5],st:[8,13],t:[0,2]},낭독:{r:[3.8,4.8],st:[7,12],t:[-1,1]},대화:{r:[4.8,6],st:[6,11],t:[-1,1]}};
+const RD_TAG={강의:"강의",수업:"강의",설교:"설교",발표:"발표",낭독:"낭독",찬양:"낭독",노래가사:"낭독",대화:"대화"};
+const rdGoalOf=g=>RD_GOAL[g.goal]?g.goal:RD_TAG[tagsOf(g).find(t=>RD_TAG[t])]||"낭독";
+function rdRecOff(){clearInterval(RD_REC);RD_REC=0;recCancel()}
+async function rdRec(){const g=MINE[RD];if(!g||REC.on)return;if(asrNew()){askAsr(rdRec,true);return}stopPlay();
+ const n=sylOf(strip(markupOf(g)));REC.quiet=n>80?3:1.8;REC.max=Math.min(300,Math.max(40,n/2.5+15))*1000;RD_RES=null;RD_MK=false;renderRd();
+ try{await recStart(()=>{},()=>{if(REC.on)rdRecEnd()},true)}catch(e){renderRd("마이크를 쓸 수 없어요. 브라우저에서 마이크를 허용해 주세요.");return}
+ const t0=Date.now();
+ $("rd-act").innerHTML=`<button type="button" class="mic rec" id="rd-mic" aria-label="녹음 끝내기">${STOP}</button><p class="hint" id="rd-rh">듣고 있어요 · 다 읽으면 눌러 주세요<b id="rd-tm">0:00</b></p>`;
+ $("rd-mic").onclick=rdRecEnd;RD_REC=setInterval(()=>{const e=$("rd-tm"),x=Math.round((Date.now()-t0)/1000);if(e)e.textContent=Math.floor(x/60)+":"+String(x%60).padStart(2,"0")},500)}
+async function rdRecEnd(){clearInterval(RD_REC);RD_REC=0;const g=MINE[RD],take=recStop();if(!take||!g)return;
+ const mb=$("rd-mic");if(mb){mb.disabled=true;mb.classList.remove("rec")}const h=$("rd-rh");if(h)h.textContent="듣고 정리하는 중…";
+ try{const plain=strip(markupOf(g)),heard=PM.asr?await PM.asr:"",f0b=PROF.n>=3?PROF.f0:null,m=await measure(take,plain,heard);PM.asr=null;
+  const v=VoiceCare.analyze(take.x,take.sr,{noise:VoiceCare.noiseDb(take.x.subarray(0,Math.round(take.sr*.3)),take.sr)}),voiced=Math.round(v.voiced||0);
+  
+  const base=RECS.filter(r=>r.kind==="read1"&&r.cond&&Number.isFinite(r.cond.cpps)).slice(0,7).map(r=>r.cond.cpps),cond=!Number.isFinite(v.cpps)?["소리가 작아 못 쟀어요",""]:base.length<2?[`기준을 만드는 중이에요 (읽기 녹음 ${base.length+1}/3)`,""]:(d=>d>=.8?["지난 읽기보다 맑아요","up"]:d<=-.8?["지난 읽기보다 조금 거칠어요 · 물 한 잔, 목을 쉬어 주세요","dn"]:["지난 읽기와 비슷해요",""])(v.cpps-pct(base,.5));
+  RD_RES={take,m,heard,f0b,voiced,dur:take.x.length/take.sr,cond,diff:heard?wordDiff(g,heard):null};
+  const t=today();try{await dbPut("rec",{id:Date.now(),at:new Date().toISOString(),kind:"read1",mid:g.id,raw:markupOf(g),bold:[...g.on],text:plain,src:"",m1:m,m2:null,up:0,demo:false,
+   w1:await wavOf(take),w2:null,heard,use:voiced,cond:{cpps:Number.isFinite(v.cpps)?v.cpps:null},goal:rdGoalOf(g)});RD_RES.saved=1;if(voiced>=1)await saveDay({use:((t&&t.use)||0)+voiced});await loadAll()}catch(e){}
+  renderRd();const c=$("rd-res");if(c)c.scrollIntoView({block:"nearest",behavior:"smooth"})}
+ catch(e){PM.asr=null;RD_RES=null;renderRd((e.message||"분석하지 못했어요")+" — 다시 녹음해 주세요.")}}
+
+function wordDiff(g,heard){const W=g.ss.flatMap(x=>x.split(/\s+/)),a=[];W.forEach(w=>a.push(...hangul(w)));const h=[...hangul(heard)],n=a.length,m=h.length;if(!n||!m||n*m>6e6)return null;
+ const D=[];for(let i=0;i<=n;i++)D.push(new Uint16Array(m+1));
+ for(let i=1;i<=n;i++){const P=D[i-1],C=D[i];for(let j=1;j<=m;j++)C[j]=a[i-1]===h[j-1]?P[j-1]+1:Math.max(P[j],C[j-1])}
+ const at=new Int32Array(n).fill(-1);for(let i=n,j=m;i&&j;)if(a[i-1]===h[j-1]){at[--i]=--j}else if(D[i-1][j]>=D[i][j-1])i--;else j--;
+ const out={};let s0=0,last=null;W.forEach((w,k)=>{const L=hangul(w).length,e=s0+L;let ok=0;for(let i=s0;i<e;i++)if(at[i]>=0)ok++;
+  if(L&&ok/L<.7){let lo=-1,hi=m;for(let i=s0-1;i>=0;i--)if(at[i]>=0){lo=at[i];break}for(let i=e;i<n;i++)if(at[i]>=0){hi=at[i];break}
+   out[k]=lo===last?"":h.slice(lo+1,hi).join("").slice(0,10)||"빠짐";last=lo}else last=null;s0=e});return out}
+function rdResHtml(g){const R=RD_RES,m=R.m,k=rdGoalOf(g),G=RD_GOAL[k],z=(v,[a,b])=>v<a?"lo":v>b?"hi":"ok",L=[],row=(n,sub,w,ok)=>L.push(`<li><span>${n}<small>${sub}</small></span><b class="${ok?"up":"dn"}">${w}</b></li>`);
+ {const q=z(m.rate,G.r);row("빠르기",`1초에 ${m.rate.toFixed(1)}글자 · ${k} 기준 ${G.r[0]}~${G.r[1]}`,q==="ok"?"알맞아요":q==="hi"?"조금 빨라요":"조금 느려요",q==="ok")}
+ if(Number.isFinite(m.range)){const q=z(m.range,G.st);row("억양",`높낮이 폭 ${m.range.toFixed(1)}반음 · 기준 ${G.st[0]}~${G.st[1]}`,q==="ok"?"알맞아요":q==="hi"?"조금 커요":"조금 평평해요",q==="ok")}
+ if(R.f0b&&m.f0){const d=12*Math.log2(m.f0/R.f0b),q=z(d,G.t);row("톤(높이)",Math.abs(d)<.5?"평소 내 말소리 높이":`평소보다 ${Math.abs(d).toFixed(1)}반음 ${d>0?"높게":"낮게"}`,q==="ok"?"알맞아요":q==="hi"?"조금 높아요":"조금 낮아요",q==="ok")}
+ if(m.clear!=null)row("또렷함","글자가 또박또박 나뉘는 정도",m.clear>=7?"또렷해요":"조금 뭉쳤어요",m.clear>=7);
+ if(m.match!=null){const nd=R.diff?Object.keys(R.diff).length:0;row("발음 정확도",`기계가 알아들은 비율 ${m.match}%${nd?` · 밑줄 ${nd}곳`:""}`,m.match>=90?"정확해요":"받침까지 또박또박",m.match>=90)}
+ const t=today();
+ return`<div class="qcard rd-res" id="rd-res"><div class="qc-h"><b>방금 읽은 목소리</b><small>${R.saved?"기록에 저장했어요":"이 화면에서만 보여요"}</small></div>
+  <div class="chips" role="group" aria-label="읽는 목적 — 기준이 바뀌어요">${Object.keys(RD_GOAL).map(x=>`<button type="button" data-goal="${x}" aria-pressed="${x===k}">${x}</button>`).join("")}</div>
+  <ul>${L.join("")}<li><span>목 사용량<small>녹음 ${useT(Math.round(R.dur))} 중 소리 낸 시간 ${useT(R.voiced)}${t&&t.use?` · 오늘 합계 ${useT(t.use)}`:""}</small></span></li>
+  <li><span>목 상태<small>${R.cond[0]}</small></span>${R.cond[1]?`<b class="${R.cond[1]}">${R.cond[1]==="up"?"맑음":"쉬어 가요"}</b>`:""}</li></ul>
+  ${m.match==null&&(window.SpeechRecognition||window.webkitSpeechRecognition)?`<button type="button" class="lockline" id="rd-asr">어떤 글자를 어떻게 읽었는지 보기 · 음성 인식 켜기</button>`:R.diff&&Object.keys(R.diff).length?`<p class="meta">물결 밑줄 = 기계가 다르게 알아들은 말이에요. 위 작은 글자가 들린 말.</p>`:""}
+  <p class="meta">목 상태는 의료 진단이 아니에요 · 같은 방식으로 읽은 내 녹음끼리 견준 값이에요. 기준 숫자는 시험용이에요.</p></div>`}
+function rdResAct(g){$("rd-act").innerHTML=`<div class="iconrow"><button type="button" class="ib" id="rd-pl" aria-label="내 목소리 듣기">${ICON.play}듣기</button><button type="button" class="ib pri" id="rd-go" aria-label="다시 녹음">${ICON.mic}다시 녹음</button><button type="button" class="ib" id="rd-co" aria-label="코치 표시로 연습">${ICON.spark}코치 연습</button><button type="button" class="ib" id="rd-done" aria-label="결과 닫기">${ICON.check}완료</button></div>`;
+ $("rd-pl").onclick=e=>play(RD_RES.take,e.currentTarget,true);$("rd-go").onclick=rdRec;$("rd-done").onclick=()=>{stopPlay();RD_RES=null;renderRd()};
+ $("rd-co").onclick=()=>{stopPlay();openPractice({text:markupOf(g),src:"",mid:g.id,bold:g.on})};
+ $("rd-body").querySelectorAll("[data-goal]").forEach(b=>b.onclick=()=>{g.goal=b.dataset.goal;saveG(g);renderRd()});
+ const a=$("rd-asr");if(a)a.onclick=()=>askAsr(()=>{a.textContent="켰어요 · 다음 녹음부터 보여요";a.disabled=true})}
 
 
 const VC_CTX=["평소","강의 후","설교 후","발표 후","무대 후","연습 후"];
