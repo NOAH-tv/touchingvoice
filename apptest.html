@@ -2653,7 +2653,8 @@ $("coach").addEventListener("submit",e=>{e.preventDefault();const i=$("chat-tx")
 var VT={on:false};
 
 function voiceTalk(noAI){if(VT.on){VT.stop&&VT.stop();return}
- if(noAI!==1&&aiCan()){aiOK().then(ok=>ok?voiceAI():voiceTalk(1));return}
+ 
+ if(noAI!==1){if(aiCan())aiOK().then(ok=>voiceAI(ok));else voiceAI(false);return}
  const C=window.SpeechRecognition||window.webkitSpeechRecognition;if(!C){COACH.kb=true;chatPush("c","이 브라우저는 말을 글자로 바꾸지 못해. 글로 써 줘!");renderCoach();return}
  if(!ASR_ON){askAsr(voiceTalk,false);return}
  VT.on=true;const R=document.documentElement,ov=document.createElement("div");ov.className="vt nolv";
@@ -2690,13 +2691,13 @@ async function aiCall(op,body){const tk=await TVAuth.token();if(!tk)throw new Er
  const r=await fetch(AI_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({op,tk,...body})}),j=await r.json();if(!j.ok)throw new Error(j.err||"ai");return j}
 const AI_ERR={login:"다시 로그인해 줘.",notallowed:"아직 시험 중이라 허락된 계정만 AI 선생님을 쓸 수 있어.",limit:"오늘 이야기를 많이 했어! 내일 또 하자."};
 const plain=h=>String(h).replace(/<br\s*\/?>/g,"\n").replace(/<[^>]+>/g," ").replace(/&nbsp;/g," ").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&#39;/g,"'").replace(/&quot;/g,'"').replace(/&amp;/g,"&").replace(/[ \t]+/g," ").trim();
-function aiHist(){const L=CHAT.list.slice(-12).map(m=>({role:m.w==="u"?"user":"assistant",content:plain(m.t).slice(0,600)})).filter(m=>m.content);while(L.length&&L[0].role!=="user")L.shift();return L}
+function aiHist(){const L=CHAT.list.slice(-12).map(m=>({role:m.w==="u"?"user":"assistant",content:plain(m.t).slice(0,600)})).filter(m=>m.content);while(L.length&&L[0].role!=="user")L.shift();while(L.length&&L[L.length-1].role!=="user")L.pop();return L}
 
 function aiCtx(v){const W=x=>x==null?null:x>=70?"좋음":x>=45?"보통":"낮음",t=today(),st=t?.steps||{},vc=VCHKS[0],td=vc&&new Date(vc.at).toDateString()===new Date().toDateString();
  const sc=o=>[["clear","소리 맑음"],["flow","소리 이어짐"],["breath","숨 길이"]].filter(([k])=>o&&o[k]!=null).map(([k,n])=>n+" "+W(o[k])).join(", ");
  return[`선생님 이름: ${coachName()}`,`지금 목소리 유형: ${TYPES[$("cur").value]||"모름"} / 되고 싶은 목소리: ${TYPES[$("tgt").value]||"모름"}`,`연습 ${dayN()}일째${streak()>1?`, ${streak()}일 연속`:""}. 오늘의 3분 ${D3.filter(k=>st[k[0]]).length}/4단계`,
   td?`오늘 '아~' 목소리 체크: ${["좋아요","조금 지쳤어요","쉬어 주세요"][vc.lv]||"?"} (${sc(vc.sc)})`:"오늘은 아직 '아~' 목소리 체크를 안 했음",
-  v?`방금 말할 때 목소리(휴대폰 참고값): ${sc(v)||"잘 안 들림"}`:"",
+  v?(typeof v==="string"?v:`방금 말할 때 목소리(휴대폰 참고값): ${sc(v)||"잘 안 들림"}`):"",
   "[권할 수 있는 연습] 연습을 권할 때는 아래에서 지금 상황에 가장 맞는 하나만 골라 대답 맨 끝에 [[연습:아이디]]를 붙인다(카드가 떠서 바로 시작할 수 있다). 권할 게 없으면 붙이지 않는다. 앞쪽일수록 앱이 오늘 먼저 권하는 것.",
   ...aiMissions().map(m=>`${m.id}: ${plain(m.name)} — ${plain(m.why).slice(0,45)}`)].filter(Boolean).join("\n")}
 
@@ -2715,14 +2716,29 @@ async function wav16b64(t){const n=Math.ceil(t.x.length*16000/t.sr),oc=new Offli
  for(let i=0;i<x.length;i++)d.setInt16(44+i*2,Math.max(-1,Math.min(1,x[i]))*32767,true);
  return new Promise(r=>{const f=new FileReader();f.onload=()=>r(String(f.result).split(",")[1]);f.readAsDataURL(new Blob([buf]))})}
 
-async function voiceAI(){if(VT.on||REC.on)return;VT.on=true;const ov=document.createElement("div");ov.className="vt";
+async function voiceParts(t){let s=null,q={};try{SEX=$("sex").value;const x=await resample(t.x,t.sr);s=analyzeSentence(x,noiseFloor(x),1)}catch(e){}
+ try{const nd=VoiceCare.noiseDb(t.x.subarray(0,Math.round(t.sr*.3)),t.sr),m=VoiceCare.analyze(t.x,t.sr,{noise:nd});if(m.voiced>=1)q=chkScores(m)}catch(e){}
+ if(!s)return null;try{profAdd({f0:s.f0,bands:s.bands,regs4:s.regs4,vsp:s.vspace})}catch(e){}
+ const mid=$("sex").value==="m"?110:195,h=12*Math.log2(s.f0/mid),W=v=>v>=70?"좋아요":v>=45?"보통":"더 연습",sec=Math.round(t.x.length/t.sr);
+ const hW=h<-2?"낮은 편":h>2?"높은 편":"보통",rW=s.rangeSt<5?"고른 편":s.rangeSt>9.5?"넓은 편":"알맞음",dW=s.dyn<8?"고른 편":s.dyn>16?"크게 바뀜":"알맞음",note=noteLabel(Math.round(12*Math.log2(s.f0/440)));
+ const rows=[{l:"높이",v:Math.max(4,Math.min(100,50+h*7)),t:hW},{l:"억양 폭",v:Math.min(100,s.rangeSt/14*100),t:rW},{l:"크기 변화",v:Math.min(100,s.dyn/24*100),t:dW}];
+ if(q.clear!=null)rows.push({l:"맑음",v:q.clear,t:W(q.clear)});if(q.flow!=null)rows.push({l:"이어짐",v:q.flow,t:W(q.flow)});
+ const B=s.bands||[0,0,0,0],BN=["저음 울림","몸통 울림","또렷한 소리","바람·치찰"];
+ const card=rBars("방금 내 목소리",`${sec}초 · 말소리 높이 ${note} 근처 · 휴대폰 마이크로 본 참고값, 진단이 아니에요`,rows)
+  +rBars("소리 성분","소리 에너지가 어느 높이에 모였는지(합 100%)",B.map((b,k)=>({l:BN[k],v:Math.min(100,b*2),t:Math.round(b)+"%"})));
+ const line=`방금 말한 목소리(휴대폰 참고값): 높이 ${hW}(${note} 근처), 억양 폭 ${rW}, 크기 변화 ${dW}${q.clear!=null?`, 맑음 ${W(q.clear)}`:""}${q.flow!=null?`, 이어짐 ${W(q.flow)}`:""}, 소리 성분 ${B.map((b,k)=>BN[k]+" "+Math.round(b)+"%").join(" · ")}`;
+ return{card,line}}
+async function voiceAI(useAI){if(VT.on||REC.on)return;VT.on=true;const ov=document.createElement("div");ov.className="vt";
  ov.innerHTML=`<div class="vt-edge"></div><button type="button" class="vt-orb" id="vt-orb" aria-label="다 말했어요"><i></i><i></i><i></i></button><p class="vt-t" id="vt-t" aria-live="polite">말해 줘, 듣고 있어…</p><button type="button" class="vt-x" id="vt-x">${ICON.stop} 다 말했어요</button>`;document.body.appendChild(ov);
  const close=()=>{VT.on=false;ov.classList.add("out");setTimeout(()=>ov.remove(),300)};
- const fin=async()=>{if(!VT.on)return;close();const t=recStop();if(!t||t.x.length<t.sr*.6)return;
-  chatPush("u",'<span class="ai-wait">글자로 바꾸는 중…</span>');renderCoach();const me=CHAT.list[CHAT.list.length-1];let v=null;
-  try{const nd=VoiceCare.noiseDb(t.x.subarray(0,Math.round(t.sr*.3)),t.sr),m=VoiceCare.analyze(t.x,t.sr,{noise:nd});if(m.voiced>=1)v=chkScores(m)}catch(e){}
-  try{const j=await aiCall("stt",{audio:await wav16b64(t)}),x=(j.text||"").trim();if(!x){CHAT.list.pop();chatPush("c","잘 못 들었어. 한 번만 더 말해 줄래?");renderCoach();return}me.t=esc(x);chatSave();aiReply(v)}
-  catch(e){CHAT.list.pop();chatPush("c",AI_ERR[e.message]||"지금은 말을 글자로 못 바꿨어. 글로 써 줄래?");COACH.kb=true;renderCoach()}};
+ const fin=async()=>{if(!VT.on)return;close();const t=recStop();if(!t||t.x.length<t.sr*.6)return;const sec=Math.round(t.x.length/t.sr);
+  chatPush("u",`🎙 ${sec}초 말함${useAI?' <span class="ai-wait">· 글자로 바꾸는 중…</span>':""}`);const me=CHAT.list[CHAT.list.length-1];
+  chatPush("c",'<span class="ai-wait">목소리 듣는 중…</span>');const pc=CHAT.list[CHAT.list.length-1];renderCoach();
+  await new Promise(r=>setTimeout(r,30));const P=await voiceParts(t);pc.t=P?P.card:"목소리가 충분히 잡히지 않았어. 조용한 곳에서 조금 더 길게 말해 줄래?";chatSave();renderCoach();
+  if(!useAI){chatPush("c","목소리는 이렇게 들었어. 하고 싶은 말은 글로 써 줘!");renderCoach();return}
+  let x="";try{const j=await aiCall("stt",{audio:await wav16b64(t)});x=(j.text||"").trim()}catch(e){if(AI_ERR[e.message]){me.t=`🎙 ${sec}초 말함`;chatPush("c",AI_ERR[e.message]);renderCoach();return}}
+  me.t=x?esc(x):`🎙 ${sec}초 말함 (글자로는 못 바꿨어요)`;chatSave();renderCoach();
+  aiReply(P?P.line+(x?"":"\n사용자가 글 대신 목소리만 보냈다(글자 변환 안 됨). 들은 목소리 성분을 보고 짧게 피드백하고 연습 하나를 권해라."):(x?"":"목소리가 잘 안 잡혔다."))};
  VT.stop=fin;$("vt-x").onclick=fin;$("vt-orb").onclick=fin;REC.quiet=1.5;REC.max=30000;
  try{await recStart(()=>{},()=>{if(REC.on)fin()})}catch(e){close();chatPush("c","마이크를 쓸 수 없어. 브라우저에서 마이크를 허락해 줘.");renderCoach()}}
 
