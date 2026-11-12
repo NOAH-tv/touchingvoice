@@ -500,12 +500,43 @@ button svg,.ftag svg,.srch svg{flex:none}
 #tp-ta:focus{outline:none;border-style:solid;border-color:#B79CF0}
 #tp-use:empty{display:none}
 
+.pbar{display:flex;align-items:center;gap:12px;align-self:stretch;width:100%;max-width:520px;box-sizing:border-box;margin:12px auto 0;padding:10px 16px 10px 10px;border-radius:22px;background:color-mix(in oklab,var(--card-solid) 46%,transparent);border:1px solid var(--glass-line);box-shadow:inset 0 1px 0 var(--glass-hi),var(--shadow);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);animation:pbin .25s ease}
+@keyframes pbin{from{opacity:0;transform:translateY(6px)}}
+.pbar-b{width:38px;height:38px;flex:none;border-radius:50%;border:0;display:grid;place-items:center;cursor:pointer;color:#fff;background:linear-gradient(135deg,#9A7BE0,#6B45BC);box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 4px 12px color-mix(in oklab,#43227D 30%,transparent)}.pbar-b svg{width:17px;height:17px}
+.pbar-m{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.pbar b{font-size:12px;font-weight:700;color:var(--brand);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pbar span{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.pbar input{-webkit-appearance:none;appearance:none;width:100%;height:22px;margin:0;background:none;cursor:pointer;--p:0%}
+.pbar input::-webkit-slider-runnable-track{height:6px;border-radius:99px;background:linear-gradient(90deg,#9A7BE0,#F29AC4 62%,#E8CF8A) 0/var(--p) 100% no-repeat,color-mix(in oklab,var(--ink) 13%,transparent)}
+.pbar input::-moz-range-track{height:6px;border-radius:99px;background:linear-gradient(90deg,#9A7BE0,#F29AC4 62%,#E8CF8A) 0/var(--p) 100% no-repeat,color-mix(in oklab,var(--ink) 13%,transparent)}
+.pbar input::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;margin-top:-6px;border-radius:50%;background:#fff;border:0;box-shadow:0 0 0 3px color-mix(in oklab,var(--brand) 32%,transparent),0 2px 8px rgba(67,34,125,.4)}
+.pbar input::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#fff;border:0;box-shadow:0 0 0 3px color-mix(in oklab,var(--brand) 32%,transparent),0 2px 8px rgba(67,34,125,.4)}
+
+.mic{width:76px;height:76px;padding:0;justify-content:center;align-items:center;isolation:isolate;background:none;color:#fff;box-shadow:0 10px 28px color-mix(in oklab,#43227D 34%,transparent)}
+.mic::before{content:"";position:absolute;inset:0;border-radius:50%;z-index:-1;background:radial-gradient(circle at 30% 28%,#C9B3FF,transparent 56%),radial-gradient(circle at 76% 34%,#E8CF8A,transparent 46%),radial-gradient(circle at 46% 82%,#F29AC4,transparent 52%),#6B45BC;box-shadow:inset 0 1px 0 rgba(255,255,255,.45);animation:vtspin 14s linear infinite}
+
+.mic svg{width:30px;height:30px;filter:drop-shadow(0 1px 2px rgba(40,20,80,.5))}
+.mic.rec{background:none;color:#fff;transform:scale(calc(1 + var(--lv,0)*.26))}
+.mic.rec::before{animation-duration:2.4s;filter:saturate(1.25) brightness(1.06)}
+.mic.rec::after{content:"";position:absolute;inset:-14px;border:0;border-radius:50%;z-index:-2;opacity:1;background:radial-gradient(circle,rgba(183,156,240,.6),rgba(242,154,196,.28) 55%,transparent 72%);filter:blur(9px);transform:scale(calc(1 + var(--lv,0)*.8));animation:michalo 1.7s ease-in-out infinite alternate}
+@keyframes michalo{from{opacity:.55}to{opacity:1}}
+.lvl{height:4px;background:color-mix(in oklab,var(--ink) 10%,transparent)}.lvl s{background:linear-gradient(90deg,#9A7BE0,#F29AC4,#E8CF8A)}
+
+.rb .c{width:58px;height:58px;background:color-mix(in oklab,var(--card-solid) 50%,transparent);-webkit-backdrop-filter:blur(18px) saturate(180%);backdrop-filter:blur(18px) saturate(180%)}
+.rb.pri .c{background:radial-gradient(circle at 30% 26%,#C9B3FF,transparent 58%),radial-gradient(circle at 78% 80%,#F29AC4,transparent 55%),#6B45BC;color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 8px 22px color-mix(in oklab,#43227D 32%,transparent)}
+.rb .t{font-size:12.5px;font-weight:600}
+.iconrow{gap:6px}.iconrow .ib{background:none;border:0;box-shadow:none;gap:7px;padding:4px 2px;font-size:12.5px;font-weight:600;color:var(--ink)}
+.iconrow .ib svg{width:54px;height:54px;padding:15px;box-sizing:border-box;border-radius:50%;color:var(--brand);background:color-mix(in oklab,var(--card-solid) 50%,transparent);border:1px solid var(--glass-line);box-shadow:inset 0 1px 0 var(--glass-hi),var(--shadow);-webkit-backdrop-filter:blur(18px) saturate(180%);backdrop-filter:blur(18px) saturate(180%)}
+.iconrow .ib.pri{background:none;color:var(--ink)}.iconrow .ib.pri svg{color:#fff;border-color:transparent;background:radial-gradient(circle at 30% 26%,#C9B3FF,transparent 58%),radial-gradient(circle at 78% 80%,#F29AC4,transparent 55%),#6B45BC}
+.iconrow .ib:disabled{opacity:.4}
+@media (prefers-reduced-motion:reduce){.mic::before,.mic.rec::after{animation:none}}
+
 #v-today>#home,#v-today>h2.sec,#v-today>#today,#v-today>#tracks,#t-train{display:none!important}
 .coach{gap:14px}.coach .say{align-self:stretch}
 .coach-me{align-self:flex-end;margin:0;max-width:80%;padding:9px 14px;border-radius:18px 18px 6px 18px;background:var(--pri-grad);color:var(--pri-fg);font-size:14.5px;font-weight:600}
 .coach-say{align-self:stretch;font-size:17px;line-height:1.6}.coach-say small{display:block;margin-top:6px;font-size:13px;color:var(--muted);line-height:1.5}
 .coach-chips{justify-content:center}
 .flow-q{display:block;margin-top:6px;font-style:normal;font-weight:600;color:var(--ink)}
+.chs{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.chs button{border:1px solid var(--glass-line);border-radius:999px;padding:9px 14px;font:inherit;font-size:14px;font-weight:700;cursor:pointer;color:var(--brand);background:color-mix(in oklab,var(--card-solid) 60%,transparent)}.chs button:last-child{background:var(--pri-grad);color:var(--pri-fg);border-color:transparent}
 .msg-n{display:block;margin-bottom:4px;font-size:12.5px;color:var(--gold-ink)}
 .qcard{margin-top:4px;padding:12px;border-radius:16px;background:var(--soft);display:flex;flex-direction:column;gap:8px}
 .qc-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.qc-h b{font-size:15px}.qc-h small{flex-basis:100%;color:var(--muted);font-size:12.5px}
@@ -837,12 +868,13 @@ function analyzeVowel(x,noiseDb){const fr=pitchTrack(x,noiseDb),runs=[];let cur=
 
 
 
+
 const VoiceCare=(()=>{
  // ---------- 신호 처리 ----------
  function fft(re,im){const n=re.length;for(let i=1,j=0;i<n;i++){let bit=n>>1;for(;j&bit;bit>>=1)j^=bit;j^=bit;if(i<j){let t=re[i];re[i]=re[j];re[j]=t;t=im[i];im[i]=im[j];im[j]=t;}}
   for(let len=2;len<=n;len<<=1){const a=-2*Math.PI/len,wr=Math.cos(a),wi=Math.sin(a),h=len>>1;for(let i=0;i<n;i+=len){let cr=1,ci=0;for(let j=0;j<h;j++){const k=i+j,q=k+h,tr=cr*re[q]-ci*im[q],ti=cr*im[q]+ci*re[q];re[q]=re[k]-tr;im[q]=im[k]-ti;re[k]+=tr;im[k]+=ti;const t=cr*wr-ci*wi;ci=cr*wi+ci*wr;cr=t;}}}}
  // 앱과 같은 YIN(실시간 음높이)
- function pitch(input,sampleRate){const step=Math.max(1,Math.floor(sampleRate/8000)),rate=sampleRate/step,n=Math.floor(input.length/step),x=new Float32Array(n);let mean=0,power=0;for(let i=0;i<n;i++){let sum=0;for(let j=0;j<step;j++)sum+=input[i*step+j];x[i]=sum/step;mean+=x[i];}mean/=n;for(let i=0;i<n;i++){x[i]-=mean;power+=x[i]*x[i];}if(Math.sqrt(power/n)<.003)return null;const lo=Math.floor(rate/800),hi=Math.ceil(rate/65),w=Math.min(384,n-hi-2);if(w<160)return null;const d=new Float32Array(hi+2);for(let t=1;t<=hi+1;t++){let sum=0;for(let j=0;j<w;j++){const a=x[j]-x[j+t];sum+=a*a;}d[t]=sum;}let run=0;d[0]=1;for(let t=1;t<=hi+1;t++){run+=d[t];d[t]=run?d[t]*t/run:1;}let best=-1;for(let t=lo;t<=hi;t++){if(d[t]<.15){while(t<hi&&d[t+1]<d[t])t++;best=t;break;}}if(best<0)return null;const a=d[best-1],b=d[best],z=d[best+1],den=a-2*b+z,hz=rate/(best+(den?.5*(a-z)/den:0));return hz>=65&&hz<=800?hz:null;}
+ function pitch(input,sampleRate){const step=Math.max(1,Math.floor(sampleRate/8000)),rate=sampleRate/step,n=Math.floor(input.length/step),x=new Float32Array(n);let mean=0,power=0;for(let i=0;i<n;i++){let sum=0;for(let j=0;j<step;j++)sum+=input[i*step+j];x[i]=sum/step;mean+=x[i];}mean/=n;for(let i=0;i<n;i++){x[i]-=mean;power+=x[i]*x[i];}if(Math.sqrt(power/n)<.0009)return null;{const k=1-Math.exp(-2*Math.PI*900/rate);for(let pass=0;pass<2;pass++){let y=0;for(let i=0;i<n;i++){y+=k*(x[i]-y);x[i]=y;}}}const lo=Math.floor(rate/800),hi=Math.ceil(rate/65),w=Math.min(384,n-hi-2);if(w<160)return null;const d=new Float32Array(hi+2);for(let t=1;t<=hi+1;t++){let sum=0;for(let j=0;j<w;j++){const a=x[j]-x[j+t];sum+=a*a;}d[t]=sum;}let run=0;d[0]=1;for(let t=1;t<=hi+1;t++){run+=d[t];d[t]=run?d[t]*t/run:1;}let best=-1;for(let t=lo;t<=hi;t++){if(d[t]<.15){while(t<hi&&d[t+1]<d[t])t++;best=t;break;}}if(best<0){let m=lo;for(let t=lo;t<=hi;t++)if(d[t]<d[m])m=t;if(d[m]<.28&&m>lo&&m<hi)best=m;}if(best<0)return null;const a=d[best-1],b=d[best],z=d[best+1],den=a-2*b+z,hz=rate/(best+(den?.5*(a-z)/den:0));return hz>=65&&hz<=800?hz:null;}
  const db=v=>10*Math.log10(v+1e-12);
  function rmsDb(x,from=0,to=x.length){let s=0;for(let i=from;i<to;i++)s+=x[i]*x[i];return db(s/Math.max(1,to-from));}
  function quantile(values,p){const a=values.filter(Number.isFinite).sort((a,b)=>a-b);if(!a.length)return null;const at=(a.length-1)*p,i=Math.floor(at);return a[i]+(a[Math.min(i+1,a.length-1)]-a[i])*(at-i);}
@@ -859,15 +891,15 @@ const VoiceCare=(()=>{
  function analyze(pcm,sr,opt={}){
   const out={voiced:0,level:null,hz:null,cpps:null,breaks:null,breath:null,hf:null,frames:0};if(!pcm||pcm.length<sr*.3)return out;
   const {y,sr:sr2}=decimate(pcm,sr),N=1024,hop=Math.round(sr2*.01),half=N>>1,win=new Float32Array(N);for(let i=0;i<N;i++)win[i]=.5-.5*Math.cos(2*Math.PI*i/(N-1));
-  const floor=Math.max(-62,(Number.isFinite(opt.noise)?opt.noise:-70)+6),pitches=[],levels=[],ceps=[];let prev=null,breaks=0,voicedFrames=0;
+  const floor=Math.max(-62,(Number.isFinite(opt.noise)?opt.noise:-70)+6),pitches=[],levels=[],ceps=[],trk=[];let prev=null,breaks=0,voicedFrames=0;
   const re=new Float64Array(N),im=new Float64Array(N);
   for(let at=0,k=0;at+N<=y.length;at+=hop,k++){const L=rmsDb(y,at,at+N);if(L<floor){prev=null;continue;}const hz=pitch(y.subarray(at,at+N),sr2);if(!hz){prev=null;continue;}
-   voicedFrames++;pitches.push(hz);levels.push(L);if(prev&&Math.abs(12*Math.log2(hz/prev))>=9)breaks++;prev=hz;
+   voicedFrames++;pitches.push(hz);levels.push(L);trk.push([k,hz]);prev=hz;
    if(k%2)continue;// 고르기는 20ms마다
    for(let i=0;i<N;i++){re[i]=y[at+i]*win[i];im[i]=0;}fft(re,im);
    const spec=new Float64Array(N);for(let i=0;i<=half;i++){const v=db(re[i]*re[i]+im[i]*im[i]);spec[i]=v;if(i&&i<half)spec[N-i]=v;}
    for(let i=0;i<N;i++){re[i]=spec[i];im[i]=0;}fft(re,im);const c=new Float32Array(half);for(let i=0;i<half;i++)c[i]=db(re[i]*re[i]+im[i]*im[i]);ceps.push(c);}
-  out.frames=voicedFrames;out.voiced=voicedFrames*hop/sr2;if(!voicedFrames)return out;
+  {let run=[],last=-9;const flush=()=>{if(run.length>=5){const sm=run.map((_,i)=>median(run.slice(Math.max(0,i-2),i+3)));for(let i=1;i<sm.length;i++)if(Math.abs(12*Math.log2(sm[i]/sm[i-1]))>=9)breaks++;}run=[];};for(const[k,hz]of trk){if(k!==last+1)flush();run.push(hz);last=k;}flush();}out.frames=voicedFrames;out.voiced=voicedFrames*hop/sr2;if(!voicedFrames)return out;
   out.level=median(levels);out.hz=median(pitches);out.breaks=out.voiced>0?breaks/out.voiced:null;
   // CPPS: 7프레임(시간)·3칸(켑스트럼) 평균 → 60–600Hz 봉우리와 회귀선 사이의 높이
   if(ceps.length>=7){const qLo=Math.ceil(sr2/600),qHi=Math.min(half-2,Math.floor(sr2/60)),fLo=Math.ceil(sr2/1000),vals=[];
@@ -1140,10 +1172,10 @@ function askAsr(then,first){$("sheet").innerHTML=`<div role="dialog" aria-modal=
  $("as-ok").onclick=()=>{ASR_ON=true;try{localStorage.setItem("tv_asr","1")}catch(_){}renderAsr();$("sheet").hidden=true;if(then)then()}}
 async function recStart(onLevel,onAuto,asr){const s=await micOpen();
  const AC=window.AudioContext||window.webkitAudioContext,ctx=new AC();await ctx.resume();const src=ctx.createMediaStreamSource(s),node=ctx.createScriptProcessor(4096,1,1),chunks=[];let spoke=false,quiet=0;const t0=performance.now();
- node.onaudioprocess=e=>{const d=e.inputBuffer.getChannelData(0);chunks.push(new Float32Array(d));let m=0;for(let i=0;i<d.length;i++){const v=Math.abs(d[i]);if(v>m)m=v}onLevel(m);
+ node.onaudioprocess=e=>{const d=e.inputBuffer.getChannelData(0);chunks.push(new Float32Array(d));let m=0;for(let i=0;i<d.length;i++){const v=Math.abs(d[i]);if(v>m)m=v}onLevel(m);document.documentElement.style.setProperty("--lv",Math.min(1,m*3.5).toFixed(3));
   if(m>0.05){spoke=true;quiet=0}else if(spoke){quiet+=d.length/ctx.sampleRate;if(quiet>(REC.quiet||1.8))onAuto()}if(performance.now()-t0>(REC.max||40000))onAuto()};
  src.connect(node);node.connect(ctx.destination);Object.assign(REC,{on:true,ctx,stream:s,src,node,chunks,sr:ctx.sampleRate});PM.asr=asr&&ASR_ON?asrStart():null}
-function recStop(){if(PM.asrStop){PM.asrStop();PM.asrStop=null}if(!REC.on)return null;REC.on=false;try{REC.node.disconnect();REC.src.disconnect()}catch(e){}REC.stream.getTracks().forEach(t=>t.stop()),micDone();
+function recStop(){if(PM.asrStop){PM.asrStop();PM.asrStop=null}if(!REC.on)return null;REC.on=false;document.documentElement.style.removeProperty("--lv");try{REC.node.disconnect();REC.src.disconnect()}catch(e){}REC.stream.getTracks().forEach(t=>t.stop()),micDone();
  const n=REC.chunks.reduce((a,c)=>a+c.length,0),x=new Float32Array(n);let o=0;REC.chunks.forEach(c=>{x.set(c,o);o+=c.length});try{REC.ctx.close()}catch(e){}return{x,sr:REC.sr}}
 
 let PROF={};try{PROF=JSON.parse(localStorage.getItem("tv_prof")||"{}")||{}}catch(e){}
@@ -1172,8 +1204,21 @@ function asrStart(){const C=window.SpeechRecognition||window.webkitSpeechRecogni
   return new Promise(res=>{const done=()=>res(txt);r.onend=done;setTimeout(()=>{try{r.stop()}catch(e){}},45000);PM.asrStop=()=>{try{r.stop()}catch(e){}setTimeout(done,700)}})}catch(e){return null}}
 let PLAY=null;
 function stopPlay(){if(PLAY){try{PLAY.s.stop()}catch(e){}try{PLAY.ctx.close()}catch(e){}if(PLAY.btn)PLAY.btn.innerHTML=PLAY.label;PLAY=null}}
-function play(take,btn,icon){if(PLAY&&PLAY.btn===btn){stopPlay();return}stopPlay();if(!take)return;const AC=window.AudioContext||window.webkitAudioContext,ctx=new AC(),b=ctx.createBuffer(1,take.x.length,take.sr);b.getChannelData(0).set(take.x);
- const s=ctx.createBufferSource();s.buffer=b;s.connect(ctx.destination);s.start();PLAY={ctx,s,btn,label:btn?btn.innerHTML:""};if(btn){const sv=icon&&btn.querySelector("svg");if(sv)sv.outerHTML=ICON.stop;else btn.textContent="■ 멈추기"}s.onended=()=>{if(PLAY&&PLAY.s===s)stopPlay()}}
+
+const peakGain=x=>{let p=0;for(let i=0;i<x.length;i++){const v=x[i]<0?-x[i]:x[i];if(v>p)p=v}return p>0?Math.min(8,.9/p):1};
+function play(take,btn,icon,from){if(PLAY&&PLAY.btn===btn&&from==null){stopPlay();return}stopPlay();if(!take)return;const AC=window.AudioContext||window.webkitAudioContext,ctx=new AC(),b=ctx.createBuffer(1,take.x.length,take.sr);b.getChannelData(0).set(take.x);
+ if(take.g==null)take.g=peakGain(take.x);const g=ctx.createGain();g.gain.value=take.g;const off=Math.max(0,Math.min(b.duration-.05,from||0));
+ const s=ctx.createBufferSource();s.buffer=b;s.connect(g);g.connect(ctx.destination);s.start(0,off);PLAY={ctx,s,btn,label:btn?btn.innerHTML:"",t0:ctx.currentTime-off};if(btn){const sv=icon&&btn.querySelector("svg");if(sv)sv.outerHTML=ICON.stop;else btn.textContent="■ 멈추기"}s.onended=()=>{if(PLAY&&PLAY.s===s)stopPlay()}
+ if(btn)pbar(btn,{dur:b.duration,cur:()=>PLAY&&PLAY.s===s?ctx.currentTime-PLAY.t0:null,seek:t=>play(take,btn,icon,t),pause:()=>{if(PLAY&&PLAY.s===s)stopPlay()}})}
+
+function pbar(btn,o){const host=btn.closest(".iconrow,.rrow,.rec-a")||btn.parentElement;let bar=host.nextElementSibling;
+ if(!bar||!bar.classList.contains("pbar")){host.insertAdjacentHTML("afterend",`<div class="pbar"><button type="button" class="pbar-b" aria-label="멈춤 · 이어 듣기"></button><div class="pbar-m"><b></b><input type="range" min="0" step="0.01" value="0" aria-label="재생 위치"></div><span></span></div>`);bar=host.nextElementSibling}
+ const r=bar.querySelector("input"),lab=bar.querySelector("span"),nm=bar.querySelector("b"),pb=bar.querySelector(".pbar-b"),f=x=>`${Math.floor(x/60)}:${String(Math.floor(x%60)).padStart(2,"0")}`;
+ nm.textContent=(btn.getAttribute("aria-label")||"").replace(/ ?(들어 ?보기|듣기)$/,"").replace(/ 녹음$/,"");r.max=o.dur.toFixed(2);let drag=false;
+ const show=t=>{r.value=t;r.style.setProperty("--p",(o.dur?Math.min(100,t/o.dur*100):0)+"%");lab.textContent=f(t)+" / "+f(o.dur)};show(o.cur()||0);pb.innerHTML=ICON.pause;
+ r.oninput=()=>{if(!drag){drag=true;o.pause()}show(+r.value)};r.onchange=()=>{drag=false;o.seek(+r.value)};
+ pb.onclick=()=>{if(o.cur()!=null){o.pause();pb.innerHTML=ICON.play}else o.seek(+r.value>=o.dur-.1?0:+r.value)};
+ const tick=()=>{const t=o.cur();if(!bar.isConnected)return;if(t==null){if(!drag)pb.innerHTML=ICON.play;return}if(!drag)show(Math.min(o.dur,t));requestAnimationFrame(tick)};requestAnimationFrame(tick)}
 
 function hangul(t){const k=(t.match(/[가-힣0-9]/g)||[]).join("");return/[가-힣]/.test(k)?k:(t.toLowerCase().match(/[a-z0-9]/g)||[]).join("")}
 function lcs(a,b){const d=new Array(b.length+1).fill(0);for(let i=1;i<=a.length;i++){let prev=0;for(let j=1;j<=b.length;j++){const t=d[j];d[j]=a[i-1]===b[j-1]?prev+1:Math.max(d[j],d[j-1]);prev=t}}return d[b.length]}
@@ -1240,7 +1285,7 @@ let PST=0;
 async function dbPut(n,v){try{const d=await idb();await new Promise((res,rej)=>{const tx=d.transaction(n,"readwrite");tx.objectStore(n).put(v);tx.oncomplete=res;tx.onerror=()=>rej(tx.error)});if(!PST&&navigator.storage&&navigator.storage.persist){PST=1;navigator.storage.persist().catch(()=>{})}}catch(e){MEM[n]=MEM[n].filter(x=>x.id!==v.id).concat(v)}}
 async function dbDel(n,id){try{const d=await idb();await new Promise((res,rej)=>{const tx=d.transaction(n,"readwrite");tx.objectStore(n).delete(id);tx.oncomplete=res;tx.onerror=()=>rej(tx.error)})}catch(e){MEM[n]=MEM[n].filter(x=>x.id!==id)}}
 async function loadAll(){MINE=(await dbAll("mine")).map(x=>({...x,ss:x.ss||[x.t],ps:x.ps||{},on:new Set(x.on||[]),tags:x.tags||(x.cat&&x.cat!=="기타"?[tagNorm(x.cat)]:[])})).sort((a,b)=>b.id-a.id);RECS=(await dbAll("rec")).sort((a,b)=>b.id-a.id);renderSents();renderRecs();await loadDays();renderHome();await loadTrk();renderTrain();renderTracks();VCHKS=(await dbAll("vchk")).sort((x,y)=>y.id-x.id);renderVoice()}
-async function wavOf(take){if(!take)return null;const x=await resample(take.x,take.sr),buf=new ArrayBuffer(44+x.length*2),v=new DataView(buf),w=(o,s)=>[...s].forEach((c,i)=>v.setUint8(o+i,c.charCodeAt(0)));
+async function wavOf(take){if(!take)return null;const x0=await resample(take.x,take.sr),gn=peakGain(x0),x=x0.map(v=>v*gn),buf=new ArrayBuffer(44+x.length*2),v=new DataView(buf),w=(o,s)=>[...s].forEach((c,i)=>v.setUint8(o+i,c.charCodeAt(0)));
  w(0,"RIFF");v.setUint32(4,36+x.length*2,true);w(8,"WAVEfmt ");v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,SR,true);v.setUint32(28,SR*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);w(36,"data");v.setUint32(40,x.length*2,true);
  for(let i=0;i<x.length;i++)v.setInt16(44+i*2,Math.max(-1,Math.min(1,x[i]))*32767,true);return new Blob([buf],{type:"audio/wav"})}
 
@@ -2123,7 +2168,8 @@ document.addEventListener("click",async e=>{const b=e.target.closest("[data-vpla
 
 let AUD=null;
 function stopAud(){if(!AUD)return;AUD.a.pause();if(AUD.b.isConnected)AUD.b.innerHTML=AUD.h;URL.revokeObjectURL(AUD.u);AUD=null}
-function playBlob(blob,b){const same=AUD&&AUD.b===b;stopAud();if(same||!blob)return;const u=URL.createObjectURL(blob),a=new Audio(u);AUD={a,b,h:b.innerHTML,u};const sv=b.querySelector("svg");if(sv)sv.outerHTML=ICON.stop;a.onended=stopAud;a.play().catch(stopAud)}
+function playBlob(blob,b,from){const same=AUD&&AUD.b===b;if(same&&from==null){stopAud();return}stopAud();if(!blob)return;const u=URL.createObjectURL(blob),a=new Audio(u);AUD={a,b,h:b.innerHTML,u};const sv=b.querySelector("svg");if(sv)sv.outerHTML=ICON.stop;a.onended=stopAud;
+ a.onloadedmetadata=()=>{if(from)a.currentTime=from;pbar(b,{dur:a.duration||0,cur:()=>AUD&&AUD.a===a?a.currentTime:null,seek:t=>playBlob(blob,b,t),pause:()=>{if(AUD&&AUD.a===a)stopAud()}})};a.play().catch(stopAud)}
 document.addEventListener("click",async e=>{const b=e.target.closest("[data-play],[data-rdel],[data-redo]"),box=b&&b.closest("[data-rid]");if(!box)return;const r=RECS.find(x=>x.id===+box.dataset.rid);if(!r)return;
  if(b.dataset.play)playBlob(r["w"+b.dataset.play],b);
  else if("rdel" in b.dataset){if(armDel(b)){stopAud();await dbDel("rec",r.id);await loadAll()}}
@@ -2372,7 +2418,7 @@ const FLOW_RT={breath:["숨 길이 연습","말이 조금 급했어. 숨을 길�
 const flowText=()=>TODAY?{text:TODAY.text,src:TODAY.src||""}:{text:BST_LINE,src:""};
 function flowRtGo(k){if(k==="breath"||k==="scale"){const L=trkLevels(k),t=L.find(x=>bestOf(x)<60)||L[L.length-1];if(t){openTrk(t);return}}
  const g=k==="high"?"high":"mid",p=genPlan(g),i=p.steps.findIndex((_,j)=>genBest(p.id,j)<60);openGen(p,i<0?p.steps.length-1:i)}
-function flowReread(){if(PM.flow===2&&PM.m1){PM.flow=3;PM.coach=coach(PM,$("tgt").value);PM.step=3;$("pm").hidden=false;document.body.style.overflow="hidden";renderPM()}else openPractice({...flowText(),flow:3})}
+function flowReread(){if(PM.m1&&(PM.flow===2||PM.flow===3)){delete PM.m2;delete PM.take2;PM.saved=false;PM.flow=3;PM.coach=coach(PM,$("tgt").value);PM.step=3;$("pm").hidden=false;document.body.style.overflow="hidden";renderPM()}else openPractice({...flowText(),flow:3})}
 function flowMission(){const t=today(),f=CHAT.flow||(CHAT.flow={step:"check"});if(t&&t.flow)f.step="done";if(f.step==="check"&&t&&t.steps&&t.steps.check)f.step="read";
  if(f.step==="check")return{id:"f-check",name:"① 목소리 체크",min:"20초",ico:"mic",say:"먼저 오늘 목소리부터 들어 볼게. 편하게 <b>'아~' 5초</b>!",why:"매일 같은 소리로 재야 어제와 견줄 수 있어요.",go:()=>{openD3(1);F.only=true}};
  if(f.step==="read"){const x=strip(flowText().text).replace(/\s+/g," ");return{id:"f-read",name:"② 오늘의 문장 읽기",min:"1분",ico:"book",say:`오늘의 문장이야. 평소처럼 편하게 한 번 읽어 줘.<i class="flow-q">“${esc(x.length>46?x.slice(0,46)+"…":x)}”</i>`,why:"지금 내 말소리를 먼저 들어 봐야 무엇을 연습할지 알 수 있어요.",go:()=>openPractice({...flowText(),flow:1})}}
@@ -2381,19 +2427,34 @@ function flowMission(){const t=today(),f=CHAT.flow||(CHAT.flow={step:"check"});i
  return null}
 function flowReview(p){if(!/^f-/.test(p.mid))return false;const f=CHAT.flow||(CHAT.flow={step:"check"}),t=today(),tgt=$("tgt").value,W=v=>v==null?null:v>=70?"좋아요":v>=45?"보통":"연습하면 좋아질 곳";
  if(p.mid==="f-check"){if(!(t&&t.steps&&t.steps.check)){chatPush("c","아직 '아~'를 못 들었어. 준비되면 다시 해 보자.");giveMission();return true}
-  f.step="read";const c=cardCond();if(c)chatPush("c",c.html);giveMission(c&&c.drop?"어제보다 조금 지쳐 있어. 오늘은 작게, 편하게 가자.":"목소리 잘 들었어!");return true}
+  f.step="read";const c=cardCond();if(c)chatPush("c",c.html);
+  const mm=t.mv||t.m,quiet=mm&&((Number.isFinite(mm.level)&&mm.level<-42)||(Number.isFinite(mm.voiced)&&mm.voiced<2));
+  chatPush("c",`${t.w?esc((CARE_W[t.w]||CARE_W.none).line)+"<br>":""}${quiet?"소리가 조금 작게 들어왔어. <b>폰을 입에서 한 뼘쯤</b> 두고 한 번 더 재면 더 정확해.<br>":""}${c&&c.drop?"어제보다 조금 지쳐 있어. 오늘은 작게, 편하게 가자.":"목소리 잘 들었어!"} 이제 오늘의 문장을 읽어 볼까?`,null,[["f-check-again","한 번 더 잴래"],["f-next","문장 읽을래"]]);return true}
  if(p.mid==="f-read"){if(!(PM.flow===2&&PM.m1)){chatPush("c","아직 문장을 못 들었어. 준비되면 다시 읽어 줘.");giveMission();return true}
   const sc=recScores({m2:PM.m1},tgt),N={rate:"말 빠르기",melody:"높낮이(억양)",crisp:"또렷함"},ks=Object.keys(N).filter(k=>sc[k]!=null);
   chatPush("c",`<div class="qcard"><div class="qc-h"><b>방금 읽은 목소리</b><small>되고 싶은 목소리 ‘${esc(TYPES[tgt]||"")}’ 기준</small></div><ul>${ks.map(k=>`<li><span>${N[k]}</span><b class="${sc[k]>=70?"up":sc[k]<45?"dn":""}">${W(sc[k])}</b></li>`).join("")}</ul></div>`);
-  const weak=ks.slice().sort((x,y)=>sc[x]-sc[y])[0];f.rt=!weak||sc[weak]>=70?"mid":{rate:"breath",melody:"scale",crisp:"high"}[weak];f.step="routine";f.plays=0;giveMission("결과를 보고 오늘의 연습을 골랐어.");return true}
+  const weak=ks.slice().sort((x,y)=>sc[x]-sc[y])[0];f.rt=!weak||sc[weak]>=70?"mid":{rate:"breath",melody:"scale",crisp:"high"}[weak];f.plays=0;
+  const m=PM.m1,how=[m.rate!=null?`1초에 ${m.rate.toFixed(1)}글자`:"",m.pauses!=null?`쉼 ${m.pauses}번`:""].filter(Boolean).join(" · ");
+  chatPush("c",`${how?how+"으로 읽었어. ":""}${weak&&sc[weak]<70?`가장 좋아질 곳은 <b>${N[weak]}</b>야.`:"전체로 좋았어!"}<br>${(FLOW_RT[f.rt]||FLOW_RT.mid)[1]}<br>한 번 더 읽어 볼래, 아니면 이 연습부터 할래?`,null,[["f-read-again","한 번 더 읽을래"],["f-next",(FLOW_RT[f.rt]||FLOW_RT.mid)[0]+" 할래"]]);return true}
  if(p.mid==="f-rt"){const a=coachSnap(),up=Object.entries(a.plays).some(([k,v])=>v>(p.snap.plays[k]||0));if(!up){chatPush("c","연습을 도중에 멈췄네. 괜찮아, 한 번만 끝까지 해 보자.");giveMission();return true}
-  const b=Object.entries(TRK.best).find(([k,v])=>(v.plays||0)>(p.snap.plays[k]||0));f.step="reread";giveMission(`연습 잘했어!${b?` 이번엔 ${b[1].best}%.`:""}`);return true}
+  const b=Object.entries(TRK.best).find(([k,v])=>(v.plays||0)>(p.snap.plays[k]||0)),q=TR.t&&TR.notes&&TR.notes.length?Math.round(TR.notes.filter(n=>n.lit).length/TR.notes.length*100):null,best=b?b[1].best:null;
+  const cr=TR.brk||(BRK&&p.snap.brk==null?{st:BRK.st}:null);f.step="reread";
+  chatPush("c",`${q!=null?`이번엔 <b>${q}%</b>`:best!=null?`최고 <b>${best}%</b>`:"끝까지 했어"}${best!=null&&q!=null&&best>q?` (최고 ${best}%)`:""}. ${(q??best??0)>=60?"통과야! 다음 단계가 열렸어.":"60%까지 조금만 더 가 보자."}${cr?`<br>${noteLabel(cr.st)}에서 소리가 걸렸어 — 키우지 말고 작게 다가가면 돼.`:""}<br>한 번 더 할래, 아니면 아까 문장을 다시 읽어 볼래?`,null,[["f-rt-again","한 번 더 할래"],["f-next","문장 다시 읽을래"]]);return true}
  if(p.mid==="f-re"){if(!PM.m2){chatPush("c","아직 다시 읽지 않았어. 준비되면 이어서 하자.");giveMission();return true}
-  const R=compare(PM,tgt),up=R.rows.filter(r=>r.k==="up");f.step="done";saveDay({flow:1});
-  chatPush("c",`${up.length?`처음보다 <b>${up.map(r=>r.name).join(" · ")}</b> ${up.length}가지가 좋아졌어!`:"처음과 비슷하게 읽었어. 내일 한 번 더 해 보면 달라질 거야."}<br>전후 녹음은 <b>기록</b> 탭에 남겼어. 오늘 루틴 끝 — 내일 또 만나자! 👏`);return true}
+  const R=compare(PM,tgt),up=R.rows.filter(r=>r.k==="up"),dn=R.rows.filter(r=>r.k==="down");saveDay({flow:1});
+  chatPush("c",`${up.length?`처음보다 <b>${up.map(r=>r.name).join(" · ")}</b> ${up.length}가지가 좋아졌어!`:"처음과 비슷하게 읽었어."}${dn.length?` <b>${dn.map(r=>r.name).join(" · ")}</b>는 처음이 더 나았어.`:""}<br>전후 녹음은 <b>기록</b> 탭에 남겼어. 한 번 더 읽어 볼래?`,null,[["f-re-again","한 번 더 읽을래"],["f-end","오늘은 여기까지"]]);return true}
  return false}
+function flowChoice(id,label,i){const m=CHAT.list[i];if(m)m.done=true;chatPush("u",esc(label));const f=CHAT.flow||(CHAT.flow={step:"check"});
+ const go=(mid,fn)=>{CHAT.pend={mid,snap:coachSnap()};chatSave();renderCoach();fn()};
+ if(id==="f-check-again")return go("f-check",()=>{openD3(1);F.only=true});
+ if(id==="f-read-again")return go("f-read",()=>openPractice({...flowText(),flow:1}));
+ if(id==="f-rt-again")return go("f-rt",()=>flowRtGo(f.rt));
+ if(id==="f-re-again")return go("f-re",flowReread);
+ if(id==="f-end"){f.step="done";chatPush("c","오늘 루틴 끝! 👏 내일 또 '아~'부터 같이 하자.");renderCoach();return}
+ if(id==="f-next"){if(f.step==="read"&&PM.flow===2&&PM.m1)f.step="routine";const x=flowMission();if(x)return go(x.id,x.go);giveMission()}
+ renderCoach()}
 const coachPick=avoid=>{const L=coachList(),k=L.filter(m=>m.id!==avoid);return(k.length?k:L)[COACH.skip%(k.length||L.length)]};
-const chatPush=(w,t,mid)=>{CHAT.list.push(mid?{w,t,mid}:{w,t});chatSave()};
+const chatPush=(w,t,mid,ch)=>{CHAT.list.push(Object.assign({w,t},mid?{mid}:{},ch?{ch}:{}));chatSave()};
 const giveMission=(lead,avoid)=>{const m=coachPick(avoid);chatPush("c",(lead?lead+"<br>":"")+m.say,m.id)};
 
 function coachSnap(){const t=today(),st=t?.steps||{};return{d3:D3.filter(x=>st[x[0]]).length,plays:Object.fromEntries(Object.entries(TRK.best).map(([k,v])=>[k,v.plays||0])),brk:BRK?BRK.step||0:null,vc:VCHKS.length,rec:RECS.length,mine:MINE.length}}
@@ -2445,14 +2506,14 @@ function renderCoach(){const e=$("coach");if(!e||!COACH)return;
   else giveMission(`${u.name?esc(u.name)+", ":""}안녕! ${esc(coachName())}${ya(coachName())}. 오늘 ${dayN()}일째${sk>1?` · ${sk}일 연속!`:"."}<br>궁금한 건 물어봐. 예: <b>"오늘 내 목소리 컨디션 어제랑 비교하면 어때?"</b>`)}
  const lastM=CHAT.list.reduce((a,m,i)=>m.mid?i:a,-1),L=coachList();
  e.innerHTML=`<div class="chat" id="chat-log" aria-live="polite">${CHAT.list.map((m,i)=>m.w==="u"?`<p class="msg me">${m.t}</p>`
-  :`<div class="msg c">${i===0||CHAT.list[i-1].w!=="c"?`<img class="say-img" src="${charSrc($("tgt").value)}" alt="">`:`<span class="say-img" style="visibility:hidden"></span>`}<div class="bubble">${i===0||CHAT.list[i-1].w!=="c"?`<b class="msg-n">${esc(coachName())}</b>`:""}${m.t}${m.mid?(()=>{const x=L.find(q=>q.id===m.mid);return x?`<button type="button" class="mis${i===lastM?" now":""}" data-m="${m.mid}"><span class="c">${ICON[x.ico]||ICON.play}</span><span><b>${x.name}</b><small>약 ${x.min} · 누르면 시작</small></span></button>`:m.mid==="d3"?`<span class="mis done">${ICON.check} 했어요</span>`:""})():""}</div></div>`).join("")}</div>
+  :`<div class="msg c">${i===0||CHAT.list[i-1].w!=="c"?`<img class="say-img" src="${charSrc($("tgt").value)}" alt="">`:`<span class="say-img" style="visibility:hidden"></span>`}<div class="bubble">${i===0||CHAT.list[i-1].w!=="c"?`<b class="msg-n">${esc(coachName())}</b>`:""}${m.t}${m.ch&&!m.done?`<div class="chs">${m.ch.map(([id,l])=>`<button type="button" data-ch="${id}" data-i="${i}">${l}</button>`).join("")}</div>`:""}${m.mid?(()=>{const x=L.find(q=>q.id===m.mid);return x?`<button type="button" class="mis${i===lastM?" now":""}" data-m="${m.mid}"><span class="c">${ICON[x.ico]||ICON.play}</span><span><b>${x.name}</b><small>약 ${x.min} · 누르면 시작</small></span></button>`:m.mid==="d3"?`<span class="mis done">${ICON.check} 했어요</span>`:""})():""}</div></div>`).join("")}</div>
   <div class="chips coach-chips" role="group" aria-label="빠른 대답">${["오늘 컨디션 어제랑 비교해 줘","내 목소리 미리 들어볼래","오늘 뭐 할까?","이번 주 어땠어?","목이 좀 쉬었어"].map(x=>`<button type="button" data-q="${x}">${x}</button>`).join("")}</div>
   <div class="chat-dock${COACH.kb?" kb":""}" id="chat-dock"><button type="button" class="dock-kb" id="chat-kb" aria-label="${COACH.kb?"목소리로 말하기로":"글로 쓰기"}" aria-pressed="${!!COACH.kb}">${COACH.kb?ICON.wave:ICON.pen}</button>
    <form class="chat-in" id="chat-in"><input id="chat-tx" enterkeyhint="send" autocomplete="off" placeholder="${esc(coachName())}에게 물어보기…" aria-label="선생님에게 물어보기"><button type="submit" class="chat-send" aria-label="보내기">${ICON.next}</button></form>
    <button type="button" class="dock-hint" id="chat-say">눌러서 말하기…</button>
    <button type="button" class="chat-mic" id="chat-mic" aria-label="눌러서 말하기">${MIC}</button></div>`;
  const lg=$("chat-log");lg.scrollTop=lg.scrollHeight;requestAnimationFrame(()=>{const c=lg.lastElementChild;if(c&&!$("v-today").hidden&&c.getBoundingClientRect().bottom>innerHeight)c.scrollIntoView({block:"end"})})}
-$("coach").addEventListener("click",e=>{const m=e.target.closest("[data-m]");if(m){coachAsk(m.dataset.m);return}const q=e.target.closest("[data-q]");if(q)coachReply(q.dataset.q);if(e.target.closest("#chat-mic,#chat-say"))voiceTalk();if(e.target.closest("#chat-kb")){COACH.kb=!COACH.kb;renderCoach();if(COACH.kb)$("chat-tx").focus()}});
+$("coach").addEventListener("click",e=>{const c=e.target.closest("[data-ch]");if(c){flowChoice(c.dataset.ch,c.textContent,+c.dataset.i);return}const m=e.target.closest("[data-m]");if(m){coachAsk(m.dataset.m);return}const q=e.target.closest("[data-q]");if(q)coachReply(q.dataset.q);if(e.target.closest("#chat-mic,#chat-say"))voiceTalk();if(e.target.closest("#chat-kb")){COACH.kb=!COACH.kb;renderCoach();if(COACH.kb)$("chat-tx").focus()}});
 $("coach").addEventListener("submit",e=>{e.preventDefault();const i=$("chat-tx"),v=i.value;i.value="";coachReply(v);const n=$("chat-tx");if(n&&v.trim())n.focus()});
 
 {const OV=["pm","d3","tr","vc","rd","tp","sc"],mo=new MutationObserver(()=>{if(CHAT.pend&&OV.every(id=>$(id).hidden))setTimeout(()=>{if(CHAT.pend&&OV.every(id=>$(id).hidden))coachReview()},500)});OV.forEach(id=>$(id)&&mo.observe($(id),{attributes:true,attributeFilter:["hidden"]}))}
