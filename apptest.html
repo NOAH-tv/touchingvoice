@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://www.gstatic.com https://apis.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; font-src 'self'; connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com; frame-src https://touchingvoice-d1b1b.firebaseapp.com; object-src 'none'; base-uri 'none'; form-action 'none'"><meta name="referrer" content="no-referrer"><meta name="theme-color" media="(prefers-color-scheme: light)" content="#F5EEE0"><meta name="theme-color" media="(prefers-color-scheme: dark)" content="#100C1A">
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://www.gstatic.com https://apis.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; font-src 'self'; connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com; frame-src 'self' https://touchingvoice-d1b1b.firebaseapp.com; object-src 'none'; base-uri 'none'; form-action 'none'"><meta name="referrer" content="no-referrer"><meta name="theme-color" media="(prefers-color-scheme: light)" content="#F5EEE0"><meta name="theme-color" media="(prefers-color-scheme: dark)" content="#100C1A">
 <title>터칭보이스 앱 시험판</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
@@ -1529,6 +1529,8 @@ function applyUser(u){if(!u)return;GOAL=u.goal||null;NOWP=u.now||null;if(Array.i
 const syncUser=w=>{const u={...(loadUser()||{}),sex:$("sex").value,cur:$("cur").value,tgt:$("tgt").value};u.now=fixSide(u.now||posOfCode(u.cur),u.cur);
  if(w==="tgt"||!u.goal||codeOfGoal(u.goal)!==u.tgt)u.goal=presetFor(u.tgt,u.now);saveUser(u);GOAL=u.goal;NOWP=u.now};
 function openOB(){OB={k:"hi",u:{...(loadUser()||{})}};$("ob").hidden=false;document.body.style.overflow="hidden";renderOB()}
+function obAuthed(me){if(!me||$("ob").hidden||!["hi","join"].includes(OB.k))return;const u=OB.u;u.via="google";if(!u.name&&me.name)u.name=me.name.split(" ")[0].slice(0,20);
+ if(OB.gate){closeOB();maybeAd()}else if(OB.login&&u.cur&&u.tgt)obGo("done");else obGo("info")}
 function authGate(){let ob=null;try{ob=localStorage.getItem("tv_ob")}catch(e){}if(!ob){if($("ob").hidden)openOB();return}
  if(!$("ob").hidden&&OB.gate)return;OB={k:"join",u:{...(loadUser()||{})},login:true,gate:true};$("ob").hidden=false;document.body.style.overflow="hidden";renderOB()}
 function closeOB(){if(REC.on)recCancel();$("ob").hidden=true;document.body.style.overflow=""}
@@ -1560,7 +1562,7 @@ function renderOB(){const k=OB.k,u=OB.u,B=$("ob-body"),A=$("ob-act"),i=["join","
   <p class="ob-err" id="ob-err"></p><p class="meta ob-c" style="margin:0">로그인하면 이름과 이메일이 계정 확인에 쓰여요. 카카오 · Apple 로그인은 준비 중이에요.</p>`;
   A.innerHTML="";
   TVAuth.warm();$("ob-sso").onclick=async e=>{const b=e.target.closest("button");if(!b||b.disabled)return;b.disabled=true;$("ob-err").textContent="";
-   try{const me=TVAuth.info()||await TVAuth.signIn();u.via="google";if(!u.name&&me.name)u.name=me.name.split(" ")[0].slice(0,20);if(OB.gate){closeOB();maybeAd()}else if(OB.login&&u.cur&&u.tgt)obGo("done");else obGo("info")}
+   try{obAuthed(TVAuth.info()||await TVAuth.signIn())}
    catch(err){b.disabled=false;const el=$("ob-err");if(el)el.textContent=TVAuth.msg(err)}};return}
  if(k==="info"){B.innerHTML=`<div class="pm-kick">시작 전에</div><h2 class="ob-h2" id="ob-h">나에 대해 조금만 알려 주세요</h2>
   <label class="ed-l">부를 이름 <small>선택 · 인사할 때 불러 드려요</small><input id="ob-nm" class="inp" maxlength="20" autocomplete="nickname" placeholder="예: 우경" value="${esc(u.name||"")}"></label>
@@ -2204,28 +2206,33 @@ function spAttach(ta,box){let prev=null,done=0,tm=0;
 
 
 const TVAuth=(()=>{
- const FB={apiKey:"AIzaSyALL2p6zE5_AzS6V025MzPElXqjUUhhqp8",authDomain:"touchingvoice-d1b1b.firebaseapp.com",projectId:"touchingvoice-d1b1b",appId:"1:548781546332:web:b5b60389e164858e627f99"},B="https://www.gstatic.com/firebasejs/12.18.0/";
- let A,auth,user=null,ready=null;const subs=new Set();
+ const SELF=location.hostname==="touchingvoice.app";
+ const FB={apiKey:"AIzaSyALL2p6zE5_AzS6V025MzPElXqjUUhhqp8",authDomain:SELF?"touchingvoice.app":"touchingvoice-d1b1b.firebaseapp.com",projectId:"touchingvoice-d1b1b",appId:"1:548781546332:web:b5b60389e164858e627f99"},B="https://www.gstatic.com/firebasejs/12.18.0/";
+ let A,auth,user=null,ready=null,rerr=null;const subs=new Set();
  const info=()=>user?{uid:user.uid,name:user.displayName||"",email:user.email||""}:null;
  const tell=()=>{try{user?localStorage.setItem("tv_auth","1"):localStorage.removeItem("tv_auth")}catch(e){}subs.forEach(f=>{try{f(info())}catch(e){}})};
  
  const load=()=>ready||(ready=(async()=>{const[app,a]=await Promise.all([import(B+"firebase-app.js"),import(B+"firebase-auth.js")]);A=a;
    const inst=app.getApps().find(x=>x.name==="tvapp")||app.initializeApp(FB,"tvapp");auth=a.getAuth(inst);await a.setPersistence(auth,a.browserLocalPersistence);
-   await auth.authStateReady();user=auth.currentUser;a.onAuthStateChanged(auth,u=>{user=u;tell()})})().catch(e=>{ready=null;throw e}));
+   await auth.authStateReady();try{await a.getRedirectResult(auth)}catch(e){rerr=e}user=auth.currentUser;a.onAuthStateChanged(auth,u=>{user=u;tell()})})().catch(e=>{ready=null;throw e}));
  
  const inApp=()=>/KAKAOTALK|Instagram|NAVER\(inapp|FBAN|FBAV|Line\//i.test(navigator.userAgent);
  async function signIn(){if(inApp())throw Object.assign(new Error("inapp"),{code:"inapp"});await load();
-  const p=new A.GoogleAuthProvider();p.setCustomParameters({prompt:"select_account"});await A.signInWithPopup(auth,p);user=auth.currentUser;tell();return info()}
+  const p=new A.GoogleAuthProvider();p.setCustomParameters({prompt:"select_account"});
+  
+  if(SELF){try{localStorage.setItem("tv_auth_wait","1")}catch(e){}await A.signInWithRedirect(auth,p);return new Promise(()=>{})}
+  await A.signInWithPopup(auth,p);user=auth.currentUser;tell();return info()}
  async function signOut(){let k=null;try{k=localStorage.getItem("tv_auth")}catch(e){}if(!ready&&!k)return;await load();await A.signOut(auth);user=null;tell()}
  const MSG={inapp:"카카오톡 · 인스타그램 안에서는 구글 로그인이 막혀 있어요. 사파리나 크롬에서 이 주소를 열어 주세요.","auth/popup-blocked":"로그인 창이 막혔어요. 한 번 더 눌러 주세요.","auth/popup-closed-by-user":"로그인을 마치지 않고 창을 닫았어요.","auth/cancelled-popup-request":"로그인을 마치지 않고 창을 닫았어요.","auth/unauthorized-domain":"이 주소에서는 로그인이 안 돼요. touchingvoice.app 에서 열어 주세요.","auth/network-request-failed":"인터넷 연결을 확인해 주세요."};
  return{signIn,signOut,info,inApp,on:f=>{subs.add(f)},warm:()=>{load().catch(()=>{})},msg:e=>MSG[e&&e.code]||"로그인하지 못했어요. 잠시 뒤 다시 해 주세요.",
-  boot:()=>{let k=null;try{k=localStorage.getItem("tv_auth")}catch(e){}if(k)load().then(tell).catch(()=>{})}}})();
+  boot:()=>{let k=null,w=null;try{k=localStorage.getItem("tv_auth");w=localStorage.getItem("tv_auth_wait");localStorage.removeItem("tv_auth_wait")}catch(e){}
+   if(k||w)load().then(()=>{tell();if(w&&!user&&rerr){const el=$("ob-err");if(el)el.textContent=TVAuth.msg(rerr)}}).catch(()=>{})},waiting:()=>{try{return!!localStorage.getItem("tv_auth_wait")}catch(e){return false}}}})();
 
 function renderAcct(){const me=TVAuth.info(),s=$("acct-s"),b=$("acct-b");if(!s||!b)return;
  s.textContent=me?(me.name||"이름 없음")+" · "+me.email:"Google 계정으로 로그인할 수 있어요";b.textContent=me?"로그아웃":"Google로 로그인";b.disabled=false}
 $("acct-b").onclick=async e=>{const b=e.currentTarget;b.disabled=true;$("acct-e").textContent="";
  try{if(TVAuth.info())await TVAuth.signOut();else await TVAuth.signIn()}catch(err){$("acct-e").textContent=TVAuth.msg(err)}renderAcct()};
-TVAuth.on(renderAcct);TVAuth.on(me=>{if(!me)authGate()});renderAcct();TVAuth.boot();
+TVAuth.on(renderAcct);TVAuth.on(me=>{if(!me)authGate();else obAuthed(me)});renderAcct();TVAuth.boot();
 
 const spM=spAttach($("mtext"),$("m-sp"));
 
