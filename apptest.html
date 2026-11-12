@@ -1632,17 +1632,25 @@ function trkLoop(){if(!TR.run)return;const raw=TR.au.currentTime,tl=raw-(TR.demo
  $("tr-hit").textContent=TR.notes.filter(n=>n.lit).length;$("tr-time").textContent=`${fmtT(raw)} / ${fmtT(TR.au.duration||TR.t.dur||0)}`;
  if(act.length&&!TR.demo){const n=act[0];$("tr-msg").textContent=`${noteNm(n.midi)} · ${TR.cur==null?"소리를 내 주세요":Math.abs(TR.cur-n.midi)<=tol?"좋아요!":TR.cur<n.midi?"조금 더 높게":"조금 더 낮게"}`}
  drawTrk();TR.raf=requestAnimationFrame(trkLoop)}
-function trkRange(cv,now){if(!cv.dataset.f)return[TR.lo-2,TR.hi+2];const v=TR.notes.filter(n=>n.t+n.dur>now-1&&n.t<now+4).map(n=>n.midi);
- if(v.length){let a=Math.min(...v)-3,b=Math.max(...v)+3;if(b-a<12){const c=(a+b)/2;a=c-6;b=c+6}TR.vw=TR.vw?[TR.vw[0]+(a-TR.vw[0])*.06,TR.vw[1]+(b-TR.vw[1])*.06]:[a,b]}return TR.vw||[TR.lo-2,TR.hi+2]}
+
+function rollPage(now,t0,t1,w){const span=Math.max(1,t1-t0);if(span<=12)return{a:t0,pxs:w/span};const P=8,s=P*.8;return{a:t0+Math.max(0,Math.floor((now-t0)/s))*s,pxs:w/P}}
+
+function rollSpan(v){let a=Math.min(...v)-2,b=Math.max(...v)+2;if(b-a<12){const c=Math.round((a+b)/2);a=c-6;b=c+6}return[a,b]}
+function rollKeys(g,lo,hi,y,kw,cur,lab){const h=Math.abs(y(lo)-y(lo+1));g.save();g.textAlign="left";g.textBaseline="middle";g.font=`600 ${Math.round(Math.max(9,Math.min(18,h*.7)))}px Paperlogy,sans-serif`;
+ for(let m=Math.ceil(lo);m<=Math.floor(hi);m++){const k=((m%12)+12)%12,blk=[1,3,6,8,10].includes(k),yy=y(m),on=cur!=null&&Math.round(cur)===m,l=lab(m);
+  g.fillStyle="rgba(245,238,224,.86)";g.fillRect(0,yy-h/2+.5,kw,Math.max(1,h-1));if(blk){g.fillStyle="rgba(30,18,58,.94)";g.fillRect(0,yy-h/2+.5,kw*.6,Math.max(1,h-1))}
+  if(on){g.fillStyle="#F2C35B";g.fillRect(0,yy-h/2+.5,kw,Math.max(1,h-1))}
+  if(l){g.fillStyle="#43227D";g.fillText(l,5,yy)}}g.restore()}
 function drawTrk(){const cv=$("tr-roll");if(!cv)return;const g=cv.getContext("2d"),f=+cv.dataset.f||1,W=cv.width/f,H=cv.height/f,now=TR.now;g.setTransform(f,0,0,f,0,0);g.clearRect(0,0,W,H);
- const [lo,hi]=trkRange(cv,now),top=66,bot=H-40,y=m=>bot-(m-lo)/(hi-lo)*(bot-top),pxs=W/5,px0=W*0.28,X=t=>px0+(t-now)*pxs,big=!!cv.dataset.f,bh=Math.max(10,Math.min(big?44:26,(bot-top)/(hi-lo)*0.9));
+ const big=!!cv.dataset.f,KW=big?58:46,end=(TR.au&&TR.au.duration)||TR.t.dur||Math.max(...TR.notes.map(n=>n.t+n.dur)),pg=rollPage(now,0,end,W-KW-14),X=t=>KW+(t-pg.a)*pg.pxs,px0=Math.max(KW,X(now)),pe=pg.a+(W-KW-14)/pg.pxs,vm=TR.notes.filter(n=>n.t+n.dur>pg.a&&n.t<pe).map(n=>n.midi),[lo,hi]=rollSpan(vm.length?vm:[TR.lo,TR.hi]),top=66,bot=H-40,y=m=>bot-(m-lo)/(hi-lo)*(bot-top),bh=Math.max(10,Math.min(big?44:26,(bot-top)/(hi-lo)*0.9));
  g.textBaseline="middle";g.font="600 15px Paperlogy,sans-serif";g.textAlign="left";
- for(let m=Math.ceil(lo);m<=hi;m++){const yy=y(m),c=((m%12)+12)%12===0;g.strokeStyle=c?"rgba(245,238,224,.16)":"rgba(255,255,255,.035)";g.lineWidth=1;g.beginPath();g.moveTo(46,yy);g.lineTo(W,yy);g.stroke();if(c){g.fillStyle="rgba(245,238,224,.6)";g.fillText(noteNm(m),6,yy)}}
- TR.notes.forEach(n=>{const x1=Math.max(46,X(n.t)),x2=X(n.t+n.dur)-3;if(x2<=x1||x1>W)return;const on=now>=n.t&&now<n.t+n.dur,past=n.t+n.dur<now;
+ for(let m=Math.ceil(lo);m<=hi;m++){const yy=y(m),c=((m%12)+12)%12===0;g.strokeStyle=c?"rgba(245,238,224,.16)":"rgba(255,255,255,.035)";g.lineWidth=1;g.beginPath();g.moveTo(KW,yy);g.lineTo(W,yy);g.stroke()}
+ TR.notes.forEach(n=>{const x1=Math.max(KW,X(n.t)),x2=X(n.t+n.dur)-3;if(x2<=x1||x1>W)return;const on=now>=n.t&&now<n.t+n.dur,past=n.t+n.dur<now;
   g.save();if(n.lit){g.shadowColor="rgba(242,195,91,.9)";g.shadowBlur=16}g.beginPath();const yy=y(n.midi)-bh/2;if(g.roundRect)g.roundRect(x1,yy,x2-x1,bh,bh/2);else g.rect(x1,yy,x2-x1,bh);
   g.fillStyle=n.lit?"#F2C35B":past?"rgba(214,200,250,.16)":on?"rgba(214,200,250,.9)":"rgba(187,166,240,.45)";g.fill();g.restore()});
  g.strokeStyle="rgba(255,255,255,.85)";g.lineWidth=4;g.lineCap="round";g.lineJoin="round";g.beginPath();let last=null;
- TR.trail.forEach(q=>{const x=X(q.t);if(x<46||x>px0+2){last=null;return}const yy=y(q.s);if(last&&q.t-last.t<0.12)g.lineTo(x,yy);else g.moveTo(x,yy);last=q});g.stroke();
+ TR.trail.forEach(q=>{const x=X(q.t);if(q.t<pg.a||x<KW||x>px0+2){last=null;return}const yy=y(q.s);if(last&&q.t-last.t<0.12)g.lineTo(x,yy);else g.moveTo(x,yy);last=q});g.stroke();
+ rollKeys(g,lo,hi,y,KW,TR.cur,m=>{const k=((m%12)+12)%12;return[1,3,6,8,10].includes(k)?"":k===0||(bot-top)/(hi-lo)>=16?noteNm(m):""});
  g.strokeStyle="rgba(245,238,224,.45)";g.lineWidth=2;g.setLineDash([4,6]);g.beginPath();g.moveTo(px0,top-40);g.lineTo(px0,bot+16);g.stroke();g.setLineDash([]);
  let cy=TR.cur;if(cy==null){const n=TR.notes.find(n=>n.t+n.dur>now)||TR.notes[TR.notes.length-1];cy=n?n.midi:null}
  if(cy!=null&&CHICK.complete&&CHICK.naturalWidth){const z=big?Math.max(58,Math.min(88,bh*2.4)):58,cx=px0,c0=Math.min(bot-z/2,Math.max(top-30+z/2,y(cy)-z/2-12));g.save();g.beginPath();g.arc(cx,c0,z/2,0,7);g.fillStyle="#F5EEE0";g.fill();g.clip();g.drawImage(CHICK,cx-z/2-7,c0-z/2-5,z+14,z+14);g.restore();g.strokeStyle="#F2C35B";g.lineWidth=3;g.beginPath();g.arc(cx,c0,z/2,0,7);g.stroke()}}
@@ -1889,17 +1897,18 @@ function rollFocus(ov,cv,on,redraw){$(ov).classList.toggle("focus",on);if(!cv){R
  if(on){ROLL_FIT=()=>{const r=cv.getBoundingClientRect();if(!r.width||!r.height)return;const d=Math.min(3,window.devicePixelRatio||1);cv.width=Math.round(r.width*d);cv.height=Math.round(r.height*d);cv.dataset.f=cv.width/Math.max(480,Math.min(900,r.width*1.4));if(redraw)redraw()};ROLL_FIT();return}
  ROLL_FIT=null;delete cv.dataset.f;cv.width=760;cv.height=cv.id==="roll"?560:520;if(redraw)redraw()}
 function drawRoll(cv,R){LAST_ROLL=[cv,R];const g=cv.getContext("2d"),f=+cv.dataset.f||1,W=cv.width/f,H=cv.height/f,now=R.now;g.setTransform(f,0,0,f,0,0);g.clearRect(0,0,W,H);
- const top=96,bot=H-70,y=x=>Math.max(top-14,Math.min(bot+14,bot-(x+1)*(bot-top)/9)),pxs=W/4.4,px0=W*0.30,X=t=>px0+(t-now)*pxs;
+ const top=96,bot=H-70,y=x=>Math.max(top-14,Math.min(bot+14,bot-(x+1)*(bot-top)/9)),big=!!cv.dataset.f,KW=big?64:52,all=[...R.guide,...R.notes],t0=all.length?Math.min(...all.map(n=>n.a))-.3:0,t1=all.length?Math.max(...all.map(n=>n.b))+.3:4,pg=rollPage(now,t0,t1,W-KW-14),X=t=>KW+(t-pg.a)*pg.pxs,px0=Math.max(KW,X(now));
  g.textBaseline="middle";g.lineWidth=1;
- for(let i=0;i<=11;i++){const x=52+i*(W-52)/11;g.strokeStyle="rgba(255,255,255,.05)";g.beginPath();g.moveTo(x,top-34);g.lineTo(x,bot+24);g.stroke()}
- const big=!!cv.dataset.f,sp=(bot-top)/9;g.font=`600 ${big?Math.round(Math.min(26,Math.max(18,sp*.3))):18}px Paperlogy,sans-serif`;g.textAlign="left";
- [0,2,4,5,7].forEach((x,i)=>{g.strokeStyle="rgba(245,238,224,.10)";g.beginPath();g.moveTo(52,y(x));g.lineTo(W,y(x));g.stroke();g.fillStyle="rgba(245,238,224,.6)";g.fillText(SOL[i],14,y(x))});
- const bar=(a,b,x,fill,glow)=>{const x1=Math.max(52,X(a)),x2=X(b)-8;if(x2<=x1||x1>W)return null;g.save();if(glow){g.shadowColor="rgba(242,195,91,.95)";g.shadowBlur=20}g.beginPath();const h=big?Math.max(28,Math.min(48,sp*.55)):28,yy=y(x)-h/2;if(g.roundRect)g.roundRect(x1,yy,x2-x1,h,h/2);else g.rect(x1,yy,x2-x1,h);g.fillStyle=fill;g.fill();g.restore();return[x1,x2]};
+ for(let i=0;i<=11;i++){const x=KW+i*(W-KW)/11;g.strokeStyle="rgba(255,255,255,.05)";g.beginPath();g.moveTo(x,top-34);g.lineTo(x,bot+24);g.stroke()}
+ const sp=(bot-top)/9;g.font=`600 ${big?Math.round(Math.min(26,Math.max(18,sp*.3))):18}px Paperlogy,sans-serif`;g.textAlign="left";
+ [0,2,4,5,7].forEach((x,i)=>{g.strokeStyle="rgba(245,238,224,.10)";g.beginPath();g.moveTo(KW,y(x));g.lineTo(W,y(x));g.stroke()});
+ const bar=(a,b,x,fill,glow)=>{const x1=Math.max(KW,X(a)),x2=X(b)-8;if(x2<=x1||x1>W)return null;g.save();if(glow){g.shadowColor="rgba(242,195,91,.95)";g.shadowBlur=20}g.beginPath();const h=big?Math.max(28,Math.min(48,sp*.55)):28,yy=y(x)-h/2;if(g.roundRect)g.roundRect(x1,yy,x2-x1,h,h/2);else g.rect(x1,yy,x2-x1,h);g.fillStyle=fill;g.fill();g.restore();return[x1,x2]};
  R.guide.forEach(n=>bar(n.a,n.b,n.st,"rgba(187,166,240,.42)"));
  g.font="600 17px Paperlogy,sans-serif";g.textAlign="center";
  R.notes.forEach((n,i)=>{const q=bar(n.a,n.b,n.st,n.lit?"#F2C35B":"rgba(214,200,250,.55)",n.lit);if(q){g.fillStyle=n.lit?"#F2C35B":"rgba(245,238,224,.45)";g.fillText(String(i+1),(q[0]+q[1])/2,H-30)}});
  g.strokeStyle="rgba(255,255,255,.8)";g.lineWidth=4;g.lineCap="round";g.lineJoin="round";g.beginPath();let last=null;
- R.trail.forEach(q=>{const x=X(q.t);if(x<52||x>px0+2){last=null;return}const yy=y(q.s);if(last&&q.t-last.t<0.12)g.lineTo(x,yy);else g.moveTo(x,yy);last=q});g.stroke();
+ R.trail.forEach(q=>{const x=X(q.t);if(q.t<pg.a||x<KW||x>px0+2){last=null;return}const yy=y(q.s);if(last&&q.t-last.t<0.12)g.lineTo(x,yy);else g.moveTo(x,yy);last=q});g.stroke();
+ rollKeys(g,-1,8,y,KW,R.cur,m=>({0:SOL[0],2:SOL[1],4:SOL[2],5:SOL[3],7:SOL[4]})[m]||"");
  g.strokeStyle="rgba(245,238,224,.45)";g.lineWidth=2;g.setLineDash([4,6]);g.beginPath();g.moveTo(px0,top-34);g.lineTo(px0,bot+18);g.stroke();g.setLineDash([]);
  // 병아리 — 내 소리 높이(없으면 지금 음·첫 음) 위에 앉는다
  let cy=R.cur;if(cy==null){const n=[...R.guide,...R.notes].find(n=>now>=n.a&&now<n.b)||R.guide[0]||R.notes[0];cy=n?n.st:null}
@@ -2544,6 +2553,7 @@ function coachReply(txt){const x=txt.replace(/\s+/g," ").trim();if(!x)return;cha
  if(CHAT.ask==="name"){CHAT.ask=null;const n=x.replace(/^(음+|어+)[,. ]*/,"").replace(/(이라고|라고|로|으로)? ?(불러|해)? ?(줘|주세요|요)?[.!~]*$/,"").replace(/(이야|야|예요|이에요)$/,"").trim()||"목소리 선생님";
   coachSetName(n);giveMission(`좋아! 이제 나는 <b>${esc(coachName())}</b>${ya(coachName())}. 반가워!<br>궁금한 건 물어봐. 예: <b>"오늘 내 목소리 컨디션 어제랑 비교하면 어때?"</b><br>먼저 오늘 할 거 하나 줄게.`);renderCoach();return}
  if(/이름.*(바꿔|바꿀|지어)|부를게/.test(x)){CHAT.ask="name";chatPush("c","좋아, 새 이름을 말해 줘!");renderCoach();return}
+ if(/(목소리|목).*(들어|녹음|체크|재 ?줘)|지금 (내 )?목소리/.test(x)){chatPush("c",`좋아! 아래를 누르고 편하게 <b>'아~' 5초</b>.<button type="button" class="mis now" data-vchk><span class="c">${ICON.mic}</span><span><b>'아~' 5초 들려주기</b><small>누르면 바로 들어요 · 화면은 그대로</small></span></button>`);renderCoach();return}
  if(/컨디션|상태|어제|비교|오늘 (내 )?목소리 어때|목 어때/.test(x)){const c=cardCond();
   if(!c){chatPush("c","오늘은 아직 네 목소리를 못 들었어. <b>'아~' 5초</b>만 들려주면 어제랑 견줘 줄게.","short");COACH.short=true;renderCoach();return}
   chatPush("c",c.html);if(c.drop){COACH.light=true;COACH.skip=0;giveMission("어제보다 조금 지쳐 있어. 오늘은 작게, 짧게 가자.")}else{COACH.skip=0;giveMission("좋아, 이 컨디션이면 연습해도 괜찮아.")}renderCoach();return}
@@ -2576,13 +2586,13 @@ function renderCoach(){const e=$("coach");if(!e||!COACH)return;
  const lastM=CHAT.list.reduce((a,m,i)=>m.mid?i:a,-1),L=coachList();
  e.innerHTML=`<div class="chat" id="chat-log" aria-live="polite">${CHAT.list.map((m,i)=>m.w==="u"?`<p class="msg me">${m.t}</p>`
   :`<div class="msg c">${i===0||CHAT.list[i-1].w!=="c"?`<img class="say-img" src="${charSrc($("tgt").value)}" alt="">`:`<span class="say-img" style="visibility:hidden"></span>`}<div class="bubble">${i===0||CHAT.list[i-1].w!=="c"?`<b class="msg-n">${esc(coachName())}</b>`:""}${m.t}${m.ch&&!m.done?`<div class="chs">${m.ch.map(([id,l])=>`<button type="button" data-ch="${id}" data-i="${i}">${l}</button>`).join("")}</div>`:""}${m.mid?(()=>{const x=L.find(q=>q.id===m.mid);return x?`<button type="button" class="mis${i===lastM?" now":""}" data-m="${m.mid}"><span class="c">${ICON[x.ico]||ICON.play}</span><span><b>${x.name}</b><small>약 ${x.min} · 누르면 시작</small></span></button>`:m.mid==="d3"?`<span class="mis done">${ICON.check} 했어요</span>`:""})():""}</div></div>`).join("")}</div>
-  <div class="chips coach-chips" role="group" aria-label="빠른 대답">${["오늘 컨디션 어제랑 비교해 줘","내 목소리 미리 들어볼래","오늘 뭐 할까?","이번 주 어땠어?","목이 좀 쉬었어"].map(x=>`<button type="button" data-q="${x}">${x}</button>`).join("")}</div>
+  <div class="chips coach-chips" role="group" aria-label="빠른 대답">${["지금 내 목소리 들어 봐","오늘 컨디션 어제랑 비교해 줘","내 목소리 미리 들어볼래","오늘 뭐 할까?","이번 주 어땠어?","목이 좀 쉬었어"].map(x=>`<button type="button" data-q="${x}">${x}</button>`).join("")}</div>
   <div class="chat-dock${COACH.kb?" kb":""}" id="chat-dock"><button type="button" class="dock-kb" id="chat-kb" aria-label="${COACH.kb?"목소리로 말하기로":"글로 쓰기"}" aria-pressed="${!!COACH.kb}">${COACH.kb?ICON.wave:ICON.pen}</button>
    <form class="chat-in" id="chat-in"><input id="chat-tx" enterkeyhint="send" autocomplete="off" placeholder="${esc(coachName())}에게 물어보기…" aria-label="선생님에게 물어보기"><button type="submit" class="chat-send" aria-label="보내기">${ICON.next}</button></form>
    <button type="button" class="dock-hint" id="chat-say">눌러서 말하기…</button>
    <button type="button" class="chat-mic" id="chat-mic" aria-label="눌러서 말하기">${MIC}</button></div>`;
  const lg=$("chat-log");lg.scrollTop=lg.scrollHeight;requestAnimationFrame(()=>{const c=lg.lastElementChild;if(c&&!$("v-today").hidden&&c.getBoundingClientRect().bottom>innerHeight)c.scrollIntoView({block:"end"})})}
-$("coach").addEventListener("click",e=>{const c=e.target.closest("[data-ch]");if(c){flowChoice(c.dataset.ch,c.textContent,+c.dataset.i);return}const m=e.target.closest("[data-m]");if(m){coachAsk(m.dataset.m);return}const q=e.target.closest("[data-q]");if(q)coachReply(q.dataset.q);if(e.target.closest("#chat-mic,#chat-say"))voiceTalk();if(e.target.closest("#chat-kb")){COACH.kb=!COACH.kb;renderCoach();if(COACH.kb)$("chat-tx").focus()}});
+$("coach").addEventListener("click",e=>{const c=e.target.closest("[data-ch]");if(c){flowChoice(c.dataset.ch,c.textContent,+c.dataset.i);return}const m=e.target.closest("[data-m]");if(m){coachAsk(m.dataset.m);return}const q=e.target.closest("[data-q]");if(q){if(q.dataset.q==="지금 내 목소리 들어 봐"){chatPush("u",q.dataset.q);renderCoach();chatCheck()}else coachReply(q.dataset.q)}if(e.target.closest("[data-vchk]"))chatCheck();if(e.target.closest("#chat-mic,#chat-say"))voiceTalk();if(e.target.closest("#chat-kb")){COACH.kb=!COACH.kb;renderCoach();if(COACH.kb)$("chat-tx").focus()}});
 $("coach").addEventListener("submit",e=>{e.preventDefault();const i=$("chat-tx"),v=i.value;i.value="";coachReply(v);const n=$("chat-tx");if(n&&v.trim())n.focus()});
 
 {const OV=["pm","d3","tr","vc","rd","tp","sc"],mo=new MutationObserver(()=>{if(CHAT.pend&&OV.every(id=>$(id).hidden))setTimeout(()=>{if(CHAT.pend&&OV.every(id=>$(id).hidden))coachReview()},500)});OV.forEach(id=>$(id)&&mo.observe($(id),{attributes:true,attributeFilter:["hidden"]}))}
@@ -2605,6 +2615,19 @@ function voiceTalk(){if(VT.on){VT.stop&&VT.stop();return}
  try{r.start()}catch(e){end();return}
  micOpen().then(s=>{if(fin||retry){s.getTracks().forEach(x=>x.stop());micDone();return}st=s;ac=new(window.AudioContext||window.webkitAudioContext)();const an=ac.createAnalyser();an.fftSize=512;ac.createMediaStreamSource(s).connect(an);const d=new Float32Array(an.fftSize);let lv=0;ov.classList.remove("nolv");
   const tick=()=>{an.getFloatTimeDomainData(d);let m=0;for(const v of d)m+=v*v;const x=Math.min(1,Math.sqrt(m/d.length)*9);lv=x>lv?lv*.35+x*.65:lv*.82+x*.18;R.style.setProperty("--lv",lv.toFixed(3));raf=requestAnimationFrame(tick)};tick()}).catch(()=>{})}
+
+function vcChat(r){if(r.noisy)return r.talk;const L=[["clear","소리 맑음"],["flow","소리 이어짐"],["breath","숨 길이"]],W=v=>v>=70?"아주 좋아요":v>=50?"좋아요":v>=30?"보통":"쉬어 가요";
+ return`<div class="qcard"><div class="qc-h"><b>지금 내 목소리 · ${["좋아요","조금 지쳤어요","쉬어 주세요"][r.lv]||""}</b><small>휴대폰 마이크로 본 참고예요 · 진단이 아니에요</small></div><ul>${L.filter(([k])=>r.sc[k]!=null).map(([k,n])=>`<li><span>${n}</span><b class="${r.sc[k]>=50?"up":r.sc[k]<30?"dn":""}">${W(r.sc[k])}</b></li>`).join("")}</ul></div>${r.talk}`}
+async function chatCheck(){if(VT.on||REC.on)return;VT.on=true;const ov=document.createElement("div");ov.className="vt";
+ ov.innerHTML=`<div class="vt-edge"></div><button type="button" class="vt-orb" id="vt-orb" aria-label="다 냈어요"><i></i><i></i><i></i></button><p class="vt-t" id="vt-t" aria-live="polite">편하게 '아~' 5초!</p><button type="button" class="vt-x" id="vt-x">${ICON.stop} 다 냈어요</button>`;document.body.appendChild(ov);
+ const close=()=>{VT.on=false;ov.classList.add("out");setTimeout(()=>ov.remove(),300)};
+ const fin=async()=>{if(!VT.on)return;close();const t=recStop();
+  if(!t||t.x.length<t.sr){chatPush("c","너무 짧았어. 한 번 더 '아~' 5초 들려줘!<button type=\"button\" class=\"mis now\" data-vchk><span class=\"c\">"+ICON.mic+"</span><span><b>다시 들려주기</b><small>누르면 바로 들어요</small></span></button>");renderCoach();return}
+  VC={ctx:"평소",res:null,min:0,load:null,trend:null};const nd=VoiceCare.noiseDb(t.x.subarray(0,Math.round(t.sr*.3)),t.sr);
+  await vcResult(VoiceCare.analyze(t.x,t.sr,{noise:nd}),nd,false,t);chatPush("c",vcChat(VC.res));renderCoach()};
+ VT.stop=fin;$("vt-x").onclick=fin;$("vt-orb").onclick=fin;REC.quiet=1.2;REC.max=6500;const t0=Date.now();
+ try{await recStart(()=>{const e=$("vt-t");if(e)e.textContent=`듣고 있어 · ${Math.min(5,(Date.now()-t0)/1000|0)}초`},()=>{if(REC.on)fin()})}
+ catch(e){close();chatPush("c","마이크를 쓸 수 없어. 브라우저에서 마이크를 허락해 줘.");renderCoach()}}
 COACH={light:false,short:false,skip:0};
 
 {const i=$("coach-nm");if(i){i.value=((loadUser()||{}).coach)||"";i.addEventListener("change",()=>{if(coachSetName(i.value)){CHAT.ask=null;chatSave();renderCoach()}})}}
