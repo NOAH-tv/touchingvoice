@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://www.gstatic.com https://apis.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; font-src 'self'; connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com; frame-src 'self' https://touchingvoice-d1b1b.firebaseapp.com; object-src 'none'; base-uri 'none'; form-action 'none'"><meta name="referrer" content="no-referrer"><meta name="theme-color" media="(prefers-color-scheme: light)" content="#F5EEE0"><meta name="theme-color" media="(prefers-color-scheme: dark)" content="#100C1A">
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://www.gstatic.com https://apis.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; font-src 'self'; connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src 'self' https://touchingvoice-d1b1b.firebaseapp.com; object-src 'none'; base-uri 'none'; form-action 'none'"><meta name="referrer" content="no-referrer"><meta name="theme-color" media="(prefers-color-scheme: light)" content="#F5EEE0"><meta name="theme-color" media="(prefers-color-scheme: dark)" content="#100C1A">
 <title>터칭보이스 앱 시험판</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
@@ -387,6 +387,9 @@ mark{background:color-mix(in oklab,var(--gold) 38%,transparent);color:inherit;bo
 .sc-ban{flex-direction:row;align-items:center;justify-content:space-between;gap:12px}.sc-ban b{display:block}.sc-ban small{color:var(--muted)}
 .rd-line{font-size:clamp(19px,4.4cqi + 4px,28px)!important;line-height:2.05!important}
 .ed-row{display:flex;align-items:center;gap:10px;align-self:stretch}.ed-row span{flex:1;font-weight:600}.ed-row b{min-width:3.2em;text-align:center;font-variant-numeric:tabular-nums}
+.ai-wait{opacity:.6}
+.cs-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid rgba(128,128,128,.22)}.cs-row>div{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;color:var(--ink);font-size:15px}.cs-row small{font-weight:500;color:var(--muted)}
+.cs-dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 14px;margin:0;align-self:stretch;text-align:left;font-size:14px;line-height:1.5}.cs-dl dt{font-weight:700;color:var(--muted);white-space:nowrap}.cs-dl dd{margin:0}.cs-gift{font-weight:700;color:var(--ink)}
 .ed-l{display:flex;flex-direction:column;gap:6px;align-self:stretch;font-size:13px;font-weight:600;color:var(--muted)}#ed-text{min-height:200px}
 .vc-cmp{display:flex;flex-direction:column;gap:8px}
 .vc-r{display:grid;grid-template-columns:84px minmax(0,1fr) auto;gap:10px;align-items:center}.vc-r b{font-size:14px;font-weight:600}
@@ -530,7 +533,7 @@ button svg,.ftag svg,.srch svg{flex:none}
 .iconrow .ib:disabled{opacity:.4}
 @media (prefers-reduced-motion:reduce){.mic::before,.mic.rec::after{animation:none}}
 
-#v-today>#home,#v-today>h2.sec,#v-today>#today,#v-today>#tracks,#t-train{display:none!important}
+#v-today>#home,#v-today>h2.sec,#v-today>#today,#v-today>#tracks{display:none!important}
 .coach{gap:14px}.coach .say{align-self:stretch}
 .coach-me{align-self:flex-end;margin:0;max-width:80%;padding:9px 14px;border-radius:18px 18px 6px 18px;background:var(--pri-grad);color:var(--pri-fg);font-size:14.5px;font-weight:600}
 .coach-say{align-self:stretch;font-size:17px;line-height:1.6}.coach-say small{display:block;margin-top:6px;font-size:13px;color:var(--muted);line-height:1.5}
@@ -544,6 +547,16 @@ button svg,.ftag svg,.srch svg{flex:none}
 .qcard li b.up{color:var(--good)}.qcard li b.dn{color:var(--bad)}
 .qcard ul.qc-week{flex-direction:row;justify-content:space-between}.qc-week li{flex-direction:column;align-items:center;gap:2px;font-size:12px;color:var(--muted)}
 .qcard .pair-ch{margin:0 auto}
+
+.rbars{display:flex;flex-direction:column;gap:8px}
+.rb-row{display:grid;grid-template-columns:4.4em minmax(0,1fr) minmax(3.4em,auto);align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.rb-row i{position:relative;height:10px;border-radius:99px;background:color-mix(in oklab,var(--ink) 10%,transparent)}
+.rb-row em{display:block;height:100%;border-radius:99px;background:color-mix(in oklab,var(--brand) 45%,transparent)}
+.rb-row.on{color:var(--ink);font-weight:700}.rb-row.on em{background:var(--brand)}
+.rb-row s{position:absolute;top:-3px;bottom:-3px;width:2px;margin-left:-1px;border-radius:2px;background:var(--gold)}
+.rb-row span,.rb-row b{white-space:nowrap}.rb-row b{text-align:right;color:var(--ink);font-variant-numeric:tabular-nums}
+.rtab{width:100%;border-collapse:collapse;font-size:13.5px;font-variant-numeric:tabular-nums}.rtab th{font-weight:600;color:var(--muted);text-align:right;padding:2px 0 4px}
+.rtab td{text-align:right;padding:6px 0;border-top:1px solid var(--line)}.rtab th:first-child,.rtab td:first-child{text-align:left}.rtab td.up{color:var(--good);font-weight:700}.rtab td.down{color:var(--bad)}
 
 .pm .pm-top,.pm .pm-kick,.pm .pm-title,.pm .pm-src,.pm .pm-text,.pm .say,#rd .sc-ban,#rd .rd-line{transition:opacity .45s ease,color .45s ease}
 
@@ -734,6 +747,8 @@ button svg,.ftag svg,.srch svg{flex:none}
   <label class="ed-l">내 목소리 선생님 이름 <small>채팅에서 이 이름으로 불러요</small><input id="coach-nm" class="inp" maxlength="10" placeholder="예: 소리쌤" autocomplete="off"></label>
   <div class="ed-l">계정 <small id="acct-s"></small><small>지금은 계정 확인만 해요. 연습 기록은 로그인해도 이 기기에만 저장돼요.</small><button type="button" class="btn" id="acct-b" style="align-self:flex-start"></button><p class="ob-err" id="acct-e" style="text-align:left"></p></div>
   <div class="ed-l">내 기록 <small>대본 · 녹음 · 목소리 기록은 이 기기 안에만 저장돼요. 앱이 서버로 보내지 않아요. 브라우저의 사이트 데이터를 지우면 함께 지워져요.</small><button type="button" class="btn" id="wipe" style="align-self:flex-start">이 기기의 내 기록 모두 지우기</button></div>
+  <div class="ed-l">내 목소리 데이터 <small>녹음을 기기 밖으로 보내는 기능만 따로 동의를 받아요. 동의하지 않아도 분석 · 연습 · 기록은 이 기기에서 그대로 돼요.</small><div id="cs-list"></div></div>
+  <div class="ed-l" id="aim-row" hidden>AI 선생님 시험 <small>같은 질문을 두 AI에게 해 보고 견줘 보세요</small><div class="chips" id="aim-pick" role="group" aria-label="AI 고르기"><button type="button" data-m="claude">Claude</button><button type="button" data-m="gpt">ChatGPT</button></div></div>
   <button type="button" class="rb pri" id="set-ok"><span class="c"><span class="ico" data-i="check"></span></span><span class="t">완료</span></button>
 </div></div>
 
@@ -1325,7 +1340,7 @@ function armDel(b){if(b.dataset.armed)return true;b.dataset.armed=1;b.classList.
 
 const TP={g:null,mode:"auto",run:false,raf:0,pos:0,rec:null,ms:0,t0:0};let TPH="",TPW=[],TPS=1;
 let TP_MIR=false;try{TP_MIR=localStorage.getItem("tv_tpmr")==="1"}catch(e){}
-function openTP(g){TP.g=g;TP.used=false;TP.ms=0;TP.t0=0;Object.assign(VW,{fr:[],skip:0,warned:-1e9,chk:0,fail:false});$("tp-warn").hidden=true;$("tp-vw").setAttribute("aria-pressed",VW_ON);try{const l=+localStorage.getItem("tv_tplh");if(l)$("tp-text").style.setProperty("--tplh",l);const k=localStorage.getItem("tv_tpls");if(k!=null)$("tp-text").style.setProperty("--tpls",(+k/100)+"em")}catch(e){}TP.pos=0;let j=0,h=0;const n=g.ss.reduce((a,x)=>a+x.split(/\s+/).length,0);
+function openTP(g){TP.g=g;TP.used=false;Object.assign(TPR,{ch:[],n:0,seg:[],p0:null,cap:null});TP.ms=0;TP.t0=0;Object.assign(VW,{fr:[],skip:0,warned:-1e9,chk:0,fail:false});$("tp-warn").hidden=true;$("tp-vw").setAttribute("aria-pressed",VW_ON);try{const l=+localStorage.getItem("tv_tplh");if(l)$("tp-text").style.setProperty("--tplh",l);const k=localStorage.getItem("tv_tpls");if(k!=null)$("tp-text").style.setProperty("--tpls",(+k/100)+"em")}catch(e){}TP.pos=0;let j=0,h=0;const n=g.ss.reduce((a,x)=>a+x.split(/\s+/).length,0);
  $("tp-text").innerHTML=g.ss.map(x=>`<span class="sn">${x.split(/\s+/).map(w=>{const k=j++;h+=hangul(w).length;const q=g.ps[k];
   return`<span class="tw" data-h="${h}">${g.on.has(k)?`<b>${esc(w)}</b>`:esc(w)}</span>${q&&k<n-1?` <span class="p">${q===2?"//":"/"}</span>`:""}`}).join(" ")}</span>`).join("");
  TPH=hangul(g.ss.join(" "));TPS=LANG==="en"?sylOf(g.ss.join(" ")):TPH.length;TPW=[...$("tp-text").querySelectorAll(".tw")];
@@ -1338,12 +1353,16 @@ function tpSeek(){const v=$("tp-view"),y=v.scrollTop+v.clientHeight*.3,w=TPW.fin
 
 const VW={on:false,skip:0,fr:[],warned:-1e9,chk:0};let VW_ON=true;try{VW_ON=localStorage.getItem("tv_vw")!=="0"}catch(e){}
 const tpNow=()=>TP.ms+(TP.t0?Date.now()-TP.t0:0);
-async function vwStart(){if(VW.on||VW.skip||!VW_ON||!navigator.mediaDevices)return;VW.on=true;
- try{const st=await micOpen(),ac=new(window.AudioContext||window.webkitAudioContext)();await ac.resume();const an=ac.createAnalyser();an.fftSize=2048;an.smoothingTimeConstant=0;ac.createMediaStreamSource(st).connect(an);
+
+const TPR={ch:[],n:0,sr:0,seg:[],p0:null,cap:null,MAX:120};
+const tpProg=()=>{const v=$("tp-view");if(TP.mode==="auto"){if(v.scrollTop<4)return 0;if(v.scrollTop>=v.scrollHeight-v.clientHeight-2)return TPH.length;tpSeek()}return TP.pos};
+async function vwStart(){if(VW.on||VW.skip||!navigator.mediaDevices)return;VW.on=true;
+ try{const st=await micOpen(),ac=new(window.AudioContext||window.webkitAudioContext)();await ac.resume();const an=ac.createAnalyser();an.fftSize=2048;an.smoothingTimeConstant=0;const src=ac.createMediaStreamSource(st);src.connect(an);
+  const rn=ac.createScriptProcessor(4096,1,1);rn.onaudioprocess=e=>{if(!TP.run||TPR.cap!=null)return;const d=new Float32Array(e.inputBuffer.getChannelData(0));TPR.ch.push(d);TPR.n+=d.length;TPR.sr=ac.sampleRate;if(TPR.n>=TPR.MAX*ac.sampleRate)TPR.cap=tpProg()};src.connect(rn);rn.connect(ac.destination);
   if(!VW.on){st.getTracks().forEach(t=>t.stop()),micDone();ac.close();return}
   Object.assign(VW,{st,ac,an,fail:false,buf:new Float32Array(2048),sp:new Float32Array(1024),iv:setInterval(vwTick,100)});tpInfo()}catch(e){VW.on=false;VW.fail=true;tpInfo()}}
 function vwStop(){VW.on=false;clearInterval(VW.iv);VW.iv=0;if(VW.st){VW.st.getTracks().forEach(t=>t.stop()),micDone();try{VW.ac.close()}catch(e){}VW.st=VW.ac=VW.an=null}}
-function vwTick(){if(!TP.run||!VW.an)return;VW.an.getFloatTimeDomainData(VW.buf);let s=0;for(const v of VW.buf)s+=v*v;const db=10*Math.log10(s/VW.buf.length+1e-12);if(db<-55)return;
+function vwTick(){if(!TP.run||!VW.an||!VW_ON)return;VW.an.getFloatTimeDomainData(VW.buf);let s=0;for(const v of VW.buf)s+=v*v;const db=10*Math.log10(s/VW.buf.length+1e-12);if(db<-55)return;
  const hz=VoiceCare.pitch(VW.buf,VW.ac.sampleRate);if(!hz)return;VW.an.getFloatFrequencyData(VW.sp);const bw=VW.ac.sampleRate/2048,E=(a,b)=>{let e=0;for(let i=Math.round(a/bw);i<=Math.round(b/bw);i++)e+=Math.pow(10,VW.sp[i]/10);return e};
  const t=tpNow();VW.fr.push([t,db,12*Math.log2(hz/440),10*Math.log10((E(2000,4000)+1e-12)/(E(100,1000)+1e-12))]);
  if(t-VW.chk>=6e4){VW.chk=t;const r=vwTrend();if(r&&r.risk&&t-VW.warned>=10*6e4){VW.warned=t;tpWarn(r)}}}
@@ -1358,13 +1377,27 @@ function tpWarn(r){const w=$("tp-warn");w.innerHTML=`${ICON.alert}<span><b>소�
 const useT=x=>{const m=Math.floor(x/60),r=x%60,E=LANG==="en";return x>=600?Math.round(x/60)+(E?" min":"분"):x>=60?m+(E?" min":"분")+(r?" "+r+(E?" s":"초"):""):x+(E?" s":"초")};
 function renderUse(){const e=$("use-today");if(!e)return;const t=today(),wk=DAYS.filter(d=>Date.now()-d.ts<7*864e5).reduce((a,d)=>a+(d.use||0),0);
  e.textContent=t&&t.use?`오늘 목 사용 · 프롬프터 ${Math.max(1,Math.round((t.tpms||0)/6e4))}분 · 소리 낸 시간 ${useT(t.use)} · 최근 7일 ${useT(wk)}`:wk?`목 사용 · 최근 7일 소리 낸 시간 ${useT(wk)}`:"";e.hidden=!e.textContent}
-function closeTP(){if(TP.edit){TP.edit=false;$("tp").classList.remove("edit","typing");vvFit()}tpStop();const use=Math.round(VW.fr.length/10);vwStop();TP_SAVE();$("tp").hidden=true;document.body.style.overflow=$("rd").hidden?"":"hidden";if(!$("rd").hidden&&RD!=null)renderRd();if(TP.used){TP.used=false;const c=TP.g&&tagsOf(TP.g),min=Math.round(TP.ms/6e4),tr=vwTrend();if(use>=5){const t=today();saveDay({use:((t&&t.use)||0)+use,tpms:((t&&t.tpms)||0)+TP.ms})}setTimeout(()=>offerVC(c,min,tr,use),250)}}
+function closeTP(){if(TP.edit){TP.edit=false;$("tp").classList.remove("edit","typing");vvFit()}tpStop();const use=Math.round(VW.fr.length/10);vwStop();TP_SAVE();$("tp").hidden=true;document.body.style.overflow=$("rd").hidden?"":"hidden";if(!$("rd").hidden&&RD!=null)renderRd();if(TP.used){TP.used=false;const c=TP.g&&tagsOf(TP.g),min=Math.round(TP.ms/6e4),tr=vwTrend();if(use>=5){const t=today();saveDay({use:((t&&t.use)||0)+use,tpms:((t&&t.tpms)||0)+TP.ms})}setTimeout(()=>tpReport(()=>offerVC(c,min,tr,use)),250)}else Object.assign(TPR,{ch:[],n:0,seg:[]})}
+
+async function tpReport(then){const sr=TPR.sr,n=TPR.n,txt=TPR.seg.map(([a,b])=>TPH.slice(a,b)).join(" ");
+ if(!sr||n<5*sr||hangul(txt).length<10){Object.assign(TPR,{ch:[],n:0,seg:[]});then();return}
+ const x=new Float32Array(n);let o=0;TPR.ch.forEach(c=>{x.set(c,o);o+=c.length});Object.assign(TPR,{ch:[],n:0,seg:[]});
+ $("sheet").innerHTML=`<div role="dialog" aria-modal="true"><h2 class="sh-h">방금 읽은 목소리</h2><p class="hint">분석하는 중…</p></div>`;$("sheet").hidden=false;
+ let m;try{m=await measure({x,sr},txt,"")}catch(e){$("sheet").hidden=true;then();return}
+ const tgt=$("tgt").value,sc=recScores({m2:m},tgt),bd=band(tgt),W=v=>v>=70?"좋아요":v>=45?"보통":"더 연습",sec=Math.round(n/sr);
+ const card=rBars("프롬프터로 읽은 목소리",`${sec>=60?Math.floor(sec/60)+"분 ":""}${sec%60}초 녹음 · 되고 싶은 목소리 '${esc(TYPES[tgt]||"")}' 기준${n>=TPR.MAX*sr?" · 처음 2분으로 봤어요":""}`,
+  [["rate","말 빠르기"],["melody","높낮이"],["crisp","또렷함"]].filter(([k])=>sc[k]!=null).map(([k,l])=>({l,v:sc[k],t:W(sc[k])})))
+  +`<p class="meta" style="margin:6px 0 0">1초에 ${m.rate.toFixed(1)}글자 (목표 ${bd[0]}~${bd[1]}) · 쉼 ${m.pauses}번</p>`;
+ if(typeof chatPush==="function"){chatPush("c",card+"프롬프터로 읽은 거 들어 봤어! 결과는 이래.");if(typeof renderCoach==="function")renderCoach()}
+ $("sheet").innerHTML=`<div role="dialog" aria-modal="true" aria-labelledby="tr-h"><h2 class="sh-h" id="tr-h">방금 읽은 목소리</h2>${card}<p class="meta" style="margin:0">녹음은 이 기기에서 분석만 하고 저장하지 않아요 · 채팅에도 남겨 뒀어요</p>
+  <div class="rrow"><button type="button" class="rb pri" id="tr-ok"><span class="c">${ICON.check}</span><span class="t">확인</span></button></div></div>`;
+ $("tr-ok").onclick=()=>{$("sheet").hidden=true;then()}}
 function tpInfo(){const r=+$("tp-rate").value,v=$("tp-view"),room=v.scrollHeight-v.clientHeight,sec=Math.round(TPS/r*(room>0?1-Math.min(1,v.scrollTop/room):1)),nb=$("tp-num");if(document.activeElement!==nb)nb.value=r.toFixed(1);
- $("tp-info").textContent=(TP.mode==="auto"?`이 빠르기면 끝까지 약 ${sec>=60?Math.floor(sec/60)+"분 ":""}${sec%60}초 · 글을 누르면 멈춰요`:(TP.run?"듣고 있어요 · 읽는 곳을 따라 내려가요 (말을 누르면 그 자리로)":"시작을 누르고 읽어 주세요 · 브라우저(크롬·사파리)의 음성 인식을 써요"))+(TP.run&&VW.on?" · 목 지키는 중":"");
+ $("tp-info").textContent=(TP.mode==="auto"?`이 빠르기면 끝까지 약 ${sec>=60?Math.floor(sec/60)+"분 ":""}${sec%60}초 · 글을 누르면 멈춰요`:(TP.run?"듣고 있어요 · 읽는 곳을 따라 내려가요 (말을 누르면 그 자리로)":"시작을 누르고 읽어 주세요 · 브라우저(크롬·사파리)의 음성 인식을 써요"))+(TP.run&&VW.on&&VW_ON?" · 목 지키는 중":"");if(TP.run&&VW.st&&TPR.cap==null)$("tp-info").textContent="● 녹음 중 · "+$("tp-info").textContent;
  $("tp-use").textContent=VW.fail?"마이크를 못 켜서 목 지키기는 쉬어요":VW.fr.length>=30?`목 지키기 · 소리 낸 시간 ${useT(Math.round(VW.fr.length/10))}`:""}
 function tpBtn(){$("tp-go").innerHTML=`<span class="c">${TP.run?ICON.pause:ICON.play}</span><span class="t">${TP.run?"멈춤":"시작"}</span>`;$("tp-go").setAttribute("aria-label",TP.run?"멈춤":"시작");$("tp").classList.toggle("run",TP.run)}
 function tpMode(m){tpStop();TP.mode=m;$("tp-auto").setAttribute("aria-pressed",m==="auto");$("tp-voice").setAttribute("aria-pressed",m==="voice");$("tp-speed").hidden=m!=="auto";tpInfo()}
-function tpStop(){if(TP.t0){TP.ms+=Date.now()-TP.t0;TP.t0=0}TP.run=false;cancelAnimationFrame(TP.raf);if(TP.rec){const r=TP.rec;TP.rec=null;r.onend=null;try{r.stop()}catch(e){}}tpBtn()}
+function tpStop(){if(TP.run&&TPR.p0!=null){const p1=TPR.cap!=null?TPR.cap:tpProg();if(p1>TPR.p0)TPR.seg.push([TPR.p0,p1]);TPR.p0=null}if(TP.t0){TP.ms+=Date.now()-TP.t0;TP.t0=0}TP.run=false;cancelAnimationFrame(TP.raf);if(TP.rec){const r=TP.rec;TP.rec=null;r.onend=null;try{r.stop()}catch(e){}}tpBtn()}
 function tpStart(){const v=$("tp-view");TP.used=true;
  if(TP.mode==="auto"){TP.run=true;let last=performance.now(),acc=v.scrollTop;
   const step=t=>{if(!TP.run)return;const dt=Math.min(.1,(t-last)/1000);last=t;const room=v.scrollHeight-v.clientHeight;if(Math.abs(v.scrollTop-acc)>3)acc=v.scrollTop;acc+=+$("tp-rate").value*room/Math.max(1,TPS)*dt;v.scrollTop=acc;
@@ -1374,7 +1407,7 @@ function tpStart(){const v=$("tp-view");TP.used=true;
   r.onresult=e=>{let t="";for(let i=e.resultIndex;i<e.results.length;i++)t+=e.results[i][0].transcript;tpFollow(hangul(t))};
   r.onerror=e=>{if(e.error==="audio-capture"&&VW.on){vwStop();VW.skip=1;$("tp-info").textContent="이 기기는 '목소리 따라'와 목 지키기를 같이 못 써요 · 따라가기만 할게요";return}if(/not-allowed|service-not-allowed|audio-capture/.test(e.error)){tpStop();$("tp-info").textContent="마이크를 쓸 수 없어요 · '시간'으로 써 주세요"}};
   r.onend=()=>{if(TP.run&&TP.rec===r)try{r.start()}catch(e){}};TP.rec=r;TP.run=true;try{r.start()}catch(e){}}
- if(TP.run){TP.t0=Date.now();vwStart()}tpBtn();tpInfo()}
+ if(TP.run){TP.t0=Date.now();if(TPR.cap==null)TPR.p0=tpProg();vwStart()}tpBtn();tpInfo()}
 
 function tpFollow(heard){for(let k=Math.min(8,heard.length);k>=3;k--){const tail=heard.slice(-k),i=TPH.indexOf(tail,Math.max(0,TP.pos-10));if(i>=0&&i-TP.pos<160){TP.pos=Math.max(TP.pos,i+k);tpShow();return}}}
 function tpShow(){let cur=null;TPW.forEach(w=>{const read=+w.dataset.h<=TP.pos;w.classList.toggle("read",read);if(!read&&!cur)cur=w});
@@ -1388,7 +1421,7 @@ $("tp-dn").onclick=()=>tpSet(+$("tp-rate").value-0.1);$("tp-up").onclick=()=>tpS
 $("tp-num").onchange=()=>{const v=parseFloat(String($("tp-num").value).replace(",","."));if(Number.isFinite(v))tpSet(v);else $("tp-num").value=(+$("tp-rate").value).toFixed(1)};
 $("tp-num").onkeydown=e=>{if(e.key==="Enter")e.currentTarget.blur()};
 $("tp-num").onfocus=e=>e.currentTarget.select();
-$("tp-vw").onclick=()=>{VW_ON=!VW_ON;try{localStorage.setItem("tv_vw",VW_ON?"1":"0")}catch(e){}$("tp-vw").setAttribute("aria-pressed",VW_ON);if(!VW_ON)vwStop();else if(TP.run)vwStart();tpInfo()};
+$("tp-vw").onclick=()=>{VW_ON=!VW_ON;try{localStorage.setItem("tv_vw",VW_ON?"1":"0")}catch(e){}$("tp-vw").setAttribute("aria-pressed",VW_ON);tpInfo()};
 
 const TP_LK={fs:["tv_tpfs",40,20,120,4,"--tpfs",v=>v+"px",v=>v],lh:["tv_tplh",1.7,1.2,3,.1,"--tplh",v=>v,v=>v.toFixed(1)],ls:["tv_tpls",2,-3,15,1,"--tpls",v=>(v/100)+"em",v=>v>0?"+"+v:String(v)]};
 const tpLk=k=>{const c=TP_LK[k];try{const x=localStorage.getItem(c[0]);if(x!=null&&x!==""&&Number.isFinite(+x))return +x}catch(e){}return c[1]};
@@ -1657,7 +1690,7 @@ function drawTrk(){const cv=$("tr-roll");if(!cv)return;const g=cv.getContext("2d
 const trkProf=()=>{const L=TR.demo?[]:TR.notes.filter(n=>n.lit).map(n=>n.midi+12*(TR.oct||0)-69);if(L.length)profAdd({lo:Math.min(...L),hi:Math.max(...L)})};
 async function trkEnd(){if(TR.done)return;TR.done=true;trkProf();rollFocus("tr",null,false);TR.run=false;cancelAnimationFrame(TR.raf);
  const N=TR.notes.length,hit=TR.notes.filter(n=>n.lit).length,q=Math.round(hit/N*100),k=trkKey(TR.t),prev=TRK.best[k];
- await dbPut("trk",{id:k,best:Math.max(q,prev?prev.best:0),plays:(prev?prev.plays:0)+1,last:Date.now(),demo:TR.demo&&!(prev&&!prev.demo)});await loadTrk();renderTrain();renderTracks();
+ await dbPut("trk",{id:k,best:Math.max(q,prev?prev.best:0),plays:(prev?prev.plays:0)+1,hist:[...((prev&&prev.hist)||[]),q].slice(-8),last:Date.now(),demo:TR.demo&&!(prev&&!prev.demo)});await loadTrk();renderTrain();renderTracks();
  const nx=TR.t.my?null:trkLevels(TR.t.g).find(x=>x.lv>TR.t.lv);
  $("tr-body").innerHTML=`<div class="pm-kick">${TR.t.my?"내 트랙":esc(TRK_G[TR.t.g][0])+" · "+nn(TR.t)}</div><div class="grade">${gradeOf(q)}</div>${say(q>=75?"완벽해! 다음 단계로 가자.":q>=60?"단계 완료! 정말 잘했어.":"조금만 더! 반주를 한 번 먼저 들어 보고 다시 해 보자.",{size:"s"})}<h2 class="verdict" id="tr-h" style="text-align:center">${q}% 맞혔어요</h2>
   <p class="cue-l">음표 ${N}개 중 ${hit}개${prev?` · 이전 최고 ${prev.best}%`:""}${q>=60?" · 이 단계 완료!":" · 60% 넘으면 이 단계 완료"}${TR.demo?" (데모)":""}</p>`;
@@ -1665,7 +1698,7 @@ async function trkEnd(){if(TR.done)return;TR.done=true;trkProf();rollFocus("tr",
  $("tr-again").onclick=()=>{TR.au.currentTime=0;trkReady()};if(nx)$("tr-next").onclick=()=>openTrk(nx);$("tr-list").onclick=closeTrk;if(TR.brk&&!TR.demo){const b=TR.brk;setTimeout(()=>brkOffer(b),400)}}
 function closeTrkAudio(){cancelAnimationFrame(TR.raf);TR.run=false;if(TR.au){TR.au.pause();TR.au.onended=null}if(TR.url&&TR.t&&TR.t.my)URL.revokeObjectURL(TR.url);if(TR.mic){TR.mic.st.getTracks().forEach(x=>x.stop()),micDone();TR.mic.ac.close().catch(()=>{});TR.mic=null}}
 function closeTrk(){let pend=null;if(GEN){if(GEN.run&&SC_PEEK){pend=SC_PEEK().brk;GEN.quiet=true;if(SC_STOP)SC_STOP()}GEN=null}else if(TR.t&&!TR.demo&&!TR.done){pend=TR.brk||null;if(TR.notes.some(n=>n.lit)){TR.done=true;trkProf();const q=Math.round(TR.notes.filter(n=>n.lit).length/TR.notes.length*100),k=trkKey(TR.t),prev=TRK.best[k];
-   dbPut("trk",{id:k,best:Math.max(q,prev?prev.best:0),plays:(prev?prev.plays:0)+1,last:Date.now(),demo:false}).then(loadTrk).then(()=>{renderTrain();renderTracks()})}}
+   dbPut("trk",{id:k,best:Math.max(q,prev?prev.best:0),plays:(prev?prev.plays:0)+1,hist:[...((prev&&prev.hist)||[]),q].slice(-8),last:Date.now(),demo:false}).then(loadTrk).then(()=>{renderTrain();renderTracks()})}}
  closeTrkAudio();rollFocus("tr",null,false);$("tr").hidden=true;document.body.style.overflow=$("d3").hidden?"":"hidden";if(pend)setTimeout(()=>brkOffer(pend),250)}
 $("tr-back").onclick=closeTrk;$("tr-home").onclick=goHome;
 $("train").addEventListener("click",async e=>{const b=e.target.closest("button");if(!b)return;
@@ -1693,7 +1726,7 @@ function applyUser(u){if(!u)return;GOAL=u.goal||null;NOWP=u.now||null;if(Array.i
 const syncUser=w=>{const u={...(loadUser()||{}),sex:$("sex").value,cur:$("cur").value,tgt:$("tgt").value};u.now=fixSide(u.now||posOfCode(u.cur),u.cur);
  if(w==="tgt"||!u.goal||codeOfGoal(u.goal)!==u.tgt)u.goal=presetFor(u.tgt,u.now);saveUser(u);GOAL=u.goal;NOWP=u.now};
 function openOB(){OB={k:"hi",u:{...(loadUser()||{})}};$("ob").hidden=false;document.body.style.overflow="hidden";renderOB()}
-function obAuthed(me){if(!me||$("ob").hidden||!["hi","join"].includes(OB.k))return;const u=OB.u;u.via="google";if(!u.name&&me.name)u.name=me.name.split(" ")[0].slice(0,20);
+function obAuthed(me){if(!me||$("ob").hidden||!["hi","join"].includes(OB.k))return;const u=OB.u;u.via=me.via||"google";if(!u.name&&me.name)u.name=me.name.split(" ")[0].slice(0,20);
  if(OB.gate){closeOB();maybeAd()}else if(OB.login&&u.cur&&u.tgt)obGo("done");else obGo("info")}
 
 function authGate(){if(!/(^|\.)touchingvoice\.app$|^localhost$|^127\.0\.0\.1$/.test(location.hostname))return;let ob=null;try{ob=localStorage.getItem("tv_ob")}catch(e){}if(!ob){if($("ob").hidden)openOB();return}
@@ -1721,13 +1754,13 @@ function renderOB(){const k=OB.k,u=OB.u,B=$("ob-body"),A=$("ob-act"),i=["join","
   <h1 class="ob-h" id="ob-h">내 목소리,<br>매일 3분이면 달라져요</h1><p class="ob-sub ob-c">듣는 사람이 느끼는 내 목소리를 알고,<br>원하는 목소리까지 병아리와 함께 가요.</p>`;
   A.innerHTML=`${obBtn("ob-start","next","시작하기",1)}<button type="button" class="link" id="ob-login">이미 계정이 있어요</button>`;
   $("ob-lang").onclick=e=>{const b=e.target.closest("button");if(b&&b.dataset.l!==LANG)setLang(b.dataset.l)};$("ob-start").onclick=()=>{OB.login=false;obGo("join")};$("ob-login").onclick=()=>{OB.login=true;obGo("join")};return}
- if(k==="join"){B.innerHTML=`<div class="pm-kick">${OB.login?"로그인":"계정 만들기"}</div><h2 class="ob-h2" id="ob-h">${OB.login?"다시 만나서 반가워요":"Google 계정으로 시작해요"}</h2>
-  <p class="ob-sub">${OB.gate?"Google 계정으로 다시 로그인해 주세요. 이 기기의 연습 기록은 그대로 있어요.":"로그인해야 앱을 쓸 수 있어요. 연습 기록은 지금은 이 기기에만 저장돼요."}</p>
-  <div class="ob-sso" id="ob-sso"><button type="button" class="sso g" data-via="google">Google로 계속하기</button></div>
-  <p class="ob-err" id="ob-err"></p><p class="meta ob-c" style="margin:0">로그인하면 이름과 이메일이 계정 확인에 쓰여요. 카카오 · Apple 로그인은 준비 중이에요.</p>`;
+ if(k==="join"){B.innerHTML=`<div class="pm-kick">${OB.login?"로그인":"계정 만들기"}</div><h2 class="ob-h2" id="ob-h">${OB.login?"다시 만나서 반가워요":"Apple · Google 계정으로 시작해요"}</h2>
+  <p class="ob-sub">${OB.gate?"처음 쓰던 계정으로 다시 로그인해 주세요. 이 기기의 연습 기록은 그대로 있어요.":"로그인해야 앱을 쓸 수 있어요. 연습 기록은 지금은 이 기기에만 저장돼요."}</p>
+  <div class="ob-sso" id="ob-sso"><button type="button" class="sso a" data-via="apple">Apple로 계속하기</button><button type="button" class="sso g" data-via="google">Google로 계속하기</button></div>
+  <p class="ob-err" id="ob-err"></p><p class="meta ob-c" style="margin:0">로그인하면 이름과 이메일이 계정 확인에 쓰여요. 카카오 로그인은 준비 중이에요.</p>`;
   A.innerHTML="";
   TVAuth.warm();$("ob-sso").onclick=async e=>{const b=e.target.closest("button");if(!b||b.disabled)return;b.disabled=true;$("ob-err").textContent="";
-   try{obAuthed(TVAuth.info()||await TVAuth.signIn())}
+   try{obAuthed(TVAuth.info()||await TVAuth.signIn(b.dataset.via))}
    catch(err){b.disabled=false;const el=$("ob-err");if(el)el.textContent=TVAuth.msg(err)}};return}
  if(k==="info"){B.innerHTML=`<div class="pm-kick">시작 전에</div><h2 class="ob-h2" id="ob-h">나에 대해 조금만 알려 주세요</h2>
   <label class="ed-l">부를 이름 <small>선택 · 인사할 때 불러 드려요</small><input id="ob-nm" class="inp" maxlength="20" autocomplete="nickname" placeholder="예: 우경" value="${esc(u.name||"")}"></label>
@@ -1985,7 +2018,7 @@ function renderGen(res){const p=GEN.plan,s=p.steps[GEN.i],N=p.steps.length;$("tr
  $("g-run").onclick=()=>GEN.run?SC_STOP&&SC_STOP():run(false);$("g-demo").onclick=()=>run(true)}
 async function genEnd(r,demo){const p=GEN.plan,i=GEN.i,q=Math.round(r.hits/r.n*100),b=r.brk||(r.stopped&&r.at!=null?{st:r.at,kind:"stop"}:null),pass=!r.stopped&&!r.brk&&q>=60;
  if(p.id==="brk"){if(BRK){BRK.log=(BRK.log||[]).concat([{d:dayKey(),i,q,ok:pass}]).slice(-40);if(pass)BRK.step=Math.max(BRK.step||0,i+1);brkSave()}}
- else{const k=p.id+"-"+(i+1),prev=TRK.best[k];await dbPut("trk",{id:k,best:Math.max(q,prev?prev.best:0),plays:(prev?prev.plays:0)+1,last:Date.now(),demo:demo&&!(prev&&!prev.demo)});await loadTrk()}
+ else{const k=p.id+"-"+(i+1),prev=TRK.best[k];await dbPut("trk",{id:k,best:Math.max(q,prev?prev.best:0),plays:(prev?prev.plays:0)+1,hist:[...((prev&&prev.hist)||[]),q].slice(-8),last:Date.now(),demo:demo&&!(prev&&!prev.demo)});await loadTrk()}
  renderTrain();if(!GEN)return;
  const msg=`${r.n}음 중 ${r.hits}음을 맞췄어요`+(r.brk?` · ${noteLabel(r.brk.st)}에서 ${BRK_WORD[r.brk.kind]}`:r.stopped?" · 도중에 멈췄어요":"");
  const talk=pass?(i<p.steps.length-1?"좋아! 다음 단계로 가 보자.":"끝까지 왔어! 정말 잘했어."):b&&p.id==="brk"?"괜찮아. 한 단계 아래에서 한 번 더 하고 오자.":"조금만 더! 작게, 천천히 한 번 더 해 보자.";
@@ -2232,7 +2265,7 @@ async function vcResult(m,nd,demo,take){const noisy=!(m.voiced>=1.5)||!(m.level-
  const rel=lvRel(sc,ref),lvA=rel==null?lvAbs(m):Math.max(rel,lvAbs(m)-1),load=use?VC.load:null,trend=use?VC.trend:null,lv=Math.max(lvA,trend&&trend.risk?1:0);
  const st=noisy?"noisy":["ok","care","bad"][lv],talk=noisy?"주변이 시끄러워서 잘 못 들었어. 조용한 곳에서 한 번만 더!":trend&&trend.risk?trTalk(trend,lvA,VC.ctx,ref,load,rel):vcTalk(lv,VC.ctx,ref,load,rel);
  const rec={id:Date.now(),at:new Date().toISOString(),ctx:VC.ctx,m:demo?null:m,mv:m,sc,ref,st,lv,load,min:use&&VC.min||null,trend,talk,demo,w:demo||!take?null:await wavOf(take)};
- if(!noisy){await dbPut("vchk",rec);VCHKS=(await dbAll("vchk")).sort((x,y)=>y.id-x.id)}VC.res={...rec,noisy};renderVC()}
+ if(!noisy){await dbPut("vchk",rec);VCHKS=(await dbAll("vchk")).sort((x,y)=>y.id-x.id)}VC.res={...rec,noisy};renderVC();if(!noisy&&!demo)csNudge()}
 $("vc-back").onclick=()=>{if(VC.res){VC.res=null;renderVC()}else closeVC()};$("vc-home").onclick=goHome;
 function vcCard(){const L=VCHKS.filter(x=>VC_F==="전체"||x.ctx===VC_F),now=Date.now(),U=VCHKS.filter(x=>x.ctx!=="평소"&&now-new Date(x.at)<14*864e5),c=[0,0,0];U.forEach(x=>c[lvOf(x)]++);const pat=c[1]+c[2]>=3&&(c[1]+c[2])/U.length>=.6;
  return`<article class="d3card"><div class="d3-h"><div><div class="d3-k">목소리 상태 기록</div><div class="d3-t" style="font-size:18px">강의·무대 전후로 재 보세요</div></div><button type="button" class="ib pri" id="vc-open" aria-label="지금 상태 체크">${ICON.mic}체크</button></div>
@@ -2426,7 +2459,7 @@ const TVAuth=(()=>{
  const SELF=location.hostname==="touchingvoice.app";
  const FB={apiKey:"AIzaSyALL2p6zE5_AzS6V025MzPElXqjUUhhqp8",authDomain:SELF?"touchingvoice.app":"touchingvoice-d1b1b.firebaseapp.com",projectId:"touchingvoice-d1b1b",appId:"1:548781546332:web:b5b60389e164858e627f99"},B="https://www.gstatic.com/firebasejs/12.18.0/";
  let A,auth,user=null,ready=null,rerr=null;const subs=new Set();
- const info=()=>user?{uid:user.uid,name:user.displayName||"",email:user.email||""}:null;
+ const info=()=>user?{uid:user.uid,name:user.displayName||"",email:user.email||"",via:/apple/.test((user.providerData[0]||{}).providerId||"")?"apple":"google"}:null;
  const tell=()=>{try{user?localStorage.setItem("tv_auth","1"):localStorage.removeItem("tv_auth")}catch(e){}subs.forEach(f=>{try{f(info())}catch(e){}})};
  
  const load=()=>ready||(ready=(async()=>{const[app,a]=await Promise.all([import(B+"firebase-app.js"),import(B+"firebase-auth.js")]);A=a;
@@ -2434,14 +2467,18 @@ const TVAuth=(()=>{
    await auth.authStateReady();try{await a.getRedirectResult(auth)}catch(e){rerr=e}user=auth.currentUser;a.onAuthStateChanged(auth,u=>{user=u;tell()})})().catch(e=>{ready=null;throw e}));
  
  const inApp=()=>/KAKAOTALK|Instagram|NAVER\(inapp|FBAN|FBAV|Line\//i.test(navigator.userAgent);
- async function signIn(){if(inApp())throw Object.assign(new Error("inapp"),{code:"inapp"});await load();
-  const p=new A.GoogleAuthProvider();p.setCustomParameters({prompt:"select_account"});
+ 
+ async function signIn(via){if(inApp())throw Object.assign(new Error("inapp"),{code:"inapp"});await load();
+  let p;if(via==="apple"){p=new A.OAuthProvider("apple.com");p.addScope("email");p.addScope("name");p.setCustomParameters({locale:LANG==="en"?"en":"ko"})}
+  else{p=new A.GoogleAuthProvider();p.setCustomParameters({prompt:"select_account"})}
   
   if(SELF){try{localStorage.setItem("tv_auth_wait","1")}catch(e){}await A.signInWithRedirect(auth,p);return new Promise(()=>{})}
   await A.signInWithPopup(auth,p);user=auth.currentUser;tell();return info()}
  async function signOut(){let k=null;try{k=localStorage.getItem("tv_auth")}catch(e){}if(!ready&&!k)return;await load();await A.signOut(auth);user=null;tell()}
- const MSG={inapp:"카카오톡 · 인스타그램 안에서는 구글 로그인이 막혀 있어요. 사파리나 크롬에서 이 주소를 열어 주세요.","auth/popup-blocked":"로그인 창이 막혔어요. 한 번 더 눌러 주세요.","auth/popup-closed-by-user":"로그인을 마치지 않고 창을 닫았어요.","auth/cancelled-popup-request":"로그인을 마치지 않고 창을 닫았어요.","auth/unauthorized-domain":"이 주소에서는 로그인이 안 돼요. touchingvoice.app 에서 열어 주세요.","auth/network-request-failed":"인터넷 연결을 확인해 주세요."};
- return{signIn,signOut,info,inApp,on:f=>{subs.add(f)},warm:()=>{load().catch(()=>{})},msg:e=>MSG[e&&e.code]||"로그인하지 못했어요. 잠시 뒤 다시 해 주세요.",
+ const MSG={inapp:"카카오톡 · 인스타그램 안에서는 로그인이 막혀 있어요. 사파리나 크롬에서 이 주소를 열어 주세요.","auth/operation-not-allowed":"Apple 로그인은 아직 준비 중이에요. Google로 계속해 주세요.","auth/account-exists-with-different-credential":"같은 이메일로 이미 다른 방법(Google 등)으로 가입했어요. 처음 쓰던 방법으로 로그인해 주세요.","auth/popup-blocked":"로그인 창이 막혔어요. 한 번 더 눌러 주세요.","auth/popup-closed-by-user":"로그인을 마치지 않고 창을 닫았어요.","auth/cancelled-popup-request":"로그인을 마치지 않고 창을 닫았어요.","auth/unauthorized-domain":"이 주소에서는 로그인이 안 돼요. touchingvoice.app 에서 열어 주세요.","auth/network-request-failed":"인터넷 연결을 확인해 주세요."};
+ 
+ const token=async()=>{if(!user)return null;try{return await user.getIdToken()}catch(e){return null}};
+ return{signIn,signOut,info,inApp,token,on:f=>{subs.add(f)},warm:()=>{load().catch(()=>{})},msg:e=>MSG[e&&e.code]||"로그인하지 못했어요. 잠시 뒤 다시 해 주세요.",
   boot:()=>{let k=null,w=null;try{k=localStorage.getItem("tv_auth");w=localStorage.getItem("tv_auth_wait");localStorage.removeItem("tv_auth_wait")}catch(e){}
    if(k||w)load().then(()=>{tell();if(w&&!user&&rerr){const el=$("ob-err");if(el)el.textContent=TVAuth.msg(rerr)}}).catch(()=>{})},waiting:()=>{try{return!!localStorage.getItem("tv_auth_wait")}catch(e){return false}}}})();
 
@@ -2452,6 +2489,8 @@ $("acct-b").onclick=async e=>{const b=e.currentTarget;b.disabled=true;$("acct-e"
 TVAuth.on(renderAcct);TVAuth.on(me=>{if(!me)authGate();else obAuthed(me)});renderAcct();TVAuth.boot();
 
 
+
+const AI_URL="https://script.google.com/macros/s/AKfycbzVbvxWeG-CbYMc98UovhrwL3l08KYpGlyGQgxeDChHe1Gjq8lxW9Gtq2i20sSfYa2E/exec";
 var COACH=null;  
 const CHAT_MAX=40;
 
@@ -2516,10 +2555,10 @@ function flowReview(p){if(!/^f-/.test(p.mid))return false;const f=CHAT.flow||(CH
   chatPush("c",`${how?how+"으로 읽었어. ":""}${weak&&sc[weak]<70?`가장 좋아질 곳은 <b>${N[weak]}</b>야.`:"전체로 좋았어!"}<br>${(FLOW_RT[f.rt]||FLOW_RT.mid)[1]}<br>한 번 더 읽어 볼래, 아니면 이 연습부터 할래?`,null,[["f-read-again","한 번 더 읽을래"],["f-next",(FLOW_RT[f.rt]||FLOW_RT.mid)[0]+" 할래"]]);return true}
  if(p.mid==="f-rt"){const a=coachSnap(),up=Object.entries(a.plays).some(([k,v])=>v>(p.snap.plays[k]||0));if(!up){chatPush("c","연습을 도중에 멈췄네. 괜찮아, 한 번만 끝까지 해 보자.");giveMission();return true}
   const b=Object.entries(TRK.best).find(([k,v])=>(v.plays||0)>(p.snap.plays[k]||0)),q=TR.t&&TR.notes&&TR.notes.length?Math.round(TR.notes.filter(n=>n.lit).length/TR.notes.length*100):null,best=b?b[1].best:null;
-  const cr=TR.brk||(BRK&&p.snap.brk==null?{st:BRK.st}:null);f.step="reread";
+  const cr=TR.brk||(BRK&&p.snap.brk==null?{st:BRK.st}:null);resCards(p.snap).forEach(h=>chatPush("c",h));f.step="reread";
   chatPush("c",`${q!=null?`이번엔 <b>${q}%</b>`:best!=null?`최고 <b>${best}%</b>`:"끝까지 했어"}${best!=null&&q!=null&&best>q?` (최고 ${best}%)`:""}. ${(q??best??0)>=60?"통과야! 다음 단계가 열렸어.":"60%까지 조금만 더 가 보자."}${cr?`<br>${noteLabel(cr.st)}에서 소리가 걸렸어 — 키우지 말고 작게 다가가면 돼.`:""}<br>한 번 더 할래, 아니면 아까 문장을 다시 읽어 볼래?`,null,[["f-rt-again","한 번 더 할래"],["f-next","문장 다시 읽을래"]]);return true}
  if(p.mid==="f-re"){if(!PM.m2){chatPush("c","아직 다시 읽지 않았어. 준비되면 이어서 하자.");giveMission();return true}
-  const R=compare(PM,tgt),up=R.rows.filter(r=>r.k==="up"),dn=R.rows.filter(r=>r.k==="down");saveDay({flow:1});
+  const R=compare(PM,tgt),up=R.rows.filter(r=>r.k==="up"),dn=R.rows.filter(r=>r.k==="down");saveDay({flow:1});chatPush("c",rTable("처음 vs 다시 읽기",R.rows));
   chatPush("c",`${up.length?`처음보다 <b>${up.map(r=>r.name).join(" · ")}</b> ${up.length}가지가 좋아졌어!`:"처음과 비슷하게 읽었어."}${dn.length?` <b>${dn.map(r=>r.name).join(" · ")}</b>는 처음이 더 나았어.`:""}<br>전후 녹음은 <b>기록</b> 탭에 남겼어. 한 번 더 읽어 볼래?`,null,[["f-re-again","한 번 더 읽을래"],["f-end","오늘은 여기까지"]]);return true}
  return false}
 function flowChoice(id,label,i){const m=CHAT.list[i];if(m)m.done=true;chatPush("u",esc(label));const f=CHAT.flow||(CHAT.flow={step:"check"});
@@ -2531,12 +2570,24 @@ function flowChoice(id,label,i){const m=CHAT.list[i];if(m)m.done=true;chatPush("
  if(id==="f-end"){f.step="done";chatPush("c","오늘 루틴 끝! 👏 내일 또 '아~'부터 같이 하자.");renderCoach();return}
  if(id==="f-next"){if(f.step==="read"&&PM.flow===2&&PM.m1)f.step="routine";const x=flowMission();if(x)return go(x.id,x.go);giveMission()}
  renderCoach()}
+
+function rBars(title,sub,rows,line){return`<div class="qcard"><div class="qc-h"><b>${title}</b>${sub?`<small>${sub}</small>`:""}</div><div class="rbars">${rows.map(r=>`<div class="rb-row${r.on?" on":""}"><span>${r.l}</span><i><em style="width:${Math.max(2,Math.min(100,r.v||0))}%"></em>${line?`<s style="left:${line}%"></s>`:""}</i><b>${r.t!=null?r.t:Math.round(r.v||0)+"%"}</b></div>`).join("")}</div></div>`}
+function rTable(title,rows){return`<div class="qcard"><div class="qc-h"><b>${title}</b><small>초록 ▲ = 처음보다 좋아진 것</small></div><table class="rtab"><tr><th>항목</th><th>처음</th><th>다시</th></tr>${rows.map(r=>`<tr><td>${r.name}</td><td>${r.a}</td><td class="${r.k}">${r.b}${r.k==="up"?" ▲":""}</td></tr>`).join("")}</table></div>`}
+
+function resCards(b){const out=[];
+ for(const[k,v]of Object.entries(TRK.best))if((v.plays||0)>(b.plays[k]||0)){const h=v.hist&&v.hist.length?v.hist:[v.best],g=k.match(/^gen-(\w+)-(\d+)$/),t=!g&&TRK_LIB.find(x=>trkKey(x)===k);
+  const nm=g?(GEN_G[g[1]]?GEN_G[g[1]][0]+" "+g[2]+"단계":"음역 연습"):k.startsWith("brk")?"걸린 음 연습":t?esc(t.name):"내 반주 연습";
+  out.push(rBars(nm,`최고 ${v.best}% · 금색 줄(60%)을 넘으면 통과`,h.map((x,i)=>({l:i===h.length-1?"이번":`${i+1}회`,v:x,on:i===h.length-1})),60))}
+ if(VCHKS.length>b.vc){const x=VCHKS[0],p=VCHKS[1],L=[["clear","맑음"],["flow","이어짐"],["breath","숨 길이"]].filter(([k])=>x&&x.sc&&x.sc[k]!=null);
+  if(L.length)out.push(rBars("목소리 상태","휴대폰 마이크로 본 참고값 · 진단이 아니에요"+(p?" · ▲▼ 지난번과 비교":""),L.map(([k,n])=>{const d=p&&p.sc&&p.sc[k]!=null?x.sc[k]-p.sc[k]:0;return{l:n,v:x.sc[k],t:Math.round(x.sc[k])+(d>=3?" ▲":d<=-3?" ▼":"")}})))}
+ if(RECS.length>b.rec&&PM.result&&PM.result.rows)out.push(rTable("처음 vs 다시 읽기",PM.result.rows));
+ return out}
 const coachPick=avoid=>{const L=coachList(),k=L.filter(m=>m.id!==avoid);return(k.length?k:L)[COACH.skip%(k.length||L.length)]};
 const chatPush=(w,t,mid,ch)=>{CHAT.list.push(Object.assign({w,t},mid?{mid}:{},ch?{ch}:{}));chatSave()};
 const giveMission=(lead,avoid)=>{const m=coachPick(avoid);chatPush("c",(lead?lead+"<br>":"")+m.say,m.id)};
 
 function coachSnap(){const t=today(),st=t?.steps||{};return{d3:D3.filter(x=>st[x[0]]).length,plays:Object.fromEntries(Object.entries(TRK.best).map(([k,v])=>[k,v.plays||0])),brk:BRK?BRK.step||0:null,vc:VCHKS.length,rec:RECS.length,mine:MINE.length}}
-function coachReview(){const p=CHAT.pend;if(!p)return;CHAT.pend=null;if(flowReview(p)){renderCoach();return}const a=coachSnap(),b=p.snap,out=[];
+function coachReview(){const p=CHAT.pend;if(!p)return;CHAT.pend=null;if(flowReview(p)){renderCoach();return}const a=coachSnap(),b=p.snap,out=[];resCards(b).forEach(h=>chatPush("c",h));
  if(a.d3>b.d3)out.push(a.d3>=4?`오늘의 3분 끝! 👏 벌써 ${dayN()}일째야${streak()>1?` · ${streak()}일 연속`:""}.`:`오늘의 3분 ${a.d3}단계까지 했어.`);
  for(const[k,v]of Object.entries(TRK.best))if((v.plays||0)>(b.plays[k]||0)){out.push(k.startsWith("gen-")||k.startsWith("brk")?`음역 연습 최고 ${v.best}%${v.best>=60?" — 통과!":""}`:`반주 연습 최고 ${v.best}%${v.best>=60?" — 다음 단계 열렸어!":""}`);break}
  if(a.brk!=null&&b.brk!=null&&a.brk>b.brk)out.push(`걸린 음 연습 한 단계 올라갔어 (${a.brk}/${BRK_STEPS.length}).`);
@@ -2554,6 +2605,8 @@ function coachReply(txt){const x=txt.replace(/\s+/g," ").trim();if(!x)return;cha
   coachSetName(n);giveMission(`좋아! 이제 나는 <b>${esc(coachName())}</b>${ya(coachName())}. 반가워!<br>궁금한 건 물어봐. 예: <b>"오늘 내 목소리 컨디션 어제랑 비교하면 어때?"</b><br>먼저 오늘 할 거 하나 줄게.`);renderCoach();return}
  if(/이름.*(바꿔|바꿀|지어)|부를게/.test(x)){CHAT.ask="name";chatPush("c","좋아, 새 이름을 말해 줘!");renderCoach();return}
  if(/(목소리|목).*(들어|녹음|체크|재 ?줘)|지금 (내 )?목소리/.test(x)){chatPush("c",`좋아! 아래를 누르고 편하게 <b>'아~' 5초</b>.<button type="button" class="mis now" data-vchk><span class="c">${ICON.mic}</span><span><b>'아~' 5초 들려주기</b><small>누르면 바로 들어요 · 화면은 그대로</small></span></button>`);renderCoach();return}
+ 
+ if(aiCan()&&!["오늘 컨디션 어제랑 비교해 줘","내 목소리 미리 들어볼래","오늘 뭐 할까?","이번 주 어땠어?","목이 좀 쉬었어"].includes(x)&&!(last&&/^(응|어|네|예|좋아|그래|오케이|ㅇㅋ|ok|시작|할게|하자)[!.~ ]*$/i.test(x))){aiOK().then(ok=>ok?aiReply():(chatPush("c","알겠어! 그럼 지금처럼 정해진 말로 대답할게. 한 번 더 말해 줄래?"),renderCoach()));renderCoach();return}
  if(/컨디션|상태|어제|비교|오늘 (내 )?목소리 어때|목 어때/.test(x)){const c=cardCond();
   if(!c){chatPush("c","오늘은 아직 네 목소리를 못 들었어. <b>'아~' 5초</b>만 들려주면 어제랑 견줘 줄게.","short");COACH.short=true;renderCoach();return}
   chatPush("c",c.html);if(c.drop){COACH.light=true;COACH.skip=0;giveMission("어제보다 조금 지쳐 있어. 오늘은 작게, 짧게 가자.")}else{COACH.skip=0;giveMission("좋아, 이 컨디션이면 연습해도 괜찮아.")}renderCoach();return}
@@ -2571,7 +2624,7 @@ function coachReply(txt){const x=txt.replace(/\s+/g," ").trim();if(!x)return;cha
  else chatPush("c","아직은 몇 가지 말만 알아들어 😅 이렇게 물어봐 줘: <b>오늘 컨디션 어제랑 비교해 줘 · 이번 주 어땠어 · 오늘 뭐 할까 · 목이 쉬었어 · 시간이 없어</b>");
  renderCoach()}
 
-function coachAsk(mid){const m=coachList().find(x=>x.id===mid);if(!m){chatPush("c","그건 오늘 벌써 했어! 다른 걸 해 보자.");giveMission();renderCoach();return}
+function coachAsk(mid){const m=aiMissions().find(x=>x.id===mid);if(!m){chatPush("c","그건 오늘 벌써 했어! 다른 걸 해 보자.");giveMission();renderCoach();return}
  $("sheet").innerHTML=`<div role="dialog" aria-modal="true" aria-labelledby="ca-h"><h2 class="sh-h" id="ca-h">${m.name}</h2>${say("지금 시작할까? 시작하면 화면 전체가 연습 화면으로 바뀌어. 끝나면 여기서 결과를 같이 보자.",{size:"s",pop:false})}
   <p class="meta" style="margin:0;align-self:stretch">약 ${m.min} · ${esc(m.why)}</p>
   <div class="rrow"><button type="button" class="rb" id="ca-x" aria-label="나중에"><span class="c">${ICON.close}</span><span class="t">나중에</span></button><button type="button" class="rb pri" id="ca-ok" aria-label="시작"><span class="c">${ICON.play}</span><span class="t">시작</span></button></div></div>`;
@@ -2583,7 +2636,7 @@ function renderCoach(){const e=$("coach");if(!e||!COACH)return;
  if(!CHAT.list.length){const u=loadUser()||{},sk=streak();
   if(!u.coach){chatPush("c",`${u.name?esc(u.name)+", ":""}안녕! 나는 네 목소리를 매일 같이 봐 줄 선생님이야.<br><b>나를 뭐라고 부를래?</b> 이름을 지어 줘! (예: 소리쌤 · 보이 · 하루쌤)`);CHAT.ask="name";chatSave()}
   else giveMission(`${u.name?esc(u.name)+", ":""}안녕! ${esc(coachName())}${ya(coachName())}. 오늘 ${dayN()}일째${sk>1?` · ${sk}일 연속!`:"."}<br>궁금한 건 물어봐. 예: <b>"오늘 내 목소리 컨디션 어제랑 비교하면 어때?"</b>`)}
- const lastM=CHAT.list.reduce((a,m,i)=>m.mid?i:a,-1),L=coachList();
+ const lastM=CHAT.list.reduce((a,m,i)=>m.mid?i:a,-1),L=aiMissions();
  e.innerHTML=`<div class="chat" id="chat-log" aria-live="polite">${CHAT.list.map((m,i)=>m.w==="u"?`<p class="msg me">${m.t}</p>`
   :`<div class="msg c">${i===0||CHAT.list[i-1].w!=="c"?`<img class="say-img" src="${charSrc($("tgt").value)}" alt="">`:`<span class="say-img" style="visibility:hidden"></span>`}<div class="bubble">${i===0||CHAT.list[i-1].w!=="c"?`<b class="msg-n">${esc(coachName())}</b>`:""}${m.t}${m.ch&&!m.done?`<div class="chs">${m.ch.map(([id,l])=>`<button type="button" data-ch="${id}" data-i="${i}">${l}</button>`).join("")}</div>`:""}${m.mid?(()=>{const x=L.find(q=>q.id===m.mid);return x?`<button type="button" class="mis${i===lastM?" now":""}" data-m="${m.mid}"><span class="c">${ICON[x.ico]||ICON.play}</span><span><b>${x.name}</b><small>약 ${x.min} · 누르면 시작</small></span></button>`:m.mid==="d3"?`<span class="mis done">${ICON.check} 했어요</span>`:""})():""}</div></div>`).join("")}</div>
   <div class="chips coach-chips" role="group" aria-label="빠른 대답">${["지금 내 목소리 들어 봐","오늘 컨디션 어제랑 비교해 줘","내 목소리 미리 들어볼래","오늘 뭐 할까?","이번 주 어땠어?","목이 좀 쉬었어"].map(x=>`<button type="button" data-q="${x}">${x}</button>`).join("")}</div>
@@ -2599,7 +2652,8 @@ $("coach").addEventListener("submit",e=>{e.preventDefault();const i=$("chat-tx")
 
 var VT={on:false};
 
-function voiceTalk(){if(VT.on){VT.stop&&VT.stop();return}
+function voiceTalk(noAI){if(VT.on){VT.stop&&VT.stop();return}
+ if(noAI!==1&&aiCan()){aiOK().then(ok=>ok?voiceAI():voiceTalk(1));return}
  const C=window.SpeechRecognition||window.webkitSpeechRecognition;if(!C){COACH.kb=true;chatPush("c","이 브라우저는 말을 글자로 바꾸지 못해. 글로 써 줘!");renderCoach();return}
  if(!ASR_ON){askAsr(voiceTalk,false);return}
  VT.on=true;const R=document.documentElement,ov=document.createElement("div");ov.className="vt nolv";
@@ -2628,6 +2682,52 @@ async function chatCheck(){if(VT.on||REC.on)return;VT.on=true;const ov=document.
  VT.stop=fin;$("vt-x").onclick=fin;$("vt-orb").onclick=fin;REC.quiet=1.2;REC.max=6500;const t0=Date.now();
  try{await recStart(()=>{const e=$("vt-t");if(e)e.textContent=`듣고 있어 · ${Math.min(5,(Date.now()-t0)/1000|0)}초`},()=>{if(REC.on)fin()})}
  catch(e){close();chatPush("c","마이크를 쓸 수 없어. 브라우저에서 마이크를 허락해 줘.");renderCoach()}}
+
+var AIM=(()=>{try{return localStorage.getItem("tv_aim")==="gpt"?"gpt":"claude"}catch(e){return"claude"}})();
+const aiCan=()=>!!AI_URL&&!!TVAuth.info()&&(csOn("ai")||!CSO.ai);
+const aiOK=()=>csOn("ai")?Promise.resolve(true):needConsent("ai");
+async function aiCall(op,body){const tk=await TVAuth.token();if(!tk)throw new Error("login");
+ const r=await fetch(AI_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({op,tk,...body})}),j=await r.json();if(!j.ok)throw new Error(j.err||"ai");return j}
+const AI_ERR={login:"다시 로그인해 줘.",notallowed:"아직 시험 중이라 허락된 계정만 AI 선생님을 쓸 수 있어.",limit:"오늘 이야기를 많이 했어! 내일 또 하자."};
+const plain=h=>String(h).replace(/<br\s*\/?>/g,"\n").replace(/<[^>]+>/g," ").replace(/&nbsp;/g," ").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&#39;/g,"'").replace(/&quot;/g,'"').replace(/&amp;/g,"&").replace(/[ \t]+/g," ").trim();
+function aiHist(){const L=CHAT.list.slice(-12).map(m=>({role:m.w==="u"?"user":"assistant",content:plain(m.t).slice(0,600)})).filter(m=>m.content);while(L.length&&L[0].role!=="user")L.shift();return L}
+
+function aiCtx(v){const W=x=>x==null?null:x>=70?"좋음":x>=45?"보통":"낮음",t=today(),st=t?.steps||{},vc=VCHKS[0],td=vc&&new Date(vc.at).toDateString()===new Date().toDateString();
+ const sc=o=>[["clear","소리 맑음"],["flow","소리 이어짐"],["breath","숨 길이"]].filter(([k])=>o&&o[k]!=null).map(([k,n])=>n+" "+W(o[k])).join(", ");
+ return[`선생님 이름: ${coachName()}`,`지금 목소리 유형: ${TYPES[$("cur").value]||"모름"} / 되고 싶은 목소리: ${TYPES[$("tgt").value]||"모름"}`,`연습 ${dayN()}일째${streak()>1?`, ${streak()}일 연속`:""}. 오늘의 3분 ${D3.filter(k=>st[k[0]]).length}/4단계`,
+  td?`오늘 '아~' 목소리 체크: ${["좋아요","조금 지쳤어요","쉬어 주세요"][vc.lv]||"?"} (${sc(vc.sc)})`:"오늘은 아직 '아~' 목소리 체크를 안 했음",
+  v?`방금 말할 때 목소리(휴대폰 참고값): ${sc(v)||"잘 안 들림"}`:"",
+  "[권할 수 있는 연습] 연습을 권할 때는 아래에서 지금 상황에 가장 맞는 하나만 골라 대답 맨 끝에 [[연습:아이디]]를 붙인다(카드가 떠서 바로 시작할 수 있다). 권할 게 없으면 붙이지 않는다. 앞쪽일수록 앱이 오늘 먼저 권하는 것.",
+  ...aiMissions().map(m=>`${m.id}: ${plain(m.name)} — ${plain(m.why).slice(0,45)}`)].filter(Boolean).join("\n")}
+
+function aiMissions(){const L=coachList(),has=id=>L.some(m=>m.id===id);
+ Object.keys(GEN_G).forEach(g=>{if(!has("g-"+g))L.push({id:"g-"+g,name:GEN_G[g][0],min:"2분",ico:"stairs",say:"",why:GEN_G[g][1],go:()=>{const p=genPlan(g),i=p.steps.findIndex((_,j)=>genBest(p.id,j)<60);openGen(p,i<0?p.steps.length-1:i)}})});
+ Object.keys(TRK_G).forEach(g=>{const lv=trkLevels(g),t=lv.find(x=>bestOf(x)<60)||lv[lv.length-1];if(t&&!has("t-"+g))L.push({id:"t-"+g,name:TRK_G[g][0],min:"3분",ico:"music",say:"",why:TRK_G[g][1],go:()=>openTrk(t)})});
+ return L}
+async function aiReply(v){const msgs=aiHist();chatPush("c",'<span class="ai-wait">생각하는 중…</span>');renderCoach();const it=CHAT.list[CHAT.list.length-1];
+ try{const j=await aiCall("chat",{m:AIM,msgs,ctx:aiCtx(v)}),mm=String(j.text).match(/\[\[연습:([\w-]+)\]\]/);
+  it.t=esc(String(j.text).replace(/\[\[[^\]]*\]\]/g,"").trim()).replace(/\n/g,"<br>");if(mm&&aiMissions().some(x=>x.id===mm[1]))it.mid=mm[1]}
+ catch(e){it.t=AI_ERR[e.message]||"지금은 AI 선생님과 연결이 안 돼. 잠시 뒤에 다시 말해 줘."}chatSave();renderCoach()}
+
+async function wav16b64(t){const n=Math.ceil(t.x.length*16000/t.sr),oc=new OfflineAudioContext(1,n,16000),b=oc.createBuffer(1,t.x.length,t.sr);b.copyToChannel(t.x,0);const s=oc.createBufferSource();s.buffer=b;s.connect(oc.destination);s.start();
+ const x=(await oc.startRendering()).getChannelData(0),buf=new ArrayBuffer(44+x.length*2),d=new DataView(buf),w=(o,q)=>[...q].forEach((ch,i)=>d.setUint8(o+i,ch.charCodeAt(0)));
+ w(0,"RIFF");d.setUint32(4,36+x.length*2,true);w(8,"WAVEfmt ");d.setUint32(16,16,true);d.setUint16(20,1,true);d.setUint16(22,1,true);d.setUint32(24,16000,true);d.setUint32(28,32000,true);d.setUint16(32,2,true);d.setUint16(34,16,true);w(36,"data");d.setUint32(40,x.length*2,true);
+ for(let i=0;i<x.length;i++)d.setInt16(44+i*2,Math.max(-1,Math.min(1,x[i]))*32767,true);
+ return new Promise(r=>{const f=new FileReader();f.onload=()=>r(String(f.result).split(",")[1]);f.readAsDataURL(new Blob([buf]))})}
+
+async function voiceAI(){if(VT.on||REC.on)return;VT.on=true;const ov=document.createElement("div");ov.className="vt";
+ ov.innerHTML=`<div class="vt-edge"></div><button type="button" class="vt-orb" id="vt-orb" aria-label="다 말했어요"><i></i><i></i><i></i></button><p class="vt-t" id="vt-t" aria-live="polite">말해 줘, 듣고 있어…</p><button type="button" class="vt-x" id="vt-x">${ICON.stop} 다 말했어요</button>`;document.body.appendChild(ov);
+ const close=()=>{VT.on=false;ov.classList.add("out");setTimeout(()=>ov.remove(),300)};
+ const fin=async()=>{if(!VT.on)return;close();const t=recStop();if(!t||t.x.length<t.sr*.6)return;
+  chatPush("u",'<span class="ai-wait">글자로 바꾸는 중…</span>');renderCoach();const me=CHAT.list[CHAT.list.length-1];let v=null;
+  try{const nd=VoiceCare.noiseDb(t.x.subarray(0,Math.round(t.sr*.3)),t.sr),m=VoiceCare.analyze(t.x,t.sr,{noise:nd});if(m.voiced>=1)v=chkScores(m)}catch(e){}
+  try{const j=await aiCall("stt",{audio:await wav16b64(t)}),x=(j.text||"").trim();if(!x){CHAT.list.pop();chatPush("c","잘 못 들었어. 한 번만 더 말해 줄래?");renderCoach();return}me.t=esc(x);chatSave();aiReply(v)}
+  catch(e){CHAT.list.pop();chatPush("c",AI_ERR[e.message]||"지금은 말을 글자로 못 바꿨어. 글로 써 줄래?");COACH.kb=true;renderCoach()}};
+ VT.stop=fin;$("vt-x").onclick=fin;$("vt-orb").onclick=fin;REC.quiet=1.5;REC.max=30000;
+ try{await recStart(()=>{},()=>{if(REC.on)fin()})}catch(e){close();chatPush("c","마이크를 쓸 수 없어. 브라우저에서 마이크를 허락해 줘.");renderCoach()}}
+
+{const r=$("aim-row"),p=$("aim-pick");if(r&&p){r.hidden=!AI_URL;const show=()=>[...p.children].forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===AIM));show();
+ p.onclick=e=>{const b=e.target.closest("button");if(!b)return;AIM=b.dataset.m;try{localStorage.setItem("tv_aim",AIM)}catch(_){}show()}}}
 COACH={light:false,short:false,skip:0};
 
 {const i=$("coach-nm");if(i){i.value=((loadUser()||{}).coach)||"";i.addEventListener("change",()=>{if(coachSetName(i.value)){CHAT.ask=null;chatSave();renderCoach()}})}}
@@ -2707,12 +2807,31 @@ let PHOTO_U="";$("f-photo").onchange=e=>{const f=e.target.files[0];if(!f)return;
 const renderAsr=()=>[...$("asr-pick").children].forEach(b=>b.setAttribute("aria-pressed",(b.dataset.a==="1")===ASR_ON));
 $("asr-pick").onclick=e=>{const b=e.target.closest("button");if(!b)return;ASR_ON=b.dataset.a==="1";try{localStorage.setItem("tv_asr",ASR_ON?"1":"0")}catch(_){}renderAsr()};renderAsr();
 
+const CS_V="2026-11-12",CS={
+ backup:{t:"기록 백업",soon:1,need:"이 기능을 쓰려면 꼭 필요해요",what:"연습 녹음 · 목소리 측정값(음높이·맑음 등) · 연습 기록",why:"폰을 바꾸거나 앱을 지워도 내 기록을 이어 쓰기 위해",keep:"동의를 끄거나 탈퇴할 때까지 · 끄면 30일 안에 서버에서 지워요",no:"기록이 이 기기에만 남아요. 다른 기능은 모두 그대로 쓸 수 있어요."},
+ ai:{t:"AI 선생님 대화",soon:!AI_URL,need:"이 기능을 쓰려면 꼭 필요해요",what:"채팅에서 말한 녹음과 글 · 오늘 목소리 상태 · 고른 목소리 유형과 연습 요약 (이름·이메일은 AI에 보내지 않아요)",why:"녹음을 글자로 바꾸고 AI 선생님이 대답을 만들기 위해. 미국 AI 회사 서버를 거쳐 처리되고, 그 회사의 AI 학습에는 쓰지 않는 방식으로 연결해요",keep:"대답을 만든 뒤 바로 지워요 · AI 회사는 오용 감시를 위해 최대 30일 보관한 뒤 지워요",no:"채팅 선생님은 지금처럼 이 기기 안의 규칙으로 대답해요."},
+ research:{t:"목소리 연구 참여",need:"선택이에요 · 안 해도 불이익이 없어요",what:"'아~' 5초 녹음 · 목소리 측정값 · 성별 (이름·이메일은 보내지 않아요)",why:"더 정확한 목소리 분석을 만드는 연구·개발",keep:"3년 · 동의를 끄면 30일 안에 지워요",no:"아무 불이익 없이 모든 기능을 그대로 써요.",gift:"함께해 주시면 정식 출시 때 프리미엄 리포트를 먼저 열어 드려요."}};
+let CSO={};try{CSO=JSON.parse(localStorage.getItem("tv_consent")||"{}")||{}}catch(e){}
+const csOn=k=>!!(CSO[k]&&CSO[k].on&&CSO[k].v===CS_V);
+function csSet(k,on){CSO[k]={on,v:CS_V,at:new Date().toISOString()};try{localStorage.setItem("tv_consent",JSON.stringify(CSO))}catch(_){}renderCs()}
+
+const needConsent=k=>csOn(k)?Promise.resolve(true):new Promise(r=>askConsent(k,r));
+function askConsent(k,then){const c=CS[k];$("sheet").innerHTML=`<div role="dialog" aria-modal="true" aria-labelledby="cs-h"><h2 class="sh-h" id="cs-h">${c.t}</h2><p class="hint">${c.need}</p>
+ <dl class="cs-dl"><dt>보내는 것</dt><dd>${c.what}</dd><dt>쓰는 곳</dt><dd>${c.why}</dd><dt>보관 기간</dt><dd>${c.keep}</dd><dt>안 하면</dt><dd>${c.no}</dd></dl>${c.gift?`<p class="hint cs-gift">${c.gift}</p>`:""}<p class="hint">설정 › 내 목소리 데이터에서 언제든 끌 수 있어요.</p>
+ <div class="rrow"><button type="button" class="rb" id="cs-x"><span class="c">${ICON.close}</span><span class="t">안 할게요</span></button><button type="button" class="rb pri" id="cs-ok"><span class="c">${ICON.check}</span><span class="t">동의하기</span></button></div></div>`;
+ $("sheet").hidden=false;const done=on=>{$("sheet").hidden=true;csSet(k,on);if(then)then(on)};$("cs-x").onclick=()=>done(false);$("cs-ok").onclick=()=>done(true)}
+function renderCs(){$("cs-list").innerHTML=Object.keys(CS).map(k=>{const c=CS[k],on=csOn(k),d=on?new Date(CSO[k].at):null;
+ return`<div class="cs-row"><div><b>${c.t}${c.soon?" <small>· 준비 중</small>":""}</b><small>${on?`동의함 · ${d.getMonth()+1}/${d.getDate()}`:"동의 안 함"}</small></div><button type="button" class="btn" data-cs="${k}">${on?"동의 끄기":"자세히 보고 동의"}</button></div>`}).join("")}
+$("cs-list").onclick=e=>{const b=e.target.closest("[data-cs]");if(!b)return;const k=b.dataset.cs;if(csOn(k))csSet(k,false);else askConsent(k)};renderCs();
+
+function csNudge(){if(CSO.research)return;setTimeout(()=>{if($("sheet").hidden)askConsent("research")},2200)}
+
 $("wipe").onclick=async e=>{const b=e.currentTarget,t0="이 기기의 내 기록 모두 지우기";if(!b.dataset.armed){b.dataset.armed=1;b.classList.add("danger");b.textContent="정말 지울까요? 되돌릴 수 없어요 · 한 번 더 누르면 지워요";
   setTimeout(()=>{if(b.dataset.armed){delete b.dataset.armed;b.classList.remove("danger");b.textContent=t0}},5000);return}
  b.disabled=true;stopAud();try{if(DBP)(await DBP).close()}catch(_){}DBP=null;
  await new Promise(r=>{try{const q=indexedDB.deleteDatabase("tv_reading_v1");q.onsuccess=q.onerror=q.onblocked=()=>r()}catch(_){r()}});
  
- try{["tv_user","tv_ob","tv_lang","tv_plan","tv_hello_day","tv_ad_day","tv_tplh","tv_tpfs","tv_tpls","tv_tpmr","tv_vw","tv_trk_off","tv_sc_shift","tv_theme","tv_rs","tv_rl","tv_pos","tv_asr","tv_brk","tv_prof","tv_chat"].forEach(k=>localStorage.removeItem(k))}catch(_){}
+ try{["tv_user","tv_ob","tv_lang","tv_plan","tv_hello_day","tv_ad_day","tv_tplh","tv_tpfs","tv_tpls","tv_tpmr","tv_vw","tv_trk_off","tv_sc_shift","tv_theme","tv_rs","tv_rl","tv_pos","tv_asr","tv_brk","tv_prof","tv_chat","tv_consent"].forEach(k=>localStorage.removeItem(k))}catch(_){}
  try{await TVAuth.signOut()}catch(_){}try{localStorage.removeItem("tv_auth")}catch(_){}
  location.reload()};
 
