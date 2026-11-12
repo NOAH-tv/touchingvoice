@@ -1329,10 +1329,10 @@ async function saveRec(){const R=PM.result,note=t=>{const e=$("svd");if(e)e.inne
   note(PM.demo?"기록에 저장했어요 (데모라 녹음은 없어요)":"기록에 저장했어요 · 아래 '기록'에서 다시 들을 수 있어요");await loadAll()}
  catch(e){note("이 기기에서는 기록을 저장하지 못했어요")}}
 function recInner(r,full){const d=new Date(r.at),when=d.toLocaleDateString(SPK(),{month:"numeric",day:"numeric"})+" "+d.toLocaleTimeString(SPK(),{hour:"numeric",minute:"2-digit"});
- return`<div class="rec-h"><span class="dn">${when}</span><span class="way">${r.m2?r.up+"가지 좋아짐":"읽기 녹음"}</span>${r.demo?'<span class="meta">데모</span>':""}<span class="acts">
-  <button type="button" class="icb" data-play="1" aria-label="처음 녹음 듣기"${r.w1?"":" disabled"}>${ICON.play1}<small>처음</small></button>${r.m2?`<button type="button" class="icb" data-play="2" aria-label="다시 읽은 녹음 듣기"${r.w2?"":" disabled"}>${ICON.play2}<small>다시</small></button>`:""}
+ return`<div class="rec-h"><span class="dn">${when}</span><span class="way">${r.m2?r.up+"가지 좋아짐":r.kind==="tp"?"프롬프터 녹음":"읽기 녹음"}</span>${r.demo?'<span class="meta">데모</span>':""}<span class="acts">
+  <button type="button" class="icb" data-play="1" aria-label="처음 녹음 듣기"${r.w1?"":" disabled"}>${ICON.play1}<small>${r.m2?"처음":"듣기"}</small></button>${r.m2?`<button type="button" class="icb" data-play="2" aria-label="다시 읽은 녹음 듣기"${r.w2?"":" disabled"}>${ICON.play2}<small>다시</small></button>`:""}
   <button type="button" class="icb" data-rdel aria-label="이 기록 지우기">${ICON.trash}</button>${full?`<button type="button" class="go" data-redo aria-label="이 글 다시 연습하기">${ICON.mic}</button>`:""}</span></div>
-  ${full?`<p class="rec-t">${paras(r.text)}</p>`:""}<p class="rec-n">${r.m2?`빠르기 ${r.m1.rate.toFixed(1)} → ${r.m2.rate.toFixed(1)}글자/초 · 쉼 ${r.m1.pauses} → ${r.m2.pauses}번`:`빠르기 ${r.m1.rate.toFixed(1)}글자/초 · 쉼 ${r.m1.pauses}번${r.m1.match!=null?` · 발음 ${r.m1.match}%`:""}${r.use?` · 소리 낸 시간 ${useT(r.use)}`:""}`}</p>`}
+  ${full?`<p class="rec-t">${paras(r.text)}</p>`:""}<p class="rec-n">${r.m2?`빠르기 ${r.m1.rate.toFixed(1)} → ${r.m2.rate.toFixed(1)}글자/초 · 쉼 ${r.m1.pauses} → ${r.m2.pauses}번`:r.m1?`빠르기 ${r.m1.rate.toFixed(1)}글자/초 · 쉼 ${r.m1.pauses}번${r.m1.match!=null?` · 발음 ${r.m1.match}%`:""}${r.use?` · 소리 낸 시간 ${useT(r.use)}`:""}`:r.dur?`${useT(r.dur)} 읽음`:""}</p>`}
 function renderRecs(){$("recs").innerHTML=RECS.length?RECS.map(r=>`<article class="day" data-rid="${r.id}">${recInner(r,true)}</article>`).join(""):`${say("아직 기록이 없어. 오늘의 읽기를 연습하면 녹음이 여기 쌓여!",{pop:false})}`}
 
 function armDel(b){if(b.dataset.armed)return true;b.dataset.armed=1;b.classList.add("armed");const h=b.innerHTML;b.innerHTML=ICON.trash+"<small>지울까요?</small>";
@@ -1340,7 +1340,7 @@ function armDel(b){if(b.dataset.armed)return true;b.dataset.armed=1;b.classList.
 
 const TP={g:null,mode:"auto",run:false,raf:0,pos:0,rec:null,ms:0,t0:0};let TPH="",TPW=[],TPS=1;
 let TP_MIR=false;try{TP_MIR=localStorage.getItem("tv_tpmr")==="1"}catch(e){}
-function openTP(g){TP.g=g;TP.used=false;Object.assign(TPR,{ch:[],n:0,seg:[],p0:null,cap:null});TP.ms=0;TP.t0=0;Object.assign(VW,{fr:[],skip:0,warned:-1e9,chk:0,fail:false});$("tp-warn").hidden=true;$("tp-vw").setAttribute("aria-pressed",VW_ON);try{const l=+localStorage.getItem("tv_tplh");if(l)$("tp-text").style.setProperty("--tplh",l);const k=localStorage.getItem("tv_tpls");if(k!=null)$("tp-text").style.setProperty("--tpls",(+k/100)+"em")}catch(e){}TP.pos=0;let j=0,h=0;const n=g.ss.reduce((a,x)=>a+x.split(/\s+/).length,0);
+function openTP(g){TP.g=g;TP.used=false;Object.assign(TPR,{ch:[],n:0,seg:[],p0:null,cap:null,mr:null,bl:[]});TP.ms=0;TP.t0=0;Object.assign(VW,{fr:[],skip:0,warned:-1e9,chk:0,fail:false});$("tp-warn").hidden=true;$("tp-vw").setAttribute("aria-pressed",VW_ON);try{const l=+localStorage.getItem("tv_tplh");if(l)$("tp-text").style.setProperty("--tplh",l);const k=localStorage.getItem("tv_tpls");if(k!=null)$("tp-text").style.setProperty("--tpls",(+k/100)+"em")}catch(e){}TP.pos=0;let j=0,h=0;const n=g.ss.reduce((a,x)=>a+x.split(/\s+/).length,0);
  $("tp-text").innerHTML=g.ss.map(x=>`<span class="sn">${x.split(/\s+/).map(w=>{const k=j++;h+=hangul(w).length;const q=g.ps[k];
   return`<span class="tw" data-h="${h}">${g.on.has(k)?`<b>${esc(w)}</b>`:esc(w)}</span>${q&&k<n-1?` <span class="p">${q===2?"//":"/"}</span>`:""}`}).join(" ")}</span>`).join("");
  TPH=hangul(g.ss.join(" "));TPS=LANG==="en"?sylOf(g.ss.join(" ")):TPH.length;TPW=[...$("tp-text").querySelectorAll(".tw")];
@@ -1359,6 +1359,8 @@ const tpProg=()=>{const v=$("tp-view");if(TP.mode==="auto"){if(v.scrollTop<4)ret
 async function vwStart(){if(VW.on||VW.skip||!navigator.mediaDevices)return;VW.on=true;
  try{const st=await micOpen(),ac=new(window.AudioContext||window.webkitAudioContext)();await ac.resume();const an=ac.createAnalyser();an.fftSize=2048;an.smoothingTimeConstant=0;const src=ac.createMediaStreamSource(st);src.connect(an);
   const rn=ac.createScriptProcessor(4096,1,1);rn.onaudioprocess=e=>{if(!TP.run||TPR.cap!=null)return;const d=new Float32Array(e.inputBuffer.getChannelData(0));TPR.ch.push(d);TPR.n+=d.length;TPR.sr=ac.sampleRate;if(TPR.n>=TPR.MAX*ac.sampleRate)TPR.cap=tpProg()};src.connect(rn);rn.connect(ac.destination);
+  
+  try{if(window.MediaRecorder){const mr=new MediaRecorder(st);TPR.mr=mr;TPR.bl=[];mr.ondataavailable=e=>{if(e.data&&e.data.size)TPR.bl.push(e.data)};if(TP.run)mr.start(1000)}}catch(e){TPR.mr=null}
   if(!VW.on){st.getTracks().forEach(t=>t.stop()),micDone();ac.close();return}
   Object.assign(VW,{st,ac,an,fail:false,buf:new Float32Array(2048),sp:new Float32Array(1024),iv:setInterval(vwTick,100)});tpInfo()}catch(e){VW.on=false;VW.fail=true;tpInfo()}}
 function vwStop(){VW.on=false;clearInterval(VW.iv);VW.iv=0;if(VW.st){VW.st.getTracks().forEach(t=>t.stop()),micDone();try{VW.ac.close()}catch(e){}VW.st=VW.ac=VW.an=null}}
@@ -1377,19 +1379,24 @@ function tpWarn(r){const w=$("tp-warn");w.innerHTML=`${ICON.alert}<span><b>소�
 const useT=x=>{const m=Math.floor(x/60),r=x%60,E=LANG==="en";return x>=600?Math.round(x/60)+(E?" min":"분"):x>=60?m+(E?" min":"분")+(r?" "+r+(E?" s":"초"):""):x+(E?" s":"초")};
 function renderUse(){const e=$("use-today");if(!e)return;const t=today(),wk=DAYS.filter(d=>Date.now()-d.ts<7*864e5).reduce((a,d)=>a+(d.use||0),0);
  e.textContent=t&&t.use?`오늘 목 사용 · 프롬프터 ${Math.max(1,Math.round((t.tpms||0)/6e4))}분 · 소리 낸 시간 ${useT(t.use)} · 최근 7일 ${useT(wk)}`:wk?`목 사용 · 최근 7일 소리 낸 시간 ${useT(wk)}`:"";e.hidden=!e.textContent}
-function closeTP(){if(TP.edit){TP.edit=false;$("tp").classList.remove("edit","typing");vvFit()}tpStop();const use=Math.round(VW.fr.length/10);vwStop();TP_SAVE();$("tp").hidden=true;document.body.style.overflow=$("rd").hidden?"":"hidden";if(!$("rd").hidden&&RD!=null)renderRd();if(TP.used){TP.used=false;const c=TP.g&&tagsOf(TP.g),min=Math.round(TP.ms/6e4),tr=vwTrend();if(use>=5){const t=today();saveDay({use:((t&&t.use)||0)+use,tpms:((t&&t.tpms)||0)+TP.ms})}setTimeout(()=>tpReport(()=>offerVC(c,min,tr,use)),250)}else Object.assign(TPR,{ch:[],n:0,seg:[]})}
+function closeTP(){if(TP.edit){TP.edit=false;$("tp").classList.remove("edit","typing");vvFit()}tpStop();const use=Math.round(VW.fr.length/10),mrP=tpMrStop();mrP.then(vwStop,vwStop);TP_SAVE();$("tp").hidden=true;document.body.style.overflow=$("rd").hidden?"":"hidden";if(!$("rd").hidden&&RD!=null)renderRd();if(TP.used){TP.used=false;const c=TP.g&&tagsOf(TP.g),min=Math.round(TP.ms/6e4),tr=vwTrend();if(use>=5){const t=today();saveDay({use:((t&&t.use)||0)+use,tpms:((t&&t.tpms)||0)+TP.ms})}setTimeout(()=>tpReport(()=>offerVC(c,min,tr,use),mrP),250)}else Object.assign(TPR,{ch:[],n:0,seg:[]})}
 
-async function tpReport(then){const sr=TPR.sr,n=TPR.n,txt=TPR.seg.map(([a,b])=>TPH.slice(a,b)).join(" ");
- if(!sr||n<5*sr||hangul(txt).length<10){Object.assign(TPR,{ch:[],n:0,seg:[]});then();return}
+const tpMrStop=()=>new Promise(r=>{const mr=TPR.mr,mk=()=>TPR.bl&&TPR.bl.length?new Blob(TPR.bl,{type:(mr&&mr.mimeType)||"audio/webm"}):null;TPR.mr=null;if(!mr||mr.state==="inactive"){r(mk());return}mr.onstop=()=>r(mk());try{mr.stop()}catch(e){r(mk())}});
+
+async function tpSave(blob,m){if(!blob||blob.size<3000||!TP.g)return;const g=TP.g,all=g.ss.join(" ");
+ try{await dbPut("rec",{id:Date.now(),at:new Date().toISOString(),kind:"tp",mid:g.id||null,raw:all,text:(g.title?g.title+" · ":"")+(all.length>120?all.slice(0,120)+"…":all),src:"프롬프터",m1:m||null,m2:null,up:0,demo:false,w1:blob,dur:Math.round(TP.ms/1000)});await loadAll()}catch(e){}}
+async function tpReport(then,mrP){const blob=mrP?await mrP:null,sr=TPR.sr,n=TPR.n,txt=TPR.seg.map(([a,b])=>TPH.slice(a,b)).join(" ");
+ if(!sr||n<5*sr||hangul(txt).length<10){Object.assign(TPR,{ch:[],n:0,seg:[]});await tpSave(blob,null);then();return}
  const x=new Float32Array(n);let o=0;TPR.ch.forEach(c=>{x.set(c,o);o+=c.length});Object.assign(TPR,{ch:[],n:0,seg:[]});
  $("sheet").innerHTML=`<div role="dialog" aria-modal="true"><h2 class="sh-h">방금 읽은 목소리</h2><p class="hint">분석하는 중…</p></div>`;$("sheet").hidden=false;
- let m;try{m=await measure({x,sr},txt,"")}catch(e){$("sheet").hidden=true;then();return}
+ let m;try{m=await measure({x,sr},txt,"")}catch(e){$("sheet").hidden=true;await tpSave(blob,null);then();return}
+ tpSave(blob,m);
  const tgt=$("tgt").value,sc=recScores({m2:m},tgt),bd=band(tgt),W=v=>v>=70?"좋아요":v>=45?"보통":"더 연습",sec=Math.round(n/sr);
  const card=rBars("프롬프터로 읽은 목소리",`${sec>=60?Math.floor(sec/60)+"분 ":""}${sec%60}초 녹음 · 되고 싶은 목소리 '${esc(TYPES[tgt]||"")}' 기준${n>=TPR.MAX*sr?" · 처음 2분으로 봤어요":""}`,
   [["rate","말 빠르기"],["melody","높낮이"],["crisp","또렷함"]].filter(([k])=>sc[k]!=null).map(([k,l])=>({l,v:sc[k],t:W(sc[k])})))
   +`<p class="meta" style="margin:6px 0 0">1초에 ${m.rate.toFixed(1)}글자 (목표 ${bd[0]}~${bd[1]}) · 쉼 ${m.pauses}번</p>`;
  if(typeof chatPush==="function"){chatPush("c",card+"프롬프터로 읽은 거 들어 봤어! 결과는 이래.");if(typeof renderCoach==="function")renderCoach()}
- $("sheet").innerHTML=`<div role="dialog" aria-modal="true" aria-labelledby="tr-h"><h2 class="sh-h" id="tr-h">방금 읽은 목소리</h2>${card}<p class="meta" style="margin:0">녹음은 이 기기에서 분석만 하고 저장하지 않아요 · 채팅에도 남겨 뒀어요</p>
+ $("sheet").innerHTML=`<div role="dialog" aria-modal="true" aria-labelledby="tr-h"><h2 class="sh-h" id="tr-h">방금 읽은 목소리</h2>${card}<p class="meta" style="margin:0">녹음은 이 기기의 <b>기록</b> 탭에 남겨 다시 들을 수 있어요 · 채팅에도 남겨 뒀어요</p>
   <div class="rrow"><button type="button" class="rb pri" id="tr-ok"><span class="c">${ICON.check}</span><span class="t">확인</span></button></div></div>`;
  $("tr-ok").onclick=()=>{$("sheet").hidden=true;then()}}
 function tpInfo(){const r=+$("tp-rate").value,v=$("tp-view"),room=v.scrollHeight-v.clientHeight,sec=Math.round(TPS/r*(room>0?1-Math.min(1,v.scrollTop/room):1)),nb=$("tp-num");if(document.activeElement!==nb)nb.value=r.toFixed(1);
@@ -1397,7 +1404,7 @@ function tpInfo(){const r=+$("tp-rate").value,v=$("tp-view"),room=v.scrollHeight
  $("tp-use").textContent=VW.fail?"마이크를 못 켜서 목 지키기는 쉬어요":VW.fr.length>=30?`목 지키기 · 소리 낸 시간 ${useT(Math.round(VW.fr.length/10))}`:""}
 function tpBtn(){$("tp-go").innerHTML=`<span class="c">${TP.run?ICON.pause:ICON.play}</span><span class="t">${TP.run?"멈춤":"시작"}</span>`;$("tp-go").setAttribute("aria-label",TP.run?"멈춤":"시작");$("tp").classList.toggle("run",TP.run)}
 function tpMode(m){tpStop();TP.mode=m;$("tp-auto").setAttribute("aria-pressed",m==="auto");$("tp-voice").setAttribute("aria-pressed",m==="voice");$("tp-speed").hidden=m!=="auto";tpInfo()}
-function tpStop(){if(TP.run&&TPR.p0!=null){const p1=TPR.cap!=null?TPR.cap:tpProg();if(p1>TPR.p0)TPR.seg.push([TPR.p0,p1]);TPR.p0=null}if(TP.t0){TP.ms+=Date.now()-TP.t0;TP.t0=0}TP.run=false;cancelAnimationFrame(TP.raf);if(TP.rec){const r=TP.rec;TP.rec=null;r.onend=null;try{r.stop()}catch(e){}}tpBtn()}
+function tpStop(){if(TPR.mr&&TPR.mr.state==="recording")try{TPR.mr.pause()}catch(e){}if(TP.run&&TPR.p0!=null){const p1=TPR.cap!=null?TPR.cap:tpProg();if(p1>TPR.p0)TPR.seg.push([TPR.p0,p1]);TPR.p0=null}if(TP.t0){TP.ms+=Date.now()-TP.t0;TP.t0=0}TP.run=false;cancelAnimationFrame(TP.raf);if(TP.rec){const r=TP.rec;TP.rec=null;r.onend=null;try{r.stop()}catch(e){}}tpBtn()}
 function tpStart(){const v=$("tp-view");TP.used=true;
  if(TP.mode==="auto"){TP.run=true;let last=performance.now(),acc=v.scrollTop;
   const step=t=>{if(!TP.run)return;const dt=Math.min(.1,(t-last)/1000);last=t;const room=v.scrollHeight-v.clientHeight;if(Math.abs(v.scrollTop-acc)>3)acc=v.scrollTop;acc+=+$("tp-rate").value*room/Math.max(1,TPS)*dt;v.scrollTop=acc;
@@ -1407,7 +1414,7 @@ function tpStart(){const v=$("tp-view");TP.used=true;
   r.onresult=e=>{let t="";for(let i=e.resultIndex;i<e.results.length;i++)t+=e.results[i][0].transcript;tpFollow(hangul(t))};
   r.onerror=e=>{if(e.error==="audio-capture"&&VW.on){vwStop();VW.skip=1;$("tp-info").textContent="이 기기는 '목소리 따라'와 목 지키기를 같이 못 써요 · 따라가기만 할게요";return}if(/not-allowed|service-not-allowed|audio-capture/.test(e.error)){tpStop();$("tp-info").textContent="마이크를 쓸 수 없어요 · '시간'으로 써 주세요"}};
   r.onend=()=>{if(TP.run&&TP.rec===r)try{r.start()}catch(e){}};TP.rec=r;TP.run=true;try{r.start()}catch(e){}}
- if(TP.run){TP.t0=Date.now();if(TPR.cap==null)TPR.p0=tpProg();vwStart()}tpBtn();tpInfo()}
+ if(TP.run){TP.t0=Date.now();if(TPR.cap==null)TPR.p0=tpProg();vwStart();if(TPR.mr&&TPR.mr.state==="paused")try{TPR.mr.resume()}catch(e){}}tpBtn();tpInfo()}
 
 function tpFollow(heard){for(let k=Math.min(8,heard.length);k>=3;k--){const tail=heard.slice(-k),i=TPH.indexOf(tail,Math.max(0,TP.pos-10));if(i>=0&&i-TP.pos<160){TP.pos=Math.max(TP.pos,i+k);tpShow();return}}}
 function tpShow(){let cur=null;TPW.forEach(w=>{const read=+w.dataset.h<=TP.pos;w.classList.toggle("read",read);if(!read&&!cur)cur=w});
@@ -2521,7 +2528,7 @@ function coachList(){const t=today(),st=t?.steps||{},done=D3.filter(x=>st[x[0]])
  {const fm=flowMission();if(fm&&!COACH.light)L.push(fm)}
  if(COACH.light||(t&&t.w==="cloud"))L.push({id:"rest",name:"목 상태 보기",min:"10초",ico:"shield",say:"오늘은 목이 쉬어 가는 날로 하자. <b>'아~' 5초</b>로 목 상태만 보고, 물 한 잔 마시고 끝!",why:"지친 날 무리하면 회복이 늦어져요. 작게, 짧게만.",go:()=>openVC("평소")});
  if(COACH.short&&done<4)L.push({id:"short",name:"목소리 체크",min:"1분",ico:"mic",say:"그럼 1분만! <b>목소리 체크</b>만 하고 가자.",why:"하루 한 번 '아~'만 해도 내 기준이 쌓여요.",go:()=>openD3(1)});
- if(done<4){const nx=D3.findIndex(x=>!st[x[0]]);L.push({id:"d3",name:"오늘의 3분",min:"3분",ico:"play",say:done?`오늘의 3분, ${done}단계까지 했어! <b>${D3[nx][1]}</b>부터 이어서 가 보자.`:"오늘의 3분부터 하자. 목소리 체크 → 기초 연습 → 읽기 → 마무리 한마디, 내가 순서대로 안내할게.",why:"매일 같은 3분이 쌓여야 내 목소리 기준이 생겨요.",go:()=>openD3(done?nx+1:1)})}
+ if(done<4&&!(t&&t.flow)){const nx=D3.findIndex(x=>!st[x[0]]);L.push({id:"d3",name:"오늘의 3분",min:"3분",ico:"play",say:done?`오늘의 3분, ${done}단계까지 했어! <b>${D3[nx][1]}</b>부터 이어서 가 보자.`:"오늘의 3분부터 하자. 목소리 체크 → 기초 연습 → 읽기 → 마무리 한마디, 내가 순서대로 안내할게.",why:"매일 같은 3분이 쌓여야 내 목소리 기준이 생겨요.",go:()=>openD3(done?nx+1:1)})}
  if(BRK&&(BRK.step||0)<BRK_STEPS.length){const i=Math.min(BRK.step||0,BRK_STEPS.length-1);L.push({id:"brk",name:"걸린 음 연습 · "+noteLabel(BRK.st),min:"2분",ico:"stairs",say:`지난번 <b>${noteLabel(BRK.st)}</b>에서 소리가 걸렸지? 오늘은 '${BRK_STEPS[i][2]}' 단계(${i+1}/${BRK_STEPS.length})로 가 보자.`,why:"소리를 키워서 넘기지 않아요. 작게, 한 걸음씩 다가가면 그 음이 편해져요.",go:()=>openGen(brkPlan(),i)})}
  if(typeof BST==="object"&&BST&&BST.day!==dayKey()&&!COACH.light)L.push({id:"boost",name:"내 목소리 미리 듣기",min:"1분",ico:"wave",say:"한 문장만 읽어 줘. 네 목소리에서 <b>살짝 키우면 좋은 소리</b>를 찾아서, 연습하면 가까워질 방향을 들려줄게.",why:"되고 싶은 목소리가 귀로 들리면 연습 방향이 분명해져요.",go:openBoost});
  if(COACH.want){const p=genPlan(COACH.want),i=p.steps.findIndex((_,j)=>genBest(p.id,j)<60);L.unshift({id:"want",name:GEN_G[COACH.want][0],min:"2분",ico:"stairs",say:`방금 들은 그 소리 쪽으로! <b>${GEN_G[COACH.want][0]}</b> 해 보자.`,why:GEN_G[COACH.want][1],go:()=>openGen(p,i<0?p.steps.length-1:i)})}
@@ -2537,8 +2544,8 @@ function flowRtGo(k){if(k==="breath"||k==="scale"){const L=trkLevels(k),t=L.find
  const g=k==="high"?"high":"mid",p=genPlan(g),i=p.steps.findIndex((_,j)=>genBest(p.id,j)<60);openGen(p,i<0?p.steps.length-1:i)}
 function flowReread(){if(PM.m1&&(PM.flow===2||PM.flow===3)){delete PM.m2;delete PM.take2;PM.saved=false;PM.flow=3;PM.coach=coach(PM,$("tgt").value);PM.step=3;$("pm").hidden=false;document.body.style.overflow="hidden";renderPM()}else openPractice({...flowText(),flow:3})}
 function flowMission(){const t=today(),f=CHAT.flow||(CHAT.flow={step:"check"});if(t&&t.flow)f.step="done";if(f.step==="check"&&t&&t.steps&&t.steps.check)f.step="read";
- if(f.step==="check")return{id:"f-check",name:"① 목소리 체크",min:"20초",ico:"mic",say:"먼저 오늘 목소리부터 들어 볼게. 편하게 <b>'아~' 5초</b>!",why:"매일 같은 소리로 재야 어제와 견줄 수 있어요.",go:()=>{openD3(1);F.only=true}};
- if(f.step==="read"){const x=strip(flowText().text).replace(/\s+/g," ");return{id:"f-read",name:"② 오늘의 문장 읽기",min:"1분",ico:"book",say:`오늘의 문장이야. 평소처럼 편하게 한 번 읽어 줘.<i class="flow-q">“${esc(x.length>46?x.slice(0,46)+"…":x)}”</i>`,why:"지금 내 말소리를 먼저 들어 봐야 무엇을 연습할지 알 수 있어요.",go:()=>openPractice({...flowText(),flow:1})}}
+ if(f.step==="check")return{id:"f-check",name:"① 목소리 체크",min:"20초",ico:"mic",say:"오늘 순서는 <b>① 목소리 체크 → ② 스크립트 읽기 → ③ 변화 결과</b>야.<br>먼저 편하게 <b>'아~' 5초</b>!",why:"매일 같은 소리로 재야 어제와 견줄 수 있어요.",go:()=>{openD3(1);F.only=true}};
+ if(f.step==="read"){const x=strip(flowText().text).replace(/\s+/g," ");return{id:"f-read",name:"② 스크립트 읽기",min:"1분",ico:"book",say:`② 오늘의 스크립트야. 평소처럼 편하게 <b>한 번만</b> 읽어 줘. 다 읽으면 ③ 변화 결과를 바로 보여 줄게.<i class="flow-q">“${esc(x.length>46?x.slice(0,46)+"…":x)}”</i>`,why:"지금 내 말소리를 먼저 들어 봐야 무엇을 연습할지 알 수 있어요.",go:()=>openPractice({...flowText(),flow:1})}}
  if(f.step==="routine"){const r=FLOW_RT[f.rt]||FLOW_RT.mid;return{id:"f-rt",name:"③ "+r[0],min:"2분",ico:"stairs",say:r[1],why:"방금 읽은 결과에서 고른 오늘의 연습이에요.",go:()=>flowRtGo(f.rt)}}
  if(f.step==="reread")return{id:"f-re",name:"④ 같은 문장 다시 읽기",min:"1분",ico:"again",say:"연습했으니 <b>아까 그 문장</b>을 다시 읽어 보자. 처음 소리와 이어서 들어 볼 수 있어.",why:"전과 후를 귀로 견줘 봐야 달라진 걸 알 수 있어요.",go:flowReread};
  return null}
@@ -2546,13 +2553,9 @@ function flowReview(p){if(!/^f-/.test(p.mid))return false;const f=CHAT.flow||(CH
  if(p.mid==="f-check"){if(!(t&&t.steps&&t.steps.check)){chatPush("c","아직 '아~'를 못 들었어. 준비되면 다시 해 보자.");giveMission();return true}
   f.step="read";const c=cardCond();if(c)chatPush("c",c.html);
   const mm=t.mv||t.m,quiet=mm&&((Number.isFinite(mm.level)&&mm.level<-42)||(Number.isFinite(mm.voiced)&&mm.voiced<2));
-  chatPush("c",`${t.w?esc((CARE_W[t.w]||CARE_W.none).line)+"<br>":""}${quiet?"소리가 조금 작게 들어왔어. <b>폰을 입에서 한 뼘쯤</b> 두고 한 번 더 재면 더 정확해.<br>":""}${c&&c.drop?"어제보다 조금 지쳐 있어. 오늘은 작게, 편하게 가자.":"목소리 잘 들었어!"} 이제 오늘의 문장을 읽어 볼까?`,null,[["f-check-again","한 번 더 잴래"],["f-next","문장 읽을래"]]);return true}
- if(p.mid==="f-read"){if(!(PM.flow===2&&PM.m1)){chatPush("c","아직 문장을 못 들었어. 준비되면 다시 읽어 줘.");giveMission();return true}
-  const sc=recScores({m2:PM.m1},tgt),N={rate:"말 빠르기",melody:"높낮이(억양)",crisp:"또렷함"},ks=Object.keys(N).filter(k=>sc[k]!=null);
-  chatPush("c",`<div class="qcard"><div class="qc-h"><b>방금 읽은 목소리</b><small>되고 싶은 목소리 ‘${esc(TYPES[tgt]||"")}’ 기준</small></div><ul>${ks.map(k=>`<li><span>${N[k]}</span><b class="${sc[k]>=70?"up":sc[k]<45?"dn":""}">${W(sc[k])}</b></li>`).join("")}</ul></div>`);
-  const weak=ks.slice().sort((x,y)=>sc[x]-sc[y])[0];f.rt=!weak||sc[weak]>=70?"mid":{rate:"breath",melody:"scale",crisp:"high"}[weak];f.plays=0;
-  const m=PM.m1,how=[m.rate!=null?`1초에 ${m.rate.toFixed(1)}글자`:"",m.pauses!=null?`쉼 ${m.pauses}번`:""].filter(Boolean).join(" · ");
-  chatPush("c",`${how?how+"으로 읽었어. ":""}${weak&&sc[weak]<70?`가장 좋아질 곳은 <b>${N[weak]}</b>야.`:"전체로 좋았어!"}<br>${(FLOW_RT[f.rt]||FLOW_RT.mid)[1]}<br>한 번 더 읽어 볼래, 아니면 이 연습부터 할래?`,null,[["f-read-again","한 번 더 읽을래"],["f-next",(FLOW_RT[f.rt]||FLOW_RT.mid)[0]+" 할래"]]);return true}
+  chatPush("c",`${t.w?esc((CARE_W[t.w]||CARE_W.none).line)+"<br>":""}${quiet?"소리가 조금 작게 들어왔어. <b>폰을 입에서 한 뼘쯤</b> 두고 한 번 더 재면 더 정확해.<br>":""}${c&&c.drop?"어제보다 조금 지쳐 있어. 오늘은 작게, 편하게 가자.":"목소리 잘 들었어!"} 이제 ② 스크립트 읽기!`,null,[["f-next","스크립트 읽을래"],["f-check-again","한 번 더 잴래"]]);return true}
+ if(p.mid==="f-read"){if(!(PM.flow===2&&PM.m1)){chatPush("c","아직 스크립트를 못 들었어. 준비되면 읽어 줘.");giveMission();return true}
+  flowResult(tgt);return true}
  if(p.mid==="f-rt"){const a=coachSnap(),up=Object.entries(a.plays).some(([k,v])=>v>(p.snap.plays[k]||0));if(!up){chatPush("c","연습을 도중에 멈췄네. 괜찮아, 한 번만 끝까지 해 보자.");giveMission();return true}
   const b=Object.entries(TRK.best).find(([k,v])=>(v.plays||0)>(p.snap.plays[k]||0)),q=TR.t&&TR.notes&&TR.notes.length?Math.round(TR.notes.filter(n=>n.lit).length/TR.notes.length*100):null,best=b?b[1].best:null;
   const cr=TR.brk||(BRK&&p.snap.brk==null?{st:BRK.st}:null);resCards(p.snap).forEach(h=>chatPush("c",h));f.step="reread";
@@ -2571,8 +2574,18 @@ function flowChoice(id,label,i){const m=CHAT.list[i];if(m)m.done=true;chatPush("
  if(id==="f-next"){if(f.step==="read"&&PM.flow===2&&PM.m1)f.step="routine";const x=flowMission();if(x)return go(x.id,x.go);giveMission()}
  renderCoach()}
 
+async function flowResult(tgt){const f=CHAT.flow||(CHAT.flow={step:"check"}),m=PM.m1,prev=RECS.find(r=>r.m1&&!r.demo),pm=prev&&(prev.m2||prev.m1),N=[["rate","말 빠르기"],["melody","높낮이(억양)"],["crisp","또렷함"]];
+ const sc=recScores({m2:m},tgt),ps=pm?recScores({m2:pm},tgt):{},W=v=>v>=70?"좋아요":v>=45?"보통":"더 연습",ks=N.filter(([k])=>sc[k]!=null);
+ chatPush("c",rBars("② 방금 읽은 목소리",`1초에 ${m.rate.toFixed(1)}글자 · 쉼 ${m.pauses}번 · 되고 싶은 목소리 '${esc(TYPES[tgt]||"")}' 기준`,ks.map(([k,l])=>({l,v:sc[k],t:W(sc[k])}))));
+ if(pm){const d=new Date(prev.at),when=`${d.getMonth()+1}/${d.getDate()}`;
+  chatPush("c",rTable(`③ 변화 결과 · 지난번(${when})과 비교`,ks.filter(([k])=>ps[k]!=null).map(([k,l])=>{const x=sc[k]-ps[k];return{name:l,a:W(ps[k]),b:W(sc[k]),k:x>=8?"up":x<=-8?"down":"same"}}).concat([{name:"1초 글자",a:pm.rate.toFixed(1),b:m.rate.toFixed(1),k:"same"}]),["지난번","오늘"],"초록 ▲ = 지난번보다 좋아진 것"))}
+ else chatPush("c","③ 변화 결과는 다음에 읽을 때부터 보여 줄게. 오늘 녹음이 첫 기준이야!");
+ f.step="done";saveDay({flow:1});
+ try{await dbPut("rec",{id:Date.now(),at:new Date().toISOString(),kind:"today",mid:null,raw:PM.text,bold:PM.bold?[...PM.bold]:null,text:PM.plain,src:PM.src||"",m1:m,m2:null,up:0,demo:!!PM.demo,w1:PM.demo?null:await wavOf(PM.take1)});await loadAll()}catch(e){}
+ chatPush("c","오늘 순서 끝! 👏 읽은 녹음은 <b>기록</b> 탭에서 다시 들을 수 있어.<br>더 하고 싶으면 이거 해 볼래?");giveMission();renderCoach()}
+
 function rBars(title,sub,rows,line){return`<div class="qcard"><div class="qc-h"><b>${title}</b>${sub?`<small>${sub}</small>`:""}</div><div class="rbars">${rows.map(r=>`<div class="rb-row${r.on?" on":""}"><span>${r.l}</span><i><em style="width:${Math.max(2,Math.min(100,r.v||0))}%"></em>${line?`<s style="left:${line}%"></s>`:""}</i><b>${r.t!=null?r.t:Math.round(r.v||0)+"%"}</b></div>`).join("")}</div></div>`}
-function rTable(title,rows){return`<div class="qcard"><div class="qc-h"><b>${title}</b><small>초록 ▲ = 처음보다 좋아진 것</small></div><table class="rtab"><tr><th>항목</th><th>처음</th><th>다시</th></tr>${rows.map(r=>`<tr><td>${r.name}</td><td>${r.a}</td><td class="${r.k}">${r.b}${r.k==="up"?" ▲":""}</td></tr>`).join("")}</table></div>`}
+function rTable(title,rows,H,sub){H=H||["처음","다시"];return`<div class="qcard"><div class="qc-h"><b>${title}</b><small>${sub||"초록 ▲ = 처음보다 좋아진 것"}</small></div><table class="rtab"><tr><th>항목</th><th>${H[0]}</th><th>${H[1]}</th></tr>${rows.map(r=>`<tr><td>${r.name}</td><td>${r.a}</td><td class="${r.k}">${r.b}${r.k==="up"?" ▲":""}</td></tr>`).join("")}</table></div>`}
 
 function resCards(b){const out=[];
  for(const[k,v]of Object.entries(TRK.best))if((v.plays||0)>(b.plays[k]||0)){const h=v.hist&&v.hist.length?v.hist:[v.best],g=k.match(/^gen-(\w+)-(\d+)$/),t=!g&&TRK_LIB.find(x=>trkKey(x)===k);
@@ -2625,6 +2638,8 @@ function coachReply(txt){const x=txt.replace(/\s+/g," ").trim();if(!x)return;cha
  renderCoach()}
 
 function coachAsk(mid){const m=aiMissions().find(x=>x.id===mid);if(!m){chatPush("c","그건 오늘 벌써 했어! 다른 걸 해 보자.");giveMission();renderCoach();return}
+ 
+ if(/^f-/.test(mid)){CHAT.pend={mid,snap:coachSnap()};chatSave();m.go();return}
  $("sheet").innerHTML=`<div role="dialog" aria-modal="true" aria-labelledby="ca-h"><h2 class="sh-h" id="ca-h">${m.name}</h2>${say("지금 시작할까? 시작하면 화면 전체가 연습 화면으로 바뀌어. 끝나면 여기서 결과를 같이 보자.",{size:"s",pop:false})}
   <p class="meta" style="margin:0;align-self:stretch">약 ${m.min} · ${esc(m.why)}</p>
   <div class="rrow"><button type="button" class="rb" id="ca-x" aria-label="나중에"><span class="c">${ICON.close}</span><span class="t">나중에</span></button><button type="button" class="rb pri" id="ca-ok" aria-label="시작"><span class="c">${ICON.play}</span><span class="t">시작</span></button></div></div>`;
@@ -2636,6 +2651,7 @@ function renderCoach(){const e=$("coach");if(!e||!COACH)return;
  if(!CHAT.list.length){const u=loadUser()||{},sk=streak();
   if(!u.coach){chatPush("c",`${u.name?esc(u.name)+", ":""}안녕! 나는 네 목소리를 매일 같이 봐 줄 선생님이야.<br><b>나를 뭐라고 부를래?</b> 이름을 지어 줘! (예: 소리쌤 · 보이 · 하루쌤)`);CHAT.ask="name";chatSave()}
   else giveMission(`${u.name?esc(u.name)+", ":""}안녕! ${esc(coachName())}${ya(coachName())}. 오늘 ${dayN()}일째${sk>1?` · ${sk}일 연속!`:"."}<br>궁금한 건 물어봐. 예: <b>"오늘 내 목소리 컨디션 어제랑 비교하면 어때?"</b>`)}
+ if(!COACH.boot){COACH.boot=1;const fm=flowMission(),lm=[...CHAT.list].reverse().find(m=>m.mid);if(fm&&!CHAT.pend&&(!lm||lm.mid!==fm.id||CHAT.list.at(-1)!==lm))chatPush("c",(CHAT.list.length>1?"다시 왔구나! 오늘 순서 이어서 하자.<br>":"")+fm.say,fm.id)}
  const lastM=CHAT.list.reduce((a,m,i)=>m.mid?i:a,-1),L=aiMissions();
  e.innerHTML=`<div class="chat" id="chat-log" aria-live="polite">${CHAT.list.map((m,i)=>m.w==="u"?`<p class="msg me">${m.t}</p>`
   :`<div class="msg c">${i===0||CHAT.list[i-1].w!=="c"?`<img class="say-img" src="${charSrc($("tgt").value)}" alt="">`:`<span class="say-img" style="visibility:hidden"></span>`}<div class="bubble">${i===0||CHAT.list[i-1].w!=="c"?`<b class="msg-n">${esc(coachName())}</b>`:""}${m.t}${m.ch&&!m.done?`<div class="chs">${m.ch.map(([id,l])=>`<button type="button" data-ch="${id}" data-i="${i}">${l}</button>`).join("")}</div>`:""}${m.mid?(()=>{const x=L.find(q=>q.id===m.mid);return x?`<button type="button" class="mis${i===lastM?" now":""}" data-m="${m.mid}"><span class="c">${ICON[x.ico]||ICON.play}</span><span><b>${x.name}</b><small>약 ${x.min} · 누르면 시작</small></span></button>`:m.mid==="d3"?`<span class="mis done">${ICON.check} 했어요</span>`:""})():""}</div></div>`).join("")}</div>
