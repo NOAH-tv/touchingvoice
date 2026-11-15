@@ -2782,7 +2782,7 @@ async function chatCheck(){if(VT.on||REC.on)return;VT.on=true;const ov=document.
  catch(e){close();chatPush("c","마이크를 쓸 수 없어. 브라우저에서 마이크를 허락해 줘.");renderCoach()}}
 
 const AIM="claude";
-const aiCan=()=>!!AI_URL&&!!TVAuth.info()&&(csOn("ai")||!CSO.ai);
+const aiCan=()=>!!AI_URL&&!!TVAuth.info()&&(csOn("ai")||!(CSO.ai&&CSO.ai.v===CS_V));
 const aiOK=()=>csOn("ai")?Promise.resolve(true):needConsent("ai");
 async function aiCall(op,body){const tk=await TVAuth.token();if(!tk)throw new Error("login");
  const r=await fetch(AI_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({op,tk,...body})}),j=await r.json();if(!j.ok)throw new Error(j.err||"ai");return j}
