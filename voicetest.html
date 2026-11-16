@@ -196,6 +196,8 @@ pre{white-space:pre-wrap;font-size:12px;background:var(--bg2);border-radius:12px
 .hc-tag{font-size:16px;font-weight:600;line-height:1.5;text-wrap:balance}
 .hc-line{position:relative;display:inline-block;max-width:92%;margin:6px auto 2px;padding:9px 16px;border-radius:18px;background:#fff;color:var(--fam-deep);font-size:17px;font-weight:700;line-height:1.4;word-break:keep-all;box-shadow:0 6px 16px rgba(0,0,0,.18)}
 .hc-line::before{content:"";position:absolute;left:50%;top:-7px;width:14px;height:14px;background:#fff;transform:translateX(-50%) rotate(45deg);border-radius:2px}
+.chem-sc{display:flex;flex-direction:column;align-items:center;gap:2px;margin:6px 0}.chem-sc b{font-size:52px;line-height:1;color:var(--gold)}.chem-sc span{font-size:12.5px;color:var(--muted)}.mch{grid-template-columns:repeat(3,1fr)!important}.mch img{width:72px!important}.cvr{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin:8px 0}.cvr span{font-size:13.5px;color:var(--muted);width:100%;text-align:center}.cvr .btn.on{background:var(--fam-ui);color:#fff;border-color:transparent}
+.gmap{display:grid;grid-template-columns:repeat(auto-fill,minmax(62px,1fr));gap:8px;margin:4px 0 6px}.gmap>div{text-align:center}.gmap img{width:56px;border-radius:14px;margin:0 auto 3px;display:block}.gmap small{display:block;font-size:11px;line-height:1.3;color:var(--muted)}.gmap .me img{outline:3px solid var(--gold);outline-offset:1px}.gmap .me small{color:var(--fg);font-weight:700}.gmini{display:grid;grid-template-columns:repeat(2,30px);gap:4px;flex:none}.friend .gmini img{width:30px;height:30px;min-width:0;border-radius:8px;object-fit:cover;margin:0}
 .mch{display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:center}.mch>div{background:var(--bg2);border-radius:18px;padding:12px 8px}.mch img{width:84px;border-radius:18px;margin:0 auto 6px}.mch b{display:block;font-size:15px}.mch small{display:block;font-size:12px;color:var(--muted);line-height:1.35}.mch em{display:block;font-style:normal;font-size:12.5px;color:var(--gold);margin-top:6px;font-weight:700}
 .cmp{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;text-align:center}
 .cmp img{width:76px;border-radius:16px;margin:0 auto 4px}
@@ -608,8 +610,8 @@ const lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
 const runs=()=>+lsGet(RUNS_KEY)||0;
 const sitKey=()=>SITS[S.sit]?S.sit:"intro";
 /* 11/4 대표: 한 번 끝낸 사람은 정보·질문 없이 '다시 녹음하기'로 바로 다시 잰다(상황 문장은 녹음 화면에서 바꿀 수 있다) */
-function reRecord(){const keep={};["friend","name","sex","age","job","teacher","sit"].forEach(k=>{if(S[k]!==undefined)keep[k]=S[k]});S={...keep};REC.r1=REC.r2=REC.t=null;save();go("prep")}
-function newRun(){const keep=S.demo?{}:{name:S.name,sex:S.sex,age:S.age,job:S.job},n=runs();REC.r1=REC.r2=REC.t=null;S={friend:S.friend,...keep,sit:n?SIT_ORDER[n%SIT_ORDER.length]:"intro"};save()}
+function reRecord(){const keep={};["friend","friendRate","group","cv","name","sex","age","job","teacher","sit"].forEach(k=>{if(S[k]!==undefined)keep[k]=S[k]});S={...keep};REC.r1=REC.r2=REC.t=null;save();go("prep")}
+function newRun(){const keep=S.demo?{}:{name:S.name,sex:S.sex,age:S.age,job:S.job},n=runs();REC.r1=REC.r2=REC.t=null;S={friend:S.friend,friendRate:S.friendRate,group:S.group,cv:S.cv,...keep,sit:n?SIT_ORDER[n%SIT_ORDER.length]:"intro"};save()}
 const $=s=>document.querySelector(s);
 const view=$("#view");
 const later=(fn,ms)=>{const t=setTimeout(fn,ms);timers.push(t);return t};
@@ -642,7 +644,7 @@ R.landing=()=>{const f=TYPES[S.friend]?S.friend:null;return{html:`
   <div class="kicker">터칭보이스 · ${PAID?"목소리 × 성격 레포트":"목소리 유형 테스트"}</div>
   <h1 class="display bi">${PAID?words("목소리와 성격이")+"<br>"+words("말해 주는 나",270):words("나는 어떤 유형의")+"<br>"+words("목소리일까?",270)}</h1>
   <p class="lead">${PAID?"녹음 두 번과 성격 10문항으로<br>목소리와 성격을 함께 알아봐요.":"간단한 목소리 테스트로<br>16가지 목소리 유형 중 나를 찾아요."}</p>
-  ${f?`<div class="friend"><img src="${img.char(f)}" alt="${TYPES[f][1]}"><div style="min-width:0"><small>친구의 목소리는</small><br><b>${f} · ${TYPES[f][1]}</b><br><small>나도 테스트하면 우리 목소리 케미가 나와요</small></div></div>`:`<div class="orb glass"><img class="float" src="${img.egg}" alt="목소리 알"></div>`}
+  ${S.group&&S.group.length&&!S.J?`<div class="friend"><div class="gmini">${S.group.slice(-4).map(c=>`<img src="${img.char(c)}" alt="">`).join("")}</div><div style="min-width:0"><small>우리 모임 목소리 지도에</small><br><b>${S.group.length}명이 모였어요</b><br><small>테스트하면 나도 지도에 들어가요</small></div></div>`:f?`<div class="friend"><img src="${img.char(f)}" alt="${TYPES[f][1]}"><div style="min-width:0"><small>친구의 목소리는</small><br><b>${f} · ${TYPES[f][1]}</b><br><small>나도 테스트하면 우리 목소리 케미가 나와요</small></div></div>`:`<div class="orb glass"><img class="float" src="${img.egg}" alt="목소리 알"></div>`}
   <button class="btn pri block shine" id="start">${PAID?"시작하기":"내 목소리 유형 알아보기"}</button>
 </section>
 <!-- 11/5 대표: 첫 화면은 안내만. 예시 결과·16가지 캐릭터는 보여 주지 않고, 결과는 검사 마지막에 -->
@@ -965,27 +967,111 @@ function condCard(){const k=condOf(S.m);if(!k)return"";const t=COND_TXT[k.w];
 
 /* ===== 7. 결과 (무료) ===== */
 function axisVal(L,m,J){const d=LET[L];if(d.ax==="높이"){const who=S.age>0&&S.age<13?"또래 친구들":S.sex==="m"?"남성 평균":S.sex==="f"?"여성 평균":"전체 평균",x=Math.abs(J.stRel);return x<1?`${who}과 거의 같은 높이예요`:`${who}보다 ${x<3?"조금":"많이"} ${J.stRel<0?"낮아요":"높아요"}`}if(d.ax==="속도")return`1초에 ${Math.round(m.s.rate)}글자쯤 말해요`;if(d.ax==="음색")return m.v.hnr>=TH.hnr?"바람 소리 없이 깨끗해요":m.v.hnr<TH.hnr-4?"바람 소리가 많이 섞여요":"바람 소리가 살짝 섞여요";return m.s.rangeSt>=TH.range?"올라갔다 내려갔다 크게 움직여요":"높낮이 변화가 작아요"}
-/* 11/16 대표(받은 피드백 "나랑 잘 맞는 친구 보기"가 공유를 부른다): 재미로 보는 '목소리 케미'. 성격이 아니라 두 목소리가 대화에서 어울리는지만 본다(목소리로 성격을 말하지 않는다).
-   네 가지 중 맞는 만큼 별: 높이는 다르면(화음), 빠르기는 같으면(템포), 소리 색깔은 다르면(서로 채움), 오르내림은 다르면(띄우고 잡아 줌) +1 */
-const CHEM=[[1,"높은 소리와 낮은 소리가 만나 듣기 편한 화음이 돼요","목소리 높이가 비슷해 결이 닮았어요"],[0,"말 빠르기가 비슷해 대화가 매끄럽게 이어져요","한 사람이 빠르면 한 사람이 템포를 잡아 줘요"],[1,"또렷함과 부드러움이 서로를 채워 줘요","소리 색깔이 비슷해 듣기 편안해요"],[1,"한 사람은 분위기를 띄우고, 한 사람은 중심을 잡아요","말하는 리듬이 닮았어요"]];
-const chemOk=(a,b,i)=>CHEM[i][0]?a[i]!==b[i]:a[i]===b[i];
-const chemN=(a,b)=>[0,1,2,3].filter(i=>chemOk(a,b,i)).length;
-const chemWhy=(a,b)=>[0,1,2,3].map(i=>chemOk(a,b,i)?CHEM[i][1]:CHEM[i][2]);
-const chemLab=n=>["정반대 매력","서로 다른 매력","알아 가는 케미","잘 맞는 케미","찰떡 케미"][n];
-const stars=n=>"★".repeat(n)+"☆".repeat(4-n);
+/* 11/16 대표 결정 — 목소리 케미 설계안(06_연구·데이터/MD(연구·전략 문서)/목소리케미_설계안_2026-11-16.md, 추천안): 하면서 고친다.
+   · 나쁜 케미는 없다: 네 가지(높이·빠르기·소리 색깔·오르내림) 같음/다름 16조합마다 이름·한 줄·잘 통하는 장면·작은 팁.
+   · 점수(72~98)는 근거가 있는 '말 빠르기 비슷함'(대화 중 말 속도 수렴과 호감 — Schweitzer & Lewandowski 2013)이 대부분, 닮은 칸 수는 조금만.
+   · 진짜 케미는 '같이 읽기'(두 사람이 번갈아 읽으며 말 속도가 가까워지는지)로 잰다. 👍/👎는 시트 '케미응답'에 모아 보정.
+   · 목소리로 성격을 말하지 않는다 — 두 목소리가 대화에서 어떻게 들리는지만. 친구·동료 대화만(연애 궁합 아님) */
+const CHEM_NM={ /* 칸 순서: 높이·빠르기·소리 색깔·오르내림, s=같음 d=다름 → [이름, 한 줄, 잘 통하는 장면, 작은 팁] */
+ ssss:["쌍둥이 듀엣","목소리 결이 꼭 닮아서 말하지 않아도 박자가 맞아요","수다 · 같이 노래하기","둘이 같은 쪽으로 쏠리기 쉬워요. 중요한 말은 한 사람이 천천히 짚어 주세요"],
+ sssd:["리듬 짝꿍","높이·속도·소리는 닮았고, 한 사람은 오르내리고 한 사람은 담백해요","설명하기 · 발표 연습","담백한 쪽이 결론을, 오르내리는 쪽이 예시를 맡아 보세요"],
+ ssds:["결이 다른 단짝","같은 높이와 속도에 또렷함과 부드러움이 섞여요","고민 나누기 · 상담","또렷한 쪽이 정리하고 부드러운 쪽이 마무리하면 좋아요"],
+ ssdd:["반전 단짝","높이와 속도는 같은데 소리 색깔과 억양이 달라 지루할 틈이 없어요","여행 계획 · 수다","말이 겹치면 한 사람이 반 박자 기다려 보세요"],
+ sdss:["완급 단짝","소리는 닮았는데 한 사람은 빠르고 한 사람은 느긋해요","회의 정리 · 이야기 들어 주기","빠른 쪽이 문장 끝에서 반 박자 쉬면 더 잘 맞아요"],
+ sdsd:["페이스메이커","한 사람은 속도와 리듬을 끌고, 한 사람은 중심을 잡아요","같이 운동 · 같이 공부","느긋한 쪽이 '잠깐' 하고 끊어 줘도 괜찮아요"],
+ sdds:["보완 콤비","빠르기와 소리 색깔이 달라 서로 비는 곳을 채워 줘요","프로젝트 · 역할 나누기","빠른 쪽이 핵심 단어만 또박또박 말해 보세요"],
+ sddd:["퍼즐 조각 듀오","높이만 같고 나머지는 달라, 서로에게 없는 소리를 가졌어요","아이디어 회의","서로 말 빠르기를 한 번씩 맞춰 보면 금방 가까워져요"],
+ dsss:["화음 듀엣","높이만 달라서, 같이 말하거나 노래하면 화음처럼 겹쳐요","같이 노래 · 낭독","낮은 쪽이 문장 끝을 받쳐 주면 더 듣기 좋아요"],
+ dssd:["무대 위 듀엣","높이와 억양이 달라, 한 사람이 띄우고 한 사람이 받쳐요","발표 · 행사 진행","오르내리는 쪽이 시작을, 담백한 쪽이 마무리를 맡아 보세요"],
+ dsds:["라디오 콤비","속도와 억양은 같고 높이·소리 색깔이 달라 듣는 사람이 편해요","팟캐스트 · 수다 방송","한 사람씩 번갈아 질문을 던져 보세요"],
+ dsdd:["티키타카 콤비","속도가 맞아 주고받기가 빠르고, 서로 다른 소리가 재미를 더해요","수다 · 아이디어 회의","신나면 둘 다 빨라져요. 중요한 결정은 천천히"],
+ ddss:["리드 & 서포트","높이와 빠르기가 달라, 한 사람이 끌고 한 사람이 받쳐 줘요","발표 준비 · 길 안내","끄는 쪽이 가끔 상대 속도에 맞춰 주세요"],
+ ddsd:["밸런스 짝","소리 색깔만 닮고 나머지는 달라, 서로 다른 매력이 균형을 이뤄요","함께 일하기","서로 말 빠르기를 한 번씩 따라 해 보세요"],
+ ddds:["대비 듀오","높이·빠르기·소리 색깔이 달라 함께 있으면 대비가 선명해요","사회자와 게스트 · 인터뷰","닮은 억양이 둘을 이어 주는 끈이에요"],
+ dddd:["정반대 듀오","네 가지가 다 달라서, 같이 있으면 소리가 꽉 차요","토론 · 역할극","같이 읽기로 서로 맞춰 가 보세요. 맞춰 갈수록 케미가 올라가요"]};
+const chemKey=(a,b)=>[0,1,2,3].map(i=>a[i]===b[i]?"s":"d").join("");
+const chemOf=(a,b)=>CHEM_NM[chemKey(a,b)];
+/* 지수: 말 빠르기 비슷함(둘 다 실측이 있으면 1초당 음절 차이, 없으면 A/U 글자) 20점 + 닮은 칸 6점 → 72~98 */
+function chemScore(a,b,ra,rb){const sim=ra>0&&rb>0?1-Math.min(1,Math.abs(ra-rb)/2):(a[1]===b[1]?.8:.4),same=[0,1,2,3].filter(i=>a[i]===b[i]).length;return Math.round(72+20*sim+6*same/4)}
 const FLIP={L:"H",H:"L",A:"U",U:"A",D:"B",B:"D",T:"F",F:"T"};
-function chemBest(me){const b=[FLIP[me[0]],me[1],FLIP[me[2]],FLIP[me[3]]].join(""),b2=[FLIP[me[0]],me[1],FLIP[me[2]],me[3]].join("");return[b,b2]}
-function matchCard(){const me=S.J.code,[b1,b2]=chemBest(me);
- return`<section class="card"><div class="kicker">재미로 보는 목소리 케미</div><h2>나랑 대화가 잘 통하는 목소리</h2>
- <div class="mch">${[b1,b2].map(c=>`<div><img src="${img.char(c)}" alt="" loading="lazy"><b>${c}</b><small>${nmNW(c)}</small><em>${stars(chemN(me,c))} ${chemLab(chemN(me,c))}</em></div>`).join("")}</div>
- <ul class="tips">${chemWhy(me,b1).map(t=>`<li>${t}</li>`).join("")}</ul>
+const myRate=()=>S.m&&S.m.s?S.m.s.rate:0;
+function matchCard(){const me=S.J.code,picks=[me,[FLIP[me[0]],me[1],FLIP[me[2]],FLIP[me[3]]].join(""),[FLIP[me[0]],FLIP[me[1]],me[2],me[3]].join("")];
+ return`<section class="card"><div class="kicker">재미로 보는 목소리 케미</div><h2>나랑 이런 케미가 나와요</h2>
+ <div class="mch">${picks.map(c=>{const k=chemOf(me,c);return`<div><img src="${img.char(c)}" alt="" loading="lazy"><b>${c}</b><small>${nmNW(c)}</small><em>${k[0]} · ${chemScore(me,c)}</em></div>`}).join("")}</div>
+ <p class="small" style="text-align:center">나쁜 케미는 없어요. 두 목소리가 대화할 때 어떻게 어울리는지만 봐요.</p>
  <button class="btn pri block shine" id="chemShare">친구한테 보내서 우리 케미 보기</button>
- <p class="small" style="text-align:center">친구가 이 링크로 테스트하면, 둘의 목소리 케미 점수가 나와요.</p></section>`}
-function friendCard(){const f=S.friend,me=S.J.code;if(!TYPES[f])return"";const n=chemN(f,me);
+ <button class="btn block" id="duoGo">옆에 친구가 있다면? 같이 읽고 진짜 케미 재기</button></section>`}
+const cvDone=k=>S.cv&&S.cv[k];
+function chemVote(v,key,extra){if(cvDone(key))return;S.cv=S.cv||{};S.cv[key]=v;save();const rec={type:"chemvote",vote:v,...extra};if(SAVE_URL)fetch(SAVE_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(rec)}).catch(()=>{});
+ view.querySelectorAll(`[data-cvk="${key}"]`).forEach(b=>{b.disabled=true;b.classList.toggle("on",b.dataset.cv===v)});toast("알려 줘서 고마워요!")}
+const voteRow=key=>`<div class="cvr"><span>실제로 대화가 잘 통해요?</span><button class="btn sm${cvDone(key)==="up"?" on":""}" data-cv="up" data-cvk="${key}" ${cvDone(key)?"disabled":""}>👍 네</button><button class="btn sm${cvDone(key)==="down"?" on":""}" data-cv="down" data-cvk="${key}" ${cvDone(key)?"disabled":""}>👎 글쎄요</button></div>`;
+function friendCard(){const f=S.friend,me=S.J.code;if(!TYPES[f])return"";const k=chemOf(f,me),sc=chemScore(f,me,S.friendRate,myRate());
  return`<section class="card"><div class="kicker">친구와 나 · 목소리 케미</div><div class="cmp"><div><img src="${img.char(f)}" alt=""><small>친구</small><b>${f}</b><small>${nmNW(f)}</small></div><div class="muted" style="font-size:18px">×</div><div><img src="${img.char(me)}" alt=""><small>나</small><b>${me}</b><small>${nmNW(me)}</small></div></div>
- <p style="text-align:center;font-size:20px;color:var(--gold)">${stars(n)}</p><h2 style="text-align:center">${f===me?"똑같은 목소리 쌍둥이":chemLab(n)}</h2>
- <ul class="tips">${chemWhy(f,me).map(t=>`<li>${t}</li>`).join("")}</ul>
- <p class="small" style="text-align:center">재미로 보는 점수예요. 목소리가 어떻게 어울리는지만 봐요.</p></section>`}
+ <div class="chem-sc"><b class="num">${sc}</b><span>케미 지수</span></div><h2 style="text-align:center">${k[0]}</h2><p style="text-align:center">${k[1]}</p>
+ <div class="target stack"><span>잘 통하는 장면</span><b>${k[2]}</b></div><p class="small">💡 ${k[3]}</p>
+ ${voteRow("f_"+f)}
+ <button class="btn pri block shine" id="chemCard">케미 카드 공유하기</button>
+ <button class="btn block" id="duoGo">같이 읽고 진짜 케미 재기</button>
+ <p class="small" style="text-align:center">재미로 보는 지수예요. 목소리가 대화에서 어떻게 어울리는지만 봐요.</p></section>`}
+/* '우리 모임 목소리 지도' — 링크(?g=유형.유형…)에 참여한 유형이 쌓인다(서버 없음, 이름 없음, 최대 30명). 테스트를 끝내면 내 유형을 붙여 단톡방에 다시 보낸다 */
+const gURL=L=>location.origin+location.pathname+"?g="+L.join(".");
+function groupNow(){const me=S.J.code;if(S.group&&!S.groupJoined){S.group=S.group.concat(me).slice(-30);S.groupJoined=true;save()}return S.group}
+function groupCard(){const me=S.J.code,L=groupNow();
+ if(!L)return`<section class="card"><div class="kicker">단톡방에서 같이 하기</div><h2>우리 모임 목소리 지도 만들기</h2><p class="muted">단톡방에 보내면 친구들이 테스트할 때마다 지도에 캐릭터가 하나씩 늘어나요. 우리 모임에 어떤 케미 짝이 많은지도 나와요.</p><button class="btn pri block shine" id="grpGo">단톡방에 보내기</button></section>`;
+ const N=L.length,mi=L.lastIndexOf(me),cnt=[0,1,2,3].map(i=>{const c={};L.forEach(x=>c[x[i]]=(c[x[i]]||0)+1);const k=Object.keys(c).sort((a,b)=>c[b]-c[a])[0];return[k,c[k]]}),top=cnt.slice().sort((a,b)=>b[1]-a[1])[0];
+ const nm={};for(let i=0;i<N;i++)for(let j=i+1;j<N;j++){const n=chemOf(L[i],L[j])[0];nm[n]=(nm[n]||0)+1}const tops=Object.keys(nm).sort((a,b)=>nm[b]-nm[a]).slice(0,3);
+ let mb=null;L.forEach((c,i)=>{if(i===mi)return;const s=chemScore(me,c);if(!mb||s>mb[1])mb=[i,s]});
+ return`<section class="card"><div class="kicker">우리 모임 목소리 지도 · ${N}명</div><h2>${N>1&&top[1]>N/2?`우리 모임은 '${LET[top[0]].nm}' 목소리가 많아요`:"우리 모임 목소리 지도"}</h2>
+ <div class="gmap">${L.map((c,i)=>`<div class="${i===mi?"me":""}"><img src="${img.char(c)}" alt="" loading="lazy"><small>${i===mi?"나":(i+1)+"번째"}</small><small>${c}</small></div>`).join("")}</div>
+ ${tops.length?`<div class="target stack"><span>우리 모임에 많은 케미</span><b>${tops.map(n=>`${n} ${nm[n]}쌍`).join(" · ")}</b></div>`:""}
+ ${mb?`<p class="small" style="text-align:center">나랑 케미 지수가 제일 높은 멤버: <b>${mb[0]+1}번째(${L[mb[0]]}) · ${chemOf(me,L[mb[0]])[0]} ${mb[1]}</b></p>`:""}
+ <button class="btn pri block shine" id="grpGo">지도에 나 추가해서 단톡방에 다시 보내기</button>
+ <p class="small" style="text-align:center">이름은 링크에 들어가지 않아요. 몇 번째로 들어왔는지만 보여요.</p></section>`}
+function groupShare(){const L=S.group&&S.groupJoined?S.group:[S.J.code],N=L.length,url=gURL(L),text=N>1?`우리 모임 목소리 지도 ${N}명째! 너도 1분 테스트하고 이 링크 단톡방에 다시 올려 줘 👉`:`우리 모임 목소리 지도 만들자! 1분 테스트하고 결과 링크를 단톡방에 다시 올려 줘 👉`;
+ if(navigator.share)navigator.share({title:"우리 모임 목소리 지도",text,url}).catch(()=>{});else copy(text+" "+url)}
+/* 친구와 나 케미 카드 이미지(1080×1920, 공유 카드와 같은 판) */
+async function makeChemCard(){const f=S.friend,me=S.J.code,F=FAM[me.slice(0,2)],k=chemOf(f,me),sc=chemScore(f,me,S.friendRate,myRate()),c=document.createElement("canvas");c.width=1080;c.height=1920;const g=c.getContext("2d"),ff="Paperlogy,'Apple SD Gothic Neo',sans-serif";
+ try{await Promise.all(["700 80px","600 40px","500 40px"].map(x=>document.fonts.load(x+" Paperlogy")))}catch(e){}
+ const rr=(x,y,w,h,r)=>{g.beginPath();if(g.roundRect)g.roundRect(x,y,w,h,r);else g.rect(x,y,w,h)},fnt=(wt,px)=>{g.font=`${wt} ${px}px ${ff}`},fit=(t,wt,px,mw)=>{fnt(wt,px);while(g.measureText(t).width>mw&&px>22){px-=2;fnt(wt,px)}};
+ const gr=g.createLinearGradient(169,-61,911,1981);gr.addColorStop(0,F[2]);gr.addColorStop(1,F[3]);g.fillStyle=gr;g.fillRect(0,0,1080,1920);g.textAlign="center";g.textBaseline="middle";
+ fnt(600,34);const pt="우리 목소리 케미",pw=g.measureText(pt).width+60;rr(540-pw/2,230,pw,72,36);g.fillStyle="rgba(255,255,255,.16)";g.fill();g.fillStyle="#fff";g.fillText(pt,540,267);
+ const iz=330;for(const [code,x,lab] of [[f,105,"친구"],[me,645,"나"]]){try{const im=await loadImg(img.char(code));g.save();rr(x,350,iz,iz,52);g.fillStyle="#F5EEE0";g.fill();g.clip();g.drawImage(im,x,350,iz,iz);g.restore()}catch(e){}
+  g.fillStyle="#fff";fnt(700,56);g.fillText(code,x+iz/2,740);fit(TYPES[code][1],600,34,400);g.fillText(TYPES[code][1],x+iz/2,796);fnt(500,30);g.globalAlpha=.8;g.fillText(lab,x+iz/2,846);g.globalAlpha=1}
+ fnt(700,64);g.fillText("×",540,515);fnt(700,150);g.fillStyle="#FFE08A";g.fillText(String(sc),540,975);fnt(500,30);g.fillStyle="#fff";g.globalAlpha=.85;g.fillText("케미 지수",540,1072);g.globalAlpha=1;
+ fit(k[0],700,72,960);g.fillText(k[0],540,1150);fit(k[1],500,36,960);g.globalAlpha=.95;g.fillText(k[1],540,1240);g.globalAlpha=1;fit("잘 통하는 장면 · "+k[2],600,34,960);g.fillText("잘 통하는 장면 · "+k[2],540,1310);
+ const qs=156,qy=1480;fnt(700,44);const t1="너랑 나는 몇 점일까?",t2="QR 찍고 우리 목소리 케미 보기",t3="touchingvoice.app",tw2=Math.max(g.measureText(t1).width,(fnt(500,30),g.measureText(t2).width)),qx=Math.round(540-(qs+32+tw2)/2);
+ drawQR(g,me,qx,qy,qs);g.textAlign="left";g.fillStyle="#fff";fnt(700,44);g.fillText(t1,qx+qs+32,qy+36);fnt(500,30);g.globalAlpha=.9;g.fillText(t2,qx+qs+32,qy+86);g.globalAlpha=.75;fnt(500,28);g.fillText(t3,qx+qs+32,qy+128);g.globalAlpha=1;return c}
+async function shareChem(){const c=await makeChemCard(),blob=await new Promise(r=>c.toBlob(r,"image/png")),fl=new File([blob],`touchingvoice_chem_${S.friend}_${S.J.code}.png`,{type:"image/png"}),k=chemOf(S.friend,S.J.code),text=`우리 목소리 케미 '${k[0]}' ${chemScore(S.friend,S.J.code,S.friendRate,myRate())}점! 너랑 나는 몇 점일까? 👉 `+shareURL();
+ if(canFiles(fl)){try{await navigator.share({files:[fl],text})}catch(e){}return}const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=fl.name;document.body.appendChild(a);a.click();a.remove();toast("케미 카드를 저장했어요")}
+/* 같이 읽기(체험판) — 한 폰으로 두 사람이 대화 대본 6줄을 번갈아 읽는다. 줄마다 말 빠르기를 재서, 첫 주고받기보다 마지막 주고받기에서
+   두 사람 빠르기 차이가 얼마나 줄었는지(수렴) = 진짜 케미. 녹음은 이 기기에서만 분석하고 저장하지 않는다. ponytail: 높이 수렴은 앱에서 */
+const DUO=[["A","오늘 점심 뭐 먹을까? 나는 따뜻한 국물이 먹고 싶어."],["B","좋아, 그럼 회사 앞에 새로 생긴 국숫집 가 볼까?"],["A","거기 줄이 길다던데, 조금 일찍 나가면 괜찮겠지?"],["B","그럼 열한 시 오십 분에 로비에서 만나자. 늦지 마!"],["A","알겠어. 대신 오늘은 내가 커피까지 살게."],["B","오, 진짜? 그럼 나는 달달한 라떼로 부탁할게."]];
+let DUOR=[];
+R.duo=()=>({top:{back:()=>go("result"),label:"같이 읽기"},html:`
+<div><div class="kicker">같이 읽기 · 1분</div><h1 class="title">둘이 번갈아<br>한 줄씩 읽어요</h1><p class="muted">읽어 가면서 두 사람 말 속도가 얼마나 가까워지는지 재요. 서로 좋아하는 사람끼리는 대화할수록 말 속도가 닮아 간대요.</p></div>
+<section class="card"><ol class="list"><li><b>A = 나, B = 친구</b><small class="sub">폰을 둘 사이에 두고, 자기 차례에 버튼을 누르고 읽어요</small></li><li><b>대화하듯 자연스럽게</b><small class="sub">대본 6줄 · 한 줄에 3초쯤</small></li><li><b>녹음은 저장하지 않아요</b><small class="sub">이 기기 안에서 빠르기만 재요</small></li></ol></section>
+<button class="btn pri block shine" id="duoStart">같이 읽기 시작</button>`,
+ bind(){$("#duoStart").onclick=()=>{DUOR=[];go("duoRec",{i:0})}}});
+R.duoRec=o=>{const i=(o&&o.i)|0,err=o&&o.err;const [who,line]=DUO[i];return{top:{back:()=>go("duo"),label:`같이 읽기 ${i+1} / ${DUO.length}`},html:`
+<div><div class="kicker">${who==="A"?"A · 나":"B · 친구"} 차례</div><h1 class="title">${who==="A"?"내가 읽어요":"친구가 읽어요"}</h1></div>
+${i?`<p class="small" style="opacity:.7">${DUO[i-1][0]}: ${DUO[i-1][1]}</p>`:""}
+<p class="sentence">${line}</p>${err?`<p class="err">${err}</p>`:""}
+${micHTML("버튼을 누르고 읽어 주세요")}`,
+ bind(){bindMic({maxSec:12,minSec:1,onDone:r=>{$("#micmsg").textContent="듣는 중…";
+  resample(r.x,r.sr).then(x=>{const nd=S.m&&S.m.noiseDb!=null?S.m.noiseDb:noiseFloor(x),sx=S.sex;S.sex="x";/* 친구는 성별이 다를 수 있어 높이 추적 범위를 넓게 */let a;try{a=analyzeSentence(x,nd,sylOf(line))}finally{S.sex=sx}DUOR[i]=a.rate;i+1<DUO.length?go("duoRec",{i:i+1}):go("duoRes")})
+  .catch(()=>go("duoRec",{i,err:"소리가 잘 안 잡혔어요 — 조금 더 크게 다시 읽어 주세요"}))}})}}};
+function duoConv(){const g=k=>Math.abs(DUOR[2*k]-DUOR[2*k+1]),first=g(0),last=g(2);return{first,last,conv:Math.round(cl((first-last)/Math.max(first,.3),-1,1)*100)}}
+R.duoRes=()=>{if(DUOR.length<DUO.length)return R.duo();const d=duoConv(),lab=d.conv>=40?"서로 맞춰 주는 짝":d.conv>=10?"점점 맞춰 가는 짝":d.conv>-10?"각자 리듬이 분명한 짝":"자기 속도가 뚜렷한 짝",key="duo_"+Date.now();
+ const msg=d.conv>=10?`읽어 갈수록 두 사람 말 속도가 <b>${d.conv}%</b> 가까워졌어요.`:d.conv>-10?"처음부터 끝까지 각자 속도로 읽었어요. 한 번 더 읽어 보면 맞춰 가는 게 보일 거예요.":"이번엔 각자 자기 속도가 더 분명해졌어요. 다음엔 상대 속도를 살짝 따라 해 보세요.";
+ S.duoLast={conv:d.conv,at:Date.now()};save();
+ return{top:{back:()=>go("result"),label:"같이 읽기 결과"},html:`
+<div class="win" style="text-align:center"><div class="kicker">같이 읽기 결과</div><h1 class="title">${lab}</h1></div>
+<section class="card"><div class="chem-sc">${d.conv>=10?`<b class="num">+${d.conv}%</b><span>말 속도 가까워짐</span>`:`<b style="font-size:34px">각자 리듬</b><span>이번엔 서로 다른 속도로 읽었어요</span>`}</div><p style="text-align:center">${msg}</p>
+<p class="small" style="text-align:center">대화하면서 말 속도가 닮아 가는 건 서로 맞춰 주고 있다는 신호예요(연구로 알려진 현상). 재미로 봐 주세요.</p>
+${voteRow(key)}</section>
+<button class="btn pri block shine" id="duoAgain">한 번 더 같이 읽기</button><button class="btn ghost block" id="duoBack">결과로 돌아가기</button>`,
+ bind(){$("#duoAgain").onclick=()=>{DUOR=[];go("duoRec",{i:0})};$("#duoBack").onclick=()=>go("result");
+  view.querySelectorAll("[data-cv]").forEach(b=>b.onclick=()=>chemVote(b.dataset.cv,key,{f:S.friend||"",me:S.J.code,name:"같이 읽기",score:null,fr:null,mr:null,conv:d.conv}))}}};
 /* ===== 11/5 대표: 결과 → ③ 원하는 목소리 정하기 → ④ 1분 체험 → 앱(지금은 대기예약) =====
    APP_LINK에 앱 주소를 넣으면 대기예약 대신 '앱 받기'로 바뀐다 */
 const APP_LINK="";
@@ -1171,13 +1257,14 @@ ${condCard()}
 ${`<section class="card"><div class="kicker">내 결과 알리기</div><h2>친구에게도 "너는 어떤 목소리야?"</h2><p class="small">공유 이미지 아래 QR을 찍으면 친구도 바로 테스트하고 나와 비교해요.</p>${shareRow()}</section>`}
 ${friendCard()}
 ${S.demo?"":matchCard()}
+${S.demo?"":groupCard()}
 <section class="card"><h2>다른 유형 구경하기${S.demo?" <small>(예시)</small>":""}</h2>${S.demo?"":`<p class="small">16가지 목소리 캐릭터를 눌러서 살펴보세요.</p>`}<div class="rgrid">${Object.keys(TYPES).map(c=>`<button class="rt ${c===J.code?(S.demo?"pick":"me"):""}" data-c="${c}"><span><img src="${img.char(c)}" alt="${TYPES[c][1]}" loading="lazy"></span><b>${c}</b>${c===J.code&&!S.demo?`<em class="me-badge">나</em>`:""}<small>${nmLN(c)}</small></button>`).join("")}</div></section>
 ${S.demo||PAID?"":`<button class="btn block" id="rerec">다시 녹음하기</button>`}
 ${PAID?"":`<button class="btn ghost block" id="again">처음부터 다시 하기</button>`}
 <p class="fine">이 결과는 병원 검사가 아니에요. 내 목소리가 남에게 어떻게 들리는지 알아보는 테스트예요. 녹음한 곳에 따라 결과가 달라질 수 있어요.</p>
 ${BIZ}`,
  bind(){later(()=>{view.querySelectorAll(".band i").forEach(i=>i.style.height=i.dataset.h+"%");countUp($("#ageN"),0,J.age,1200);countUp($("#attrN"),0,A.pct,1200)},250);
-  bindShare(view);const gl=$("#goal");if(gl)gl.onclick=()=>go("goal");const dp=$("#deep");if(dp)dp.onclick=goDeep;const chs=$("#chemShare");if(chs)chs.onclick=()=>shareAct("more");mountBoost(b);const hm=$("#hearMe");if(hm)mountPlayer(hm,REC.r1);
+  bindShare(view);const gl=$("#goal");if(gl)gl.onclick=()=>go("goal");const dp=$("#deep");if(dp)dp.onclick=goDeep;const chs=$("#chemShare");if(chs)chs.onclick=()=>shareAct("more");const cc=$("#chemCard");if(cc)cc.onclick=()=>shareChem().catch(()=>toast("카드를 만들지 못했어요"));const gg=$("#grpGo");if(gg)gg.onclick=groupShare;view.querySelectorAll("#duoGo").forEach(b=>b.onclick=()=>go("duo"));view.querySelectorAll("[data-cv]").forEach(b=>b.onclick=()=>{const f=S.friend,me=S.J.code;chemVote(b.dataset.cv,b.dataset.cvk,{f,me,name:chemOf(f,me)[0],score:chemScore(f,me,S.friendRate,myRate()),fr:S.friendRate||null,mr:+myRate().toFixed(2),conv:null})});mountBoost(b);const hm=$("#hearMe");if(hm)mountPlayer(hm,REC.r1);
   const mi=$("#mine");if(mi)mi.onclick=()=>{newRun();go("info")};
   const ag=$("#again");if(ag)ag.onclick=()=>{newRun();go("landing")};const rr=$("#rerec");if(rr)rr.onclick=reRecord;
   view.querySelectorAll(".rgrid .rt").forEach(p=>p.onclick=()=>S.demo?startDemo(p.dataset.c,true):typeSheet(p.dataset.c))}}};
@@ -1242,7 +1329,7 @@ async function makeCard(){const J=S.J,T=TYPES[J.code],F=FAM[J.code.slice(0,2)],c
  const cy=ly+(lines.length-1)*56+50,cw=481,ch=104,cg=14;codeParts(J.code).forEach((p,i)=>{const cx=50+(i%2)*(cw+cg),y=cy+Math.floor(i/2)*(ch+cg);rr(cx,y,cw,ch,34);g.fillStyle="rgba(255,255,255,.16)";g.fill();g.fillStyle="#fff";fnt(700,42);g.fillText(p[0],cx+cw/2,y+35);fnt(500,30);g.globalAlpha=.95;g.fillText(p[1],cx+cw/2,y+78);g.globalAlpha=1});
  {const t="“"+LINES[J.code]+"”";let bp=40;fnt(700,bp);let w=g.measureText(t).width;if(w>880){bp=Math.floor(bp*880/w);fnt(700,bp);w=g.measureText(t).width}const by=cy+2*ch+cg+34,bw=w+88,bh=90,bx=540-bw/2;
   g.save();g.shadowColor="rgba(0,0,0,.12)";g.shadowBlur=36;g.shadowOffsetY=14;rr(bx,by,bw,bh,47);g.fillStyle="#fff";g.fill();g.restore();g.beginPath();g.moveTo(520,by+2);g.lineTo(540,by-18);g.lineTo(560,by+2);g.fillStyle="#fff";g.fill();g.fillStyle=F[3];g.fillText(t,540,by+bh/2+3);
-  const qs=156,qy=by+bh+26;fnt(700,44);const t1="너는 어떤 목소리야?",t2="QR을 찍으면 나도 바로 테스트",t3="touchingvoice.app",tw2=Math.max(g.measureText(t1).width,(fnt(500,30),g.measureText(t2).width)),qx=Math.round(540-(qs+32+tw2)/2);
+  const qs=156,qy=by+bh+26;fnt(700,44);const t1="너는 어떤 목소리야?",t2="QR 찍고 우리 목소리 케미 보기",t3="touchingvoice.app",tw2=Math.max(g.measureText(t1).width,(fnt(500,30),g.measureText(t2).width)),qx=Math.round(540-(qs+32+tw2)/2);
   drawQR(g,J.code,qx,qy,qs);g.textAlign="left";g.fillStyle="#fff";fnt(700,44);g.fillText(t1,qx+qs+32,qy+36);fnt(500,30);g.globalAlpha=.9;g.fillText(t2,qx+qs+32,qy+86);g.globalAlpha=.75;fnt(500,28);g.fillText(t3,qx+qs+32,qy+128);g.globalAlpha=1;g.textAlign="center"}
  return c}
 /* 11/5 대표: 공유 — 인스타그램·틱톡은 필수. 웹에서 공유 창으로 보내면 인스타 스토리에 '스티커'로 작게 붙는다 →
@@ -1272,7 +1359,7 @@ function storySheet(ig){const app=ig?"인스타그램":"틱톡";
  async()=>{$("#stSave").onclick=saveCard;$("#stOpen").onclick=()=>openApp(ig);
   try{await cardFile();$("#cardBox").innerHTML=`<img class="share-prev" src="${CARD.url}" alt="결과 카드">`}catch(e){$("#cardBox").innerHTML="<small>카드를 만들지 못했어요.</small>"}})}
 function openApp(ig){const t=Date.now();location.href=ig?"instagram://story-camera":"snssdk1233://";setTimeout(()=>{if(!document.hidden&&Date.now()-t<3000)location.href=ig?"https://www.instagram.com/":"https://www.tiktok.com/upload"},1600)}
-const shareURL=()=>location.origin+location.pathname+"?f="+S.J.code;
+const shareURL=()=>location.origin+location.pathname+"?f="+S.J.code+(myRate()>0?"&r="+Math.round(myRate()*10):"");/* 11/16: 케미 지수용 말 빠르기(1초 음절×10, 이름·녹음 없음) */
 function shareText(){const T=TYPES[S.J.code],A=attrScore(S.m);return`${sitKey()==="intro"?"":SITS[sitKey()][1]+" "}나는 ${S.J.code} ${T[1]}. 목소리 나이 ${Math.round(S.J.age)}세 · ${A.label} ${A.pct}%. 너는 어떤 목소리야? 테스트하면 우리 둘 목소리 케미도 나와!`}
 /* 11/4 대표: 한글 읽기(라디티)와 알파벳 한 글자(L 낮은) 대신 영어 단어로 보여 준다 (단어는 기획서 v2 축 정의) */
 const EN={L:"Low",H:"High",A:"Active",U:"Unhurried",D:"Dry",B:"Breathy",T:"Tuneful",F:"Firm"};
@@ -1295,7 +1382,8 @@ function startDemo(code,stay){const tc=Q.has("teacher");S={demo:true,friend:S.fr
 if(Q.has("free")){const v=vrGet();if(!v.preview){v.preview=true;vrSet(v)}}
 /* 시작 — ?f=코드(친구 링크) · 시안 확인용 ?demo=HUDT&view=result&teacher&shot */
 if(Q.has("shot"))document.documentElement.classList.add("noanim");
-{const qf=(Q.get("f")||"").toUpperCase(),qd=(Q.get("demo")||"").toUpperCase();if(TYPES[qf]){S.friend=qf;save()}
+{const qf=(Q.get("f")||"").toUpperCase(),qd=(Q.get("demo")||"").toUpperCase();if(TYPES[qf]){S.friend=qf;const qr=+Q.get("r");S.friendRate=qr>=20&&qr<=90?qr/10:0;save()}
+ const qg=(Q.get("g")||"").toUpperCase().split(".").filter(c=>TYPES[c]).slice(-30);if(qg.length){S.group=qg;S.groupJoined=false;save()}/* 모임 지도 링크 — 테스트를 끝내면 내 유형이 붙는다 */
  if(TYPES[qd]){startDemo(qd,true);const v=Q.get("view")||"result";go(v==="guess"||!Object.hasOwn(R,v)?"result":v)}
  /* 11/5 대표: 예시 결과를 먼저 보여 주지 않는다 — 예전에 예시를 열어 둔 기기도 첫 화면부터 */
  /* 11/16 대표: 목소리 검사와 성격 10문항을 하나로 — ?paid 는 녹음 2번 → 10문항 → 분석 → 레포트(결제). ?free 는 같은 길에서 결제 없이 레포트(결과는 기기에 남음). ?free=new 는 이 기기 결과를 비우고 처음부터(시험용) */
