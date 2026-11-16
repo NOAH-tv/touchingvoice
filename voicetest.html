@@ -4,13 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>너는 어떤 목소리야? · 터칭보이스 목소리 유형 테스트</title>
-<meta name="description" content="3분 녹음으로 16가지 목소리 유형 중 나를 찾아보세요. 내가 생각한 목소리와 남에게 들리는 목소리, 목소리 나이까지.">
+<meta name="description" content="1분 녹음으로 16가지 목소리 유형 중 내 유형을 찾아보세요. 남에게 들리는 내 목소리, 목소리 나이까지.">
 <meta name="robots" content="noindex"><!-- 숨김 주소 시험 중. 정식 공개 때 지운다 -->
 <meta name="theme-color" content="#F5EEE0">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="터칭보이스">
 <meta property="og:title" content="너는 어떤 목소리야? — 16가지 목소리 유형 테스트">
-<meta property="og:description" content="3분 녹음으로 내 목소리 유형 찾기. 남에게 들리는 내 목소리, 목소리 나이까지.">
+<meta property="og:description" content="1분 녹음으로 내 목소리 유형 찾기. 남에게 들리는 내 목소리, 목소리 나이까지.">
 <meta property="og:image" content="https://touchingvoice.app/voicetype_assets/og_voicetest.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -202,7 +202,7 @@ pre{white-space:pre-wrap;font-size:12px;background:var(--bg2);border-radius:12px
 .axes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .axis{border:1px solid var(--line);border-radius:16px;padding:12px;background:var(--card);display:flex;flex-direction:column;gap:4px;min-width:0}
 .axis-top{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:var(--muted);font-weight:600}
-.axis-top b{min-width:28px;height:28px;padding:0 9px;border-radius:9px;display:grid;place-items:center;background:var(--fam-deep);color:#fff;font-size:13px}
+.axis-top{gap:6px;flex-wrap:wrap}.axis-top>*{white-space:nowrap}.axis-top b{min-width:28px;height:28px;padding:0 9px;border-radius:9px;display:grid;place-items:center;background:var(--fam-deep);color:#fff;font-size:13px}
 .axis strong{font-size:16px}
 .axis p{font-size:13px;color:var(--muted);line-height:1.45}
 .bands{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;align-items:end;height:150px;padding-top:6px;background:repeating-linear-gradient(to top,var(--line) 0 1px,transparent 1px 25px)}
@@ -310,10 +310,10 @@ pre{white-space:pre-wrap;font-size:12px;background:var(--bg2);border-radius:12px
 .rt{border:0;background:transparent;padding:0;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;color:var(--fg);min-width:0;font:inherit}
 .rt span{width:100%;aspect-ratio:1;border-radius:22px;overflow:hidden;display:block;transition:transform .15s}
 .rt:active span{transform:scale(.95)}.rt img{width:100%;height:100%;object-fit:cover}
-.rt b{font-size:12.5px;line-height:1.2}.rt small{line-height:1.25;text-align:center;color:var(--muted)}
+.rt b{font-size:12.5px;line-height:1.2}.rt{position:relative}.me-badge{position:absolute;top:4px;right:4px;font-style:normal;font-size:11px;font-weight:700;padding:2px 7px;border-radius:99px;background:var(--pri);color:var(--pri-fg)}.rt small{line-height:1.25;text-align:center;color:var(--muted)}
 .rt.pick span{box-shadow:0 0 0 3px var(--pri),0 8px 24px color-mix(in oklab,var(--pri) 35%,transparent)}
 .rt.me span{outline:2px dashed var(--gold);outline-offset:2px}
-.sticky-cta{position:sticky;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:6}
+.sticky-cta .btn:disabled{opacity:1;background:var(--card);color:var(--muted);border:1px solid var(--line2)}.sticky-cta{position:sticky;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:6}
 .trial-row{display:grid;grid-template-columns:44px minmax(0,1fr);gap:2px 10px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}.trial-row small{grid-column:2}
 .trial-row:first-child{border-top:0}.trial-row b{font-size:14.5px}.trial-row .num{font-weight:700}
 .trial-row .ok{color:var(--ok)}.trial-row .no{color:var(--muted)}
@@ -549,7 +549,7 @@ U:{ax:"속도",nm:"천천히 말하는",imp:"차분해서 믿음이 가요",pro:
 D:{ax:"음색",nm:"또렷한",imp:"한 글자 한 글자 잘 들려요",pro:"명확함 — 말끝까지 또렷해 뒤에서도 잘 들려요",con:"단단한 소리가 차갑거나 딱딱하게 들릴 수 있어요",fix:"웃는 얼굴로 첫 글자를 부드럽게 시작하기",ex:"미소 지은 채 '음~' 허밍 3초 → '안녕하세요'",good:["안내 방송","교실 수업"],care:["상담","위로"]},
 B:{ax:"음색",nm:"바람이 섞인",imp:"부드럽고 포근하게 들려요",pro:"편안함 — 가까이에서 말하듯 다정하게 들려요",con:"멀리까지 덜 닿고, 오래 말하면 쉽게 지칠 수 있어요",fix:"소리를 앞으로 모아 또렷하게",ex:"'음~' 허밍으로 코끝 울림 찾기 → 이어서 '아~'",good:["상담","1:1 대화"],care:["큰 강의실","시끄러운 곳"]},
 T:{ax:"억양",nm:"노래하듯 말하는",imp:"이야기처럼 재미있게 들려요",pro:"몰입 — 듣는 사람이 끝까지 집중해요",con:"지나치면 들떠 보이거나 진지함이 덜할 수 있어요",fix:"중요한 결론은 낮고 평평하게 정리하기",ex:"결론 문장을 한 음 높이로 차분히 읽기",good:["이야기","수업 도입"],care:["사과","엄숙한 자리"]},
-F:{ax:"억양",nm:"흔들림 없는",imp:"차분해서 하는 말이 귀에 잘 들어와요",pro:"신뢰 — 흔들림 없이 결론이 분명해요",con:"감정이 덜 보여 차갑거나 지루하게 들릴 수 있어요",fix:"질문 문장에서 음높이를 크게 움직이기",ex:"도레미파솔 오르내리듯 질문 문장을 노래하듯 읽기",good:["설명","협상"],care:["긴 강의","아이와의 대화"]}};
+F:{ax:"억양",nm:"흔들림 없는",imp:"담백해서 하는 말이 귀에 잘 들어와요",pro:"신뢰 — 흔들림 없이 결론이 분명해요",con:"감정이 덜 보여 차갑거나 지루하게 들릴 수 있어요",fix:"질문 문장에서 음높이를 크게 움직이기",ex:"도레미파솔 오르내리듯 질문 문장을 노래하듯 읽기",good:["설명","협상"],care:["긴 강의","아이와의 대화"]}};
 const FAM={LA:["라 가족","이끄는 목소리","#43227D","#2B1459"],LU:["루 가족","울리는 목소리","#7A2E46","#4F1A2C"],HA:["하 가족","깨우는 목소리","#B98A2E","#7A5A18"],HU:["후 가족","다독이는 목소리","#D07A66","#9C4D3B"]};
 /* 11/4 대표: '안녕하세요' 없이 말하는 목적이 다른 문장 5개(37~40음절). 첫 검사는 자기소개로 기본 유형을 정하고, 다시 할 때 상황을 고른다.
    상황 문장 결과는 '이 상황에서는 이렇게 들린다'로 보여 준다(기본 유형이 바뀐 게 아님). 앱에서는 더 세분화하고 문장마다 훈련법을 달리한다(앱 기획).
@@ -580,6 +580,8 @@ let S=load()||{};
 const REC={};
 let timers=[],raf=0;
 const Q=new URLSearchParams(location.search);
+/* 11/16 대표: 유료 링크(voicetest.html?paid)는 다시 하기 없이 한 번 잰 결과로 바로 레포트(voicereport.html)로 이어진다. 결과는 이 기기에 남아 새로고침·재방문에도 그대로 */
+const PAID=Q.has("paid");
 function load(){try{return JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){return null}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 /* 이 기기에서 끝낸 검사 수 · 자기소개 기본 유형 — 다시 할 때 상황 문장을 고르게 한다 */
@@ -620,13 +622,13 @@ R.landing=()=>{const f=TYPES[S.friend]?S.friend:null;return{html:`
 <section class="hero">
   <div class="kicker">터칭보이스 · 목소리 유형 테스트</div>
   <h1 class="display bi">${words("나는 어떤 유형의")}<br>${words("목소리일까?",270)}</h1>
-  <p class="lead">간단한 목소리 검사로<br>16가지 목소리 유형 중 나를 찾아요.</p>
+  <p class="lead">간단한 목소리 테스트로<br>16가지 목소리 유형 중 나를 찾아요.</p>
   ${f?`<div class="friend"><img src="${img.char(f)}" alt="${TYPES[f][1]}"><div style="min-width:0"><small>친구의 목소리는</small><br><b>${f} · ${TYPES[f][1]}</b><br><small>나는 어떤 목소리일까요?</small></div></div>`:`<div class="orb glass"><img class="float" src="${img.egg}" alt="목소리 알"></div>`}
   <button class="btn pri block shine" id="start">내 목소리 유형 알아보기</button>
 </section>
 <!-- 11/5 대표: 첫 화면은 안내만. 예시 결과·16가지 캐릭터는 보여 주지 않고, 결과는 검사 마지막에 -->
-<section class="card"><h2>검사는 이렇게 진행돼요</h2>
-  <ol class="list"><li><b>녹음 두 번</b><small class="sub">문장 하나 읽기 · ‘아—’ 길게 내기</small></li><li><b>내 목소리 유형 확인</b><small class="sub">캐릭터와 함께 높이·빠르기·소리 색깔·오르내림을 알아봐요.</small></li><li><b>원하는 목소리로 1분 체험</b><small class="sub">한 문장을 다시 읽고, 달라진 내 목소리를 바로 들어 봐요.</small></li></ol></section>
+<section class="card"><h2>테스트는 이렇게 진행돼요</h2>
+  <ol class="list"><li><b>녹음 두 번</b><small class="sub">문장 하나 읽기 · '아~' 길게 내기</small></li><li><b>내 목소리 유형 확인</b><small class="sub">캐릭터와 함께 높이·빠르기·소리 색깔·오르내림을 알아봐요.</small></li><li><b>원하는 목소리로 1분 체험</b><small class="sub">한 문장을 다시 읽고, 달라진 내 목소리를 바로 들어 봐요.</small></li></ol></section>
 <p class="fine">건강 진단이 아니라 내 목소리가 남에게 어떻게 들리는지 알아보는 자기 이해·연습용 테스트예요. 직업 이름은 목소리 인상을 빗댄 별명이에요(적성검사가 아니에요).</p>
 ${BIZ}`,
  bind(){$("#start").onclick=()=>{newRun();go("info")}}}};
@@ -634,21 +636,21 @@ function typeSheet(c){const T=TYPES[c];openSheet(`<img src="${img.char(c)}" alt=
 
 /* ===== 2. 시작 정보 ===== */
 R.info=()=>({top:{back:()=>go("landing"),label:"시작 정보"},html:`
-<div><div class="kicker">시작 전에</div><h1 class="title">나에 대해 조금만 알려 주세요</h1></div>
+<div><div class="kicker">시작 전에</div><h1 class="title">시작 전에 몇 가지만 알려 주세요</h1></div>
 <div class="card">
   <label class="lbl" for="nm">이름 또는 별명 <small>결과에서 이렇게 불러 드려요</small></label>
   <input class="inp" id="nm" type="text" maxlength="20" autocomplete="name" placeholder="예: 홍길동" value="${esc(S.name||"")}">
   <div class="lbl" style="margin-top:6px">성별 <small>목소리 높이를 같은 성별 기준으로 비교해요</small></div>
-  <div class="seg" id="sex">${[["f","여"],["m","남"],["x","말하지 않음"]].map(o=>`<button data-v="${o[0]}" class="${S.sex===o[0]?"on":""}">${o[1]}</button>`).join("")}</div>
+  <div class="seg" id="sex">${[["f","여"],["m","남"],["x","선택 안 함"]].map(o=>`<button data-v="${o[0]}" class="${S.sex===o[0]?"on":""}">${o[1]}</button>`).join("")}</div>
   <label class="lbl" for="age">나이 <small>목소리 나이와 비교해요</small></label>
   <input class="inp" id="age" type="number" inputmode="numeric" min="14" max="100" placeholder="예: 38" value="${S.age||""}">
-  <div class="lbl" style="margin-top:6px">하는 일 <small>선택 · 결과 문장에 반영돼요</small></div>
+  <div class="lbl" style="margin-top:6px">하는 일 <small>안 골라도 돼요</small></div>
   <div class="chips" id="job">${JOBS.map(j=>`<button class="chip ${S.job===j[0]?"on":""}" data-v="${j[0]}">${j[1]}</button>`).join("")}</div>
 </div>
 <div class="card">
   <label class="chk"><input type="checkbox" id="c1"><span>만 14세 이상이에요</span></label>
-  <p class="small">녹음과 검사 결과는 이 기기에서 분석해요. 목소리 인상을 살펴보는 연습용 검사예요.</p>
-  <p class="small">이름과 녹음은 저장하지 않아요. 성별·나이·하는 일과 측정 숫자만 이름 없이 모아 검사를 더 정확하게 만드는 데 써요.</p>
+  <p class="small">녹음은 이 기기 안에서만 분석해요. 목소리 인상을 살펴보는 연습용 테스트예요.</p>
+  <p class="small">녹음은 다음 화면에서 [선택] 동의한 경우에만 저장해요. 동의하지 않으면 성별·나이·하는 일과 측정 숫자만 이름 없이 모아 테스트를 더 정확하게 만드는 데 써요.</p>
 </div>
 <p class="err" id="err" role="alert"></p>
 <button class="btn pri block" id="next">녹음 준비하기</button>`,
@@ -676,40 +678,44 @@ const MIC_SVG=`<svg viewBox="0 0 24 24" width="36" height="36" fill="none" strok
 const STOP_SVG=`<svg viewBox="0 0 24 24" width="30" height="30"><rect x="6" y="6" width="12" height="12" rx="3" fill="currentColor"/></svg>`;
 const micHTML=hint=>`<div class="mic-box"><canvas class="wave" id="wave" width="680" height="144"></canvas><div class="timer" id="timer">0.0초</div>
 <button class="mic" id="mic" aria-label="녹음 시작">${MIC_SVG}</button><p class="mic-msg" id="micmsg">${hint}</p>
-<label class="file-alt">녹음 파일로 하기<input type="file" accept="audio/*" id="file" hidden></label><button class="btn ghost sm" id="micdemo" hidden>마이크 없이 데모 값으로 진행</button></div>`;
-function bindMic({maxSec,minSec=1.5,onDone,onDemo}){const mic=$("#mic"),msg=$("#micmsg"),tm=$("#timer"),cv=$("#wave"),g=cv.getContext("2d");let t0=0,lv=[];
+<input type="file" accept="audio/*" id="file" hidden></div>`;
+function bindMic({maxSec,minSec=1.5,onDone}){const mic=$("#mic"),msg=$("#micmsg"),tm=$("#timer"),cv=$("#wave"),g=cv.getContext("2d");let t0=0,lv=[];
   const col=getComputedStyle(document.documentElement).getPropertyValue("--fam-ui").trim()||"#43227D";
   const draw=()=>{g.clearRect(0,0,cv.width,cv.height);const n=56,w=cv.width/n;for(let i=0;i<n;i++){const v=lv[lv.length-n+i]||0,h=Math.max(6,v*cv.height*2.6);g.fillStyle=col;g.globalAlpha=.35+.65*(i/n);g.beginPath();const x=i*w+w*.2,y=(cv.height-h)/2;if(g.roundRect)g.roundRect(x,y,w*.6,Math.min(h,cv.height),6);else g.rect(x,y,w*.6,Math.min(h,cv.height));g.fill()}g.globalAlpha=1};draw();
   const loop=()=>{if(!rec)return;const a=new Float32Array(rec.an.fftSize);rec.an.getFloatTimeDomainData(a);let s=0;for(const v of a)s+=v*v;lv.push(Math.sqrt(s/a.length));document.documentElement.style.setProperty("--lv",Math.min(1,Math.sqrt(s/a.length)*9).toFixed(3));if(lv.length>200)lv=lv.slice(-120);draw();
     const sec=(performance.now()-t0)/1000;tm.textContent=sec.toFixed(1)+"초";if(sec>maxSec){finish();return}raf=requestAnimationFrame(loop)};
   const finish=()=>{cancelAnimationFrame(raf);document.documentElement.style.setProperty("--lv","0");const r=stopRec();mic.classList.remove("on");mic.innerHTML=MIC_SVG;mic.setAttribute("aria-label","녹음 시작");if(!r)return;const dur=r.x.length/r.sr;
     if(dur<minSec){msg.textContent="너무 짧아요. 다시 녹음해 주세요.";return}msg.textContent=r.peak>0.98?"소리가 너무 커서 찌그러졌을 수 있어요. 다음엔 폰을 조금 멀리 두세요.":"좋아요!";onDone(r)};
-  const fail=()=>{msg.textContent=onDemo?"마이크를 쓸 수 없어요. 녹음 파일을 고르거나 데모 값으로 진행해 주세요.":"마이크를 쓸 수 없어요. 아래에서 녹음 파일을 골라 주세요.";if(onDemo)$("#micdemo").hidden=false};
-  mic.onclick=()=>{if(rec){finish();return}msg.textContent="준비 중…";startRec().then(()=>{t0=performance.now();lv=[];mic.classList.add("on");mic.innerHTML=STOP_SVG;mic.setAttribute("aria-label","녹음 중지");msg.textContent="다 했으면 다시 누르세요";loop()}).catch(fail)};
+  const fail=()=>{msg.textContent="마이크를 쓸 수 없어요. 브라우저 설정에서 마이크를 허용해 주세요."};
+  mic.onclick=()=>{if(rec){finish();return}msg.textContent="준비 중…";startRec().then(()=>{t0=performance.now();lv=[];mic.classList.add("on");mic.innerHTML=STOP_SVG;mic.setAttribute("aria-label","녹음 중지");msg.textContent="다 읽었으면 한 번 더 눌러 주세요";loop()}).catch(fail)};
   $("#file").onchange=e=>{const f=e.target.files[0];if(!f)return;msg.textContent="파일 읽는 중…";decodeFile(f).then(r=>{tm.textContent=(r.x.length/r.sr).toFixed(1)+"초";onDone(r)}).catch(()=>msg.textContent="이 파일은 읽을 수 없어요. wav나 m4a로 해 주세요.")};
-  if(onDemo)$("#micdemo").onclick=onDemo}
+}
 
 R.prep=()=>({top:{back:()=>go("info"),label:"녹음 준비"},html:`
 <div><div class="kicker">녹음 준비</div><h1 class="title">조용한 곳에서,<br>폰과 입 사이를 한 뼘</h1></div>
 <div class="card"><p>먼저 2초 동안 주변 소리를 확인해요. 그동안은 말하지 말아 주세요.</p><p class="muted" id="nmsg">주변 소리가 작을수록 결과가 정확해져요.</p><p class="muted">에어팟 같은 이어폰은 빼고, 폰 마이크로 녹음해 주세요. 이어폰 마이크는 음질이 낮아 결과가 흐려져요.</p>
 </div>
+<section class="card"><label class="chk"><input type="checkbox" id="devConsent" autocomplete="off" aria-describedby="devTerms"><span><strong>[선택] 내 녹음을 터칭보이스 목소리 연구·서비스 개발에 제공할게요</strong></span></label>
+  <div id="devTerms"><p class="small">더 정확한 목소리 분석과 훈련을 만드는 데 써요. 선택하지 않아도 테스트와 결과는 똑같이 볼 수 있어요.</p>
+  <p class="small"><strong>보관 기간은 최대 3년이에요. 그 뒤에는 자동으로 지워지고, 철회하면 바로 지워요.</strong></p><details><summary>저장하는 것과 삭제 요청 방법</summary><p class="small">문장 읽기와 '아~' 녹음 2개, 측정값과 목소리 유형, 입력한 이름 또는 별명·성별·나이·하는 일을 저장해요. 터칭보이스 밖으로 팔거나 넘기지 않아요.</p>
+  <p class="small">철회·삭제는 lubere12@naver.com 으로 테스트한 날짜와 별명을 적어 보내 주세요.</p></details></div></section>
 <button class="btn pri block" id="noise">주변 소리 확인</button>
 <button class="btn ghost block" id="again2" hidden>주변 소리 다시 확인</button>`,
  /* 11/5 대표: 주변 소리 확인이 끝나면 같은 버튼이 '녹음하기'로 바뀐다 */
- bind(){let ready=false;const b=$("#noise"),ag=$("#again2"),done=loud=>{ready=true;b.textContent="녹음하기";b.disabled=false;ag.hidden=!loud};const check=()=>{b.disabled=true;ag.hidden=true;ready=false;$("#nmsg").textContent="확인 중… (말하지 마세요)";
+ bind(){let ready=false;const b=$("#noise"),ag=$("#again2"),done=loud=>{ready=true;b.textContent="다음";b.disabled=false;ag.hidden=!loud};const check=()=>{b.disabled=true;ag.hidden=true;ready=false;$("#nmsg").textContent="확인 중… (말하지 마세요)";
   startRec().then(()=>later(()=>{const r=stopRec();resample(r.x,r.sr).then(x=>{const db=[];frameDb(x,SR,882,441,v=>db.push(v));db.sort((a,c)=>a-c);S.noiseDb=db.length?db[Math.floor(db.length*.5)]:-70;
-   $("#nmsg").textContent=S.noiseDb>-45?`주변이 조금 시끄러워요(${S.noiseDb.toFixed(0)} dB). 더 조용한 곳이면 결과가 정확해져요.`:`좋아요. 조용합니다(${S.noiseDb.toFixed(0)} dB).`;done(S.noiseDb>-45)})},2000))
-  .catch(()=>{$("#nmsg").textContent="마이크를 쓸 수 없어요. 다음 화면에서 녹음 파일로 해 볼 수 있어요.";S.noiseDb=null;done(false)})};
+   $("#nmsg").textContent=S.noiseDb>-45?`주변이 조금 시끄러워요. 더 조용한 곳이면 결과가 더 정확해요.`:`좋아요, 조용해요.`;done(S.noiseDb>-45)})},2000))
+  .catch(()=>{$("#nmsg").textContent="마이크를 쓸 수 없어요. 브라우저 설정에서 마이크를 허용해 주세요.";S.noiseDb=null;done(false)})};
     b.onclick=()=>{if(!ready){check();return}
-    go("rec1")};ag.onclick=check;}});
+    (()=>{const c=$("#devConsent");S.developmentConsent=c&&c.checked?{version:"voice-dev-2026-11-05",acceptedAt:new Date().toISOString(),retentionYears:3}:null;save()})(),go("rec1")};ag.onclick=check;}});
 R.rec1=err=>({top:{back:()=>go("prep"),label:"녹음 1 / 2"},html:`
 <div><div class="kicker">녹음 1 · 문장 읽기${sitKey()==="intro"?"":" · "+SITS[sitKey()][0]}</div><h1 class="title">${SITS[sitKey()][3]}</h1></div>
 ${runs()?`<div class="card"><div class="lbl">이번엔 어떤 상황의 내 목소리를 들어 볼까요?</div><div class="chips" id="sit">${SIT_ORDER.map(k=>`<button class="chip ${sitKey()===k?"on":""}" data-v="${k}">${SITS[k][0]}</button>`).join("")}</div></div>`:""}
 <p class="sentence">${SITS[sitKey()][2]}</p>${err?`<p class="err">${err}</p>`:""}
-${micHTML("버튼을 누르고 읽기 시작하세요")}`,
+${micHTML("버튼을 누르고 읽어 주세요")}`,
  bind(){const sc=$("#sit");if(sc)sc.onclick=e=>{const b=e.target.closest("button");if(!b)return;S.sit=b.dataset.v;save();go("rec1")};bindMic({maxSec:20,onDone:r=>{REC.r1=r;later(()=>go("rec2"),500)}})}});
 R.rec2=()=>({top:{back:()=>go("rec1"),label:"녹음 2 / 2"},html:`
-<div><div class="kicker">녹음 2 · '아~' 길게</div><h1 class="title">숨을 크게 채우고, 편한 높이로 '아~'</h1></div>
+<div><div class="kicker">녹음 2 · '아~' 길게</div><h1 class="title">숨을 크게 들이쉬고, 편한 높이로 '아~'</h1></div>
 <div class="card"><p>숨이 다할 때까지 한 음으로 길게 내 주세요. 힘들면 언제든 멈춰도 괜찮아요.</p></div>
 ${micHTML("버튼을 누르고 '아~' 시작")}`,
  bind(){bindMic({maxSec:45,onDone:r=>{REC.r2=r;later(()=>go("wait"),500)}})}});
@@ -815,24 +821,23 @@ function bandBalance(b){const tot=b.reduce((a,x)=>a+x,0)||1,hi=100*(b[2]+b[3])/t
    칸 경계(11/5) 남 G2·C3·C4·G4·D5(98·131·262·392·587Hz), 여 완전5도 위 D3·G3·G4·D5·A5(147·196·392·587·880Hz).
    음 이름은 G2·C3 같은 국제 표기로 쓴다 — '솔2'처럼 쓰면 노래하는 사람은 '2옥타브 솔'(=G4)로 읽어 두 옥타브 헷갈린다 */
 const RM={m:[98,130.81,261.63,392,587.33],f:[146.83,196,392,587.33,880]};RM.x=RM.m.map(h=>h*Math.pow(2,3.5/12));
-const RM_LAB={m:["G2~C3","C3~C4","C4~G4","G4~D5"],f:["D3~G3","G3~G4","G4~D5","D5~A5"],x:["","","",""]};
-function rmPos(hz){const E=RM[S.sex]||RM.x;if(!(hz>0))return 0;for(let k=0;k<4;k++)if(hz<E[k+1])return cl((k+Math.max(0,Math.log(hz/E[k]))/Math.log(E[k+1]/E[k]))/4,0,1);return 1}
 const NOTE=["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
 function noteName(hz){const n=Math.round(69+12*Math.log2(hz/440));return NOTE[(n%12+12)%12]+(Math.floor(n/12)-1)}
 /* 11/5 대표: '목소리 톤' = 소리의 Hz 성분 — 높낮이(음역 지도)와 따로 보여 준다. 4대역 에너지를 귀 기준 dB로, 가장 센 대역이 꽉 찬 막대 */
 const TONE=[["울림","둥둥 울리는 소리"],["몸통","꽉 채우는 소리"],["또렷함","글자 살리는 소리"],["바람","스스 바람 소리"]];
 function toneCard(b){if(!b||!b.length)return"";const mx=Math.max(...b,1e-9),lv=b.map(v=>10*Math.log10(Math.max(v,1e-6)/mx));
  return`<section class="card"><div class="sec-h"><h2>목소리 톤</h2><small>목소리를 만드는 네 가지 소리</small></div>
- <div class="tone">${TONE.map((t,i)=>`<div class="tn"><span><b>${t[0]}</b><small>${t[1]}</small></span><i><s style="width:${Math.round(100*cl((lv[i]+30)/30,0.03,1))}%"></s></i><em class="num">${b[i]===mx?"가장 많아요":lv[i]>-1.5?"비슷해요":lv[i]>-6?"조금 적어요":lv[i]>-15?"적어요":"아주 적어요"}</em></div>`).join("")}</div>
+ <div class="tone">${TONE.map((t,i)=>`<div class="tn"><span><b>${t[0]}</b><small>${t[1]}</small></span><i><s style="width:${Math.round(100*cl((lv[i]+30)/30,0.03,1))}%"></s></i><em class="num">${b[i]===mx?"가장 많아요":lv[i]>-1.5?"많아요":lv[i]>-6?"조금 적어요":lv[i]>-15?"적어요":"아주 적어요"}</em></div>`).join("")}</div>
  <div class="target stack"><span>한마디로</span><b>${balanceLine(b)}</b></div></section>`}
-function regCard(r,s){const lo=s.f0lo||s.f0*Math.pow(2,-s.rangeSt/24),hi=s.f0hi||s.f0*Math.pow(2,s.rangeSt/24),a=rmPos(lo),b=rmPos(hi),c=rmPos(s.f0),L=RM_LAB[S.sex]||RM_LAB.x;
+/* 11/16 대표: 음역 지도가 너무 넓어 의미가 없다 → 평균 높이를 가운데 두고 위아래 9반음(칸당 4.5반음)만 확대해 보여 준다. 판정(regScore)은 그대로 RM 경계 */
+function regCard(r,s){const ref=S.age>0&&S.age<13?REF_KID:REF_F0[S.sex]||REF_F0.x,P=hz=>hz>0?cl(0.5+Math.log2(hz/ref)*12/18,0,1):0,lo=s.f0lo||s.f0*Math.pow(2,-s.rangeSt/24),hi=s.f0hi||s.f0*Math.pow(2,s.rangeSt/24),a=P(lo),b=P(hi),c=P(s.f0);
  return`<section class="card"><div class="sec-h"><h2>목소리 높낮이</h2><small>어디까지 오르내렸을까</small></div>
-  <div class="rmap"><div class="rm-lab"><span>낮은 소리</span><span>조금 낮은</span><span>조금 높은</span><span>높은 소리</span></div>
-   <div class="rm-track"><i></i><i></i><i></i><i></i><b class="rm-band" style="left:${(100*a).toFixed(1)}%;width:${Math.max(2,100*(b-a)).toFixed(1)}%"></b><b class="rm-avg" style="left:${(100*rmPos((S.age>0&&S.age<13?REF_KID:REF_F0[S.sex]||REF_F0.x))).toFixed(1)}%"></b><b class="rm-dot" style="left:${(100*c).toFixed(1)}%"></b></div>
+  <div class="rmap"><div class="rm-lab"><span>많이 낮은</span><span>조금 낮은</span><span>조금 높은</span><span>많이 높은</span></div>
+   <div class="rm-track"><i></i><i></i><i></i><i></i><b class="rm-band" style="left:${(100*a).toFixed(1)}%;width:${Math.max(2,100*(b-a)).toFixed(1)}%"></b><b class="rm-avg" style="left:50%"></b><b class="rm-dot" style="left:${(100*c).toFixed(1)}%"></b></div>
    </div>
-  <p class="small" style="text-align:center"><b>동그라미</b>는 내 평소 높이, <b>색칠한 곳</b>은 말하면서 오르내린 곳이에요.<br><small>점선 = ${S.age>0&&S.age<13?"또래 친구들":S.sex==="m"?"다른 남자들":S.sex==="f"?"다른 여자들":"다른 사람들"}의 평균 높이</small></p>
+  <p class="small" style="text-align:center"><b>동그라미</b>는 내 평소 높이, <b>색칠한 곳</b>은 말하면서 오르내린 곳이에요.<br><small>가운데 점선 = ${S.age>0&&S.age<13?"또래 친구들":S.sex==="m"?"남성":S.sex==="f"?"여성":"전체"} 평균 높이</small></p>
   <div class="target stack"><span>한마디로</span><b>${regLine(r)}</b></div>
-  <small>듣기 좋은 목소리는 낮은 소리와 조금 낮은 소리를 반반쯤 쓰고, 말할 때 위아래로 넓게 움직여요.</small></section>`}
+  <small>편하게 들리는 목소리는 보통 평균 높이 근처에 자리 잡고, 말할 때 위아래로 넓게 움직이는 편이에요.</small></section>`}
 /* 11/5 새 경계로 다시 잼(저·중저·중고·고 %): 좋은 목소리 = 기업가(남) 44·42·10·5 · 개발자(남) 39·46·10·6 · 리더(여) 30·58·8·5 · 배우(여) 46·43·7·5 → 저음과 중저음이 반반쯤.
    일반인 자기소개 남 25명 65·22·8·4 · 여 28명 56·33·7·5 → 저음 쪽으로 가라앉음. F#5 노래 0·12·13·75.
    중저음 몫 q = 중저/(저+중저)가 0.2→0.45에서 점수가 차고, 중저음이 70% 넘게 몰리거나 중고+고음이 30% 넘으면 깎는다 */
@@ -843,7 +848,7 @@ const balanceLine=b=>({even:"낮은 소리와 높은 소리가 골고루 섞여 
 /* 목소리 호감도 — 10/29 대표: '이성 호감도' 대신 모두 '목소리 호감도'. 성별 방향 높이는 빼고,
    소리 균형(대표 기준·좋은 목소리 녹음으로 보정, 가장 크게) + 숨결 · 고르기 · 여유·억양(근거조사 v1 B장, 계명대 일반 호감 연구) */
 /* 11/4 대표: 목소리 호감도 = 적당한 호흡 + 안정적인 발음 + 소리 비중(저·중·고 비율, 원래 4대역 그대로).
-   호흡 = '아—' 길이 · 숨이 새지도 누르지도 않는 정도(맑기 15dB 근처) · 문장 중 쉼표에서 쉬었는지
+   호흡 = '아~' 길이 · 숨이 새지도 누르지도 않는 정도(맑기 15dB 근처) · 문장 중 쉼표에서 쉬었는지
    발음 = 모음 공간(F1 폭×F2 폭, 입·혀 움직임) · 음절 대비(또렷이 끊기는 정도) · 고르기(떨림·크기)
    ⚠️ 발음 기준(ART_REF·음절 대비 범위)은 임시값 — 원음(대표·여성 강사) 녹음으로 다시 맞출 것 */
 /* 11/5 대표: 발음은 '목소리 좋은 여배우'(목소리 학습 샘플 C) 기준 — 테스트와 같은 계산으로 18초 4토막 모음 공간 809·1056·1040·1066(중앙 약 1,050), 음절 대비 약 11dB → 만점.
@@ -858,7 +863,7 @@ function attrScore(m){const s=m.s,v=m.v,bb=bandBalance(s.bands),aref=ART_REF[S.s
  const W={breath:.35,artic:.30,balance:.35},NAME={breath:"편안한 숨",artic:"또렷한 발음",balance:"고른 소리"},DESC={breath:"숨이 새지도 막히지도 않게",artic:"입을 크게 열고 또박또박",balance:"낮은·높은 소리가 골고루"};
  let sum=0;Object.keys(W).forEach(k=>sum+=W[k]*parts[k]);const pct=Math.round(55+42*cl(sum,0,1));
  const weak=Object.keys(W).sort((a,b)=>parts[a]-parts[b])[0];
- const TIP={breath:v.mpt<mptRef()*0.6?"숨을 크게 들이마시고, '아—'를 한 높이로 길게 내 보세요":v.hnr<12?"소리를 입 앞으로 모아서, 숨이 새지 않게 말해 보세요":v.hnr>19?"첫 글자를 '하' 하듯 부드럽게 시작해 보세요":"쉼표에서 숨을 한 번 쉬고 이어 말해 보세요",
+ const TIP={breath:v.mpt<mptRef()*0.6?"숨을 크게 들이마시고, '아~'를 한 높이로 길게 내 보세요":v.hnr<12?"소리를 입 앞으로 모아서, 숨이 새지 않게 말해 보세요":v.hnr>19?"첫 글자를 '하' 하듯 부드럽게 시작해 보세요":"쉼표에서 숨을 한 번 쉬고 이어 말해 보세요",
   artic:"입을 조금 더 크게 열고, 한 글자씩 또박또박 말해 보세요",
   balance:(rg?regKind(rg)==="high":bb.kind==="high")?"어깨와 턱에 힘을 빼고, 가슴이 울리는 걸 느끼며 편하게 말해 보세요":rg&&regKind(rg)==="stuck"?"문장 끝을 편하게 내려놓으며 말해 보세요":rg&&regKind(rg)==="low"?"질문하듯 말끝을 살짝 올리고, 부드럽게 말해 보세요":"입을 조금 더 열고, '음~' 할 때 코끝이 간질간질한 느낌으로 소리를 앞으로 보내 보세요"};
  return{pct,label:"듣기 좋은 정도",tip:TIP[weak],line:pct>=88?"자꾸 듣고 싶은 목소리예요":pct>=75?"부드러워서 듣기 좋은 목소리예요":"편안한 목소리예요 — 연습하면 더 올라가요",parts,names:NAME,descs:DESC,W}}
@@ -868,7 +873,7 @@ function pr(d,w){const map={"억양":"tune","음색":"clear","속도":"breath","
 
 /* ===== 6. 분석 대기 → 결과 공개 ===== */
 R.wait=()=>({html:`<div class="reveal"><div class="rv-stage" style="width:min(200px,60vw)"><img class="wobble" src="${img.egg}" alt=""></div>
-<h1 class="title">목소리를 듣는 중…</h1><div class="wait-steps" id="ws">${["높이 재는 중","속도 세는 중","숨결 듣는 중","억양 그리는 중","컨디션 살피는 중"].map(t=>`<div><i></i>${t}</div>`).join("")}</div></div>`,
+<h1 class="title">목소리를 듣는 중…</h1><div class="wait-steps" id="ws">${["높이 재는 중","빠르기 재는 중","숨결 듣는 중","오르내림 살피는 중","컨디션 살피는 중"].map(t=>`<div><i></i>${t}</div>`).join("")}</div></div>`,
  bind(){const ds=[...view.querySelectorAll("#ws div")];ds.forEach((d,i)=>later(()=>d.classList.add("on"),300+i*450));
   later(()=>{Promise.all([resample(REC.r1.x,REC.r1.sr),resample(REC.r2.x,REC.r2.sr)]).then(a=>{const nd=S.noiseDb==null?noiseFloor(a[0]):S.noiseDb;
    const s=analyzeSentence(a[0],nd,sylOf(SITS[sitKey()][2])),v=analyzeVowel(a[1],nd);S.m={s,v,noiseDb:nd,c:condMeasure(a[1])};finishTest();go("reveal")}).catch(e=>go("rec1",(e&&e.message?e.message:"분석하지 못했어요")+" — 다시 녹음해 주세요."))},2100)}});
@@ -884,9 +889,9 @@ R.reveal=()=>{const J=S.J,T=TYPES[J.code];return{html:`
  bind(){later(()=>$("#rvEgg").className="crack",1300);later(()=>{$("#rvF").classList.add("go");$("#rvEgg").hidden=true;const c=$("#rvChar");c.hidden=false;c.classList.add("popin")},2300);
   later(()=>$("#rvCode").hidden=false,2900);later(()=>$("#rvTxt").hidden=false,3300);later(()=>$("#see").hidden=false,4300);$("#see").onclick=()=>go("result")}}};
 
-/* ===== 내 목소리 컨디션 — '아—' 한 번을 세미콜론 voice-care 엔진으로 재서 일반 기준과 비교한다.
+/* ===== 내 목소리 컨디션 — '아~' 한 번을 세미콜론 voice-care 엔진으로 재서 일반 기준과 비교한다.
    앱의 '목소리 날씨'는 7일 동안 쌓은 내 기준과 비교하지만, 웹은 한 번뿐이라 일반 기준(임시값)을 쓴다. 진단 아님·숫자는 숨김.
-   임시 기준 근거: 이 엔진으로 잰 건강한 '아—' CPPS 약 14~17(목 긁은 소리 12.3), 음높이 끊김 건강 0.1 안팎(쉰 목소리 0.3~0.45) ===== */
+   임시 기준 근거: 이 엔진으로 잰 건강한 '아~' CPPS 약 14~17(목 긁은 소리 12.3), 음높이 끊김 건강 0.1 안팎(쉰 목소리 0.3~0.45) ===== */
 const COND_TH={cpps:13,breaks:.25,mpt:7};
 function condMeasure(x22){try{const fr=[];frameDb(x22,SR,441,441,v=>fr.push(v));const nd=Math.min(pct(fr,0.05),-45),c=VoiceCare.analyze(REC.r2.x,REC.r2.sr,{noise:nd});
  return{cpps:c.cpps,breaks:c.breaks,voiced:c.voiced,snr:c.level-nd}}catch(e){return null}}
@@ -897,8 +902,8 @@ function condOf(m){const c=m.c;if(!c)return null;if(!(c.voiced>=1.5)||!(c.snr>=1
  return{w:n>=2?"cloud":n?"partly":"sun",items:it}}
 const COND_TXT={sun:["맑음","목소리가 맑고 고르게 이어져요. 지금 상태를 잘 지켜 주세요."],
  partly:["구름 조금","목이 조금 피곤하거나, 녹음한 곳이 시끄러웠을 수 있어요. 물 한 잔 마시고 편하게 말해 보세요."],
- cloud:["흐림","목이 지쳐 있는 것 같아요. 오늘은 큰 소리와 긴 말을 줄이고 목을 쉬어 주세요."],
- noisy:["다시 재 볼까요","주변 소리가 크거나 '아—'가 짧아서 컨디션을 재지 못했어요. 조용한 곳에서 다시 해 보세요."]};
+ cloud:["흐림","오늘은 소리가 조금 거칠게 잡혔어요. 목이 피곤한 날일 수 있으니 큰 소리와 긴 말은 줄여 보세요."],
+ noisy:["다시 재 볼까요","주변 소리가 크거나 '아~'가 짧아서 컨디션을 재지 못했어요. 조용한 곳에서 다시 해 보세요."]};
 function wIcon(k,s=48){const C="#C9C1D8",C2="#A79DB9",sun=(x,y,r)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="#E9B949"/>`+[0,45,90,135,180,225,270,315].map(a=>{const t=a*Math.PI/180;return`<line x1="${x+(r+4)*Math.cos(t)}" y1="${y+(r+4)*Math.sin(t)}" x2="${x+(r+9)*Math.cos(t)}" y2="${y+(r+9)*Math.sin(t)}" stroke="#E9B949" stroke-width="3.5" stroke-linecap="round"/>`}).join(""),
  cloud=(x,y,c)=>`<g fill="${c}"><circle cx="${x}" cy="${y}" r="9"/><circle cx="${x+12}" cy="${y-5}" r="12"/><circle cx="${x+25}" cy="${y+1}" r="8"/><rect x="${x-3}" y="${y}" width="31" height="10" rx="5"/></g>`;
  const body={sun:sun(32,32,11),partly:sun(25,24,9)+cloud(24,42,C),cloud:cloud(10,30,C2)+cloud(22,42,C),
@@ -907,14 +912,14 @@ function wIcon(k,s=48){const C="#C9C1D8",C2="#A79DB9",sun=(x,y,r)=>`<circle cx="
   none:`<circle cx="32" cy="32" r="18" fill="none" stroke="${C2}" stroke-width="3" stroke-dasharray="4 6"/>`}[k]||"";
  return`<svg viewBox="0 0 64 64" width="${s}" height="${s}" aria-hidden="true">${body}</svg>`}
 function condCard(){const k=condOf(S.m);if(!k)return"";const t=COND_TXT[k.w];
- return`<section class="card"><div class="sec-h"><h2>내 목소리 컨디션</h2><small>'아—' 소리로 봤어요</small></div>
+ return`<section class="card"><div class="sec-h"><h2>내 목소리 컨디션</h2><small>'아~' 소리로 봤어요</small></div>
  <div class="row" style="gap:14px">${wIcon(k.w,64)}<div style="min-width:0"><b style="font-size:20px">${t[0]}</b><p class="small" style="margin-top:2px">${t[1]}</p></div></div>
  ${k.items.length?`<div class="cond">${k.items.map(i=>`<div><span>${i[0]}</span><b class="${i[1]?"no":"ok"}">${i[1]?i[3]:i[2]}</b></div>`).join("")}</div>`:""}
- ${k.w==="cloud"?`<details><summary>이럴 땐 병원에 가 보세요</summary><p class="small" style="margin-top:6px">목소리가 3주 넘게 쉬어 있거나, 말할 때 아프거나, 침을 삼키기 힘들거나, 숨이 차면 이비인후과(귀·코·목 병원)에 가 보세요.</p></details>`:""}
- <small>'아—' 한 번으로 본 결과라, 녹음한 곳에 따라 달라질 수 있어요. 병원 검사가 아니에요.</small></section>`}
+ ${k.w==="cloud"?`<details><summary>이런 증상이 오래가면 병원에 가 보세요</summary><p class="small" style="margin-top:6px">목소리가 3주 넘게 쉬어 있거나, 말할 때 아프거나, 침을 삼키기 힘들거나, 숨이 차면 이비인후과(귀·코·목 병원)에 가 보세요.</p></details>`:""}
+ <small>'아~' 한 번으로 본 결과라, 녹음한 곳에 따라 달라질 수 있어요. 병원 검사가 아니에요.</small></section>`}
 
 /* ===== 7. 결과 (무료) ===== */
-function axisVal(L,m,J){const d=LET[L];if(d.ax==="높이"){const who=S.age>0&&S.age<13?"또래 친구들":S.sex==="m"?"다른 남자들":S.sex==="f"?"다른 여자들":"다른 사람들",x=Math.abs(J.stRel);return x<1?`${who}과 거의 같은 높이예요`:`${who}보다 ${x<3?"조금":"많이"} ${J.stRel<0?"낮아요":"높아요"}`}if(d.ax==="속도")return`1초에 ${Math.round(m.s.rate)}글자쯤 말해요`;if(d.ax==="음색")return m.v.hnr>=TH.hnr?"바람 소리 없이 깨끗해요":m.v.hnr<TH.hnr-4?"바람 소리가 많이 섞여요":"바람 소리가 살짝 섞여요";return m.s.rangeSt>=TH.range?"올라갔다 내려갔다 크게 움직여요":"높낮이가 거의 같아요"}
+function axisVal(L,m,J){const d=LET[L];if(d.ax==="높이"){const who=S.age>0&&S.age<13?"또래 친구들":S.sex==="m"?"남성 평균":S.sex==="f"?"여성 평균":"전체 평균",x=Math.abs(J.stRel);return x<1?`${who}과 거의 같은 높이예요`:`${who}보다 ${x<3?"조금":"많이"} ${J.stRel<0?"낮아요":"높아요"}`}if(d.ax==="속도")return`1초에 ${Math.round(m.s.rate)}글자쯤 말해요`;if(d.ax==="음색")return m.v.hnr>=TH.hnr?"바람 소리 없이 깨끗해요":m.v.hnr<TH.hnr-4?"바람 소리가 많이 섞여요":"바람 소리가 살짝 섞여요";return m.s.rangeSt>=TH.range?"올라갔다 내려갔다 크게 움직여요":"높낮이 변화가 작아요"}
 function friendCard(){const f=S.friend,me=S.J.code;if(!TYPES[f])return"";const diff=AX_N.filter((_,i)=>f[i]!==me[i]);
  return`<section class="card"><div class="kicker">친구와 나</div><div class="cmp"><div><img src="${img.char(f)}" alt=""><small>친구</small><b>${f}</b><small>${nmNW(f)}</small></div><div class="muted" style="font-size:18px">vs</div><div><img src="${img.char(me)}" alt=""><small>나</small><b>${me}</b><small>${nmNW(me)}</small></div></div>
  <p style="text-align:center">${f===me?"둘이 같은 목소리 유형이에요!":`네 가지 중 <b>${4-diff.length}개</b>가 같아요 · 다른 것: ${diff.map(a=>AXD[a]).join(" · ")}`}</p></section>`}
@@ -925,22 +930,23 @@ const TO_TIP={L:"문장 끝을 편하게 내려놓고, 아주 조금만 낮게",
 function axisPlan(my,to){return my.split("").map((a,i)=>{const b=to[i],o={i,ax:AX_N[i],from:a,to:b};if(a===b)return{...o,st:"same"};
  if(i===0)return{...o,st:"soft",note:"높이는 아주 조금만 바꿔요 — 목을 지키려고요"};if(i===2&&b==="B")return{...o,st:"soft",note:"첫 글자에만 바람 소리를 — 계속 섞으면 목이 쉽게 지쳐요"};
  return{...o,st:"goal",note:"연습으로 잘 바뀌어요"}})}
-const goalCTA=()=>`<section class="card"><div class="kicker">다음 단계</div><h2>되고 싶은 목소리로 1분 바꿔 보기</h2><p class="muted">원하는 목소리를 고르고 한 문장을 다시 읽으면, 처음과 달라진 내 목소리를 바로 비교해 들을 수 있어요.</p><button class="btn pri block shine" id="goal">원하는 목소리 정하기</button></section>`;
+const reportCTA=`<section class="card"><div class="kicker">다음 단계</div><h2>목소리 × 성격 레포트</h2><p class="muted">성격 10문항(1분)에 답하면 내 목소리와 성격을 함께 풀어 드려요.</p><a class="btn pri block shine" href="voicereport.html">성격 10문항 하러 가기</a></section>`;
+const goalCTA=()=>`<section class="card"><div class="kicker">다음 단계</div><h2>원하는 목소리로 1분 체험하기</h2><p class="muted">원하는 목소리를 고르고 한 문장을 다시 읽으면, 처음과 달라진 내 목소리를 바로 비교해 들을 수 있어요.</p><button class="btn pri block shine" id="goal">원하는 목소리 정하기</button></section>`;
 R.goal=sel=>{const J=S.J,my=J.code,cur=sel||S.target||null,plan=cur?axisPlan(my,cur):null;
- return{top:{back:()=>go("result"),label:"③ 원하는 목소리"},html:`
-<div><div class="kicker">③ 내가 원하는 목소리</div><h1 class="title">어떤 목소리로<br>들리고 싶나요?</h1></div>
-<section class="megoal"><div><div class="av"><img src="${img.char(my)}" alt=""></div><small>지금 나</small><br><b>${my}</b></div><div class="muted" style="font-size:26px">→</div><div><div class="av goal">${cur?`<img src="${img.char(cur)}" alt="">`:"?"}</div><small>되고 싶은 목소리</small><br><b>${cur||"골라 주세요"}</b></div></section>
+ return{top:{back:()=>go("result"),label:"원하는 목소리"},html:`
+<div><div class="kicker">내가 원하는 목소리</div><h1 class="title">어떤 목소리로<br>들리고 싶나요?</h1></div>
+<section class="megoal"><div><div class="av"><img src="${img.char(my)}" alt=""></div><small>지금 나</small><br><b>${my}</b></div><div class="muted" style="font-size:26px">→</div><div><div class="av goal">${cur?`<img src="${img.char(cur)}" alt="">`:"?"}</div><small>원하는 목소리</small><br><b>${cur||"골라 주세요"}</b></div></section>
 ${plan?`<section class="card"><div class="kicker">${cur===my?"지금 내 목소리 그대로":nmNW(cur)}</div>${cur===my?"<p>지금 목소리의 장점은 살리고, 더 또렷하게 다듬어요.</p>":plan.map(p=>`<div class="ax-line ${p.st}"><b>${AXD[p.ax]}</b><span>${p.st==="same"?`${LET[p.from].nm} — 같아요 ✓`:`${LET[p.from].nm} → ${LET[p.to].nm}`}</span>${p.st==="same"?"":`<small>${p.note}</small>`}</div>`).join("")}</section>`:""}
 <section class="card"><div class="fam-legend">${Object.keys(FAM).map(k=>`<span style="--c:${FAM[k][2]}"><i></i>${FAM[k][0]} · ${FAM[k][1]}</span>`).join("")}</div>
- <div class="rgrid">${Object.keys(TYPES).map(c=>`<button class="rt ${c===cur?"pick":""} ${c===my?"me":""}" data-c="${c}"><span><img src="${img.char(c)}" alt="${TYPES[c][1]}"></span><b>${c}${c===my?" · 나":""}</b><small>${nmLN(c)}</small></button>`).join("")}</div></section>
+ <div class="rgrid">${Object.keys(TYPES).map(c=>`<button class="rt ${c===cur?"pick":""} ${c===my?"me":""}" data-c="${c}"><span><img src="${img.char(c)}" alt="${TYPES[c][1]}"></span><b>${c}</b>${c===my?`<em class="me-badge">나</em>`:""}<small>${nmLN(c)}</small></button>`).join("")}</div></section>
 <p class="fine">성격을 바꾸는 게 아니라, 남에게 들리는 내 목소리를 연습하는 거예요. 목을 지키려고 높이는 아주 조금만 바꿔요.</p>
 <div class="sticky-cta"><button class="btn pri block" id="ok" ${cur?"":"disabled"}>${cur?(cur===my?"지금 내 목소리로 1분 체험하기":"이 목소리로 1분 체험하기"):"목소리를 하나 골라 주세요"}</button></div>`,
  bind(){view.querySelectorAll(".rt").forEach(b=>b.onclick=()=>go("goal",b.dataset.c));
   const ok=$("#ok");if(ok&&cur)ok.onclick=()=>{S.target=cur;S.trial=null;save();go("try")}}}};
 const tryTips=()=>{const J=S.J,t=S.target||J.code;if(t===J.code){const k=J.code.split("").map(l=>LET[l]);return[["이것만",k[2].fix||TO_TIP.D]]}
  return axisPlan(J.code,t).filter(p=>p.st!=="same").map(p=>[AXD[p.ax],TO_TIP[p.to]])};
-R.try=err=>{const t=S.target||S.J.code,sent=SITS[sitKey()][2];return{top:{back:()=>go("goal"),label:"④ 1분 체험"},html:`
-<div><div class="kicker">④ 1분 체험 · 매일 훈련 맛보기</div><h1 class="title">${t===S.J.code?"지금 내 목소리를<br>더 또렷하게":nmNW(t)+"처럼<br>읽어 볼까요?"}</h1></div>
+R.try=err=>{const t=S.target||S.J.code,sent=SITS[sitKey()][2];return{top:{back:()=>go("goal"),label:"1분 체험"},html:`
+<div><div class="kicker">1분 체험 · 매일 훈련 맛보기</div><h1 class="title">${t===S.J.code?"지금 내 목소리를<br>더 또렷하게":nmNW(t)+"처럼<br>읽어 볼까요?"}</h1></div>
 <section class="card"><div class="kicker">이렇게 바꿔 읽어요</div><ul class="tips">${tryTips().map(x=>`<li><b>${x[0]}</b> — ${x[1]}</li>`).join("")}</ul></section>
 <p class="sentence">${sent}</p>${err?`<p class="err">${err}</p>`:""}
 ${micHTML("버튼을 누르고 위처럼 바꿔 읽어 보세요")}`,
@@ -951,44 +957,44 @@ function trialRows(){const J=S.J,b=S.m.s,a=S.trial,t=S.target||J.code,out=[];
  const add=(ax,txt,num,to,ok)=>out.push({ax,txt,num,to,ok});
  const want=i=>t[i]!==J.code[i]?t[i]:null,much=(x,c)=>Math.abs(x)<c?"조금 ":"많이 ";
  {const d=12*Math.log2(a.f0/b.f0),w=want(0);add("높이",Math.abs(d)<0.3?"처음과 거의 같은 높이예요":`처음보다 ${much(d,2)}${d>=0?"높아졌어요":"낮아졌어요"}`,Math.abs(d)<0.1?"처음과 같은 높이":`처음보다 ${Math.abs(d).toFixed(1)}반음 ${d>=0?"높게":"낮게"}`,w,w==="H"?d>0.3:w==="L"?d<-0.3:Math.abs(d)<1.5)}
- {const d=a.rate-b.rate,w=want(1);add("속도",Math.abs(d)<0.2?"처음과 비슷한 빠르기예요":`처음보다 ${much(d,1)}${d>0?"빨라졌어요":"천천히 말했어요"}`,`1초에 ${b.rate.toFixed(1)} → ${a.rate.toFixed(1)}음절`,w,w==="A"?a.rate>b.rate+0.2:w==="U"?a.rate<b.rate-0.2:Math.abs(a.rate-b.rate)<0.6)}
+ {const d=a.rate-b.rate,w=want(1);add("속도",Math.abs(d)<0.2?"처음과 비슷한 빠르기예요":`처음보다 ${much(d,1)}${d>0?"빨라졌어요":"느려졌어요"}`,`1초에 ${b.rate.toFixed(1)} → ${a.rate.toFixed(1)}음절`,w,w==="A"?a.rate>b.rate+0.2:w==="U"?a.rate<b.rate-0.2:Math.abs(a.rate-b.rate)<0.6)}
  {const d=a.rangeSt-b.rangeSt,w=want(3);add("억양",Math.abs(d)<0.5?"처음과 비슷하게 오르내렸어요":`처음보다 ${much(d,3)}${d>0?"크게 오르내렸어요":"잔잔해졌어요"}`,`폭 ${b.rangeSt.toFixed(1)} → ${a.rangeSt.toFixed(1)}반음`,w,w==="T"?a.rangeSt>b.rangeSt+0.5:w==="F"?a.rangeSt<b.rangeSt-0.5:Math.abs(a.rangeSt-b.rangeSt)<1.5)}
  return out}
 const trialSummary=()=>S.trial?trialRows().map(r=>`${r.ax} ${r.num}${r.to?(r.ok?" ✓":" ·"):""}`).join(" / "):"";
 R.tryres=()=>{const J=S.J,t=S.target||J.code,rows=trialRows(),goal=rows.filter(r=>r.to),hit=goal.filter(r=>r.ok).length;
- const head=!goal.length?"내 목소리, 한 번 더 또렷해졌어요":hit===goal.length?"한 번 만에 가까워졌어요!":hit?"한 걸음 가까워졌어요":"처음엔 원래 버릇이 나와요";
+ const head=!goal.length?"한 번 더 읽어 봤어요! 처음과 비교해 들어 보세요":hit===goal.length?"한 번 만에 가까워졌어요!":hit?"한 걸음 가까워졌어요":"처음엔 원래 버릇이 나와요";
  const tail=t===J.code?"하루 3분이면 나도 지금보다 더 또렷한 목소리가 될 수 있어요.":`하루 3분이면 나도 '${TYPES[t][1]}'의 목소리가 될 수 있어요.`;
- return{top:{back:()=>go("try"),label:"④ 1분 체험"},html:`
+ return{top:{back:()=>go("try"),label:"1분 체험"},html:`
 <div class="win"><img class="popin" src="${img.char(t)}" alt="" style="width:132px;border-radius:28px;margin:0 auto"><div class="kicker" style="text-align:center">체험 결과</div><h1 class="title" style="text-align:center">${head}</h1></div>
-<section class="card">${rows.map(r=>`<div class="trial-row"><b>${AXD[r.ax]}</b><span class="num">${r.txt}</span><small class="${r.to?(r.ok?"ok":"no"):"no"}">${r.to?(r.ok?`${LET[r.to].nm} 쪽으로 ✓`:`${LET[r.to].nm} 쪽으로 조금 더`):r.ok?"원래대로 ✓":"원래대로 해 봐요"}</small></div>`).join("")}
- ${t[2]!==J.code[2]?`<small>소리 색깔(바람·또렷함)은 '아—' 소리로 재요. 앱에서 매일 확인할 수 있어요.</small>`:""}</section>
+<section class="card">${rows.map(r=>`<div class="trial-row"><b>${AXD[r.ax]}</b><span class="num">${r.txt}</span><small class="${r.to?(r.ok?"ok":"no"):"no"}">${r.to?(r.ok?`${LET[r.to].nm} 쪽으로 ✓`:`${LET[r.to].nm} 쪽으로 조금 더`):r.ok?"처음처럼 유지 ✓":"이건 처음처럼 유지해 봐요"}</small></div>`).join("")}
+ ${t[2]!==J.code[2]?`<small>소리 색깔(바람·또렷함)은 '아~' 소리로 재요. 앱이 나오면 매일 확인할 수 있어요.</small>`:""}</section>
 ${REC.r1?pbarHTML("hearA","처음 테스트 목소리",REC.r1):""}${REC.t?pbarHTML("hearB","방금 체험한 목소리",REC.t):""}
-<section class="card"><div class="kicker">${APP_LINK?"앱에서 이어 하기":"앱 대기예약"}</div><h2>${tail}</h2><p class="muted">병아리와 함께 목 풀기 · 문장 읽기 · 발음 연습을 내 목소리에 맞춰 해요.</p>
- ${APP_LINK?`<a class="btn pri block shine" href="${APP_LINK}">앱 받고 하루 3분 이어 하기</a>`:S.waitlisted?`<div class="target"><span>대기예약</span><b>완료했어요 ✓ 앱이 나오면 알려 드릴게요</b></div>`:`<button class="btn pri block shine" id="wl">앱 나오면 알림 받기 (대기예약)</button>`}</section>
+<section class="card"><div class="kicker">${APP_LINK?"앱에서 이어 하기":"출시 알림"}</div><h2>${tail}</h2><p class="muted">병아리와 함께 목 풀기 · 문장 읽기 · 발음 연습을 내 목소리에 맞춰 해요.</p>
+ ${APP_LINK?`<a class="btn pri block shine" href="${APP_LINK}">앱 받고 하루 3분 이어 하기</a>`:S.waitlisted?`<div class="target"><span>출시 알림</span><b>신청했어요 ✓ 앱이 나오면 알려 드릴게요</b></div>`:`<button class="btn pri block shine" id="wl">앱 나오면 알림 받기</button>`}</section>
 <button class="btn block" id="again">한 번 더 체험하기</button>
 <button class="btn ghost block" id="back">결과로 돌아가기</button>`,
  bind(){const a=$("#hearA");if(a)mountPlayer(a,REC.r1);const b=$("#hearB");if(b)mountPlayer(b,REC.t);const w=$("#wl");if(w)w.onclick=()=>go("waitlist");$("#again").onclick=()=>go("try");$("#back").onclick=()=>go("result")}}};
-R.waitlist=()=>({top:{back:()=>go(S.trial?"tryres":"result"),label:"앱 대기예약"},html:`
-<div><div class="kicker">앱 대기예약</div><h1 class="title">앱이 나오면<br>가장 먼저 알려 드릴게요</h1></div>
+R.waitlist=()=>({top:{back:()=>go(S.trial?"tryres":"result"),label:"출시 알림 신청"},html:`
+<div><div class="kicker">출시 알림 신청</div><h1 class="title">앱이 나오면<br>가장 먼저 알려 드릴게요</h1></div>
 <section class="card"><p>하루 3분, 병아리와 함께 연습하면 나도 원하는 목소리가 될 수 있어요. 목 풀기·문장 읽기·발음 연습을 내 목소리에 맞춰 해요.</p>
  <label class="lbl">이름<input class="inp" id="wn" maxlength="20" value="${esc(S.name||"")}"></label>
  <label class="lbl">휴대폰 번호<small>출시 알림 문자를 한 번 보내요</small><input class="inp" id="wp" type="tel" inputmode="numeric" maxlength="13" placeholder="010-1234-5678" autocomplete="tel"></label>
  <label class="chk"><input type="checkbox" id="wc"><span>앱 출시 알림을 위해 이름과 휴대폰 번호를 터칭보이스에 저장하는 데 동의해요. 알림을 보낸 뒤에는 지워요.</span></label>
  <p class="err" id="werr"></p></section>
-<button class="btn pri block" id="wgo">대기예약 하기</button>`,
+<button class="btn pri block" id="wgo">알림 신청하기</button>`,
  bind(){$("#wgo").onclick=()=>{const name=$("#wn").value.trim(),phone=$("#wp").value.replace(/\D/g,""),e=$("#werr");
   if(!name){e.textContent="이름을 적어 주세요";return}if(!/^01[016789]\d{7,8}$/.test(phone)){e.textContent="휴대폰 번호를 확인해 주세요";return}if(!$("#wc").checked){e.textContent="동의에 체크해 주세요";return}
   if(SAVE_URL)fetch(SAVE_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({type:"waitlist",src:"web",name,phone,sex:S.sex||"",age:S.age||null,code:S.J?S.J.code:"",target:S.target||"",trial:trialSummary(),agree:true})}).catch(()=>{});
   S.name=S.name||name;S.waitlisted=phone.slice(0,3)+"-****-"+phone.slice(-4);save();go("waitdone")}}});
 R.waitdone=()=>({html:`
-<div class="win" style="text-align:center"><img class="popin" src="${img.char(S.target||(S.J&&S.J.code)||"HUDT")}" alt="" style="width:150px;border-radius:30px;margin:0 auto"><div class="kicker">대기예약 완료</div><h1 class="title">앱이 나오면<br>문자로 알려 드릴게요</h1><p class="muted">${S.waitlisted||""} 번호로 한 번 보내요.</p></div>
+<div class="win" style="text-align:center"><img class="popin" src="${img.char(S.target||(S.J&&S.J.code)||"HUDT")}" alt="" style="width:150px;border-radius:30px;margin:0 auto"><div class="kicker">알림 신청 완료</div><h1 class="title">앱이 나오면<br>문자로 알려 드릴게요</h1><p class="muted">${S.waitlisted||""} 번호로 한 번 보내요.</p></div>
 ${shareRow()}
 <button class="btn ghost block" id="back">결과로 돌아가기</button>`,
  bind(){bindShare(view);$("#back").onclick=()=>go("result")}});
-R.result=()=>{const J=S.J,m=S.m,T=TYPES[J.code],F=FAM[J.code.slice(0,2)],G=TYPES[S.guess]||T,b=m.s.bands,who=S.teacher?"학생들에게는":"남에게는";
- const A=attrScore(m),ageMsg=J.age<S.age-2?`실제보다 ${Math.round(S.age-J.age)}살 어리게 들려요`:J.age>S.age+2?"실제 나이보다 어른스럽게 들려요":"실제 나이와 비슷하게 들려요";
+R.result=()=>{const J=S.J,m=S.m,T=TYPES[J.code],F=FAM[J.code.slice(0,2)],G=TYPES[S.guess]||T,b=m.s.bands,who=S.teacher?"학생들에게는":"다른 사람에게는";
+ const A=attrScore(m),ageMsg=J.age<S.age-2?`실제보다 ${Math.round(S.age-J.age)}살 어리게 들려요`:J.age>S.age+2?`실제보다 ${Math.round(J.age-S.age)}살 성숙하게 들려요`:"실제 나이와 비슷하게 들려요";
  return{html:`
-${S.demo?`<section class="card cta" style="flex-direction:row;align-items:center;justify-content:space-between;gap:10px"><div style="min-width:0"><b>예시 결과예요</b><br><small>내 목소리로 하면 3분이면 돼요</small></div><button class="btn pri sm" id="mine">내 목소리로 하기</button></section>`:""}
+${S.demo?`<section class="card cta" style="flex-direction:row;align-items:center;justify-content:space-between;gap:10px"><div style="min-width:0"><b>예시 결과예요</b><br><small>내 목소리로 하면 1분이면 돼요</small></div><button class="btn pri sm" id="mine">내 목소리로 하기</button></section>`:""}
 <section class="hero-card">
   <div class="hc-top">${S.name&&!S.demo?`<span class="pill-g">${esc(S.name)}님</span>`:""}${sitKey()==="intro"?"":`<span class="pill-g">${SITS[sitKey()][1]}</span>`}<span class="pill-g">${F[0]} · ${F[1]}</span>${S.demo?'<span class="pill-g">예시</span>':""}</div>
   <img class="hc-img popin" src="${img.char(J.code)}" alt="${T[1]}">
@@ -1016,18 +1022,18 @@ ${toneCard(b)}
   <div class="target stack"><span>이렇게 하면 더 좋아요!</span><b>${A.tip}</b></div>
   <small>점수는 재미로 봐 주세요. 사람마다 좋아하는 목소리는 달라요.</small></section>
 ${condCard()}
-${`<section class="card"><div class="kicker">내 결과 알리기</div><h2>친구에게도 "너는 어떤 목소리야?"</h2><p class="small">공유 이미지 아래 QR을 찍으면 친구도 바로 검사하고 나와 비교해요.</p>${shareRow()}</section>`}
-${S.demo?"":goalCTA()}
+${`<section class="card"><div class="kicker">내 결과 알리기</div><h2>친구에게도 "너는 어떤 목소리야?"</h2><p class="small">공유 이미지 아래 QR을 찍으면 친구도 바로 테스트하고 나와 비교해요.</p>${shareRow()}</section>`}
+${S.demo?"":PAID?reportCTA:goalCTA()}
 ${friendCard()}
-<section class="card"><h2>다른 유형 구경하기${S.demo?" <small>(예시)</small>":""}</h2>${S.demo?"":`<p class="small">16가지 목소리 캐릭터를 눌러서 살펴보세요.</p>`}<div class="rgrid">${Object.keys(TYPES).map(c=>`<button class="rt ${c===J.code?(S.demo?"pick":"me"):""}" data-c="${c}"><span><img src="${img.char(c)}" alt="${TYPES[c][1]}" loading="lazy"></span><b>${c}${c===J.code&&!S.demo?" · 나":""}</b><small>${nmLN(c)}</small></button>`).join("")}</div></section>
-${S.demo?"":`<button class="btn block" id="rerec">다시 녹음하기</button>`}
-<button class="btn ghost block" id="again">처음부터 다시 하기</button>
+<section class="card"><h2>다른 유형 구경하기${S.demo?" <small>(예시)</small>":""}</h2>${S.demo?"":`<p class="small">16가지 목소리 캐릭터를 눌러서 살펴보세요.</p>`}<div class="rgrid">${Object.keys(TYPES).map(c=>`<button class="rt ${c===J.code?(S.demo?"pick":"me"):""}" data-c="${c}"><span><img src="${img.char(c)}" alt="${TYPES[c][1]}" loading="lazy"></span><b>${c}</b>${c===J.code&&!S.demo?`<em class="me-badge">나</em>`:""}<small>${nmLN(c)}</small></button>`).join("")}</div></section>
+${S.demo||PAID?"":`<button class="btn block" id="rerec">다시 녹음하기</button>`}
+${PAID?"":`<button class="btn ghost block" id="again">처음부터 다시 하기</button>`}
 <p class="fine">이 결과는 병원 검사가 아니에요. 내 목소리가 남에게 어떻게 들리는지 알아보는 테스트예요. 녹음한 곳에 따라 결과가 달라질 수 있어요.</p>
 ${BIZ}`,
  bind(){later(()=>{view.querySelectorAll(".band i").forEach(i=>i.style.height=i.dataset.h+"%");countUp($("#ageN"),0,J.age,1200);countUp($("#attrN"),0,A.pct,1200)},250);
   bindShare(view);const gl=$("#goal");if(gl)gl.onclick=()=>go("goal");const hm=$("#hearMe");if(hm)mountPlayer(hm,REC.r1);
   const mi=$("#mine");if(mi)mi.onclick=()=>{newRun();go("info")};
-  $("#again").onclick=()=>{newRun();go("landing")};const rr=$("#rerec");if(rr)rr.onclick=reRecord;
+  const ag=$("#again");if(ag)ag.onclick=()=>{newRun();go("landing")};const rr=$("#rerec");if(rr)rr.onclick=reRecord;
   view.querySelectorAll(".rgrid .rt").forEach(p=>p.onclick=()=>S.demo?startDemo(p.dataset.c,true):typeSheet(p.dataset.c))}}};
 function wavBlob(x,sr){const n=x.length,b=new ArrayBuffer(44+n*2),v=new DataView(b),w=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i))};w(0,"RIFF");v.setUint32(4,36+n*2,true);w(8,"WAVE");w(12,"fmt ");v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,sr,true);v.setUint32(28,sr*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);w(36,"data");v.setUint32(40,n*2,true);for(let i=0;i<n;i++){const s=Math.max(-1,Math.min(1,x[i]));v.setInt16(44+i*2,s<0?s*0x8000:s*0x7fff,true)}return new Blob([b],{type:"audio/wav"})}
 /* 재생 바 — 재생·일시정지·위치 옮기기 */
@@ -1052,8 +1058,16 @@ function serverRecord(){const m=S.m,J=S.J,s=m.s,v=m.v,A=attrScore(m),n=(x,d)=>x=
   mpt:n(v.mpt,2),hnr:n(v.hnr,2),regs4:s.regs4?s.regs4.map(x=>n(x,1)):null,vspace:n(s.vspace,0),sylc:n(s.sylc,1),pauses:s.pauses,voiceOnly:true,cpp:n(v.cpp,3),trem:n(v.trem,3),noiseDb:n(m.noiseDb,1),cond:m.c||null,
   score:J.sc,total:J.total,voice:J.voice,voiceAge:n(J.age,1),attr:A.pct,attrParts:Object.fromEntries(Object.entries(A.parts).map(([k,x])=>[k,n(x,2)])),recQ:recQ()}}
 /* 11/5 대표: 웹 검사는 이름·녹음 없이 측정 숫자만 익명으로 보낸다(기준 보정용). 녹음은 앱에서 동의(구독 할인)로 */
+/* 11/16 대표: 녹음 제공에 동의한 사람만 녹음 2개를 48kHz(최소 44.1kHz) wav로 함께 보낸다(ver2 — 서버가 드라이브에 저장, 3년 뒤 자동 삭제). 동의 안 하면 ver3 익명 숫자만 */
+const b64of=blob=>blob.arrayBuffer().then(buf=>{const u=new Uint8Array(buf);let t="";for(let i=0;i<u.length;i+=0x8000)t+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));return btoa(t)});
+function resampleTo(x,sr,to){const OC=window.OfflineAudioContext||window.webkitOfflineAudioContext,oc=new OC(1,Math.ceil(x.length*to/sr),to),b=oc.createBuffer(1,x.length,sr);b.getChannelData(0).set(x);const s=oc.createBufferSource();s.buffer=b;s.connect(oc.destination);s.start(0);
+  const p=oc.startRendering();return p&&p.then?p.then(r=>r.getChannelData(0)):new Promise(res=>{oc.oncomplete=e=>res(e.renderedBuffer.getChannelData(0))})}
+async function audioPayload(){const o={};for(const [k,r] of [["sent",REC.r1],["ah",REC.r2]]){if(!r)continue;const to=r.sr===44100?44100:48000;o[k]=await b64of(wavBlob(r.sr===to?r.x:await resampleTo(r.x,r.sr,to),to))}return o}
+const post=rec=>fetch(SAVE_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(rec)});
 function sendRecord(){const run=S;if(!SAVE_URL||run.demo||run.sent)return;let rec;try{rec=serverRecord()}catch(e){return}run.sent=true;save();
- fetch(SAVE_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(rec)}).catch(()=>{if(S===run){run.sent=false;save()}})}
+ const dc=run.developmentConsent,fail=()=>{if(S===run){run.sent=false;save()}};
+ if(dc&&dc.version==="voice-dev-2026-11-05"&&dc.acceptedAt){audioPayload().then(audio=>{if(!audio.sent||!audio.ah)return post(rec);return post({...rec,ver:2,name:run.name||"",developmentConsent:dc,audio})}).catch(fail);return}
+ post(rec).catch(fail)}
 function copy(t){const ok=()=>toast("복사했어요");if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(ok,()=>toast("복사가 막혀 있어요. 길게 눌러 직접 복사해 주세요."));else toast("길게 눌러 직접 복사해 주세요.")}
 /* ===== 8. 공유 카드 ===== */
 function loadImg(src){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=src})}
@@ -1082,14 +1096,14 @@ async function makeCard(){const J=S.J,T=TYPES[J.code],F=FAM[J.code.slice(0,2)],c
  const cy=ly+(lines.length-1)*56+50,cw=481,ch=104,cg=14;codeParts(J.code).forEach((p,i)=>{const cx=50+(i%2)*(cw+cg),y=cy+Math.floor(i/2)*(ch+cg);rr(cx,y,cw,ch,34);g.fillStyle="rgba(255,255,255,.16)";g.fill();g.fillStyle="#fff";fnt(700,42);g.fillText(p[0],cx+cw/2,y+35);fnt(500,30);g.globalAlpha=.95;g.fillText(p[1],cx+cw/2,y+78);g.globalAlpha=1});
  {const t="“"+LINES[J.code]+"”";let bp=40;fnt(700,bp);let w=g.measureText(t).width;if(w>880){bp=Math.floor(bp*880/w);fnt(700,bp);w=g.measureText(t).width}const by=cy+2*ch+cg+34,bw=w+88,bh=90,bx=540-bw/2;
   g.save();g.shadowColor="rgba(0,0,0,.12)";g.shadowBlur=36;g.shadowOffsetY=14;rr(bx,by,bw,bh,47);g.fillStyle="#fff";g.fill();g.restore();g.beginPath();g.moveTo(520,by+2);g.lineTo(540,by-18);g.lineTo(560,by+2);g.fillStyle="#fff";g.fill();g.fillStyle=F[3];g.fillText(t,540,by+bh/2+3);
-  const qs=156,qy=by+bh+26;fnt(700,44);const t1="너는 어떤 목소리야?",t2="QR을 찍으면 나도 바로 검사",t3="touchingvoice.app",tw2=Math.max(g.measureText(t1).width,(fnt(500,30),g.measureText(t2).width)),qx=Math.round(540-(qs+32+tw2)/2);
+  const qs=156,qy=by+bh+26;fnt(700,44);const t1="너는 어떤 목소리야?",t2="QR을 찍으면 나도 바로 테스트",t3="touchingvoice.app",tw2=Math.max(g.measureText(t1).width,(fnt(500,30),g.measureText(t2).width)),qx=Math.round(540-(qs+32+tw2)/2);
   drawQR(g,J.code,qx,qy,qs);g.textAlign="left";g.fillStyle="#fff";fnt(700,44);g.fillText(t1,qx+qs+32,qy+36);fnt(500,30);g.globalAlpha=.9;g.fillText(t2,qx+qs+32,qy+86);g.globalAlpha=.75;fnt(500,28);g.fillText(t3,qx+qs+32,qy+128);g.globalAlpha=1;g.textAlign="center"}
  return c}
 /* 11/5 대표: 공유 — 인스타그램·틱톡은 필수. 웹에서 공유 창으로 보내면 인스타 스토리에 '스티커'로 작게 붙는다 →
    ① 사진에 저장 ② 앱에서 그 사진을 고르기 순서로 안내(1080×1920 그대로 화면에 꽉 참). 카톡 등은 공유 창으로 이미지+링크 */
 const IC_IG='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>';
 const IC_TT='<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M14 3h3a4 4 0 0 0 4 4v3a7 7 0 0 1-4-1.3V15a6 6 0 1 1-6-6h1v3.2a2.8 2.8 0 1 0 2 2.7V3z"/></svg>';
-const shareRow=()=>`<div class="shr"><button class="btn sh-ig" data-sh="ig">${IC_IG}인스타그램</button><button class="btn sh-tt" data-sh="tt">${IC_TT}틱톡</button><button class="btn sm" data-sh="more">카톡·더보기</button><button class="btn sm" data-sh="save">이미지 저장</button><button class="btn sm" data-sh="link">링크 복사</button></div>`;
+const shareRow=()=>`<div class="shr"><button class="btn sh-ig" data-sh="ig">${IC_IG}인스타그램</button><button class="btn sh-tt" data-sh="tt">${IC_TT}틱톡</button><button class="btn sm" data-sh="more">카톡·더보기</button><button class="btn sm" data-sh="save">사진에 저장</button><button class="btn sm" data-sh="link">링크 복사</button></div>`;
 const isIOS=()=>/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
 const canFiles=f=>!!(navigator.canShare&&navigator.canShare({files:[f]}));
 let CARD=null;

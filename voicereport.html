@@ -163,7 +163,7 @@ const $=s=>document.querySelector(s),view=$("#view");
 const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function toast(t){const el=$("#toast");el.textContent=t;el.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove("show"),2800)}
 function setFam(code){const f=FAM[(code||"").slice(0,2)];if(f){document.documentElement.style.setProperty("--fam",f[0]);document.documentElement.style.setProperty("--fam-deep",f[1])}}
-function show(html){view.innerHTML=`<div class="brand noprint"><span>터칭보이스</span><a href="voicetest.html">목소리 테스트</a></div>`+html;window.scrollTo(0,0)}
+function show(html){view.innerHTML=`<div class="brand noprint"><span>터칭보이스</span><a href="voicetest.html?paid">목소리 테스트</a></div>`+html;window.scrollTo(0,0)}
 const hl=t=>esc(t).replace(", ",",<br>");/* 한 줄 요약은 쉼표 뒤에서만 줄을 바꾼다 */
 const done=()=>R.a.length===10&&R.a.every(x=>x>=1&&x<=7);
 const big5=a=>Object.fromEntries(TRAITS.map(([k],i)=>[k,Math.round((a[i]+8-a[i+5]-2)/12*100)]));
@@ -177,7 +177,7 @@ const api=o=>fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;ch
 function vNoData(){show(`
 <div><div class="kicker">목소리 × 성격 레포트</div><h1 class="title">먼저 1분 목소리 테스트를 해 주세요</h1></div>
 <div class="card"><p>레포트는 목소리 테스트 결과에 성격 10문항을 더해서 만들어요. 이 기기에 저장된 목소리 결과가 아직 없어요.</p>
-<a class="btn pri block" href="voicetest.html">1분 목소리 테스트 하러 가기</a>
+<a class="btn pri block" href="voicetest.html?paid">1분 목소리 테스트 하러 가기</a>
 <p class="small">테스트한 기기·브라우저에서 이 페이지를 열어야 결과가 이어져요.</p></div>${BIZ}`)}
 
 function vQuiz(){setFam(VT.J.code);const n=()=>R.a.filter(x=>x>=1&&x<=7).length;
@@ -196,8 +196,7 @@ const LOCKED=["내 목소리가 주는 인상 — 높이·억양·속도 풀이"
 function vTeaser(){setFam(VT.J.code);const B=big5(R.a),c=VT.J.code,nick=R.nick!=null?R.nick:(VT.name||"");
  show(`<div><div class="kicker">목소리 × 성격 레포트 · 미리 보기</div><h1 class="title">${hl(headline(B))}</h1><p class="sub">답해 주신 10문항으로 본 성격의 큰 방향이에요.</p></div>
 ${heroCard(c,VT.sex,"1분 목소리 테스트로 찾은 내 유형")}
-<div class="card"><h2>나의 성격</h2>${bars(TRAITS.map(([k,nm])=>({nm,v:B[k]})))}
-<button class="btn ghost" id="redo">다시 답하기</button></div>
+<div class="card"><h2>나의 성격</h2>${bars(TRAITS.map(([k,nm])=>({nm,v:B[k]})))}</div>
 <div class="card"><h2>이성에게 호감 주는 목소리 지수</h2><div class="gauge hide" style="--v:70"><b>??</b></div><span class="badge">재미로 보는 지수 · 확률이 아니에요</span>
 <div class="lock"><h3>${LOCK}더 매력적인 목소리 만들기 3가지</h3></div><div class="ph"><b style="width:92%"></b><b style="width:78%"></b><b style="width:85%"></b></div></div>
 <div class="card">${LOCKED.map((t,i)=>`<div class="item lock"><h3>${LOCK}${t}</h3><div class="ph"><b style="width:${[94,88,96,90,86][i]}%"></b><b style="width:${[72,91,80,76,93][i]}%"></b></div></div>`).join("")}</div>
@@ -214,7 +213,6 @@ ${BIZ}`);
  const ui=()=>{const s=PAY&&PAY.state;pb.disabled=s!=="ready";pb.textContent=s==="loading"?"결제 준비 중…":PRICE+" 결제하고 레포트 보기"};
  const reset=()=>{PAY=null;ag.checked=false;ui()};
  nk.oninput=()=>{R.nick=nk.value.trim();save();if(ag.checked)reset()};
- $("#redo").onclick=()=>{R.a=[];save();vQuiz()};
  /* 동의에 체크하는 순간 주문을 미리 만들어 둔다 → 결제 버튼을 누르는 그 순간에 결제창이 떠야 팝업이 막히지 않는다 */
  ag.onchange=async()=>{if(!ag.checked){PAY=null;return ui()}
   if(!API_URL){toast("결제는 아직 준비 중이에요");return reset()}
