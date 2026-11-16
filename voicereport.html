@@ -238,7 +238,7 @@ function loadSDK(){return window.FirstPay?Promise.resolve():new Promise((res,rej
 function claim(){if(!API_URL||R.token||!R.order||!R.ck)return;api({op:"claim",mxIssueNo:R.order.no,ck:R.ck}).then(j=>{if(j.ok&&j.token&&!R.token){R.token=j.token;save();openReport()}}).catch(()=>{})}
 
 function openPreview(){show(`<div class="card center" style="margin-top:20vh"><div class="spin"></div><p>레포트를 만들고 있어요…</p></div>`);
- api({op:"preview",sc:7,a:R.a,v:voiceSum(),nick:R.nick!=null?R.nick:(VT.name||"")}).then(j=>j.ok?vReport(j):vError(j.error==="not_test"?"시험 미리 보기는 테스트 결제 모드에서만 열려요.":"레포트를 만들지 못했어요.")).catch(()=>vError("인터넷 연결을 확인하고 다시 열어 주세요."))}
+ api({op:"preview",sc:7,a:R.a,v:voiceSum(),nick:R.nick!=null?R.nick:(VT.name||"")}).then(j=>{if(j.ok)return vReport(j);if(j.error==="not_test"){R.preview=false;save();return vTeaser()}/* 실제 결제로 바뀐 뒤에는 결제 화면으로 */vError("레포트를 만들지 못했어요.")}).catch(()=>vError("인터넷 연결을 확인하고 다시 열어 주세요."))}
 /* ===== 레포트(결제 후) — 문장은 전부 서버가 준다 ===== */
 function openReport(){show(`<div class="card center" style="margin-top:20vh"><div class="spin"></div><p>레포트를 불러오고 있어요…</p></div>`);
  if(!API_URL)return vError("레포트 서버가 아직 연결되지 않았어요.");
@@ -301,7 +301,7 @@ async function saveImage(D){const c=await makeCard(D),blob=await new Promise(r=>
 /* ===== 시작 ===== */
 (function init(){const t=(location.hash.match(/t=([0-9a-f]{64})/)||[])[1];if(t){R.token=t;save();try{history.replaceState(null,"",location.pathname)}catch(e){}}
  if(R.token)return openReport();
- if(!HAS_VOICE)return vNoData();
+ if(!HAS_VOICE)return location.replace("voicetest.html?paid");/* 11/16: 목소리 결과가 없으면 하나로 이어진 검사부터 */
  done()?(R.preview?openPreview():vTeaser()):vQuiz()})();
 window.addEventListener("pageshow",e=>{if(e.persisted)claim()});
 window.addEventListener("hashchange",()=>{if(/t=[0-9a-f]{64}/.test(location.hash))location.reload()});/* 같은 탭에서 레포트 주소(#t=)로 바뀌면 다시 읽는다 */

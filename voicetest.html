@@ -585,7 +585,7 @@ const REC={};
 let timers=[],raf=0;
 const Q=new URLSearchParams(location.search);
 /* 11/16 대표: 유료 링크(voicetest.html?paid)는 다시 하기 없이 한 번 잰 결과로 바로 레포트(voicereport.html)로 이어진다. 결과는 이 기기에 남아 새로고침·재방문에도 그대로 */
-const PAID=Q.has("paid");
+const PAID=Q.has("paid")||Q.has("free");/* 11/16 대표: ?free = 같은 하나로 이은 검사인데 마지막 '레포트 보기'에서 결제 없이 바로 레포트(테스트 결제 모드 서버에서만) */
 function load(){try{return JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){return null}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 /* 이 기기에서 끝낸 검사 수 · 자기소개 기본 유형 — 다시 할 때 상황 문장을 고르게 한다 */
@@ -624,18 +624,18 @@ $("#sheetBg").onclick=closeSheet;
 /* ===== 1. 첫 화면 ===== */
 R.landing=()=>{const f=TYPES[S.friend]?S.friend:null;return{html:`
 <section class="hero">
-  <div class="kicker">터칭보이스 · 목소리 유형 테스트</div>
-  <h1 class="display bi">${words("나는 어떤 유형의")}<br>${words("목소리일까?",270)}</h1>
-  <p class="lead">간단한 목소리 테스트로<br>16가지 목소리 유형 중 나를 찾아요.</p>
+  <div class="kicker">터칭보이스 · ${PAID?"목소리 × 성격 레포트":"목소리 유형 테스트"}</div>
+  <h1 class="display bi">${PAID?words("목소리와 성격이")+"<br>"+words("말해 주는 나",270):words("나는 어떤 유형의")+"<br>"+words("목소리일까?",270)}</h1>
+  <p class="lead">${PAID?"녹음 두 번과 성격 10문항으로<br>목소리와 성격을 함께 알아봐요.":"간단한 목소리 테스트로<br>16가지 목소리 유형 중 나를 찾아요."}</p>
   ${f?`<div class="friend"><img src="${img.char(f)}" alt="${TYPES[f][1]}"><div style="min-width:0"><small>친구의 목소리는</small><br><b>${f} · ${TYPES[f][1]}</b><br><small>나는 어떤 목소리일까요?</small></div></div>`:`<div class="orb glass"><img class="float" src="${img.egg}" alt="목소리 알"></div>`}
-  <button class="btn pri block shine" id="start">내 목소리 유형 알아보기</button>
+  <button class="btn pri block shine" id="start">${PAID?"시작하기":"내 목소리 유형 알아보기"}</button>
 </section>
 <!-- 11/5 대표: 첫 화면은 안내만. 예시 결과·16가지 캐릭터는 보여 주지 않고, 결과는 검사 마지막에 -->
 <section class="card"><h2>테스트는 이렇게 진행돼요</h2>
-  <ol class="list"><li><b>녹음 두 번</b><small class="sub">문장 하나 읽기 · '아~' 길게 내기</small></li><li><b>내 목소리 유형 확인</b><small class="sub">캐릭터와 함께 높이·빠르기·소리 색깔·오르내림을 알아봐요.</small></li><li><b>부족한 소리 채워서 들어 보기</b><small class="sub">내 목소리에서 모자란 소리를 채우면 어떻게 들리는지 바로 들어 봐요.</small></li></ol></section>
+  <ol class="list"><li><b>녹음 두 번</b><small class="sub">문장 하나 읽기 · '아~' 길게 내기</small></li>${PAID?`<li><b>성격 10문항</b><small class="sub">요즘의 나를 떠올리며 1분이면 돼요.</small></li><li><b>목소리 × 성격 레포트</b><small class="sub">목소리 유형과 성격, 대인관계·이성관계·일까지 한 번에 풀어 드려요.</small></li>`:`<li><b>내 목소리 유형 확인</b><small class="sub">캐릭터와 함께 높이·빠르기·소리 색깔·오르내림을 알아봐요.</small></li><li><b>부족한 소리 채워서 들어 보기</b><small class="sub">내 목소리에서 모자란 소리를 채우면 어떻게 들리는지 바로 들어 봐요.</small></li>`}</ol></section>
 <p class="fine">건강 진단이 아니라 내 목소리가 남에게 어떻게 들리는지 알아보는 자기 이해·연습용 테스트예요. 직업 이름은 목소리 인상을 빗댄 별명이에요(적성검사가 아니에요).</p>
 ${BIZ}`,
- bind(){$("#start").onclick=()=>{newRun();go("info")}}}};
+ bind(){$("#start").onclick=()=>{newRun();if(PAID)S.sit="intro";go("info")}}}};
 function typeSheet(c){const T=TYPES[c];openSheet(`<img src="${img.char(c)}" alt="" style="width:200px;border-radius:24px;margin:0 auto"><div style="text-align:center"><div class="kicker">${c}</div><h2 style="font-size:22px;margin-top:4px">${nmNW(c)}</h2><p style="margin-top:6px;font-weight:700;color:var(--pri)">“${LINES[c]}”</p><p class="muted" style="margin-top:6px">${T[2]}</p></div>${codeMeanHTML(c)}<button class="btn block" id="sx">닫기</button>`,()=>$("#sx").onclick=closeSheet)}
 
 /* ===== 2. 시작 정보 ===== */
@@ -714,7 +714,7 @@ R.prep=()=>({top:{back:()=>go("info"),label:"녹음 준비"},html:`
     (()=>{const c=$("#devConsent");S.developmentConsent=c&&c.checked?{version:"voice-dev-2026-11-05",acceptedAt:new Date().toISOString(),retentionYears:3}:null;save()})(),go("rec1")};ag.onclick=check;}});
 R.rec1=err=>({top:{back:()=>go("prep"),label:"녹음 1 / 2"},html:`
 <div><div class="kicker">녹음 1 · 문장 읽기${sitKey()==="intro"?"":" · "+SITS[sitKey()][0]}</div><h1 class="title">${SITS[sitKey()][3]}</h1></div>
-${runs()?`<div class="card"><div class="lbl">이번엔 어떤 상황의 내 목소리를 들어 볼까요?</div><div class="chips" id="sit">${SIT_ORDER.map(k=>`<button class="chip ${sitKey()===k?"on":""}" data-v="${k}">${SITS[k][0]}</button>`).join("")}</div></div>`:""}
+${runs()&&!PAID?`<div class="card"><div class="lbl">이번엔 어떤 상황의 내 목소리를 들어 볼까요?</div><div class="chips" id="sit">${SIT_ORDER.map(k=>`<button class="chip ${sitKey()===k?"on":""}" data-v="${k}">${SITS[k][0]}</button>`).join("")}</div></div>`:""}
 <p class="sentence">${SITS[sitKey()][2]}</p>${err?`<p class="err">${err}</p>`:""}
 ${micHTML("버튼을 누르고 읽어 주세요")}`,
  bind(){const sc=$("#sit");if(sc)sc.onclick=e=>{const b=e.target.closest("button");if(!b)return;S.sit=b.dataset.v;save();go("rec1")};bindMic({maxSec:20,onDone:r=>{REC.r1=r;later(()=>go("rec2"),500)}})}});
@@ -722,7 +722,7 @@ R.rec2=()=>({top:{back:()=>go("rec1"),label:"녹음 2 / 2"},html:`
 <div><div class="kicker">녹음 2 · '아~' 길게</div><h1 class="title">숨을 크게 들이쉬고, 편한 높이로 '아~'</h1></div>
 <div class="card"><p>숨이 다할 때까지 한 음으로 길게 내 주세요. 힘들면 언제든 멈춰도 괜찮아요.</p></div>
 ${micHTML("버튼을 누르고 '아~' 시작")}`,
- bind(){bindMic({maxSec:45,onDone:r=>{REC.r2=r;later(()=>go("wait"),500)}})}});
+ bind(){bindMic({maxSec:45,onDone:r=>{REC.r2=r;later(()=>go(PAID&&!qDone(vrGet())?"quiz":"wait"),500)}})}});
 
 /* ===== 신호 처리 (voicetype_test.html과 같은 계산) ===== */
 const SR=22050;
@@ -906,8 +906,8 @@ R.wait=()=>({html:`<div class="reveal"><div class="rv-stage" style="width:min(20
 <h1 class="title">목소리를 듣는 중…</h1><div class="wait-steps" id="ws">${["높이 재는 중","빠르기 재는 중","숨결 듣는 중","오르내림 살피는 중","컨디션 살피는 중"].map(t=>`<div><i></i>${t}</div>`).join("")}</div></div>`,
  bind(){const ds=[...view.querySelectorAll("#ws div")];ds.forEach((d,i)=>later(()=>d.classList.add("on"),300+i*450));
   later(()=>{Promise.all([resample(REC.r1.x,REC.r1.sr),resample(REC.r2.x,REC.r2.sr)]).then(a=>{const nd=S.noiseDb==null?noiseFloor(a[0]):S.noiseDb;
-   const s=analyzeSentence(a[0],nd,sylOf(SITS[sitKey()][2])),v=analyzeVowel(a[1],nd);S.m={s,v,noiseDb:nd,c:condMeasure(a[1])};finishTest();go("reveal")}).catch(e=>go("rec1",(e&&e.message?e.message:"분석하지 못했어요")+" — 다시 녹음해 주세요."))},2100)}});
-function finishTest(){const J=judge(S.m);S.J=J;setFam(J.code);save();if(!S.demo){try{localStorage.setItem(RUNS_KEY,String(runs()+1));if(sitKey()==="intro")localStorage.setItem(BASE_KEY,J.code)}catch(e){}}sendRecord()}
+   const s=analyzeSentence(a[0],nd,sylOf(SITS[sitKey()][2])),v=analyzeVowel(a[1],nd);S.m={s,v,noiseDb:nd,c:condMeasure(a[1])};const sp=finishTest();if(PAID)Promise.race([sp,new Promise(r=>setTimeout(r,8000))]).then(()=>location.href="voicereport.html",()=>location.href="voicereport.html");else go("reveal")}).catch(e=>go("rec1",(e&&e.message?e.message:"분석하지 못했어요")+" — 다시 녹음해 주세요."))},2100)}});
+function finishTest(){const J=judge(S.m);S.J=J;setFam(J.code);save();if(!S.demo){try{localStorage.setItem(RUNS_KEY,String(runs()+1));if(sitKey()==="intro")localStorage.setItem(BASE_KEY,J.code)}catch(e){}}return sendRecord()||Promise.resolve()}
 R.reveal=()=>{const J=S.J,T=TYPES[J.code];return{html:`
 <div class="reveal">
   <div class="kicker">이번 녹음에서 찾은 내 목소리는</div>
@@ -969,9 +969,9 @@ const qDone=v=>v.sc===7&&Array.isArray(v.a)&&v.a.length===10&&v.a.every(x=>x>=1&
 const SIT3=()=>sitKey()==="info"?"nego":"info";
 function goDeep(){if(!qDone(vrGet()))return go("quiz");if(!S.m2)return go("rec3");location.href="voicereport.html"}
 const deepCTA=()=>`<section class="card"><div class="kicker">목소리 × 성격 레포트</div><h2>더 자세한 내 목소리 알아보기</h2><p class="muted">성격 10문항에 답하고 문장을 한 번 더 읽으면, 내 목소리와 성격을 함께 풀어 드려요. 2분이면 돼요.</p><button class="btn pri block shine" id="deep">더 자세한 내 목소리 알아보기</button></section>`;
-R.quiz=()=>{const v=vrGet();if(v.sc!==7||!Array.isArray(v.a))v.a=[];v.sc=7;const n=()=>v.a.filter(x=>x>=1&&x<=7).length,lbl=()=>qDone(v)?"다음 · 문장 한 번 더 읽기":n()+" / 10 답했어요";
- return{top:{back:()=>go("result"),label:"더 자세히 · 1 / 2"},html:`
-<div><div class="kicker">더 자세한 내 목소리 · 성격 10문항</div><h1 class="title">평소의 나와<br>얼마나 가까운가요?</h1><p class="muted">정답은 없어요. 되고 싶은 모습 말고, 요즘의 나를 떠올려 주세요.</p></div>
+R.quiz=()=>{const v=vrGet();if(v.sc!==7||!Array.isArray(v.a))v.a=[];v.sc=7;const n=()=>v.a.filter(x=>x>=1&&x<=7).length,lbl=()=>qDone(v)?(PAID?"레포트 보기":"다음 · 문장 한 번 더 읽기"):n()+" / 10 답했어요";
+ return{top:{back:()=>go(PAID&&!S.J?"rec2":"result"),label:PAID?"성격 10문항":"더 자세히 · 1 / 2"},html:`
+<div><div class="kicker">${PAID?"마지막 단계 · 성격 10문항":"더 자세한 내 목소리 · 성격 10문항"}</div><h1 class="title">평소의 나와<br>얼마나 가까운가요?</h1><p class="muted">정답은 없어요. 되고 싶은 모습 말고, 요즘의 나를 떠올려 주세요.</p></div>
 ${ITEMS.map((t,i)=>`<section class="card q" role="radiogroup" aria-label="${i+1}번 문항"><div class="kicker">${i+1} / 10</div><p>${t}</p>
 <div class="qds">${[1,2,3,4,5,6,7].map(x=>`<button class="qd" role="radio" aria-checked="${v.a[i]===x}" data-i="${i}" data-v="${x}" aria-label="${x}점">${x}</button>`).join("")}</div>
 <div class="ends"><span>전혀 아니다</span><span>매우 그렇다</span></div></section>`).join("")}
@@ -979,7 +979,7 @@ ${ITEMS.map((t,i)=>`<section class="card q" role="radiogroup" aria-label="${i+1}
  bind(){view.querySelectorAll(".qd").forEach(d=>d.onclick=()=>{const i=+d.dataset.i;v.a[i]=+d.dataset.v;vrSet(v);
    d.parentNode.querySelectorAll(".qd").forEach(x=>x.setAttribute("aria-checked",x===d));const g=$("#qgo");g.disabled=!qDone(v);g.textContent=lbl();
    const nx=view.querySelectorAll(".q")[i+1];if(nx&&!v.a[i+1])nx.scrollIntoView({behavior:"smooth",block:"center"})});
-  $("#qgo").onclick=()=>{if(qDone(v))S.m2?location.href="voicereport.html":go("rec3")}}}};
+  $("#qgo").onclick=()=>{if(!qDone(v))return;if(PAID)S.J?location.href="voicereport.html":go("wait");else S.m2?location.href="voicereport.html":go("rec3")}}}};
 R.rec3=err=>{const k=SIT3(),T=SITS[k];return{top:{back:()=>go("quiz"),label:"더 자세히 · 2 / 2"},html:`
 <div><div class="kicker">더 자세한 내 목소리 · 한 번 더 읽기</div><h1 class="title">이번엔 이 문장을<br>읽어 주세요</h1><p class="muted">${T[3]}. 두 번 읽은 소리를 합쳐서 레포트를 더 정확하게 만들어요.</p></div>
 <p class="sentence">${T[2]}</p>${err?`<p class="err">${err}</p>`:""}
@@ -1178,8 +1178,8 @@ async function audioPayload(){const o={};for(const [k,r] of [["sent",REC.r1],["a
 const post=rec=>fetch(SAVE_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(rec)});
 function sendRecord(){const run=S;if(!SAVE_URL||run.demo||run.sent)return;let rec;try{rec=serverRecord()}catch(e){return}run.sent=true;save();
  const dc=run.developmentConsent,fail=()=>{if(S===run){run.sent=false;save()}};
- if(dc&&dc.version==="voice-dev-2026-11-05"&&dc.acceptedAt){audioPayload().then(audio=>{if(!audio.sent||!audio.ah)return post(rec);return post({...rec,ver:2,name:run.name||"",developmentConsent:dc,audio})}).catch(fail);return}
- post(rec).catch(fail)}
+ if(dc&&dc.version==="voice-dev-2026-11-05"&&dc.acceptedAt){return audioPayload().then(audio=>{if(!audio.sent||!audio.ah)return post(rec);return post({...rec,ver:2,name:run.name||"",developmentConsent:dc,audio})}).catch(fail)}
+ return post(rec).catch(fail)}
 function copy(t){const ok=()=>toast("복사했어요");if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(ok,()=>toast("복사가 막혀 있어요. 길게 눌러 직접 복사해 주세요."));else toast("길게 눌러 직접 복사해 주세요.")}
 /* ===== 8. 공유 카드 ===== */
 function loadImg(src){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=src})}
@@ -1258,12 +1258,15 @@ function startDemo(code,stay){const tc=Q.has("teacher");S={demo:true,friend:S.fr
  const qc=Q.get("cond");S.m.c={cpps:qc==="cloud"?11.6:qc==="partly"?12.5:D?16.2:14.8,breaks:qc==="cloud"?.38:.05,voiced:5.1,snr:qc==="noisy"?11:32};
  finishTest();S.J.code=code;setFam(code);save();go(stay?"result":"reveal")}
 
+if(Q.has("free")){const v=vrGet();if(!v.preview){v.preview=true;vrSet(v)}}
 /* 시작 — ?f=코드(친구 링크) · 시안 확인용 ?demo=HUDT&view=result&teacher&shot */
 if(Q.has("shot"))document.documentElement.classList.add("noanim");
 {const qf=(Q.get("f")||"").toUpperCase(),qd=(Q.get("demo")||"").toUpperCase();if(TYPES[qf]){S.friend=qf;save()}
  if(TYPES[qd]){startDemo(qd,true);const v=Q.get("view")||"result";go(v==="guess"||!Object.hasOwn(R,v)?"result":v)}
  /* 11/5 대표: 예시 결과를 먼저 보여 주지 않는다 — 예전에 예시를 열어 둔 기기도 첫 화면부터 */
- else if(S.J&&!S.demo){setFam(S.J.code);go("result")}else{if(S.demo)newRun();go("landing")}}
+ /* 11/16 대표: 목소리 검사와 성격 10문항을 하나로 — ?paid 는 녹음 2번 → 10문항 → 분석 → 레포트(결제). ?free 는 같은 길에서 결제 없이 레포트(결과는 기기에 남음). ?free=new 는 이 기기 결과를 비우고 처음부터(시험용) */
+ else if(Q.get("free")==="new"){const old=vrGet();S={friend:S.friend};REC.r1=REC.r2=null;save();vrSet({sc:7,a:[],preview:true,ck:old.ck});try{history.replaceState(null,"","?free")}catch(e){}go("landing")}
+ else if(S.J&&!S.demo){setFam(S.J.code);if(PAID)qDone(vrGet())?location.replace("voicereport.html"):go("quiz");else go("result")}else{if(S.demo)newRun();go("landing")}}
 document.fonts&&document.fonts.ready.then(()=>fitLn(document));
 })();
 </script>
