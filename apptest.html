@@ -1065,7 +1065,7 @@ function renderSents(){renderCats();const q=M_Q.trim().toLowerCase(),L=MINE.filt
  $("sents").innerHTML=L.length?L.map(g=>{const i=MINE.indexOf(g),n=RECS.filter(r=>r.mid===g.id).length,txt=g.ss.join(" ");
   return`<article class="day scr"><div class="day-h">${scInfo(g).ok?`<span class="ctag">대본</span>`:""}${tagsOf(g).length?`<span class="tg-row">${tagsOf(g).slice(0,3).map(t=>`<span class="ctag">#${esc(t)}</span>`).join("")}${tagsOf(g).length>3?`<span class="meta">+${tagsOf(g).length-3}</span>`:""}</span>`:""}<span class="meta">${new Date(g.at).toLocaleDateString(SPK(),{month:"numeric",day:"numeric"})} · ${g.ss.length}줄${n?` · 연습 ${n}번`:""}</span><span class="acts"><button type="button" class="icb" data-sdel="${g.id}" aria-label="이 글 지우기">${ICON.trash}</button></span></div>
   <button type="button" class="scr-open" data-open="${i}" aria-label="${esc(gTitle(g))} 읽기"><b>${hl(gTitle(g),q)}</b><span class="scr-prev">${hl(snip(txt,q),q)}</span></button>
-  <div class="card-foot"><button type="button" class="icb" data-open="${i}" aria-label="읽기 화면">${ICON.book}<small>읽기</small></button><button type="button" class="icb" data-tp="${i}" data-pro aria-label="프롬프터로 보기">${ICON.prompt}<small>프롬프터</small></button><button type="button" class="go" data-go="${i}" data-pro aria-label="이 글 전체 연습하기">${ICON.mic}</button></div></article>`}).join("")
+  <div class="card-foot"><button type="button" class="icb" data-open="${i}" aria-label="읽기 화면">${ICON.book}<small>읽기</small></button><button type="button" class="icb" data-tp="${i}" data-pro aria-label="프롬프터로 보기">${ICON.prompt}<small>프롬프터</small></button></div></article>`}).join("")
   :MINE.length?`<p class="empty">찾는 글이 없어요.</p>`:say("강의 대본, 설교문, 노래 가사를 넣고 <b>읽기</b>를 눌러 봐.<br>읽기 화면에서 <b>나누기</b>를 누르면 읽기 편하게 정리해 줄게!",{pop:false})}
 const saveG=g=>dbPut("mine",{...g,on:[...g.on]});
 
@@ -1176,9 +1176,12 @@ function openPractice(src){Object.keys(PM).forEach(k=>delete PM[k]);Object.assig
  PM.plain=strip(PM.text);{const n=sylOf(PM.plain);REC.quiet=n>80?3:1.8;REC.max=Math.min(300,Math.max(40,n/2.5+15))*1000}$("pm").hidden=false;document.body.style.overflow="hidden";renderPM()}
 function closePractice(){pmRecOff();recCancel();stopPlay();stopAud();$("pm").hidden=true;document.body.style.overflow=$("rd").hidden&&$("sc").hidden?"":"hidden"}
 function dots(n){[...$("pm-dots").children].forEach((d,i)=>d.classList.toggle("on",i<n));$("pm-n").textContent=n+" / 5"}
-function renderPM(){const s=PM.step;dots(s);const B=$("pm-body"),A=$("pm-act"),tgt=$("tgt").value;
+function renderPM(){const s=PM.step;
+ 
+ if(PM.flow===1&&s===2){PM.flow=2;closePractice();return}
+ $("pm-dots").hidden=$("pm-n").hidden=!!PM.flow;dots(s);const B=$("pm-body"),A=$("pm-act"),tgt=$("tgt").value;
  const srcLine=PM.src?`<div class="pm-src">— ${esc(PM.src)}</div>`:"";
- if(s===1){B.innerHTML=`<div class="pm-kick">먼저 읽기</div><h2 class="pm-title" id="pm-title">먼저 편하게 읽어 보세요</h2><p class="pm-text">${paras(PM.plain)}</p>${srcLine}`;
+ if(s===1){B.innerHTML=`<div class="pm-kick">${PM.flow?"② 스크립트 읽기":"먼저 읽기"}</div><h2 class="pm-title" id="pm-title">먼저 편하게 읽어 보세요</h2><p class="pm-text">${paras(PM.plain)}</p>${srcLine}`;
   A.innerHTML=recUI("다 읽으면 버튼을 다시 누르거나, 잠깐 멈추면 저절로 끝나요");bindRec(1)}
  else if(s===2){const m=PM.m1;B.innerHTML=`<div class="pm-kick">들어 보기</div><h2 class="pm-title" id="pm-title">방금 읽은 내 목소리예요</h2><p class="pm-text">${paras(PM.plain)}</p>${srcLine}
   <p class="quick">1초에 ${m.rate.toFixed(1)}글자 · 쉼 ${m.pauses}번${PM.demo?" · 데모":""}</p>`;
@@ -1277,7 +1280,8 @@ function play(take,btn,icon,from){if(PLAY&&PLAY.btn===btn&&from==null){stopPlay(
  const s=ctx.createBufferSource();s.buffer=b;s.connect(g);g.connect(ctx.destination);s.start(0,off);PLAY={ctx,s,btn,label:btn?btn.innerHTML:"",t0:ctx.currentTime-off};if(btn){const sv=icon&&btn.querySelector("svg");if(sv)sv.outerHTML=ICON.stop;else btn.textContent="■ 멈추기"}s.onended=()=>{if(PLAY&&PLAY.s===s)stopPlay()}
  if(btn)pbar(btn,{dur:b.duration,cur:()=>PLAY&&PLAY.s===s?ctx.currentTime-PLAY.t0:null,seek:t=>play(take,btn,icon,t),pause:()=>{if(PLAY&&PLAY.s===s)stopPlay()}})}
 
-function pbar(btn,o){const host=btn.closest(".iconrow,.rrow,.rec-a")||btn.parentElement;let bar=host.nextElementSibling;
+
+function pbar(btn,o){const host=btn.closest(".iconrow,.rrow,.rec-a")||(btn.closest(".bubble")?btn:btn.parentElement);let bar=host.nextElementSibling;
  if(!bar||!bar.classList.contains("pbar")){host.insertAdjacentHTML("afterend",`<div class="pbar"><button type="button" class="pbar-b" aria-label="멈춤 · 이어 듣기"></button><div class="pbar-m"><b></b><input type="range" min="0" step="0.01" value="0" aria-label="재생 위치"></div><span></span></div>`);bar=host.nextElementSibling}
  const r=bar.querySelector("input"),lab=bar.querySelector("span"),nm=bar.querySelector("b"),pb=bar.querySelector(".pbar-b"),f=x=>`${Math.floor(x/60)}:${String(Math.floor(x%60)).padStart(2,"0")}`;
  nm.textContent=(btn.getAttribute("aria-label")||"").replace(/ ?(들어 ?보기|듣기)$/,"").replace(/ 녹음$/,"");r.max=o.dur.toFixed(2);let drag=false;
@@ -1351,7 +1355,8 @@ let PST=0;
 async function dbPut(n,v){try{const d=await idb();await new Promise((res,rej)=>{const tx=d.transaction(n,"readwrite");tx.objectStore(n).put(v);tx.oncomplete=res;tx.onerror=()=>rej(tx.error)});if(!PST&&navigator.storage&&navigator.storage.persist){PST=1;navigator.storage.persist().catch(()=>{})}}catch(e){MEM[n]=MEM[n].filter(x=>x.id!==v.id).concat(v)}}
 async function dbDel(n,id){try{const d=await idb();await new Promise((res,rej)=>{const tx=d.transaction(n,"readwrite");tx.objectStore(n).delete(id);tx.oncomplete=res;tx.onerror=()=>rej(tx.error)})}catch(e){MEM[n]=MEM[n].filter(x=>x.id!==id)}}
 async function loadAll(){MINE=(await dbAll("mine")).map(x=>({...x,ss:x.ss||[x.t],ps:x.ps||{},on:new Set(x.on||[]),tags:x.tags||(x.cat&&x.cat!=="기타"?[tagNorm(x.cat)]:[])})).sort((a,b)=>b.id-a.id);RECS=(await dbAll("rec")).sort((a,b)=>b.id-a.id);renderSents();renderRecs();await loadDays();renderHome();await loadTrk();renderTrain();renderTracks();VCHKS=(await dbAll("vchk")).sort((x,y)=>y.id-x.id);renderVoice();renderRecs()}
-async function wavOf(take){if(!take)return null;const x0=await resample(take.x,take.sr),gn=peakGain(x0),x=x0.map(v=>v*gn),buf=new ArrayBuffer(44+x.length*2),v=new DataView(buf),w=(o,s)=>[...s].forEach((c,i)=>v.setUint8(o+i,c.charCodeAt(0)));
+
+async function wavOf(take){if(!take)return null;const x=take.x,SR=take.sr,buf=new ArrayBuffer(44+x.length*2),v=new DataView(buf),w=(o,s)=>[...s].forEach((c,i)=>v.setUint8(o+i,c.charCodeAt(0)));
  w(0,"RIFF");v.setUint32(4,36+x.length*2,true);w(8,"WAVEfmt ");v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,SR,true);v.setUint32(28,SR*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);w(36,"data");v.setUint32(40,x.length*2,true);
  for(let i=0;i<x.length;i++)v.setInt16(44+i*2,Math.max(-1,Math.min(1,x[i]))*32767,true);return new Blob([buf],{type:"audio/wav"})}
 
@@ -2366,7 +2371,10 @@ document.addEventListener("click",async e=>{const b=e.target.closest("[data-vpla
 
 let AUD=null;
 function stopAud(){if(!AUD)return;AUD.a.pause();if(AUD.b.isConnected)AUD.b.innerHTML=AUD.h;URL.revokeObjectURL(AUD.u);AUD=null}
-function playBlob(blob,b,from){const same=AUD&&AUD.b===b;if(same&&from==null){stopAud();return}stopAud();if(!blob)return;const u=URL.createObjectURL(blob),a=new Audio(u);AUD={a,b,h:b.innerHTML,u};const sv=b.querySelector("svg");if(sv)sv.outerHTML=ICON.stop;a.onended=stopAud;
+
+async function loud(bl){if(bl.type!=="audio/wav")return bl;const buf=await bl.arrayBuffer(),v=new DataView(buf),n=buf.byteLength-1;let p=0;for(let i=44;i<n;i+=2){const s=Math.abs(v.getInt16(i,true));if(s>p)p=s}const g=p?Math.min(8,29490/p):1;if(g<1.05)return bl;
+ for(let i=44;i<n;i+=2)v.setInt16(i,Math.max(-32768,Math.min(32767,Math.round(v.getInt16(i,true)*g))),true);return new Blob([buf],{type:"audio/wav"})}
+async function playBlob(blob,b,from){const same=AUD&&AUD.b===b;if(same&&from==null){stopAud();return}stopAud();if(!blob)return;const lb=await loud(blob);if(AUD)return;const u=URL.createObjectURL(lb),a=new Audio(u);AUD={a,b,h:b.innerHTML,u};const sv=b.querySelector("svg");if(sv)sv.outerHTML=ICON.stop;a.onended=stopAud;
  a.onloadedmetadata=()=>{if(from)a.currentTime=from;pbar(b,{dur:a.duration||0,cur:()=>AUD&&AUD.a===a?a.currentTime:null,seek:t=>playBlob(blob,b,t),pause:()=>{if(AUD&&AUD.a===a)stopAud()}})};a.play().catch(stopAud)}
 document.addEventListener("click",async e=>{const b=e.target.closest("[data-play],[data-rdel],[data-redo]"),box=b&&b.closest("[data-rid]");if(!box)return;const r=RECS.find(x=>x.id===+box.dataset.rid);if(!r)return;
  if(b.dataset.play)playBlob(r["w"+b.dataset.play],b);
@@ -2685,12 +2693,16 @@ function flowChoice(id,label,i){const m=CHAT.list[i];if(m)m.done=true;chatPush("
 
 async function flowResult(tgt){const f=CHAT.flow||(CHAT.flow={step:"check"}),m=PM.m1,prev=RECS.find(r=>r.m1&&!r.demo),pm=prev&&(prev.m2||prev.m1),N=[["rate","말 빠르기"],["melody","높낮이(억양)"],["crisp","또렷함"]];
  const sc=recScores({m2:m},tgt),ps=pm?recScores({m2:pm},tgt):{},W=v=>v>=70?"좋아요":v>=45?"보통":"더 연습",ks=N.filter(([k])=>sc[k]!=null);
- chatPush("c",rBars("② 방금 읽은 목소리",`1초에 ${m.rate.toFixed(1)}글자 · 쉼 ${m.pauses}번 · 되고 싶은 목소리 '${esc(TYPES[tgt]||"")}' 기준`,ks.map(([k,l])=>({l,v:sc[k],t:W(sc[k])}))));
+ 
+ const rid=Date.now();let saved=false;try{await dbPut("rec",{id:rid,at:new Date().toISOString(),kind:"today",mid:null,raw:PM.text,bold:PM.bold?[...PM.bold]:null,text:PM.plain,src:PM.src||"",m1:m,m2:null,up:0,demo:!!PM.demo,w1:PM.demo?null:await wavOf(PM.take1)});saved=!PM.demo}catch(e){}
+ const by=[...ks].sort((a,b)=>sc[b[0]]-sc[a[0]]),TIP={rate:"쉼표에서 한 박자 쉬어 가며 조금 천천히",melody:"굵은 말에서 소리를 살짝 올려 높낮이를 살려서",crisp:"받침까지 또박또박 끝까지 소리 내서"};
+ chatPush("c",rBars("② 방금 읽은 목소리",`1초에 ${m.rate.toFixed(1)}글자 · 쉼 ${m.pauses}번 · 되고 싶은 목소리 '${esc(TYPES[tgt]||"")}' 기준`,ks.map(([k,l])=>({l,v:sc[k],t:W(sc[k])})))+(saved?playBtn("r",rid):"")
+  +(by.length?`<p style="margin:10px 0 0">${by.length>1&&sc[by[0][0]]>=45?`<b>${by[0][1]}</b> 쪽이 좋았어. `:""}다음엔 ${TIP[by[by.length-1][0]]} 읽어 보자.</p>`:""));
  if(pm){const d=new Date(prev.at),when=`${d.getMonth()+1}/${d.getDate()}`;
   chatPush("c",rTable(`③ 변화 결과 · 지난번(${when})과 비교`,ks.filter(([k])=>ps[k]!=null).map(([k,l])=>{const x=sc[k]-ps[k];return{name:l,a:W(ps[k]),b:W(sc[k]),k:x>=8?"up":x<=-8?"down":"same"}}).concat([{name:"1초 글자",a:pm.rate.toFixed(1),b:m.rate.toFixed(1),k:"same"}]),["지난번","오늘"],"초록 ▲ = 지난번보다 좋아진 것"))}
  else chatPush("c","③ 변화 결과는 다음에 읽을 때부터 보여 줄게. 오늘 녹음이 첫 기준이야!");
  f.step="done";saveDay({flow:1});
- try{await dbPut("rec",{id:Date.now(),at:new Date().toISOString(),kind:"today",mid:null,raw:PM.text,bold:PM.bold?[...PM.bold]:null,text:PM.plain,src:PM.src||"",m1:m,m2:null,up:0,demo:!!PM.demo,w1:PM.demo?null:await wavOf(PM.take1)});await loadAll()}catch(e){}
+ try{await loadAll()}catch(e){}
  chatPush("c","오늘 순서 끝! 👏 읽은 녹음은 <b>기록</b> 탭에서 다시 들을 수 있어.<br>더 하고 싶으면 이거 해 볼래?");giveMission();renderCoach()}
 
 function rBars(title,sub,rows,line){return`<div class="qcard"><div class="qc-h"><b>${title}</b>${sub?`<small>${sub}</small>`:""}</div><div class="rbars">${rows.map(r=>`<div class="rb-row${r.on?" on":""}"><span>${r.l}</span><i><em style="width:${Math.max(2,Math.min(100,r.v||0))}%"></em>${line?`<s style="left:${line}%"></s>`:""}</i><b>${r.t!=null?r.t:Math.round(r.v||0)+"%"}</b></div>`).join("")}</div></div>`}
