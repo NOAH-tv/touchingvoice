@@ -105,6 +105,7 @@ ul.inc li{padding-left:22px;position:relative}ul.inc li::before{content:"";posit
 .test{font-size:12.5px;font-weight:700;color:var(--warn);text-align:center}
 .biz{font-size:11.5px;color:var(--muted);line-height:1.7;text-align:center;padding-top:12px;border-top:1px solid var(--line);margin-top:4px}
 .biz a{color:inherit}
+.biz details{margin-top:4px}.biz summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:4px;text-decoration:underline;text-underline-offset:3px}.biz summary::-webkit-details-marker{display:none}.biz summary::after{content:"▾";font-size:10px}.biz details[open] summary::after{content:"▴"}.biz details p{margin:6px 0 0}
 .toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--fg);color:var(--bg);padding:11px 16px;border-radius:14px;font-size:14px;font-weight:600;opacity:0;pointer-events:none;transition:all .3s;z-index:50;max-width:calc(100% - 32px);text-align:center}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 .center{text-align:center;align-items:center}
@@ -149,7 +150,7 @@ const TYPE_NM={LADT:"천의 얼굴 성우",LADF:"든든한 헬스 트레이너",
 const FAM={LA:["#43227D","#2B1459"],LU:["#7A2E46","#4F1A2C"],HA:["#B98A2E","#7A5A18"],HU:["#D07A66","#9C4D3B"]};
 const ALT_SEX={HUDT:"m",HUDF:"m",HUBF:"m",HABT:"m",LUBF:"f",HABF:"f",HUBT:"f"};
 const charImg=(c,sex)=>`voicetype_assets/chars/${c}${ALT_SEX[c]&&ALT_SEX[c]===sex?"_"+sex:""}.webp`;
-const BIZ=`<footer class="biz">터칭보이스 · 대표 천우경 · 사업자등록번호 649-36-01593<br>통신판매업 제2026-서울서초-0243호 · 강원특별자치도 평창군 지르메길 33, 102동 1002호<br>고객센터 010-9947-3682 · lubere12@naver.com · <a href="refund.html" target="_blank" rel="noopener">환불 규정</a></footer>`;
+const BIZ=`<footer class="biz"><div>터칭보이스 · 고객센터 010-9947-3682 · <a href="refund.html" target="_blank" rel="noopener">환불 규정</a></div><details><summary>사업자 정보</summary><p>상호 터칭보이스 · 대표 천우경 · 사업자등록번호 649-36-01593<br>통신판매업 제2026-서울서초-0243호<br>강원특별자치도 평창군 지르메길 33, 102동 1002호<br>이메일 lubere12@naver.com</p></details></footer>`;/* 노아 11/16: 사업자 정보는 접어 두기(전자상거래법 표시 항목은 펼치면 모두 보임) */
 const LOCK=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>`;
 
 /* ===== 상태 ===== */
