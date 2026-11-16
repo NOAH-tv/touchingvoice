@@ -170,7 +170,9 @@ const big5=a=>Object.fromEntries(TRAITS.map(([k],i)=>[k,Math.round((a[i]+8-a[i+5
 function headline(B){const lv=x=>x>=75?2:x<=25?0:1,top=TRAITS.map(t=>t[0]).sort((x,y)=>Math.abs(B[y]-50)-Math.abs(B[x]-50)).slice(0,2);return top.map(k=>ADJ[k][lv(B[k])]).join(", ")+" 사람"}
 const bars=(list)=>list.map(b=>`<div class="bar"><span>${esc(b.nm)}</span><i><s style="width:${Math.max(4,b.v)}%"></s></i><em>${b.v}</em></div>${b.t?`<p class="bar-t">${esc(b.t)}</p>`:""}`).join("");
 const heroCard=(code,sex,small)=>`<div class="hero-card"><img src="${charImg(code,sex)}" alt="" onerror="this.style.visibility='hidden'"><div><div class="code">${esc(code)}</div><div class="nm">${esc(TYPE_NM[code]||"")}</div><small>${esc(small)}</small></div></div>`;
-const voiceSum=()=>({code:VT.J.code,sex:VT.sex==="m"||VT.sex==="f"?VT.sex:"x",stRel:VT.J.stRel,rangeSt:VT.m.s.rangeSt,rate:VT.m.s.rate,hnr:VT.m.v.hnr,dbsd:VT.m.s.dbsd,trem:VT.m.v.trem});
+/* 11/16: 목소리 테스트에서 문장을 한 번 더 읽었으면(VT.m2) 두 번 평균 — 유형은 첫 결과 그대로 */
+const av=k=>VT.m2&&isFinite(VT.m2[k])?(VT.m.s[k]+VT.m2[k])/2:VT.m.s[k];
+const voiceSum=()=>({code:VT.J.code,sex:VT.sex==="m"||VT.sex==="f"?VT.sex:"x",stRel:VT.J.stRel,rangeSt:av("rangeSt"),rate:av("rate"),hnr:VT.m.v.hnr,dbsd:av("dbsd"),trem:Math.min(VT.m.v.trem,0.6)});
 const api=o=>fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(o)}).then(r=>r.json());
 
 /* ===== 화면 ===== */
