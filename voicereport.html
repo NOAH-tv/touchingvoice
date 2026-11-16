@@ -127,6 +127,20 @@ ul.inc li{padding-left:22px;position:relative}ul.inc li::before{content:"";posit
   a{text-decoration:none}
 }
 </style>
+<script>
+/* 11/16 광고 측정 — META_PIXEL_ID·GA_ID에 아이디를 넣으면 켜진다(비어 있으면 아무것도 불러오지 않음).
+   광고 출처(utm_source·campaign·content, 없으면 fbclid→meta·gclid→google)는 30일 동안 이 기기에 남겨 검사 기록·주문에 같이 저장한다.
+   voicetest.html·voicereport.html 두 곳에 같은 코드 — 아이디를 바꿀 땐 두 곳 다 */
+(function(){const META_PIXEL_ID="",GA_ID="";
+ const q=new URLSearchParams(location.search),o={};["source","medium","campaign","content"].forEach(k=>{const v=q.get("utm_"+k);if(v)o[k]=v.slice(0,40)});if(!o.source&&q.get("fbclid"))o.source="meta";if(!o.source&&q.get("gclid"))o.source="google";
+ let s=null;try{if(o.source){o.at=Date.now();localStorage.setItem("tv_src",JSON.stringify(o));s=o}else{const x=JSON.parse(localStorage.getItem("tv_src")||"null");if(x&&Date.now()-x.at<30*864e5)s=x}}catch(e){s=o.source?o:null}
+ window.TV_SRC=s?[s.source,s.campaign,s.content].filter(Boolean).join("/").replace(/[^\w\-\/.가-힣]/g,"").slice(0,80):"";
+ if(META_PIXEL_ID){!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init',META_PIXEL_ID);fbq('track','PageView')}
+ if(GA_ID){const sc=document.createElement("script");sc.async=true;sc.src="https://www.googletagmanager.com/gtag/js?id="+GA_ID;document.head.appendChild(sc);window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments)};gtag("js",new Date());gtag("config",GA_ID)}
+ const STD={ViewContent:1,InitiateCheckout:1,Purchase:1};
+ window.tvTrack=(ev,p)=>{try{if(window.fbq)fbq(STD[ev]?"track":"trackCustom",ev,p||{});if(window.gtag)gtag("event",ev,p||{})}catch(e){}};
+})();
+</script>
 </head>
 <body>
 <div id="bgfx"></div>
@@ -143,14 +157,14 @@ const VT_KEY="tv_voicetest_web_v1",KEY="tv_voicereport_v1";
 /* 성격 10문항 — IPIP 50문항 Big-Five 표지(공개 도메인, ipip.ori.org)에서 특성마다 정방향 1 · 역방향 1. 1~5번 정방향, 6~10번 역방향 */
 const ITEMS=["처음 보는 사람에게도 먼저 말을 거는 편이다","다른 사람의 감정에 잘 공감한다","해야 할 일은 미루지 않고 바로 해치운다","대체로 마음이 느긋하고 편안하다","상상력이 풍부하다",
  "낯선 사람들 사이에서는 조용해진다","다른 사람의 고민에는 별로 관심이 가지 않는다","쓴 물건을 제자리에 돌려놓는 걸 자주 잊는다","이런저런 걱정을 자주 한다","추상적인 이야기에는 별로 흥미가 없다"];
-const TRAITS=[["E","외향성"],["A","친화성"],["C","성실성"],["S","정서 안정"],["O","개방성"]];
+const TRAITS=[["E","외향성"],["A","친화성"],["C","계획성"],["S","담담함"],["O","개방성"]];/* 11/16: 성실성·정서 안정 → 중립 낱말(서버 TRAIT nm과 같게) */
 const ADJ={E:["혼자 있을 때 충전되는","나설 때와 물러설 때를 아는","사람 속에서 힘이 나는"],A:["할 말은 하는","따뜻함과 솔직함을 오가는","마음을 먼저 읽는"],C:["흐름을 타는","힘 조절을 할 줄 아는","끝까지 챙기는"],S:["작은 것도 깊이 느끼는","대체로 차분한","쉽게 흔들리지 않는"],O:["해 본 방법을 믿는","새로움과 익숙함을 고루 좋아하는","새로운 생각을 좋아하는"]};
 /* 유형 이름·가족 색·그림 경로는 voicetest.html 과 같다 */
 const TYPE_NM={LADT:"천의 얼굴 성우",LADF:"든든한 헬스 트레이너",LABT:"분위기 있는 배우",LABF:"편안한 팟캐스트 진행자",LUDT:"울림 있는 다큐 내레이터",LUDF:"믿음직한 비행기 기장",LUBT:"새벽 감성 라디오 DJ",LUBF:"인자한 교장선생님",HADT:"통통 튀는 쇼호스트",HADF:"발 빠른 현장 기자",HABT:"반짝이는 아이돌",HABF:"열정 폭발 일타강사",HUDT:"다정한 선생님",HUDF:"반듯한 아나운서",HUBT:"가슴 뛰는 동기부여 강사",HUBF:"공감하는 상담사"};
 const FAM={LA:["#43227D","#2B1459"],LU:["#7A2E46","#4F1A2C"],HA:["#B98A2E","#7A5A18"],HU:["#D07A66","#9C4D3B"]};
 const ALT_SEX={HUDT:"m",HUDF:"m",HUBF:"m",HABT:"m",LUBF:"f",HABF:"f",HUBT:"f"};
 const charImg=(c,sex)=>`voicetype_assets/chars/${c}${ALT_SEX[c]&&ALT_SEX[c]===sex?"_"+sex:""}.webp`;
-const BIZ=`<footer class="biz"><div>터칭보이스 · 고객센터 010-9947-3682 · <a href="refund.html" target="_blank" rel="noopener">환불 규정</a></div><details><summary>사업자 정보</summary><p>상호 터칭보이스 · 대표 천우경 · 사업자등록번호 649-36-01593<br>통신판매업 제2026-서울서초-0243호<br>강원특별자치도 평창군 지르메길 33, 102동 1002호<br>이메일 lubere12@naver.com</p></details></footer>`;/* 노아 11/16: 사업자 정보는 접어 두기(전자상거래법 표시 항목은 펼치면 모두 보임) */
+const BIZ=`<footer class="biz"><div>터칭보이스 · 고객센터 010-9947-3682 · <a href="refund.html" target="_blank" rel="noopener">환불 규정</a> · <a href="privacy.html" target="_blank" rel="noopener"><b>개인정보처리방침</b></a></div><details><summary>사업자 정보</summary><p>상호 터칭보이스 · 대표 천우경 · 사업자등록번호 649-36-01593<br>통신판매업 제2026-서울서초-0243호<br>강원특별자치도 평창군 지르메길 33, 102동 1002호<br>이메일 lubere12@naver.com</p></details></footer>`;/* 노아 11/16: 사업자 정보는 접어 두기(전자상거래법 표시 항목은 펼치면 모두 보임) */
 const LOCK=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>`;
 
 /* ===== 상태 ===== */
@@ -197,7 +211,7 @@ ${ITEMS.map((t,i)=>`<div class="card q" role="radiogroup" aria-label="${i+1}번 
   if(e.target.id==="go"&&done()){view.onclick=null;R.preview?openPreview():vTeaser()}}}
 
 const LOCKED=["내 목소리가 주는 인상 — 높이·억양·속도 풀이","성격 × 목소리: 맞는 점과 다른 점","대인관계 — 첫인상과 편한 방식","이성관계 — 가까운 사이의 소통","일·직업 — 일하는 방식과 발표 팁"];
-function vTeaser(){setFam(VT.J.code);const B=big5(R.a),c=VT.J.code,nick=R.nick!=null?R.nick:(VT.name||"");
+function vTeaser(){setFam(VT.J.code);tvTrack("ViewContent",{content_name:"report",value:+PRICE.replace(/\D/g,""),currency:"KRW"});const B=big5(R.a),c=VT.J.code,nick=R.nick!=null?R.nick:(VT.name||"");
  show(`<div><div class="kicker">목소리 × 성격 레포트 · 미리 보기</div><h1 class="title">${hl(headline(B))}</h1><p class="sub">답해 주신 10문항으로 본 성격의 큰 방향이에요.</p></div>
 ${heroCard(c,VT.sex,"1분 목소리 테스트로 찾은 내 유형")}
 <div class="card"><h2>나의 성격</h2>${bars(TRAITS.map(([k,nm])=>({nm,v:B[k]})))}</div>
@@ -218,11 +232,11 @@ ${BIZ}`);
  const reset=()=>{PAY=null;ag.checked=false;ui()};
  nk.oninput=()=>{R.nick=nk.value.trim();save();if(ag.checked)reset()};
  /* 동의에 체크하는 순간 주문을 미리 만들어 둔다 → 결제 버튼을 누르는 그 순간에 결제창이 떠야 팝업이 막히지 않는다 */
- ag.onchange=async()=>{if(!ag.checked){PAY=null;return ui()}
+ ag.onchange=async()=>{if(!ag.checked){PAY=null;return ui()}tvTrack("InitiateCheckout",{value:+PRICE.replace(/\D/g,""),currency:"KRW"});
   if(!API_URL){toast("결제는 아직 준비 중이에요");return reset()}
   const my=PAY={state:"loading"};ui();
   try{R.ck=R.ck||[...crypto.getRandomValues(new Uint8Array(16))].map(b=>b.toString(16).padStart(2,"0")).join("");R.nick=nk.value.trim();
-   const o=await api({op:"order",sc:7,a:R.a,v:voiceSum(),nick:R.nick,agree:true,ck:R.ck});
+   const o=await api({op:"order",sc:7,a:R.a,v:voiceSum(),nick:R.nick,agree:true,ck:R.ck,src:window.TV_SRC||""});
    if(!o.ok||o.env!==FP_ENV)throw new Error(o.error||"env");
    R.order={no:o.mxIssueNo};save();await loadSDK();
    if(PAY===my){PAY={state:"ready",o};ui()}
@@ -263,7 +277,7 @@ function secHtml(s,i){let h=`<span class="num">${String(i+1).padStart(2,"0")}</s
  if(s.cta&&/^https:\/\/touchingvoice\.app\//.test(s.cta.url))h+=`<a class="btn pri block" href="${esc(s.cta.url)}">${esc(s.cta.label)}</a><p class="small" style="text-align:center">${esc(s.cta.note)}</p>`;
  if(s.box)h+=`<ul class="inc small">${s.box.map(t=>`<li>${esc(t)}</li>`).join("")}</ul>`;
  return `<section class="card">${h}</section>`}
-function vReport(D){setFam(D.code);
+function vReport(D){setFam(D.code);if(!D.test&&R.token&&R.tracked!==R.token){tvTrack("Purchase",{value:+PRICE.replace(/\D/g,""),currency:"KRW"});R.tracked=R.token;save()}/* 결제 레포트를 이 기기에서 처음 열 때 한 번만 */
  show(`${D.test?`<div class="test">시험 미리 보기 — 결제 없이 보는 화면이에요</div>`:""}<div><div class="kicker">목소리 × 성격 레포트</div><h1 class="title">${D.nick?esc(D.nick)+" 님의":"나의"}<br>목소리 × 성격 레포트</h1></div>
 ${heroCard(D.code,D.sex,"내 목소리 유형")}
 ${D.sections.map(secHtml).join("")}
