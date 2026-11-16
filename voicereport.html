@@ -157,6 +157,8 @@ const LOCK=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-wi
 const jget=k=>{try{return JSON.parse(localStorage.getItem(k)||"null")}catch(e){return null}};
 let R=jget(KEY)||{};R.a=Array.isArray(R.a)?R.a:[];if(R.sc!==7){R.a=[];R.sc=7}/* 11/16 5점→7점: 옛 답은 다시 받는다 */
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(R))}catch(e){}};
+/* 11/16 대표: 시험용 링크 voicereport.html?preview — 결제 없이 결과 레포트(서버가 테스트 결제 모드일 때만 열림). ?preview=0 이면 끔 */
+{const q=new URLSearchParams(location.search);if(q.has("preview")){R.preview=q.get("preview")!=="0";save()}}
 const VT=jget(VT_KEY),HAS_VOICE=!!(VT&&!VT.demo&&VT.J&&/^[LH][AU][DB][TF]$/.test(VT.J.code||"")&&VT.m&&VT.m.s&&VT.m.v);
 let PAY=null,REPORT=null;
 const $=s=>document.querySelector(s),view=$("#view");
@@ -192,7 +194,7 @@ ${ITEMS.map((t,i)=>`<div class="card q" role="radiogroup" aria-label="${i+1}번 
    d.parentNode.querySelectorAll(".dot").forEach(x=>x.setAttribute("aria-checked",x===d));
    const g=$("#go");g.disabled=!done();g.textContent=done()?"결과 보기":n()+" / 10 답했어요";
    const next=view.querySelectorAll(".q")[i+1];if(next&&!R.a[i+1])next.scrollIntoView({behavior:"smooth",block:"center"});return}
-  if(e.target.id==="go"&&done()){view.onclick=null;vTeaser()}}}
+  if(e.target.id==="go"&&done()){view.onclick=null;R.preview?openPreview():vTeaser()}}}
 
 const LOCKED=["내 목소리가 주는 인상 — 높이·억양·속도 풀이","성격 × 목소리: 맞는 점과 다른 점","대인관계 — 첫인상과 편한 방식","이성관계 — 가까운 사이의 소통","일·직업 — 일하는 방식과 발표 팁"];
 function vTeaser(){setFam(VT.J.code);const B=big5(R.a),c=VT.J.code,nick=R.nick!=null?R.nick:(VT.name||"");
@@ -235,6 +237,8 @@ function loadSDK(){return window.FirstPay?Promise.resolve():new Promise((res,rej
 /* 결제는 됐는데 '레포트 열기' 화면을 놓친 경우: 이 기기의 주문번호 + 기기 열쇠로 되찾는다 */
 function claim(){if(!API_URL||R.token||!R.order||!R.ck)return;api({op:"claim",mxIssueNo:R.order.no,ck:R.ck}).then(j=>{if(j.ok&&j.token&&!R.token){R.token=j.token;save();openReport()}}).catch(()=>{})}
 
+function openPreview(){show(`<div class="card center" style="margin-top:20vh"><div class="spin"></div><p>레포트를 만들고 있어요…</p></div>`);
+ api({op:"preview",sc:7,a:R.a,v:voiceSum(),nick:R.nick!=null?R.nick:(VT.name||"")}).then(j=>j.ok?vReport(j):vError(j.error==="not_test"?"시험 미리 보기는 테스트 결제 모드에서만 열려요.":"레포트를 만들지 못했어요.")).catch(()=>vError("인터넷 연결을 확인하고 다시 열어 주세요."))}
 /* ===== 레포트(결제 후) — 문장은 전부 서버가 준다 ===== */
 function openReport(){show(`<div class="card center" style="margin-top:20vh"><div class="spin"></div><p>레포트를 불러오고 있어요…</p></div>`);
  if(!API_URL)return vError("레포트 서버가 아직 연결되지 않았어요.");
@@ -260,16 +264,16 @@ function secHtml(s,i){let h=`<span class="num">${String(i+1).padStart(2,"0")}</s
  if(s.box)h+=`<ul class="inc small">${s.box.map(t=>`<li>${esc(t)}</li>`).join("")}</ul>`;
  return `<section class="card">${h}</section>`}
 function vReport(D){setFam(D.code);
- show(`<div><div class="kicker">목소리 × 성격 레포트</div><h1 class="title">${D.nick?esc(D.nick)+" 님의":"나의"}<br>목소리 × 성격 레포트</h1></div>
+ show(`${D.test?`<div class="test">시험 미리 보기 — 결제 없이 보는 화면이에요</div>`:""}<div><div class="kicker">목소리 × 성격 레포트</div><h1 class="title">${D.nick?esc(D.nick)+" 님의":"나의"}<br>목소리 × 성격 레포트</h1></div>
 ${heroCard(D.code,D.sex,"내 목소리 유형")}
 ${D.sections.map(secHtml).join("")}
 <div class="card noprint"><div class="row"><button class="btn" id="pdf">PDF로 저장</button><button class="btn" id="png">이미지로 저장</button></div>
 <p class="small">이 기기에서는 언제든 다시 열려요. 다른 기기에서 보려면 지금 주소를 저장해 두세요(결제일부터 1년).</p>
-<button class="btn ghost" id="link">레포트 주소 복사</button></div>
+${R.token?`<button class="btn ghost" id="link">레포트 주소 복사</button>`:""}</div>
 <p class="small" style="text-align:center">주문번호 ${esc(D.orderNo||"")} · 결제일 ${esc(D.paidAt||"")}</p>${BIZ}`);
  $("#pdf").onclick=()=>window.print();
  $("#png").onclick=()=>saveImage(D).catch(()=>toast("이미지를 만들지 못했어요"));
- $("#link").onclick=()=>{const u=location.origin+location.pathname+"#t="+R.token;(navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>toast("주소를 복사했어요"),()=>prompt("주소를 복사해 주세요",u))}}
+ if($("#link"))$("#link").onclick=()=>{const u=location.origin+location.pathname+"#t="+R.token;(navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>toast("주소를 복사했어요"),()=>prompt("주소를 복사해 주세요",u))}}
 
 /* ===== 이미지로 저장: 핵심 결과 한 장(1080×1350) ===== */
 async function makeCard(D){const c=document.createElement("canvas");c.width=1080;c.height=1350;const g=c.getContext("2d"),ff="Paperlogy,'Apple SD Gothic Neo',sans-serif",f=FAM[D.code.slice(0,2)];
@@ -298,7 +302,7 @@ async function saveImage(D){const c=await makeCard(D),blob=await new Promise(r=>
 (function init(){const t=(location.hash.match(/t=([0-9a-f]{64})/)||[])[1];if(t){R.token=t;save();try{history.replaceState(null,"",location.pathname)}catch(e){}}
  if(R.token)return openReport();
  if(!HAS_VOICE)return vNoData();
- done()?vTeaser():vQuiz()})();
+ done()?(R.preview?openPreview():vTeaser()):vQuiz()})();
 window.addEventListener("pageshow",e=>{if(e.persisted)claim()});
 window.addEventListener("hashchange",()=>{if(/t=[0-9a-f]{64}/.test(location.hash))location.reload()});/* 같은 탭에서 레포트 주소(#t=)로 바뀌면 다시 읽는다 */
 </script>
