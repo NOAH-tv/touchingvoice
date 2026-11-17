@@ -224,6 +224,8 @@ const TRAIT_JOB={E:"행사 진행자",A:"상담사",C:"기획자",N:"작가",O:"
 /* 11/17 대표: 2,900원 결제는 빼고 성격 결과 → 앱 출시 알림 신청으로 끝낸다(결제 코드는 아래 loadSDK·claim에 그대로 남겨 둠). 알림 신청은 목소리 테스트와 같은 저장 서버의 '앱대기예약' 탭 */
 const SAVE_URL="https://script.google.com/macros/s/AKfycbyTH-Q1YT90015gFUapUB1SBi_sUt45xvQaD0DmbIp4_0fQ1PwpkuAD5q4P_9eobedZ/exec";
 function vTeaser(){setFam(VT.J.code);tvTrack("ViewContent",{content_name:"personality_free"});const B=big5(R.a),c=VT.J.code;
+ /* 11/17 대표: 목소리·성격 데이터 모두 시트에 — 결과를 처음 볼 때(답이 바뀌면 다시) 이름 없이 '성격검사' 탭으로. 짝 코드(rid)로 목소리 행과 이어진다 */
+ const sig=R.a.join("")+(VT.rid||"");if(R.sentP!==sig){R.sentP=sig;save();fetch(SAVE_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({type:"personality",src:"web",utm:window.TV_SRC||"",code:c,sex:VT.sex||"",age:VT.age||null,a:R.a,m2:VT.m2||null,rid:VT.rid||""})}).catch(()=>{R.sentP=null;save()})}
  show(`<div><div class="kicker">목소리 × 성격 결과</div><h1 class="title">${hl(headline(B))}</h1><p class="sub">답해 주신 10문항으로 본 성격의 큰 방향이에요.</p></div>
 ${heroCard(c,VT.sex,"1분 목소리 테스트로 찾은 내 유형")}
 <div class="card"><h2>나의 성격</h2>${radarSVG(TRAITS.map(([k,nm])=>[nm,B[k]]))}<p class="small" style="text-align:center">높고 낮음은 좋고 나쁨이 아니라 성향의 방향이에요.</p>

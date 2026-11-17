@@ -1303,7 +1303,8 @@ const SAVE_URL="https://script.google.com/macros/s/AKfycbyTH-Q1YT90015gFUapUB1SB
 /* 11/5 대표: 녹음 품질 기록 — 마이크가 실제로 받은 샘플레이트. 블루투스 이어폰(에어팟 등)은 16~24kHz라 48kHz로 저장해도 음질이 안 오른다 → 시트 '녹음 품질'에 남겨 거를 수 있게. 파일로 했으면 '파일' */
 function recQ(){const rs=[REC.r1,REC.r2].filter(Boolean);if(!rs.length)return"";if(rs.some(r=>r.file))return"파일";const hz=Math.min(...rs.map(r=>r.micHz||r.sr)),k=+(hz/1000).toFixed(1)+"kHz";return hz>=44100?k:k+" 낮음(이어폰 추정)"}
 function serverRecord(){const m=S.m,J=S.J,s=m.s,v=m.v,A=attrScore(m),n=(x,d)=>x==null||!isFinite(x)?null:+(+x).toFixed(d);
- return{type:"voicetype",ver:3,src:"web",utm:window.TV_SRC||"",sit:sitKey(),sitName:SITS[sitKey()][0],at:new Date().toISOString(),sex:S.sex,age:S.age,job:S.job||"",code:J.code,
+ if(!S.rid)S.rid=Date.now().toString(36)+Math.random().toString(36).slice(2,8);/* 11/17 짝 코드: 성격검사 탭과 같은 사람 잇기 */
+ return{type:"voicetype",ver:3,src:"web",rid:S.rid,utm:window.TV_SRC||"",sit:sitKey(),sitName:SITS[sitKey()][0],at:new Date().toISOString(),sex:S.sex,age:S.age,job:S.job||"",code:J.code,
   f0:n(s.f0,1),stRel:n(J.stRel,2),rangeSt:n(s.rangeSt,2),sdSt:n(s.sdSt,2),rate:n(s.rate,2),syl:s.syl,speakDur:n(s.speakDur,2),dbsd:n(s.dbsd,2),dyn:n(s.dyn,1),snr:n(s.snr,1),endSlope:n(s.endSlope,2),bands:s.bands.map(b=>n(b,1)),
   mpt:n(v.mpt,2),hnr:n(v.hnr,2),regs4:s.regs4?s.regs4.map(x=>n(x,1)):null,vspace:n(s.vspace,0),sylc:n(s.sylc,1),pauses:s.pauses,voiceOnly:true,cpp:n(v.cpp,3),trem:n(v.trem,3),noiseDb:n(m.noiseDb,1),cond:m.c||null,
   score:J.sc,total:J.total,voice:J.voice,voiceAge:n(J.age,1),attr:A.pct,attrParts:Object.fromEntries(Object.entries(A.parts).map(([k,x])=>[k,n(x,2)])),recQ:recQ()}}
