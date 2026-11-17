@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>목소리 × 성격 레포트 · 터칭보이스</title>
-<meta name="description" content="1분 목소리 테스트 결과에 10문항 성격 검사를 더한 나만의 레포트.">
+<title>목소리 × 성격 결과 · 터칭보이스</title>
+<meta name="description" content="1분 목소리 테스트 결과에 10문항 성격 검사를 더한 나의 목소리 × 성격 결과.">
 <meta name="robots" content="noindex"><!-- 시험 중. 정식 공개 때 지운다 -->
 <meta name="theme-color" content="#F5EEE0">
 <style>
@@ -157,8 +157,8 @@ const VT_KEY="tv_voicetest_web_v1",KEY="tv_voicereport_v1";
 /* 성격 10문항 — IPIP 50문항 Big-Five 표지(공개 도메인, ipip.ori.org)에서 특성마다 정방향 1 · 역방향 1. 1~5번 정방향, 6~10번 역방향 */
 const ITEMS=["처음 보는 사람에게도 먼저 말을 거는 편이다","다른 사람의 감정에 잘 공감한다","해야 할 일은 미루지 않고 바로 해치운다","대체로 마음이 느긋하고 편안하다","상상력이 풍부하다",
  "낯선 사람들 사이에서는 조용해진다","다른 사람의 고민에는 별로 관심이 가지 않는다","쓴 물건을 제자리에 돌려놓는 걸 자주 잊는다","이런저런 걱정을 자주 한다","추상적인 이야기에는 별로 흥미가 없다"];
-const TRAITS=[["E","외향성"],["A","친화성"],["C","계획성"],["S","담담함"],["O","개방성"]];/* 11/16: 성실성·정서 안정 → 중립 낱말(서버 TRAIT nm과 같게) */
-const ADJ={E:["혼자 있을 때 충전되는","나설 때와 물러설 때를 아는","사람 속에서 힘이 나는"],A:["할 말은 하는","따뜻함과 솔직함을 오가는","마음을 먼저 읽는"],C:["흐름을 타는","힘 조절을 할 줄 아는","끝까지 챙기는"],S:["작은 것도 깊이 느끼는","대체로 차분한","쉽게 흔들리지 않는"],O:["해 본 방법을 믿는","새로움과 익숙함을 고루 좋아하는","새로운 생각을 좋아하는"]};
+const TRAITS=[["E","외향성"],["A","친화성"],["C","계획성"],["N","신경성"],["O","개방성"]];/* 11/16: 성실성 → 계획성 · 11/17 대표: 정서 쪽은 원래 이름 '신경성'으로(점수는 정서 안정의 반대 = 100 − 안정) */
+const ADJ={E:["혼자 있을 때 충전되는","나설 때와 물러설 때를 아는","사람 속에서 힘이 나는"],A:["할 말은 하는","따뜻함과 솔직함을 오가는","마음을 먼저 읽는"],C:["흐름을 타는","힘 조절을 할 줄 아는","끝까지 챙기는"],N:["쉽게 흔들리지 않는","대체로 차분한","작은 것도 깊이 느끼는"],O:["해 본 방법을 믿는","새로움과 익숙함을 고루 좋아하는","새로운 생각을 좋아하는"]};
 /* 유형 이름·가족 색·그림 경로는 voicetest.html 과 같다 */
 const TYPE_NM={LADT:"천의 얼굴 성우",LADF:"든든한 헬스 트레이너",LABT:"분위기 있는 배우",LABF:"편안한 팟캐스트 진행자",LUDT:"울림 있는 다큐 내레이터",LUDF:"믿음직한 비행기 기장",LUBT:"새벽 감성 라디오 DJ",LUBF:"인자한 교장선생님",HADT:"통통 튀는 쇼호스트",HADF:"발 빠른 현장 기자",HABT:"반짝이는 아이돌",HABF:"열정 폭발 일타강사",HUDT:"다정한 선생님",HUDF:"반듯한 아나운서",HUBT:"가슴 뛰는 동기부여 강사",HUBF:"공감하는 상담사"};
 const FAM={LA:["#43227D","#2B1459"],LU:["#7A2E46","#4F1A2C"],HA:["#B98A2E","#7A5A18"],HU:["#D07A66","#9C4D3B"]};
@@ -182,7 +182,7 @@ function setFam(code){const f=FAM[(code||"").slice(0,2)];if(f){document.document
 function show(html){view.innerHTML=`<div class="brand noprint"><span>터칭보이스</span><a href="voicetest.html?paid">목소리 테스트</a></div>`+html;window.scrollTo(0,0)}
 const hl=t=>esc(t).replace(", ",",<br>");/* 한 줄 요약은 쉼표 뒤에서만 줄을 바꾼다 */
 const done=()=>R.a.length===10&&R.a.every(x=>x>=1&&x<=7);
-const big5=a=>Object.fromEntries(TRAITS.map(([k],i)=>[k,Math.round((a[i]+8-a[i+5]-2)/12*100)]));
+const big5=a=>{const o=Object.fromEntries(TRAITS.map(([k],i)=>[k,Math.round((a[i]+8-a[i+5]-2)/12*100)]));o.N=100-o.N;return o};
 function headline(B){const lv=x=>x>=75?2:x<=25?0:1,top=TRAITS.map(t=>t[0]).sort((x,y)=>Math.abs(B[y]-50)-Math.abs(B[x]-50)).slice(0,2);return top.map(k=>ADJ[k][lv(B[k])]).join(", ")+" 사람"}
 const bars=(list)=>list.map(b=>`<div class="bar"><span>${esc(b.nm)}</span><i><s style="width:${Math.max(4,b.v)}%"></s></i><em>${b.v}</em></div>${b.t?`<p class="bar-t">${esc(b.t)}</p>`:""}`).join("");
 const heroCard=(code,sex,small)=>`<div class="hero-card"><img src="${charImg(code,sex)}" alt="" onerror="this.style.visibility='hidden'"><div><div class="code">${esc(code)}</div><div class="nm">${esc(TYPE_NM[code]||"")}</div><small>${esc(small)}</small></div></div>`;
@@ -211,42 +211,24 @@ ${ITEMS.map((t,i)=>`<div class="card q" role="radiogroup" aria-label="${i+1}번 
   if(e.target.id==="go"&&done()){view.onclick=null;R.preview?openPreview():vTeaser()}}}
 
 const LOCKED=["내 목소리가 주는 인상 — 높이·억양·속도 풀이","성격 × 목소리: 맞는 점과 다른 점","대인관계 — 첫인상과 편한 방식","이성관계 — 가까운 사이의 소통","일·직업 — 일하는 방식과 발표 팁"];
-function vTeaser(){setFam(VT.J.code);tvTrack("ViewContent",{content_name:"report",value:+PRICE.replace(/\D/g,""),currency:"KRW"});const B=big5(R.a),c=VT.J.code,nick=R.nick!=null?R.nick:(VT.name||"");
- show(`<div><div class="kicker">목소리 × 성격 레포트 · 미리 보기</div><h1 class="title">${hl(headline(B))}</h1><p class="sub">답해 주신 10문항으로 본 성격의 큰 방향이에요.</p></div>
+/* 11/17 대표: 2,900원 결제는 빼고 성격 결과 → 앱 출시 알림 신청으로 끝낸다(결제 코드는 아래 loadSDK·claim에 그대로 남겨 둠). 알림 신청은 목소리 테스트와 같은 저장 서버의 '앱대기예약' 탭 */
+const SAVE_URL="https://script.google.com/macros/s/AKfycbyTH-Q1YT90015gFUapUB1SBi_sUt45xvQaD0DmbIp4_0fQ1PwpkuAD5q4P_9eobedZ/exec";
+function vTeaser(){setFam(VT.J.code);tvTrack("ViewContent",{content_name:"personality_free"});const B=big5(R.a),c=VT.J.code;
+ show(`<div><div class="kicker">목소리 × 성격 결과</div><h1 class="title">${hl(headline(B))}</h1><p class="sub">답해 주신 10문항으로 본 성격의 큰 방향이에요.</p></div>
 ${heroCard(c,VT.sex,"1분 목소리 테스트로 찾은 내 유형")}
-<div class="card"><h2>나의 성격</h2>${bars(TRAITS.map(([k,nm])=>({nm,v:B[k]})))}</div>
-<div class="card"><h2>이성에게 호감 주는 목소리 지수</h2><div class="gauge hide" style="--v:70"><b>??</b></div><span class="badge">재미로 보는 지수 · 확률이 아니에요</span>
-<div class="lock"><h3>${LOCK}더 매력적인 목소리 만들기 3가지</h3></div><div class="ph"><b style="width:92%"></b><b style="width:78%"></b><b style="width:85%"></b></div></div>
-<div class="card">${LOCKED.map((t,i)=>`<div class="item lock"><h3>${LOCK}${t}</h3><div class="ph"><b style="width:${[94,88,96,90,86][i]}%"></b><b style="width:${[72,91,80,76,93][i]}%"></b></div></div>`).join("")}</div>
-<div class="card" id="buy"><h2>전체 레포트 열기</h2>
-<div class="price"><b>${PRICE}</b><span>부가세 포함 · 한 번 결제</span></div>
-<ul class="inc"><li>성격·대인관계·이성관계·일까지 6가지 주제, 나에게 맞춘 약 2,000자</li><li>이성에게 호감 주는 목소리 지수(재미로 보는 지수)</li><li>더 매력적인 목소리 만들기 3가지</li><li>PDF·이미지로 저장, 1년 동안 다시 보기</li></ul>
-<label class="small" for="nick" style="margin-bottom:-8px">레포트에 넣을 별명 (선택)</label><input class="inp" id="nick" maxlength="12" autocomplete="off" placeholder="예: 지훈" value="${esc(nick)}">
-<label class="agree"><input type="checkbox" id="agree"><span><b>[필수]</b> 결제 후 바로 열람되는 디지털 콘텐츠로, 열람 후에는 청약철회가 제한되는 것에 동의합니다. <a href="refund.html" target="_blank" rel="noopener">환불 규정 보기</a></span></label>
-<button class="btn pri block" id="pay" disabled>${PRICE} 결제하고 레포트 보기</button>
-${FP_ENV==="product"?"":`<div class="test">테스트 결제 모드 — 실제로 돈이 나가지 않아요</div>`}
-<p class="small">결제할 때 보내는 정보는 별명(선택), 10문항 답, 목소리 측정 숫자뿐이에요. 녹음 파일은 보내지 않아요. 카드 정보는 결제사(KPN)가 처리하고 터칭보이스는 저장하지 않아요.</p></div>
+<div class="card"><h2>나의 성격</h2>${bars(TRAITS.map(([k,nm])=>({nm,v:B[k]})))}<p class="small">높고 낮음은 좋고 나쁨이 아니라 성향의 방향이에요.</p></div>
+<div class="card" id="wl"><div class="kicker">출시 알림</div><h2>내 목소리에 맞춘 연습은<br>앱에서 이어 가요</h2>
+<ul class="inc"><li>매일 '아~' 5초로 보는 오늘의 목소리 컨디션</li><li>내 유형과 성격에 맞춘 하루 3분 연습</li><li>언제든 물어보는 AI 목소리 선생님</li></ul>
+${R.waitlisted?`<p><b>신청했어요 ✓</b> 앱이 나오면 ${esc(R.waitlisted)} 번호로 문자 한 번 보내 드릴게요.</p>`:`<label class="small" for="wn" style="margin-bottom:-8px">이름</label><input class="inp" id="wn" maxlength="20" autocomplete="name" value="${esc(R.nick||VT.name||"")}">
+<label class="small" for="wp" style="margin-bottom:-8px">휴대폰 번호 · 출시 알림 문자를 한 번 보내요</label><input class="inp" id="wp" type="tel" inputmode="numeric" maxlength="13" placeholder="010-1234-5678" autocomplete="tel">
+<label class="agree"><input type="checkbox" id="wc"><span>앱 출시 알림을 위해 이름과 휴대폰 번호를 터칭보이스에 저장하는 데 동의해요. 알림을 보낸 뒤에는 지워요. <a href="privacy.html" target="_blank" rel="noopener">개인정보처리방침</a></span></label>
+<p class="small" id="werr" style="color:#c0392b" role="alert"></p>
+<button class="btn pri block" id="wgo">앱 나오면 알림 받기</button>`}</div>
 ${BIZ}`);
- const ag=$("#agree"),pb=$("#pay"),nk=$("#nick");
- const ui=()=>{const s=PAY&&PAY.state;pb.disabled=s!=="ready";pb.textContent=s==="loading"?"결제 준비 중…":PRICE+" 결제하고 레포트 보기"};
- const reset=()=>{PAY=null;ag.checked=false;ui()};
- nk.oninput=()=>{R.nick=nk.value.trim();save();if(ag.checked)reset()};
- /* 동의에 체크하는 순간 주문을 미리 만들어 둔다 → 결제 버튼을 누르는 그 순간에 결제창이 떠야 팝업이 막히지 않는다 */
- ag.onchange=async()=>{if(!ag.checked){PAY=null;return ui()}tvTrack("InitiateCheckout",{value:+PRICE.replace(/\D/g,""),currency:"KRW"});
-  if(!API_URL){toast("결제는 아직 준비 중이에요");return reset()}
-  const my=PAY={state:"loading"};ui();
-  try{R.ck=R.ck||[...crypto.getRandomValues(new Uint8Array(16))].map(b=>b.toString(16).padStart(2,"0")).join("");R.nick=nk.value.trim();
-   const o=await api({op:"order",sc:7,a:R.a,v:voiceSum(),nick:R.nick,agree:true,ck:R.ck,src:window.TV_SRC||""});
-   if(!o.ok||o.env!==FP_ENV)throw new Error(o.error||"env");
-   R.order={no:o.mxIssueNo};save();await loadSDK();
-   if(PAY===my){PAY={state:"ready",o};ui()}
-  }catch(e){if(PAY===my){toast("결제 준비에 실패했어요. 잠시 뒤 다시 해 주세요");reset()}}};
- pb.onclick=()=>{if(!PAY||PAY.state!=="ready"||!ag.checked)return;const o=PAY.o;
-  try{const fp=new FirstPay({env:FP_ENV,openType:"popup",onFailure:e=>{toast((e&&(e.message||e.msg))||"결제가 끝나지 않았어요");reset()}});
-   fp.goPay({mxId:o.mxId,mxIssueNo:o.mxIssueNo,mxIssueDate:o.mxIssueDate,orderName:o.orderName,amount:o.amount,returnUrl:o.returnUrl,callHash:o.callHash,lang:"ko"});
-   PAY={state:"paying"};ui()
-  }catch(e){toast("결제창을 열지 못했어요");reset()}};
- claim()}
+ const g=$("#wgo");if(g)g.onclick=()=>{const name=$("#wn").value.trim(),phone=$("#wp").value.replace(/\D/g,""),e=$("#werr");
+  if(!name){e.textContent="이름을 적어 주세요";return}if(!/^01[016789]\d{7,8}$/.test(phone)){e.textContent="휴대폰 번호를 확인해 주세요";return}if(!$("#wc").checked){e.textContent="동의에 체크해 주세요";return}
+  fetch(SAVE_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({type:"waitlist",src:"report",name,phone,sex:VT.sex||"",age:VT.age||null,code:c,target:"",trial:"성격 "+TRAITS.map(([k,nm])=>nm.slice(0,2)+B[k]).join(" "),agree:true})}).catch(()=>{});
+  tvTrack("Lead",{content_name:"app_waitlist"});R.waitlisted=phone.slice(0,3)+"-****-"+phone.slice(-4);save();vTeaser();toast("알림 신청했어요")}}
 function loadSDK(){return window.FirstPay?Promise.resolve():new Promise((res,rej)=>{const s=document.createElement("script");s.src=SDK[FP_ENV];s.onload=res;s.onerror=rej;document.head.appendChild(s)})}
 /* 결제는 됐는데 '레포트 열기' 화면을 놓친 경우: 이 기기의 주문번호 + 기기 열쇠로 되찾는다 */
 function claim(){if(!API_URL||R.token||!R.order||!R.ck)return;api({op:"claim",mxIssueNo:R.order.no,ck:R.ck}).then(j=>{if(j.ok&&j.token&&!R.token){R.token=j.token;save();openReport()}}).catch(()=>{})}

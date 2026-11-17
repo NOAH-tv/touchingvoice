@@ -641,7 +641,7 @@ $("#sheetBg").onclick=closeSheet;
 /* ===== 1. 첫 화면 ===== */
 R.landing=()=>{const f=TYPES[S.friend]?S.friend:null;return{html:`
 <section class="hero">
-  <div class="kicker">터칭보이스 · ${PAID?"목소리 × 성격 레포트":"목소리 유형 테스트"}</div>
+  <div class="kicker">터칭보이스 · ${PAID?"목소리 × 성격 테스트":"목소리 유형 테스트"}</div>
   <h1 class="display bi">${PAID?words("목소리와 성격이")+"<br>"+words("말해 주는 나",270):words("나는 어떤 유형의")+"<br>"+words("목소리일까?",270)}</h1>
   <p class="lead">${PAID?"녹음 두 번과 성격 10문항으로<br>목소리와 성격을 함께 알아봐요.":"간단한 목소리 테스트로<br>16가지 목소리 유형 중 나를 찾아요."}</p>
   ${S.group&&S.group.length&&!S.J?`<div class="friend"><div class="gmini">${S.group.slice(-4).map(c=>`<img src="${img.char(c)}" alt="">`).join("")}</div><div style="min-width:0"><small>우리 모임 목소리 지도에</small><br><b>${S.group.length}명이 모였어요</b><br><small>테스트하면 나도 지도에 들어가요</small></div></div>`:f?`<div class="friend"><img src="${img.char(f)}" alt="${TYPES[f][1]}"><div style="min-width:0"><small>친구의 목소리는</small><br><b>${f} · ${TYPES[f][1]}</b><br><small>나도 테스트하면 우리 목소리 케미가 나와요</small></div></div>`:`<div class="orb glass"><img class="float" src="${img.egg}" alt="목소리 알"></div>`}
@@ -649,7 +649,7 @@ R.landing=()=>{const f=TYPES[S.friend]?S.friend:null;return{html:`
 </section>
 <!-- 11/5 대표: 첫 화면은 안내만. 예시 결과·16가지 캐릭터는 보여 주지 않고, 결과는 검사 마지막에 -->
 <section class="card"><h2>테스트는 이렇게 진행돼요</h2>
-  <ol class="list"><li><b>녹음 두 번</b><small class="sub">문장 하나 읽기 · '아~' 길게 내기</small></li>${PAID?`<li><b>성격 10문항</b><small class="sub">요즘의 나를 떠올리며 1분이면 돼요.</small></li><li><b>목소리 × 성격 레포트</b><small class="sub">목소리 유형과 성격, 대인관계·이성관계·일까지 한 번에 풀어 드려요.</small></li>`:`<li><b>내 목소리 유형 확인</b><small class="sub">캐릭터와 함께 높이·빠르기·소리 색깔·오르내림을 알아봐요.</small></li><li><b>부족한 소리 채워서 들어 보기</b><small class="sub">내 목소리에서 모자란 소리를 채우면 어떻게 들리는지 바로 들어 봐요.</small></li>`}</ol></section>
+  <ol class="list"><li><b>녹음 두 번</b><small class="sub">문장 하나 읽기 · '아~' 길게 내기</small></li>${PAID?`<li><b>성격 10문항</b><small class="sub">요즘의 나를 떠올리며 1분이면 돼요.</small></li><li><b>목소리 × 성격 결과</b><small class="sub">목소리 유형과 성격을 함께 보고, 맞춤 연습은 앱으로 이어 가요.</small></li>`:`<li><b>내 목소리 유형 확인</b><small class="sub">캐릭터와 함께 높이·빠르기·소리 색깔·오르내림을 알아봐요.</small></li><li><b>부족한 소리 채워서 들어 보기</b><small class="sub">내 목소리에서 모자란 소리를 채우면 어떻게 들리는지 바로 들어 봐요.</small></li>`}</ol></section>
 <p class="fine">건강 진단이 아니라 내 목소리가 남에게 어떻게 들리는지 알아보는 자기 이해·연습용 테스트예요. 직업 이름은 목소리 인상을 빗댄 별명이에요(적성검사가 아니에요).</p>
 ${BIZ}`,
  bind(){$("#start").onclick=()=>{tvTrack("StartTest");newRun();if(PAID)S.sit="intro";go("info")}}}};
@@ -1087,8 +1087,8 @@ const ITEMS=["처음 보는 사람에게도 먼저 말을 거는 편이다","다
 const qDone=v=>v.sc===7&&Array.isArray(v.a)&&v.a.length===10&&v.a.every(x=>x>=1&&x<=7);
 const SIT3=()=>sitKey()==="info"?"nego":"info";
 function goDeep(){tvTrack("ViewContent",{content_name:"report_offer"});if(!qDone(vrGet()))return go("quiz");if(!S.m2)return go("rec3");location.href="voicereport.html"}
-const deepCTA=()=>`<section class="card"><div class="kicker">목소리 × 성격 레포트</div><h2>더 자세한 내 목소리 알아보기</h2><p class="muted">성격 10문항에 답하고 문장을 한 번 더 읽으면, 내 목소리와 성격을 함께 풀어 드려요. 2분이면 돼요.</p><button class="btn pri block shine" id="deep">더 자세한 내 목소리 알아보기</button></section>`;
-R.quiz=()=>{const v=vrGet();if(v.sc!==7||!Array.isArray(v.a))v.a=[];v.sc=7;const n=()=>v.a.filter(x=>x>=1&&x<=7).length,lbl=()=>qDone(v)?(PAID?"레포트 보기":"다음 · 문장 한 번 더 읽기"):n()+" / 10 답했어요";
+const deepCTA=()=>`<section class="card"><div class="kicker">목소리 × 성격 테스트</div><h2>더 자세한 내 목소리 알아보기</h2><p class="muted">성격 10문항에 답하고 문장을 한 번 더 읽으면, 내 목소리와 성격을 함께 풀어 드려요. 2분이면 돼요.</p><button class="btn pri block shine" id="deep">더 자세한 내 목소리 알아보기</button></section>`;
+R.quiz=()=>{const v=vrGet();if(v.sc!==7||!Array.isArray(v.a))v.a=[];v.sc=7;const n=()=>v.a.filter(x=>x>=1&&x<=7).length,lbl=()=>qDone(v)?(PAID?"결과 보기":"다음 · 문장 한 번 더 읽기"):n()+" / 10 답했어요";
  return{top:{back:()=>go(PAID&&!S.J?"rec2":"result"),label:PAID?"성격 10문항":"더 자세히 · 1 / 2"},html:`
 <div><div class="kicker">${PAID?"마지막 단계 · 성격 10문항":"더 자세한 내 목소리 · 성격 10문항"}</div><h1 class="title">평소의 나와<br>얼마나 가까운가요?</h1><p class="muted">정답은 없어요. 되고 싶은 모습 말고, 요즘의 나를 떠올려 주세요.</p></div>
 ${ITEMS.map((t,i)=>`<section class="card q" role="radiogroup" aria-label="${i+1}번 문항"><div class="kicker">${i+1} / 10</div><p>${t}</p>
@@ -1100,7 +1100,7 @@ ${ITEMS.map((t,i)=>`<section class="card q" role="radiogroup" aria-label="${i+1}
    const nx=view.querySelectorAll(".q")[i+1];if(nx&&!v.a[i+1])nx.scrollIntoView({behavior:"smooth",block:"center"})});
   $("#qgo").onclick=()=>{if(!qDone(v))return;if(PAID)S.J?location.href="voicereport.html":go("wait");else S.m2?location.href="voicereport.html":go("rec3")}}}};
 R.rec3=err=>{const k=SIT3(),T=SITS[k];return{top:{back:()=>go("quiz"),label:"더 자세히 · 2 / 2"},html:`
-<div><div class="kicker">더 자세한 내 목소리 · 한 번 더 읽기</div><h1 class="title">이번엔 이 문장을<br>읽어 주세요</h1><p class="muted">${T[3]}. 두 번 읽은 소리를 합쳐서 레포트를 더 정확하게 만들어요.</p></div>
+<div><div class="kicker">더 자세한 내 목소리 · 한 번 더 읽기</div><h1 class="title">이번엔 이 문장을<br>읽어 주세요</h1><p class="muted">${T[3]}. 두 번 읽은 소리를 합쳐서 결과를 더 정확하게 만들어요.</p></div>
 <p class="sentence">${T[2]}</p>${err?`<p class="err">${err}</p>`:""}
 ${micHTML("버튼을 누르고 읽어 주세요")}`,
  bind(){bindMic({maxSec:20,onDone:r=>{$("#micmsg").textContent="듣는 중…";
