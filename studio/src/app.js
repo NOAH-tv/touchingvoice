@@ -20,7 +20,8 @@ import { CalibrationLibraryService, observationFromRecord } from './calibration-
 import { buildPersonalModel } from './personal-calibration.js?v=monitor-fix-20260913';
 import { mountStudioTools } from './studio-tools.js?v=exam-20260916';
 import { FileAnalysisService } from './file-analysis-service.js?v=response-20261117';
-import { mountFileAnalysisView } from './file-analysis-view.js?v=response-20261117';
+import {mountExamSignalView} from './exam-signal-view.js?v=exam-spectrum-20261117';
+import { mountFileAnalysisView } from './file-analysis-view.js?v=exam-spectrum-20261117';
 import { ANALYZER_FIELDS } from './analyzer-metrics.js?v=monitor-fix-20260913';
 import { mountParticipantIntake } from './participant-intake.js?v=exam-20260916';
 import { resolveParticipant } from './participant-data.js';
@@ -45,7 +46,7 @@ let audioState = {mode:'idle',playing:false,recording:false,duration:0,currentTi
 let lastFrame = null, levels = {}, originalLevels = {}, demo = false, recordingSnapshot = null, recordingStarted = 0;
 let capture = null, suggestion = null, lastPaint = 0, lastDetailPaint = -Infinity, lastHistoryPaint = -Infinity, toastTimer, busy = false, microphoneAction = null, visibilityStopping = false, loopPlayback = false;
 let coreRun = null, coreStarting = false, coreFinishing = false, coreGeneration = 0, coreTimer = null, recordingSavePromise = null, currentResult = null, replayProfile = null;
-let selectedStructure = null, freeVoiceAccumulator = null, studioTools = null, fileAnalyzer = null, fileAnalysisView = null, loadedAnalysisSource = null;
+let selectedStructure = null, freeVoiceAccumulator = null, studioTools = null, fileAnalyzer = null, fileAnalysisView = null, examSignalView = null, loadedAnalysisSource = null;
 let participantIntake=null, memberHistory=null, driveBackup=null, driveConnection=null, lastDriveStatusPaint=0;
 let reportedRecording=false;
 let studioSuspended=false,studioInputEpoch=0,modelLoad=null,guidedCalibration=null,calibrationLibrary=null,calibrationService=null;
@@ -68,7 +69,7 @@ function clearAnalysisHistory(){lastFrame=null;levels={};originalLevels={};proHi
 function setTab(next){
   if(next==='booth')next='analyzer';
   if(guidedCalibration?.active||coreRun||coreStarting||coreFinishing){toast('진행 중인 발성 기록을 마친 뒤 이동할 수 있어요.');return;}
-  studioTools?.beforeTabChange(next);tab=next;document.body.dataset.tab=next;
+  studioTools?.beforeTabChange(next);tab=next;document.body.dataset.tab=next;examSignalView?.setActive(next==='analyzer');
   if(next==='studio')void ensureAnatomyLoaded();
   document.querySelectorAll('button[data-tab]').forEach(e=>{e.classList.toggle('active',e.dataset.tab===next);if(e.dataset.tab===next)e.setAttribute('aria-current','page');else e.removeAttribute('aria-current');});
   ['studio','analyzer','training','tuning','sessions'].forEach(k=>$(k+'Panel').hidden=k!==next);
@@ -99,8 +100,8 @@ function ensureAnatomyLoaded(){
 
 const engine = new AudioEngine({
   getProfile:effectiveProfile, beforeStartMic:ensureVoiceSelection,
-  onFrame(frame){guidedCalibration?.onFrame(frame);studioTools?.onFrame(frame);lastFrame=frame;const frameNow=performance.now()/1000;proHistory.push({t:frameNow,f0:frame.features.valid?frame.features.f0:null});while(proHistory.length&&proHistory[0].t<frameNow-10)proHistory.shift();if(freeVoiceAccumulator&&audioState.recording&&!coreRun)freeVoiceAccumulator.add(frame);if(coreRun){const now=performance.now()/1000;const mapped=processLayers(frame.features,coreRun.snapshot.profile,coreRun.levels,Math.min(200,(now-coreRun.lastFrameTime)*1000));coreRun.levels=mapped.levels;coreRun.lastFrameTime=now;coreRun.accumulator.add({...frame,features:{...frame.features,valid:mapped.valid},time:now},mapped.levels);coreRun.voiceAccumulator.add(frame);}if(capture){capture.frames.push({...frame.features});if(performance.now()-capture.start>=5000)finishCapture();}},
-  onState(state){if(state.mode!==audioState.mode||state.fileName!==audioState.fileName)clearAnalysisHistory();audioState=state;if(reportedRecording!==(state.recording===true)){reportedRecording=state.recording===true;postParent({type:'tv:recording-state',recording:reportedRecording,branchId:franchiseContext.branchId,studentId:franchiseContext.practice?'':franchiseContext.student.id});}guidedCalibration?.onState(state);renderTransport();updateLocks();if(!state.playing){lastFrame=null;cancelCapture('입력이 중지되어 수집을 취소했습니다. 다시 재생한 뒤 수집하세요.');}if(coreRun&&(!state.playing||(coreRun.source==='mic'&&!state.recording))){const reached=coreRun.source==='file'&&state.mode==='file'&&state.currentTime>=CORE_MODES[coreRun.kind].duration-.1;safe(()=>finishCore(reached));}if(loopPlayback&&!coreRun&&!coreStarting&&!coreFinishing&&!busy&&!studioSuspended&&!document.hidden&&state.mode==='file'&&!state.playing&&state.duration>0&&state.currentTime>=state.duration-.01)safe(()=>engine.play());},
+  onFrame(frame){if(audioState.mode==='mic'&&tab==='analyzer'&&!studioSuspended)examSignalView?.pushLive(frame,engine.context.sampleRate);guidedCalibration?.onFrame(frame);studioTools?.onFrame(frame);lastFrame=frame;const frameNow=performance.now()/1000;proHistory.push({t:frameNow,f0:frame.features.valid?frame.features.f0:null});while(proHistory.length&&proHistory[0].t<frameNow-10)proHistory.shift();if(freeVoiceAccumulator&&audioState.recording&&!coreRun)freeVoiceAccumulator.add(frame);if(coreRun){const now=performance.now()/1000;const mapped=processLayers(frame.features,coreRun.snapshot.profile,coreRun.levels,Math.min(200,(now-coreRun.lastFrameTime)*1000));coreRun.levels=mapped.levels;coreRun.lastFrameTime=now;coreRun.accumulator.add({...frame,features:{...frame.features,valid:mapped.valid},time:now},mapped.levels);coreRun.voiceAccumulator.add(frame);}if(capture){capture.frames.push({...frame.features});if(performance.now()-capture.start>=5000)finishCapture();}},
+  onState(state){if(state.playing)examSignalView?.pause();if(state.mode!==audioState.mode||state.fileName!==audioState.fileName)clearAnalysisHistory();audioState=state;if(reportedRecording!==(state.recording===true)){reportedRecording=state.recording===true;postParent({type:'tv:recording-state',recording:reportedRecording,branchId:franchiseContext.branchId,studentId:franchiseContext.practice?'':franchiseContext.student.id});}guidedCalibration?.onState(state);renderTransport();updateLocks();if(!state.playing){lastFrame=null;cancelCapture('입력이 중지되어 수집을 취소했습니다. 다시 재생한 뒤 수집하세요.');}if(coreRun&&(!state.playing||(coreRun.source==='mic'&&!state.recording))){const reached=coreRun.source==='file'&&state.mode==='file'&&state.currentTime>=CORE_MODES[coreRun.kind].duration-.1;safe(()=>finishCore(reached));}if(loopPlayback&&!coreRun&&!coreStarting&&!coreFinishing&&!busy&&!studioSuspended&&!document.hidden&&state.mode==='file'&&!state.playing&&state.duration>0&&state.currentTime>=state.duration-.01)safe(()=>engine.play());},
   onError(error){toast(error.message,true);},
   onRecording(recording){recordingSavePromise=safe(()=>saveRecording(recording));},
 });
@@ -138,7 +139,7 @@ function renderTransport(){
   document.body.dataset.audioActive=String(Boolean(audioState.playing||audioState.mode==='file'||demo));
   participantIntake?.updateLocks(audioState.recording);studioTools?.paint();renderExamWorkflow();
   if($('examPlaybackStop'))$('examPlaybackStop').disabled=audioState.mode!=='file'||sessionLocked()||busy;
-  if($('batchPlayBtn'))$('batchPlayBtn').textContent=audioState.mode==='file'&&audioState.playing&&loadedAnalysisSource?.sessionId===fileAnalysisView?.current?.()?.id?'원음 일시정지':'원음 재생';
+  if($('batchPlayBtn'))$('batchPlayBtn').textContent=examSignalView?.playing?'원음 일시정지':'원음 재생';
   const s=audioState,live=s.mode==='mic'&&s.playing,micLocked=Boolean(guidedCalibration?.active||busy||microphoneAction||coreRun||coreStarting||coreFinishing||studioTools?.trainingActive);
   if($('recordingFormatStatus')){
     const track=engine.stream?.getAudioTracks?.()[0],settings=track?.getSettings?.()||{},rate=engine.context?.sampleRate;
@@ -736,7 +737,9 @@ calibrationLibrary=mountCalibrationLibrary({getSnapshot:calibrationSnapshot,isBu
 for(const id of ['calibrationOpenTuning'])$(id).onclick=()=>safe(()=>{if(sessionLocked()||busy||comparing||microphoneAction)throw new Error('진행 중인 녹음·훈련을 마쳐 주세요.');calibrationLibrary.open();});
 
 fileAnalyzer=new FileAnalysisService({persist:entry=>store.put('sessions',entry),onChange:()=>{fileAnalysisView?.refresh();calibrationLibrary?.refresh();renderExamWorkflow();}});
-fileAnalysisView=mountFileAnalysisView({getProfileId:()=>profileId,getSessions:()=>sessions,getJobs:()=>fileAnalyzer.jobs,upload:importAnalysisFiles,analyzeExisting:()=>{const entries=sessions.filter(s=>s.profileId===profileId&&s.blob?.size&&!s.fileAnalysis);if(!entries.length){toast('이 회원의 녹음은 모두 분석되어 있습니다.');return;}for(const entry of entries)queueFullAnalysis(entry);fileAnalysisView.select(entries[0]);},cancel:id=>fileAnalyzer.cancel(id),play:toggleReplaySession,saveLabels:async(entry,annotation)=>{if(fileAnalyzer.jobs.some(j=>j.entry.id===entry.id&&['queued','decoding','analyzing','saving'].includes(j.status)))throw new Error('분석 저장이 끝난 뒤 라벨을 저장해 주세요.');await store.put('sessions',{...entry,annotation});entry.annotation=annotation;},toast,beforePick:prepareAnalysisUpload,onSelectionChange:()=>renderExamWorkflow()});
+examSignalView=mountExamSignalView({anchor:$('batchResult'),isLocked:()=>sessionLocked()||busy||(audioState.mode==='mic'&&audioState.playing),beforePlay:()=>{if(sessionLocked()||busy)throw Error('진행 중인 검사를 마친 뒤 재생해 주세요.');if(engine.mode==='file')engine.pause();},onPlaybackChange:renderTransport});
+$('batchWave').closest('article').hidden=true;
+fileAnalysisView=mountFileAnalysisView({getProfileId:()=>profileId,getSessions:()=>sessions,getJobs:()=>fileAnalyzer.jobs,upload:importAnalysisFiles,analyzeExisting:()=>{const entries=sessions.filter(s=>s.profileId===profileId&&s.blob?.size&&!s.fileAnalysis);if(!entries.length){toast('이 회원의 녹음은 모두 분석되어 있습니다.');return;}for(const entry of entries)queueFullAnalysis(entry);fileAnalysisView.select(entries[0]);},cancel:id=>fileAnalyzer.cancel(id),play:()=>examSignalView.togglePlayback(),saveLabels:async(entry,annotation)=>{if(fileAnalyzer.jobs.some(j=>j.entry.id===entry.id&&['queued','decoding','analyzing','saving'].includes(j.status)))throw new Error('분석 저장이 끝난 뒤 라벨을 저장해 주세요.');await store.put('sessions',{...entry,annotation});entry.annotation=annotation;},toast,beforePick:prepareAnalysisUpload,onSelectionChange:entry=>{if(!(audioState.mode==='mic'&&audioState.playing))void examSignalView.setEntry(entry);renderExamWorkflow();}});
 window.addEventListener('resize',()=>{if(tab==='analyzer')fileAnalysisView?.paint();if(tab==='sessions')memberHistory?.resize();});
 participantIntake=mountParticipantIntake({getVoicePreset:()=>profile.voicePreset,onVoicePresetChange:changeVoicePreset,container:$('participantIntake'),getProfiles:()=>profiles,getProfileId:()=>profileId,getSessions:()=>sessions,isLocked:()=>sessionLocked()||busy,isRecording:()=>audioState.recording,commit:commitParticipant,onRecord:startAnalyzerRecording,onChooseFiles:()=>fileAnalysisView?.chooseFiles(),onHistory:async ownerId=>{if(sessionLocked()||busy)throw new Error('진행 중인 검사를 마친 뒤 차트를 열어 주세요.');if(ownerId!==profileId)await changeProfile(ownerId);if(profileId!==ownerId)return;setTab('sessions');requestAnimationFrame(()=>memberHistory?.resize());},onNewParticipant:()=>{fileAnalysisView?.clearSelection();renderExamWorkflow();},onDraftChange:()=>{fileAnalysisView?.clearSelection();renderExamWorkflow();},onError:error=>toast(error.message,true)});
 $('participantHistory').textContent='개인 누적 차트 →';
@@ -766,7 +769,7 @@ await (async()=>{
   for(const s of sessions)if(s.blob?.size&&['queued','decoding','analyzing','saving'].includes(s.analysisStatus))queueFullAnalysis(s);
 })();
 export async function suspendStudio(){
-  studioSuspended=true;studioInputEpoch++;coreGeneration++;loopPlayback=false;document.body.dataset.suspended='true';
+  studioSuspended=true;examSignalView?.setActive(false);studioInputEpoch++;coreGeneration++;loopPlayback=false;document.body.dataset.suspended='true';
   calibrationService?.cancel();calibrationLibrary?.close();await guidedCalibration?.close();stopDemo();studioTools?.stopRhythm();cancelCapture();
   if(coreRun||coreStarting)await safe(()=>finishCore(false));
   if(audioState.recording&&!coreRun)return; // Navigation hides UI but keeps the existing examination capture.
@@ -779,12 +782,12 @@ export async function stopBackgroundRecording(){
   if(studioSuspended)engine.stop();
 }
 export function resumeStudio(){
-  studioSuspended=false;document.body.dataset.suspended='false';anatomy.resize();
+  studioSuspended=false;examSignalView?.setActive(tab==='analyzer');document.body.dataset.suspended='false';anatomy.resize();
   if(tab==='studio')void ensureAnatomyLoaded();
   void safe(()=>engine.resumeInput());studioTools?.resume();studioTools?.paint();
 }
 export async function shutdownStudio(){
-  studioSuspended=true;studioInputEpoch++;coreGeneration++;clearProtectedAssetCache();anatomy.dispose();
+  studioSuspended=true;examSignalView?.destroy();studioInputEpoch++;coreGeneration++;clearProtectedAssetCache();anatomy.dispose();
   calibrationService?.cancel();calibrationLibrary?.close();await guidedCalibration?.close();stopDemo();studioTools?.stopRhythm();
   studioTools?.dispose();await engine.destroy();if(recordingSavePromise)await recordingSavePromise;
   for(const job of fileAnalyzer?.jobs||[])fileAnalyzer.cancel(job.id);
