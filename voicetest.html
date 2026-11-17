@@ -416,7 +416,7 @@ p,li,small,.fine,.muted{text-wrap:pretty}
 .tn{grid-template-columns:104px minmax(0,1fr) 70px}.tn em{white-space:nowrap}
 /* 11/5 쉬운 말: 칸 이름(빠르기·소리 색깔·오르내림)이 한 줄에 */
 .trial-row,.ax-line{grid-template-columns:72px minmax(0,1fr)}.trial-row b,.ax-line b{white-space:nowrap}
-</style>
+.radar{width:100%;max-width:340px;display:block;margin:0 auto}.jobs{display:flex;flex-wrap:wrap;gap:8px}.jobs span{padding:7px 14px;border-radius:999px;background:color-mix(in oklab,var(--fam) 18%,transparent);font-weight:700;font-size:14.5px}.hx-sum{display:flex;align-items:center;gap:12px}.hx-sum img{width:60px;height:60px;border-radius:18px;flex:none;object-fit:cover}details.more>summary{list-style:none;cursor:pointer}details.more>summary::-webkit-details-marker{display:none}details.more[open]>summary{margin-bottom:14px}details.more>section+section{margin-top:14px}</style>
 <script>
 /* 11/16 광고 측정 — META_PIXEL_ID·GA_ID에 아이디를 넣으면 켜진다(비어 있으면 아무것도 불러오지 않음).
    광고 출처(utm_source·campaign·content, 없으면 fbclid→meta·gclid→google)는 30일 동안 이 기기에 남겨 검사 기록·주문에 같이 저장한다.
@@ -1087,6 +1087,22 @@ const ITEMS=["처음 보는 사람에게도 먼저 말을 거는 편이다","다
 const qDone=v=>v.sc===7&&Array.isArray(v.a)&&v.a.length===10&&v.a.every(x=>x>=1&&x<=7);
 const SIT3=()=>sitKey()==="info"?"nego":"info";
 function goDeep(){tvTrack("ViewContent",{content_name:"report_offer"});if(!qDone(vrGet()))return go("quiz");if(!S.m2)return go("rec3");location.href="voicereport.html"}
+const FIT_JOBS={LADT:["성우","오디오북 낭독가","게임 캐릭터 더빙"],LADF:["퍼스널 트레이너","스포츠 해설가","현장 리더"],LABT:["배우","광고 내레이터","뮤지컬 배우"],LABF:["팟캐스트 진행자","유튜브 진행자","고객 상담 매니저"],
+ LUDT:["다큐 내레이터","박물관 해설사","오디오북 낭독가"],LUDF:["비행기 기장","안내 방송 아나운서","프로젝트 매니저"],LUBT:["라디오 DJ","ASMR 크리에이터","싱어송라이터"],LUBF:["교장선생님","목회자","심리 상담사"],
+ HADT:["쇼호스트","행사 MC","라이브 커머스 진행자"],HADF:["기자","리포터","영업 담당자"],HABT:["아이돌","뮤지컬 배우","키즈 크리에이터"],HABF:["학원 강사","기업 교육 강사","피칭 발표자"],
+ HUDT:["초등 교사","상담사","어린이 콘텐츠 진행자"],HUDF:["아나운서","승무원","호텔 컨시어지"],HUBT:["동기부여 강사","라이프 코치","행사 MC"],HUBF:["상담사","간호사","고객 응대 매니저"]};
+/* 11/17 대표(피드백 '글보다 육각 그래프'): 꼭짓점 L=[[이름,0~100],…]을 거미줄 그래프로. 색은 유형 가족색 */
+function radarSVG(L){const n=L.length,c=120,R=88,pt=(i,r)=>{const a=-Math.PI/2+2*Math.PI*i/n;return[+(c+r*Math.cos(a)).toFixed(1),+(c+r*Math.sin(a)).toFixed(1)]},poly=r=>L.map((_,i)=>pt(i,r).join(",")).join(" ");
+ return`<svg class="radar" viewBox="-44 -8 328 256" role="img" aria-label="${L.map(x=>x[0]+" "+x[1]).join(", ")}">${[1,.5].map(f=>`<polygon points="${poly(R*f)}" fill="none" stroke="var(--line2)" stroke-width="1"/>`).join("")}${L.map((_,i)=>{const[x,y]=pt(i,R);return`<line x1="${c}" y1="${c}" x2="${x}" y2="${y}" stroke="var(--line)" stroke-width="1"/>`}).join("")}<polygon points="${L.map(([,v],i)=>pt(i,R*Math.max(v,6)/100).join(",")).join(" ")}" fill="var(--fam-ui)" fill-opacity=".32" stroke="var(--fam-ui)" stroke-width="2.5" stroke-linejoin="round"/>${L.map(([k,v],i)=>{const[x,y]=pt(i,R+24);return`<text x="${x}" y="${y+5}" text-anchor="middle" font-size="14" font-weight="700" fill="var(--fg)">${k} <tspan fill="var(--fam-ui)">${v}</tspan></text>`}).join("")}</svg>`}
+const jo=(w,a,b)=>{const c=w.charCodeAt(w.length-1)-44032;return w+(c>=0&&c<11172&&c%28?a:b)};
+const jobChips=L=>`<div class="jobs">${L.map(j=>`<span>${j}</span>`).join("")}</div>`;
+function hexVals(m,A){const b=m.s.bands,z=b&&b.length?toneZ(b):[0,0,0,0],t=x=>Math.round(cl(50+18*x,6,100)),p=k=>Math.round(100*cl(A.parts[k],0,1));
+ return[["숨",p("breath")],["발음",p("artic")],["고른 소리",p("balance")],["울림",t(z[0])],["힘",t(z[1])],["표현력",Math.round(6+94*cl(((m.s.rangeSt||0)-3)/12,0,1))]]}
+function hexCard(m,A,code){const L=hexVals(m,A),s=[...L].sort((a,b)=>b[1]-a[1]);
+ return`<section class="card"><div class="kicker">한눈에 보는 내 목소리</div>${radarSVG(L)}
+ <div class="hx-sum"><img src="${img.char(code)}" alt=""><p style="margin:0"><b>${jo(s[0][0],"이","가")} 가장 큰 무기</b>예요. ${jo(s.at(-1)[0],"을","를")} 채우면 더 멀리 가요.</p></div>
+ <div class="lbl">이 목소리가 잘 어울리는 일</div>${jobChips(FIT_JOBS[code]||[])}
+ <p class="small" style="text-align:center;margin:0">100에 가까울수록 그 힘이 커요 · 재미로 봐 주세요</p></section>`}
 const deepCTA=()=>`<section class="card"><div class="kicker">목소리 × 성격 테스트</div><h2>더 자세한 내 목소리 알아보기</h2><p class="muted">성격 10문항에 답하고 문장을 한 번 더 읽으면, 내 목소리와 성격을 함께 풀어 드려요. 2분이면 돼요.</p><button class="btn pri block shine" id="deep">더 자세한 내 목소리 알아보기</button></section>`;
 R.quiz=()=>{const v=vrGet();if(v.sc!==7||!Array.isArray(v.a))v.a=[];v.sc=7;const n=()=>v.a.filter(x=>x>=1&&x<=7).length,lbl=()=>qDone(v)?(PAID?"결과 보기":"다음 · 문장 한 번 더 읽기"):n()+" / 10 답했어요";
  return{top:{back:()=>go(PAID&&!S.J?"rec2":"result"),label:PAID?"성격 10문항":"더 자세히 · 1 / 2"},html:`
@@ -1234,6 +1250,7 @@ ${S.demo?`<section class="card cta" style="flex-direction:row;align-items:center
   ${codeMeanHTML(J.code,"on-dark")}
   <p class="hc-line">“${LINES[J.code]}”</p>
 </section>
+${hexCard(m,A,J.code)}
 ${shareRow()}
 ${S.demo?"":deepCTA()}
 <section class="card cmp-card">
@@ -1242,15 +1259,15 @@ ${S.demo?"":deepCTA()}
   ${(()=>{const k=sitKey(),b=lsGet(BASE_KEY);return k==="intro"?"":`<p class="small" style="text-align:center">${SITS[k][1]} 내 목소리예요.${TYPES[b]?` 자기소개할 때는 <b>${b} ${TYPES[b][1]}</b>였어요.`:""} 내 유형이 바뀐 게 아니라, 이럴 때는 이렇게 들린다는 뜻이에요.</p>`})()}
   ${REC.r1?pbarHTML("hearMe","방금 녹음한 내 목소리",REC.r1):""}
 </section>
+<details class="more"><summary class="btn block">자세히 보기 · 네 가지 · 높이 · 소리 색깔</summary>
 <section class="card"><h2>내 목소리 네 가지</h2><div class="axes">${J.code.split("").map(L=>`<div class="axis"><div class="axis-top">${AXD[LET[L].ax]}<b>${EN[L]}</b></div><strong>${LET[L].ax==="높이"&&Math.abs(J.stRel)<1?(L==="H"?"평균보다 조금 높은":"평균보다 조금 낮은"):LET[L].nm}</strong><small class="num">${axisVal(L,m,J)}</small><p>${LET[L].imp}</p></div>`).join("")}</div></section>
 ${m.s.regs4?regCard(m.s.regs4,m.s):""}
 ${toneCard(b)}
+</details>
 ${S.demo||!REC.r1?"":boostCard(b)}
 <section class="card"><div class="kicker">재미로 보는 두 가지</div>
   <div class="fun2"><div><small>목소리 나이</small><div class="big-num"><span id="ageN">0</span><small style="font-size:18px;color:var(--fg)">세</small></div><p class="small">${ageBand(J.age)} · ${ageMsg}</p></div>
   <div><small>${A.label}</small><div class="big-num" style="color:var(--fam-ui)"><span id="attrN">0</span><small style="font-size:18px;color:var(--fg)">%</small></div><p class="small">${A.line}</p></div></div>
-  <p class="small"><b style="color:var(--fg)">듣기 좋은 정도를 만드는 세 가지</b> · 100점 만점</p>
-  <div class="ap">${Object.keys(A.W).map(k=>`<div><small>${A.names[k]}</small><b class="num">${Math.round(100*A.parts[k])}</b><i><s style="width:${Math.round(100*A.parts[k])}%"></s></i><em>${A.descs[k]}</em></div>`).join("")}</div>
   <div class="target stack"><span>이렇게 하면 더 좋아요!</span><b>${A.tip}</b></div>
   <small>점수는 재미로 봐 주세요. 사람마다 좋아하는 목소리는 달라요.</small></section>
 ${condCard()}
@@ -1260,13 +1277,13 @@ ${S.demo?"":matchCard()}
 ${S.demo?"":groupCard()}
 <section class="card"><h2>다른 유형 구경하기${S.demo?" <small>(예시)</small>":""}</h2>${S.demo?"":`<p class="small">16가지 목소리 캐릭터를 눌러서 살펴보세요.</p>`}<div class="rgrid">${Object.keys(TYPES).map(c=>`<button class="rt ${c===J.code?(S.demo?"pick":"me"):""}" data-c="${c}"><span><img src="${img.char(c)}" alt="${TYPES[c][1]}" loading="lazy"></span><b>${c}</b>${c===J.code&&!S.demo?`<em class="me-badge">나</em>`:""}<small>${nmLN(c)}</small></button>`).join("")}</div></section>
 ${S.demo||PAID?"":`<button class="btn block" id="rerec">다시 녹음하기</button>`}
-${PAID?"":`<button class="btn ghost block" id="again">처음부터 다시 하기</button>`}
+${PAID?`<button class="btn block" id="again">다시 검사하기</button>`:`<button class="btn ghost block" id="again">처음부터 다시 하기</button>`}
 <p class="fine">이 결과는 병원 검사가 아니에요. 내 목소리가 남에게 어떻게 들리는지 알아보는 테스트예요. 녹음한 곳에 따라 결과가 달라질 수 있어요.</p>
 ${BIZ}`,
  bind(){later(()=>{view.querySelectorAll(".band i").forEach(i=>i.style.height=i.dataset.h+"%");countUp($("#ageN"),0,J.age,1200);countUp($("#attrN"),0,A.pct,1200)},250);
   bindShare(view);const gl=$("#goal");if(gl)gl.onclick=()=>go("goal");const dp=$("#deep");if(dp)dp.onclick=goDeep;const chs=$("#chemShare");if(chs)chs.onclick=()=>shareAct("more");const cc=$("#chemCard");if(cc)cc.onclick=()=>shareChem().catch(()=>toast("카드를 만들지 못했어요"));const gg=$("#grpGo");if(gg)gg.onclick=groupShare;view.querySelectorAll("#duoGo").forEach(b=>b.onclick=()=>go("duo"));view.querySelectorAll("[data-cv]").forEach(b=>b.onclick=()=>{const f=S.friend,me=S.J.code;chemVote(b.dataset.cv,b.dataset.cvk,{f,me,name:chemOf(f,me)[0],score:chemScore(f,me,S.friendRate,myRate()),fr:S.friendRate||null,mr:+myRate().toFixed(2),conv:null})});mountBoost(b);const hm=$("#hearMe");if(hm)mountPlayer(hm,REC.r1);
   const mi=$("#mine");if(mi)mi.onclick=()=>{newRun();go("info")};
-  const ag=$("#again");if(ag)ag.onclick=()=>{newRun();go("landing")};const rr=$("#rerec");if(rr)rr.onclick=reRecord;
+  const ag=$("#again");if(ag)ag.onclick=()=>{if(PAID){location.href="voicetest.html?"+(vrGet().preview?"free":"paid")+"=new";return}newRun();go("landing")};const rr=$("#rerec");if(rr)rr.onclick=reRecord;
   view.querySelectorAll(".rgrid .rt").forEach(p=>p.onclick=()=>S.demo?startDemo(p.dataset.c,true):typeSheet(p.dataset.c))}}};
 function wavBlob(x,sr){const n=x.length,b=new ArrayBuffer(44+n*2),v=new DataView(b),w=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i))};w(0,"RIFF");v.setUint32(4,36+n*2,true);w(8,"WAVE");w(12,"fmt ");v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,sr,true);v.setUint32(28,sr*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);w(36,"data");v.setUint32(40,n*2,true);for(let i=0;i<n;i++){const s=Math.max(-1,Math.min(1,x[i]));v.setInt16(44+i*2,s<0?s*0x8000:s*0x7fff,true)}return new Blob([b],{type:"audio/wav"})}
 /* 재생 바 — 재생·일시정지·위치 옮기기 */
@@ -1387,7 +1404,7 @@ if(Q.has("shot"))document.documentElement.classList.add("noanim");
  if(TYPES[qd]){startDemo(qd,true);const v=Q.get("view")||"result";go(v==="guess"||!Object.hasOwn(R,v)?"result":v)}
  /* 11/5 대표: 예시 결과를 먼저 보여 주지 않는다 — 예전에 예시를 열어 둔 기기도 첫 화면부터 */
  /* 11/16 대표: 목소리 검사와 성격 10문항을 하나로 — ?paid 는 녹음 2번 → 10문항 → 분석 → 레포트(결제). ?free 는 같은 길에서 결제 없이 레포트(결과는 기기에 남음). ?free=new 는 이 기기 결과를 비우고 처음부터(시험용) */
- else if(Q.get("free")==="new"){const old=vrGet();S={friend:S.friend};REC.r1=REC.r2=null;save();vrSet({sc:7,a:[],preview:true,ck:old.ck});try{history.replaceState(null,"","?free")}catch(e){}go("landing")}
+ else if(Q.get("free")==="new"||Q.get("paid")==="new"){/* 11/17 대표: 다시 검사하기 — 이 기기 결과를 비우고 처음부터(알림 신청 표시는 남김) */const old=vrGet(),fr=Q.get("free")==="new";S={friend:S.friend};REC.r1=REC.r2=null;save();vrSet({sc:7,a:[],preview:fr,ck:old.ck,waitlisted:old.waitlisted});try{history.replaceState(null,"",fr?"?free":"?paid")}catch(e){}go("landing")}
  else if(S.J&&!S.demo){setFam(S.J.code);if(PAID)qDone(vrGet())?location.replace("voicereport.html"):go("quiz");else go("result")}else{if(S.demo)newRun();go("landing")}}
 document.fonts&&document.fonts.ready.then(()=>fitLn(document));
 })();
