@@ -138,7 +138,13 @@ ul.inc li{padding-left:22px;position:relative}ul.inc li::before{content:"";posit
  if(META_PIXEL_ID){!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init',META_PIXEL_ID);fbq('track','PageView')}
  if(GA_ID){const sc=document.createElement("script");sc.async=true;sc.src="https://www.googletagmanager.com/gtag/js?id="+GA_ID;document.head.appendChild(sc);window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments)};gtag("js",new Date());gtag("config",GA_ID)}
  const STD={ViewContent:1,InitiateCheckout:1,Purchase:1};
- window.tvTrack=(ev,p)=>{try{if(window.fbq)fbq(STD[ev]?"track":"trackCustom",ev,p||{});if(window.gtag)gtag("event",ev,p||{})}catch(e){}};
+ /* 11/17 대표: 가능성 재기 — 단계마다 익명 이벤트 한 줄을 저장 서버 '방문기록' 탭으로(이름·녹음·연락처 없음). 주소에 ?staff 를 붙여 한 번 열면 이 기기는 '내부'로 표시돼 걸러 볼 수 있다 */
+ let sid="",staff=false;try{sid=localStorage.getItem("tv_sid")||"";if(!sid){sid=Date.now().toString(36)+Math.random().toString(36).slice(2,7);localStorage.setItem("tv_sid",sid)}if(q.has("staff"))localStorage.setItem("tv_staff","1");staff=localStorage.getItem("tv_staff")==="1"}catch(e){}
+ window.TV_STAFF=staff;
+ window.tvEvent=(name,code)=>{try{fetch("https://script.google.com/macros/s/AKfycbyTH-Q1YT90015gFUapUB1SBi_sUt45xvQaD0DmbIp4_0fQ1PwpkuAD5q4P_9eobedZ/exec",{method:"POST",mode:"no-cors",keepalive:true,headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({type:"event",ev:String(name).slice(0,40),src:window.TV_SRC||"",sid,staff,page:(location.pathname.split("/").pop()||"")+location.search.slice(0,24),code:code||""})})}catch(e){}};
+ window.tvEvent("방문");
+ const KR={StartTest:"시작",RecordDone:"녹음완료",CompleteTest:"검사완료",ViewContent:"보기",Lead:"알림신청",InitiateCheckout:"결제시작",Purchase:"결제"};
+ window.tvTrack=(ev,p)=>{window.tvEvent((KR[ev]||ev)+(p&&p.content_name?":"+p.content_name:""));try{if(window.fbq)fbq(STD[ev]?"track":"trackCustom",ev,p||{});if(window.gtag)gtag("event",ev,p||{})}catch(e){}};
 })();
 </script>
 </head>
@@ -225,7 +231,7 @@ const TRAIT_JOB={E:"행사 진행자",A:"상담사",C:"기획자",N:"작가",O:"
 const SAVE_URL="https://script.google.com/macros/s/AKfycbyTH-Q1YT90015gFUapUB1SBi_sUt45xvQaD0DmbIp4_0fQ1PwpkuAD5q4P_9eobedZ/exec";
 function vTeaser(){setFam(VT.J.code);tvTrack("ViewContent",{content_name:"personality_free"});const B=big5(R.a),c=VT.J.code;
  /* 11/17 대표: 목소리·성격 데이터 모두 시트에 — 결과를 처음 볼 때(답이 바뀌면 다시) 이름 없이 '성격검사' 탭으로. 짝 코드(rid)로 목소리 행과 이어진다 */
- const sig=R.a.join("")+(VT.rid||"");if(R.sentP!==sig){R.sentP=sig;save();fetch(SAVE_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({type:"personality",src:"web",utm:window.TV_SRC||"",code:c,sex:VT.sex||"",age:VT.age||null,a:R.a,m2:VT.m2||null,rid:VT.rid||""})}).catch(()=>{R.sentP=null;save()})}
+ const sig=R.a.join("")+(VT.rid||"");if(R.sentP!==sig){R.sentP=sig;save();fetch(SAVE_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({type:"personality",src:"web",utm:window.TV_SRC||"",code:c,sex:VT.sex||"",age:VT.age||null,a:R.a,m2:VT.m2||null,rid:VT.rid||"",staff:window.TV_STAFF?1:0})}).catch(()=>{R.sentP=null;save()})}
  show(`<div><div class="kicker">목소리 × 성격 결과</div><h1 class="title">${hl(headline(B))}</h1><p class="sub">답해 주신 10문항으로 본 성격의 큰 방향이에요.</p></div>
 ${heroCard(c,VT.sex,"1분 목소리 테스트로 찾은 내 유형")}
 <div class="card"><h2>나의 성격</h2>${radarSVG(TRAITS.map(([k,nm])=>[nm,B[k]]))}<p class="small" style="text-align:center">높고 낮음은 좋고 나쁨이 아니라 성향의 방향이에요.</p>
@@ -237,7 +243,8 @@ ${R.waitlisted?`<p><b>신청했어요 ✓</b> 앱이 나오면 ${esc(R.waitliste
 <label class="agree"><input type="checkbox" id="wc"><span>앱 출시 알림을 위해 이름과 휴대폰 번호를 터칭보이스에 저장하는 데 동의해요. 알림을 보낸 뒤에는 지워요. <a href="privacy.html" target="_blank" rel="noopener">개인정보처리방침</a></span></label>
 <p class="small" id="werr" style="color:#c0392b" role="alert"></p>
 <button class="btn pri block" id="wgo">앱 나오면 알림 받기</button>`}</div>
-<a class="btn block" href="voicetest.html?${R.preview?"free":"paid"}=new">다시 검사하기</a>
+<a class="btn block" href="voicetest.html?${R.preview?"free":"paid"}&hear" onclick="tvEvent('목소리다시듣기')">달라진 내 목소리 다시 듣기</a>
+<a class="btn ghost block" href="voicetest.html?${R.preview?"free":"paid"}=new" onclick="tvEvent('다시검사')">다시 검사하기</a>
 ${BIZ}`);
  const g=$("#wgo");if(g)g.onclick=()=>{const name=$("#wn").value.trim(),phone=$("#wp").value.replace(/\D/g,""),e=$("#werr");
   if(!name){e.textContent="이름을 적어 주세요";return}if(!/^01[016789]\d{7,8}$/.test(phone)){e.textContent="휴대폰 번호를 확인해 주세요";return}if(!$("#wc").checked){e.textContent="동의에 체크해 주세요";return}

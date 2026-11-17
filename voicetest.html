@@ -428,7 +428,13 @@ p,li,small,.fine,.muted{text-wrap:pretty}
  if(META_PIXEL_ID){!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init',META_PIXEL_ID);fbq('track','PageView')}
  if(GA_ID){const sc=document.createElement("script");sc.async=true;sc.src="https://www.googletagmanager.com/gtag/js?id="+GA_ID;document.head.appendChild(sc);window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments)};gtag("js",new Date());gtag("config",GA_ID)}
  const STD={ViewContent:1,InitiateCheckout:1,Purchase:1};
- window.tvTrack=(ev,p)=>{try{if(window.fbq)fbq(STD[ev]?"track":"trackCustom",ev,p||{});if(window.gtag)gtag("event",ev,p||{})}catch(e){}};
+ /* 11/17 대표: 가능성 재기 — 단계마다 익명 이벤트 한 줄을 저장 서버 '방문기록' 탭으로(이름·녹음·연락처 없음). 주소에 ?staff 를 붙여 한 번 열면 이 기기는 '내부'로 표시돼 걸러 볼 수 있다 */
+ let sid="",staff=false;try{sid=localStorage.getItem("tv_sid")||"";if(!sid){sid=Date.now().toString(36)+Math.random().toString(36).slice(2,7);localStorage.setItem("tv_sid",sid)}if(q.has("staff"))localStorage.setItem("tv_staff","1");staff=localStorage.getItem("tv_staff")==="1"}catch(e){}
+ window.TV_STAFF=staff;
+ window.tvEvent=(name,code)=>{try{fetch("https://script.google.com/macros/s/AKfycbyTH-Q1YT90015gFUapUB1SBi_sUt45xvQaD0DmbIp4_0fQ1PwpkuAD5q4P_9eobedZ/exec",{method:"POST",mode:"no-cors",keepalive:true,headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({type:"event",ev:String(name).slice(0,40),src:window.TV_SRC||"",sid,staff,page:(location.pathname.split("/").pop()||"")+location.search.slice(0,24),code:code||""})})}catch(e){}};
+ window.tvEvent("방문");
+ const KR={StartTest:"시작",RecordDone:"녹음완료",CompleteTest:"검사완료",ViewContent:"보기",Lead:"알림신청",InitiateCheckout:"결제시작",Purchase:"결제"};
+ window.tvTrack=(ev,p)=>{window.tvEvent((KR[ev]||ev)+(p&&p.content_name?":"+p.content_name:""));try{if(window.fbq)fbq(STD[ev]?"track":"trackCustom",ev,p||{});if(window.gtag)gtag("event",ev,p||{})}catch(e){}};
 })();
 </script>
 </head>
@@ -610,8 +616,8 @@ const lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
 const runs=()=>+lsGet(RUNS_KEY)||0;
 const sitKey=()=>SITS[S.sit]?S.sit:"intro";
 /* 11/4 대표: 한 번 끝낸 사람은 정보·질문 없이 '다시 녹음하기'로 바로 다시 잰다(상황 문장은 녹음 화면에서 바꿀 수 있다) */
-function reRecord(){const keep={};["friend","friendRate","group","cv","name","sex","age","job","teacher","sit"].forEach(k=>{if(S[k]!==undefined)keep[k]=S[k]});S={...keep};REC.r1=REC.r2=REC.t=null;save();go("prep")}
-function newRun(){const keep=S.demo?{}:{name:S.name,sex:S.sex,age:S.age,job:S.job},n=runs();REC.r1=REC.r2=REC.t=null;S={friend:S.friend,friendRate:S.friendRate,group:S.group,cv:S.cv,...keep,sit:n?SIT_ORDER[n%SIT_ORDER.length]:"intro"};save()}
+function reRecord(){const keep={};["friend","friendRate","group","cv","name","sex","age","job","teacher","sit"].forEach(k=>{if(S[k]!==undefined)keep[k]=S[k]});S={...keep};REC.r1=REC.r2=REC.t=null;recDrop();save();go("prep")}
+function newRun(){const keep=S.demo?{}:{name:S.name,sex:S.sex,age:S.age,job:S.job},n=runs();REC.r1=REC.r2=REC.t=null;recDrop();S={friend:S.friend,friendRate:S.friendRate,group:S.group,cv:S.cv,...keep,sit:n?SIT_ORDER[n%SIT_ORDER.length]:"intro"};save()}
 const $=s=>document.querySelector(s);
 const view=$("#view");
 const later=(fn,ms)=>{const t=setTimeout(fn,ms);timers.push(t);return t};
@@ -734,7 +740,7 @@ R.rec1=err=>({top:{back:()=>go("prep"),label:"녹음 1 / 2"},html:`
 ${runs()&&!PAID?`<div class="card"><div class="lbl">이번엔 어떤 상황의 내 목소리를 들어 볼까요?</div><div class="chips" id="sit">${SIT_ORDER.map(k=>`<button class="chip ${sitKey()===k?"on":""}" data-v="${k}">${SITS[k][0]}</button>`).join("")}</div></div>`:""}
 <p class="sentence">${SITS[sitKey()][2]}</p>${err?`<p class="err">${err}</p>`:""}
 ${micHTML("버튼을 누르고 읽어 주세요")}`,
- bind(){const sc=$("#sit");if(sc)sc.onclick=e=>{const b=e.target.closest("button");if(!b)return;S.sit=b.dataset.v;save();go("rec1")};bindMic({maxSec:20,onDone:r=>{REC.r1=r;later(()=>go("rec2"),500)}})}});
+ bind(){const sc=$("#sit");if(sc)sc.onclick=e=>{const b=e.target.closest("button");if(!b)return;S.sit=b.dataset.v;save();go("rec1")};bindMic({maxSec:20,onDone:r=>{REC.r1=r;recKeep(r);later(()=>go("rec2"),500)}})}});
 R.rec2=()=>({top:{back:()=>go("rec1"),label:"녹음 2 / 2"},html:`
 <div><div class="kicker">녹음 2 · '아~' 길게</div><h1 class="title">숨을 크게 들이쉬고, 편한 높이로 '아~'</h1></div>
 <div class="card"><p>숨이 다할 때까지 한 음으로 길게 내 주세요. 힘들면 언제든 멈춰도 괜찮아요.</p></div>
@@ -923,7 +929,7 @@ R.wait=()=>({html:`<div class="reveal"><div class="rv-stage" style="width:min(20
 <h1 class="title">목소리를 듣는 중…</h1><div class="wait-steps" id="ws">${["높이 재는 중","빠르기 재는 중","숨결 듣는 중","오르내림 살피는 중","컨디션 살피는 중"].map(t=>`<div><i></i>${t}</div>`).join("")}</div></div>`,
  bind(){const ds=[...view.querySelectorAll("#ws div")];ds.forEach((d,i)=>later(()=>d.classList.add("on"),300+i*450));
   later(()=>{Promise.all([resample(REC.r1.x,REC.r1.sr),resample(REC.r2.x,REC.r2.sr)]).then(a=>{const nd=S.noiseDb==null?noiseFloor(a[0]):S.noiseDb;
-   const s=analyzeSentence(a[0],nd,sylOf(SITS[sitKey()][2])),v=analyzeVowel(a[1],nd);S.m={s,v,noiseDb:nd,c:condMeasure(a[1])};const sp=finishTest();if(PAID)Promise.race([sp,new Promise(r=>setTimeout(r,8000))]).then(()=>location.href="voicereport.html",()=>location.href="voicereport.html");else go("reveal")}).catch(e=>go("rec1",(e&&e.message?e.message:"분석하지 못했어요")+" — 다시 녹음해 주세요."))},2100)}});
+   const s=analyzeSentence(a[0],nd,sylOf(SITS[sitKey()][2])),v=analyzeVowel(a[1],nd);S.m={s,v,noiseDb:nd,c:condMeasure(a[1])};const sp=finishTest();if(PAID)go("hear");else go("reveal")}).catch(e=>go("rec1",(e&&e.message?e.message:"분석하지 못했어요")+" — 다시 녹음해 주세요."))},2100)}});
 function finishTest(){const J=judge(S.m);S.J=J;setFam(J.code);save();if(!S.demo){tvTrack("CompleteTest",{content_name:J.code});try{localStorage.setItem(RUNS_KEY,String(runs()+1));if(sitKey()==="intro")localStorage.setItem(BASE_KEY,J.code)}catch(e){}}return sendRecord()||Promise.resolve()}
 R.reveal=()=>{const J=S.J,T=TYPES[J.code];return{html:`
 <div class="reveal">
@@ -1103,6 +1109,19 @@ function hexCard(m,A,code){const L=hexVals(m,A),s=[...L].sort((a,b)=>b[1]-a[1]);
  <div class="hx-sum"><img src="${img.char(code)}" alt=""><p style="margin:0"><b>${jo(s[0][0],"이","가")} 가장 큰 무기</b>예요. ${jo(s.at(-1)[0],"을","를")} 채우면 더 멀리 가요.</p></div>
  <div class="lbl">이 목소리가 잘 어울리는 일</div>${jobChips(FIT_JOBS[code]||[])}
  <p class="small" style="text-align:center;margin:0">100에 가까울수록 그 힘이 커요 · 재미로 봐 주세요</p></section>`}
+/* 11/17 대표: '주파수 보강으로 달라진 내 목소리'가 제일 좋은 경험 — 녹음(문장 읽기)은 이 기기 안(IndexedDB)에만 남겨 다시 와도 들을 수 있게. 서버로는 안 보냄 */
+const idb=(mode,fn)=>new Promise((res,rej)=>{const o=indexedDB.open("tv_vt",1);o.onupgradeneeded=()=>o.result.createObjectStore("rec");o.onsuccess=()=>{const t=o.result.transaction("rec",mode),q=fn(t.objectStore("rec"));t.oncomplete=()=>res(q&&q.result);t.onerror=()=>rej(t.error)};o.onerror=()=>rej(o.error)});
+const recKeep=r=>idb("readwrite",st=>st.put({x:r.x,sr:r.sr,micHz:r.micHz||null},"r1")).catch(()=>{});
+const recLoad=()=>idb("readonly",st=>st.get("r1")).catch(()=>null);
+const recDrop=()=>idb("readwrite",st=>st.delete("r1")).catch(()=>{});
+let BOOST_C="fill";
+/* 목소리+성격(?paid): 녹음 분석이 끝나면 성격 결과 전에 '달라진 내 목소리'부터 */
+R.hear=()=>{const J=S.J,m=S.m,b=m.s.bands,A=attrScore(m);return{html:`
+<div><div class="kicker">목소리 결과 · ${TYPES[J.code][1]}</div><h1 class="title">달라진 내 목소리를<br>먼저 들어 볼까요?</h1><p class="muted">부족한 소리를 채우거나 캐릭터처럼 바꿔서 들려 드려요.</p></div>
+${REC.r1?boostCard(b):`<section class="card"><p class="small">녹음이 이 기기에 남아 있지 않아요. 다시 검사하면 달라진 목소리를 들을 수 있어요.</p></section>`}
+${hexCard(m,A,J.code)}
+<button class="btn pri block shine" id="toRep">내 성격 결과 보기</button>`,
+ bind(){if(REC.r1)mountBoost(b);$("#toRep").onclick=()=>{tvEvent("성격결과로");location.href="voicereport.html"}}}};
 const deepCTA=()=>`<section class="card"><div class="kicker">목소리 × 성격 테스트</div><h2>더 자세한 내 목소리 알아보기</h2><p class="muted">성격 10문항에 답하고 문장을 한 번 더 읽으면, 내 목소리와 성격을 함께 풀어 드려요. 2분이면 돼요.</p><button class="btn pri block shine" id="deep">더 자세한 내 목소리 알아보기</button></section>`;
 R.quiz=()=>{const v=vrGet();if(v.sc!==7||!Array.isArray(v.a))v.a=[];v.sc=7;const n=()=>v.a.filter(x=>x>=1&&x<=7).length,lbl=()=>qDone(v)?(PAID?"결과 보기":"다음 · 문장 한 번 더 읽기"):n()+" / 10 답했어요";
  return{top:{back:()=>go(PAID&&!S.J?"rec2":"result"),label:PAID?"성격 10문항":"더 자세히 · 1 / 2"},html:`
@@ -1167,7 +1186,7 @@ function boostRender(r,pl){const p=Math.pow(2,(pl.st||0)/12),tempo=pl.tempo||1;
   const x=new Float32Array(y.length);for(let i=0;i<y.length;i++)x[i]=y[i]*k;return{x,sr:r.sr}})}
 const charPlan=c=>({st:c[0]==="L"?-2:2,tempo:c[1]==="A"?1.15:0.85,br:c[2]==="D"?-1:1,k:c[3]==="T"?1.5:0.6,g:c[2]==="D"?[0,1,3,-2]:[0,-1,-1,2],
  text:[c[0]==="L"?"낮게":"높게",c[1]==="A"?"조금 빠르게":"조금 느리게",c[2]==="D"?"숨소리 빼고 또렷하게":"숨결을 섞어서",c[3]==="T"?"오르내림을 크게":"오르내림을 차분하게"].join(" · ")});
-const boostCard=b=>`<section class="card"><div class="kicker">바꿔서 들어 보기</div><h2>캐릭터처럼 바꾼 내 목소리</h2>
+const boostCard=b=>`<section class="card"><div class="kicker">달라진 내 목소리</div><h2>채우거나, 캐릭터처럼 바꿔 듣기</h2>
  <p class="muted">캐릭터를 고르면 내 녹음을 그 목소리 쪽으로 바꿔 들려 드려요. 원래 목소리와 번갈아 들어 보세요. 크기는 똑같이 맞췄어요.</p>
  <div class="bchars" id="bchars">${["fill",...Object.keys(TYPES)].map(c=>`<button class="bc${c==="fill"?" on":""}" data-c="${c}" type="button">${c==="fill"?`<span class="bc-fill">채우기</span>`:`<img src="${img.char(c)}" alt="" loading="lazy">`}<small>${c==="fill"?"부족한 소리만":TYPES[c][1]}</small></button>`).join("")}</div>
  <p class="small" id="boostDesc">${boostPlan(b).text}</p>
@@ -1175,7 +1194,7 @@ const boostCard=b=>`<section class="card"><div class="kicker">바꿔서 들어 �
  <p class="small">녹음은 이 기기 안에서만 바꾸고, 비슷하게 흉내 낸 소리예요. 원하는 목소리를 정하고 매일 연습하는 건 앱에서 할 수 있어요.</p>
  ${APP_LINK?`<a class="btn block" href="${APP_LINK}">앱에서 원하는 목소리 연습하기</a>`:S.waitlisted?`<div class="target"><span>출시 알림</span><b>신청했어요 ✓ 앱이 나오면 알려 드릴게요</b></div>`:`<button class="btn block" id="wl2">앱 나오면 알림 받기</button>`}</section>`;
 function mountBoost(b){const o=$("#hearOrig"),slot=$("#boostSlot"),desc=$("#boostDesc"),row=$("#bchars");if(!o||!slot)return;mountPlayer(o,REC.r1);const w=$("#wl2");if(w)w.onclick=()=>go("waitlist");let tok=0;
- const make=c=>{const my=++tok,pl=c==="fill"?{...boostPlan(b)}:charPlan(c),lab=c==="fill"?"채운 내 목소리":`'${TYPES[c][1]}'처럼 바꾼 내 목소리`;desc.textContent=pl.text;slot.innerHTML=`<p class="small">바꾼 목소리를 만드는 중…</p>`;
+ const make=c=>{BOOST_C=c;const my=++tok,pl=c==="fill"?{...boostPlan(b)}:charPlan(c),lab=c==="fill"?"채운 내 목소리":`'${TYPES[c][1]}'처럼 바꾼 내 목소리`;desc.textContent=pl.text;slot.innerHTML=`<p class="small">바꾼 목소리를 만드는 중…</p>`;
   setTimeout(()=>boostRender(REC.r1,pl).then(r=>{if(my!==tok||!slot.isConnected)return;slot.innerHTML=pbarHTML("hearBoost",lab,r);mountPlayer($("#hearBoost"),r)}).catch(()=>{if(my===tok)slot.innerHTML=`<p class="small">이 브라우저에서는 바꾼 목소리를 만들지 못했어요.</p>`}),30)};
  row.onclick=e=>{const bt=e.target.closest(".bc");if(!bt)return;row.querySelectorAll(".bc").forEach(x=>x.classList.toggle("on",x===bt));make(bt.dataset.c)};make("fill")}
 R.goal=sel=>{const J=S.J,my=J.code,cur=sel||S.target||null,plan=cur?axisPlan(my,cur):null;
@@ -1251,6 +1270,7 @@ ${S.demo?`<section class="card cta" style="flex-direction:row;align-items:center
   <p class="hc-line">“${LINES[J.code]}”</p>
 </section>
 ${hexCard(m,A,J.code)}
+${S.demo||!REC.r1?"":boostCard(b)}
 ${shareRow()}
 ${S.demo?"":deepCTA()}
 <section class="card cmp-card">
@@ -1264,7 +1284,6 @@ ${S.demo?"":deepCTA()}
 ${m.s.regs4?regCard(m.s.regs4,m.s):""}
 ${toneCard(b)}
 </details>
-${S.demo||!REC.r1?"":boostCard(b)}
 <section class="card"><div class="kicker">재미로 보는 두 가지</div>
   <div class="fun2"><div><small>목소리 나이</small><div class="big-num"><span id="ageN">0</span><small style="font-size:18px;color:var(--fg)">세</small></div><p class="small">${ageBand(J.age)} · ${ageMsg}</p></div>
   <div><small>${A.label}</small><div class="big-num" style="color:var(--fam-ui)"><span id="attrN">0</span><small style="font-size:18px;color:var(--fg)">%</small></div><p class="small">${A.line}</p></div></div>
@@ -1283,7 +1302,7 @@ ${BIZ}`,
  bind(){later(()=>{view.querySelectorAll(".band i").forEach(i=>i.style.height=i.dataset.h+"%");countUp($("#ageN"),0,J.age,1200);countUp($("#attrN"),0,A.pct,1200)},250);
   bindShare(view);const gl=$("#goal");if(gl)gl.onclick=()=>go("goal");const dp=$("#deep");if(dp)dp.onclick=goDeep;const chs=$("#chemShare");if(chs)chs.onclick=()=>shareAct("more");const cc=$("#chemCard");if(cc)cc.onclick=()=>shareChem().catch(()=>toast("카드를 만들지 못했어요"));const gg=$("#grpGo");if(gg)gg.onclick=groupShare;view.querySelectorAll("#duoGo").forEach(b=>b.onclick=()=>go("duo"));view.querySelectorAll("[data-cv]").forEach(b=>b.onclick=()=>{const f=S.friend,me=S.J.code;chemVote(b.dataset.cv,b.dataset.cvk,{f,me,name:chemOf(f,me)[0],score:chemScore(f,me,S.friendRate,myRate()),fr:S.friendRate||null,mr:+myRate().toFixed(2),conv:null})});mountBoost(b);const hm=$("#hearMe");if(hm)mountPlayer(hm,REC.r1);
   const mi=$("#mine");if(mi)mi.onclick=()=>{newRun();go("info")};
-  const ag=$("#again");if(ag)ag.onclick=()=>{if(PAID){location.href="voicetest.html?"+(vrGet().preview?"free":"paid")+"=new";return}newRun();go("landing")};const rr=$("#rerec");if(rr)rr.onclick=reRecord;
+  const ag=$("#again");if(ag)ag.onclick=()=>{tvEvent("다시검사");if(PAID){location.href="voicetest.html?"+(vrGet().preview?"free":"paid")+"=new";return}newRun();go("landing")};const rr=$("#rerec");if(rr)rr.onclick=reRecord;
   view.querySelectorAll(".rgrid .rt").forEach(p=>p.onclick=()=>S.demo?startDemo(p.dataset.c,true):typeSheet(p.dataset.c))}}};
 function wavBlob(x,sr){const n=x.length,b=new ArrayBuffer(44+n*2),v=new DataView(b),w=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i))};w(0,"RIFF");v.setUint32(4,36+n*2,true);w(8,"WAVE");w(12,"fmt ");v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,sr,true);v.setUint32(28,sr*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);w(36,"data");v.setUint32(40,n*2,true);for(let i=0;i<n;i++){const s=Math.max(-1,Math.min(1,x[i]));v.setInt16(44+i*2,s<0?s*0x8000:s*0x7fff,true)}return new Blob([b],{type:"audio/wav"})}
 /* 재생 바 — 재생·일시정지·위치 옮기기 */
@@ -1295,7 +1314,7 @@ function mountPlayer(el,r){const a=new Audio(URL.createObjectURL(wavBlob(r.x,r.s
  const ui=()=>{const t=a.currentTime;bar.style.width=cl(100*t/dur,0,100)+"%";tm.textContent=fmtT(t)+" / "+fmtT(dur);const on=!a.paused;btn.innerHTML=on?IC_PAUSE:IC_PLAY;btn.setAttribute("aria-label",on?"일시정지":"재생")};
  const tick=()=>{if(!el.isConnected){a.pause();return}ui();if(!a.paused)requestAnimationFrame(tick)};
  a.onplay=tick;a.onpause=ui;a.onended=()=>{a.currentTime=0;ui()};
- btn.onclick=()=>{if(a.paused)a.play().catch(()=>toast("재생하지 못했어요"));else a.pause()};
+ btn.onclick=()=>{if(a.paused){if(el.id==="hearBoost")tvEvent("바뀐목소리재생:"+BOOST_C,S.J&&S.J.code);else if(el.id==="hearOrig")tvEvent("원래목소리재생");a.play().catch(()=>toast("재생하지 못했어요"))}else a.pause()};
  const tr=el.querySelector(".pb-track"),seek=e=>{const R=tr.getBoundingClientRect();a.currentTime=cl((e.clientX-R.left)/R.width,0,1)*dur;ui()};
  tr.onpointerdown=e=>{seek(e);try{tr.setPointerCapture(e.pointerId)}catch(_){}tr.onpointermove=seek};tr.onpointerup=tr.onpointercancel=()=>{tr.onpointermove=null};ui()}
 /* 측정값은 화면에 보여 주지 않고 터칭보이스 내부 서버로만 보낸다. 받는 곳 = 시트 "터칭보이스_목소리유형테스트"(machlayim)의 쓰기 전용 Apps Script(voicetype_store.gs). 비우면 보내지 않는다. */
@@ -1304,7 +1323,7 @@ const SAVE_URL="https://script.google.com/macros/s/AKfycbyTH-Q1YT90015gFUapUB1SB
 function recQ(){const rs=[REC.r1,REC.r2].filter(Boolean);if(!rs.length)return"";if(rs.some(r=>r.file))return"파일";const hz=Math.min(...rs.map(r=>r.micHz||r.sr)),k=+(hz/1000).toFixed(1)+"kHz";return hz>=44100?k:k+" 낮음(이어폰 추정)"}
 function serverRecord(){const m=S.m,J=S.J,s=m.s,v=m.v,A=attrScore(m),n=(x,d)=>x==null||!isFinite(x)?null:+(+x).toFixed(d);
  if(!S.rid)S.rid=Date.now().toString(36)+Math.random().toString(36).slice(2,8);/* 11/17 짝 코드: 성격검사 탭과 같은 사람 잇기 */
- return{type:"voicetype",ver:3,src:"web",rid:S.rid,utm:window.TV_SRC||"",sit:sitKey(),sitName:SITS[sitKey()][0],at:new Date().toISOString(),sex:S.sex,age:S.age,job:S.job||"",code:J.code,
+ return{type:"voicetype",ver:3,src:"web",rid:S.rid,staff:window.TV_STAFF?1:0,utm:window.TV_SRC||"",sit:sitKey(),sitName:SITS[sitKey()][0],at:new Date().toISOString(),sex:S.sex,age:S.age,job:S.job||"",code:J.code,
   f0:n(s.f0,1),stRel:n(J.stRel,2),rangeSt:n(s.rangeSt,2),sdSt:n(s.sdSt,2),rate:n(s.rate,2),syl:s.syl,speakDur:n(s.speakDur,2),dbsd:n(s.dbsd,2),dyn:n(s.dyn,1),snr:n(s.snr,1),endSlope:n(s.endSlope,2),bands:s.bands.map(b=>n(b,1)),
   mpt:n(v.mpt,2),hnr:n(v.hnr,2),regs4:s.regs4?s.regs4.map(x=>n(x,1)):null,vspace:n(s.vspace,0),sylc:n(s.sylc,1),pauses:s.pauses,voiceOnly:true,cpp:n(v.cpp,3),trem:n(v.trem,3),noiseDb:n(m.noiseDb,1),cond:m.c||null,
   score:J.sc,total:J.total,voice:J.voice,voiceAge:n(J.age,1),attr:A.pct,attrParts:Object.fromEntries(Object.entries(A.parts).map(([k,x])=>[k,n(x,2)])),recQ:recQ()}}
@@ -1362,7 +1381,7 @@ async function cardFile(){if(!CARD||CARD.code!==S.J.code){const c=await makeCard
 async function saveCard(){const f=await cardFile();if(isIOS()&&canFiles(f)){toast("나오는 창에서 '이미지 저장'을 눌러 주세요");try{await navigator.share({files:[f]})}catch(e){}return}
  const a=document.createElement("a");a.href=CARD.url;a.download=f.name;document.body.appendChild(a);a.click();a.remove();toast("이미지를 저장했어요")}
 function bindShare(root){root.querySelectorAll("[data-sh]").forEach(b=>b.onclick=()=>shareAct(b.dataset.sh))}
-async function shareAct(k){
+async function shareAct(k){tvEvent("공유:"+k,S.J&&S.J.code);
  if(k==="link"){copy(shareText()+" "+shareURL());return}
  if(k==="save"){saveCard();return}
  if(k==="more"){const f=await cardFile();if(canFiles(f)){try{await navigator.share({files:[f],text:shareText()+" "+shareURL()})}catch(e){}}else if(navigator.share){navigator.share({title:"너는 어떤 목소리야?",text:shareText(),url:shareURL()}).catch(()=>{})}else copy(shareText()+" "+shareURL());return}
@@ -1406,7 +1425,8 @@ if(Q.has("shot"))document.documentElement.classList.add("noanim");
  /* 11/5 대표: 예시 결과를 먼저 보여 주지 않는다 — 예전에 예시를 열어 둔 기기도 첫 화면부터 */
  /* 11/16 대표: 목소리 검사와 성격 10문항을 하나로 — ?paid 는 녹음 2번 → 10문항 → 분석 → 레포트(결제). ?free 는 같은 길에서 결제 없이 레포트(결과는 기기에 남음). ?free=new 는 이 기기 결과를 비우고 처음부터(시험용) */
  else if(Q.get("free")==="new"||Q.get("paid")==="new"){/* 11/17 대표: 다시 검사하기 — 이 기기 결과를 비우고 처음부터(알림 신청 표시는 남김) */const old=vrGet(),fr=Q.get("free")==="new";S={friend:S.friend};REC.r1=REC.r2=null;save();vrSet({sc:7,a:[],preview:fr,ck:old.ck,waitlisted:old.waitlisted});try{history.replaceState(null,"",fr?"?free":"?paid")}catch(e){}go("landing")}
- else if(S.J&&!S.demo){setFam(S.J.code);if(PAID)qDone(vrGet())?location.replace("voicereport.html"):go("quiz");else go("result")}else{if(S.demo)newRun();go("landing")}}
+ else if(S.J&&!S.demo){setFam(S.J.code);if(PAID)qDone(vrGet())?(Q.has("hear")||S.at==="hear"?go("hear"):location.replace("voicereport.html")):go("quiz");else go("result");
+  recLoad().then(r=>{if(r&&r.x&&!REC.r1){REC.r1=r;if(S.at==="result"||S.at==="hear")go(S.at)}})}else{if(S.demo)newRun();go("landing")}}
 document.fonts&&document.fonts.ready.then(()=>fitLn(document));
 })();
 </script>
