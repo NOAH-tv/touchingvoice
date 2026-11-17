@@ -2,6 +2,8 @@ import { VOICE_PRESETS } from './voice-presets.js?v=monitor-fix-20260913';
 import { FOCUS_FEATURES, FOCUS_DEFAULTS, FEMALE_FOCUS_PRESET, FEMALE_FOCUS_DEFAULTS } from './spectral-focus.js?v=monitor-fix-20260913';
 import { sanitizePersonalModel, personalResponseRange } from './personal-calibration.js?v=monitor-fix-20260913';
 
+import {RESPONSE_VERSION,isNewResponse,responseQuality,adjustResponseTarget} from './response-policy.js?v=response-20261117';
+
 /**
  * TouchingVoice per-singer calibration. No network or browser dependencies.
  * Values describe a visual response to audio, not measured muscle activity.
@@ -44,7 +46,7 @@ export const LEGACY_PROFILE = Object.freeze({
 
 // Habitual /a/ P10/P90 response limits. Four independent cues, not a classifier.
 export const DEFAULT_PROFILE = Object.freeze({
-  ...LEGACY_PROFILE, name: '테스트 기본값 · 2026-09-13',
+  ...LEGACY_PROFILE, responseVersion: RESPONSE_VERSION, name: '테스트 기본값 · 2026-09-13',
   layers: Object.freeze(Object.fromEntries(LAYER_KEYS.map(key =>
     [key, Object.freeze(makeLayer(...FOCUS_DEFAULTS[key]))]))),
 });
@@ -95,9 +97,11 @@ export function sanitizeProfile(input = DEFAULT_PROFILE) {
   if (input.global !== undefined && !isRecord(input.global)) fail('전체 입력 설정 형식이 올바르지 않습니다.');
   if (input.layers !== undefined && !isRecord(input.layers)) fail('층위 설정 형식이 올바르지 않습니다.');
   if (input.focusPreset !== undefined && (input.focusPreset !== FEMALE_FOCUS_PRESET || input.voicePreset !== 'female')) fail('지원하지 않는 음향 대역 기준입니다.');
+  if (input.responseVersion !== undefined && input.responseVersion !== RESPONSE_VERSION) fail('지원하지 않는 반응 계산 버전입니다.');
   const global = input.global || {};
   const result = {
     schemaVersion: 1,
+    ...(input.responseVersion ? {responseVersion:input.responseVersion} : {}),
     name: (input.name ?? DEFAULT_PROFILE.name).replace(/[\u0000-\u001f\u007f]/g, '').trim().slice(0, 80) || '이름 없는 프로필',
     global: {
       noiseGateDb: number(global.noiseGateDb, -48, -96, -6, '무음 기준'),
@@ -147,8 +151,9 @@ export function sanitizeProfile(input = DEFAULT_PROFILE) {
 export function processLayers(features, profile = DEFAULT_PROFILE, previous = {}, dtMs = 1000 / 30) {
   const input = features || {};
   const gainDb = profile.global.inputGainDb;
+  const current=isNewResponse(profile),quality=current?responseQuality(input,profile):null;
   const valid = input.valid === true && Number.isFinite(input.level)
-    && input.level + gainDb >= profile.global.noiseGateDb;
+    && input.level + gainDb >= profile.global.noiseGateDb && (!current||quality.valid);
   const raw = {}, levels = {};
   const dt = Number.isFinite(dtMs) ? clamp(dtMs, 0, 1000) : 1000 / 30;
   for (const key of LAYER_KEYS) {
@@ -159,12 +164,13 @@ export function processLayers(features, profile = DEFAULT_PROFILE, previous = {}
       const value = feature + (layer.feature === 'level' ? gainDb : 0);
       const personal = personalResponseRange(profile.personalModel, key, input, profile);
       const low = personal?.inputMin ?? layer.inputMin, high = personal?.inputMax ?? layer.inputMax;
-      const normalized = clamp((value - low) / (high - low), 0, 1);
+      const normalized = clamp((value - low) / (high - low) * (current ? .7 : 1), 0, 1);
       const curved = Math.pow(normalized, layer.gamma);
       const adjusted = clamp(curved * layer.gain + layer.offset / 100, 0, 1);
       target = (layer.outputMin + adjusted * (layer.outputMax - layer.outputMin)) / 100;
       if (personal) target *= personal.attenuation;
     }
+    if(current && valid && Number.isFinite(feature)) target=adjustResponseTarget(key,target,input,profile);
     raw[key] = target;
     const old = Number.isFinite(previous[key]) ? clamp(previous[key], 0, 1) : 0;
     const tau = target > old ? layer.attackMs : layer.releaseMs;
@@ -173,7 +179,7 @@ export function processLayers(features, profile = DEFAULT_PROFILE, previous = {}
     if (!layer.enabled || (target === 0 && value < 0.0001)) value = 0;
     levels[key] = clamp(value, 0, 1);
   }
-  return { raw, levels, valid };
+  return { raw, levels, valid, responseVersion:profile.responseVersion||'legacy-profile-v1', reason:quality?.reason||null, displayValues:Object.fromEntries(LAYER_KEYS.map(k=>[k,valid?levels[k]:null])) };
 }
 
 export function percentile(values, fraction) {

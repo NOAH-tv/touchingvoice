@@ -4,22 +4,23 @@ import {config as franchiseConfig} from '../../config.js';
 import {readProtectedAsset,clearProtectedAssetCache} from '../protected-assets.js?v=practice-20260911';
 import { getContext, postParent } from '../context.js';
 const franchiseContext=getContext();
+import {activateResponseProfile,sameResponseVersion,isNewResponse} from './response-policy.js?v=response-20261117';
 import { AnatomyView } from './anatomy.js?v=nasal-smooth-20260906';
 import { ANATOMY_REFERENCE } from './anatomy-reference.js';
-import { AudioEngine } from './audio.js?v=exam-20260916';
-import { DEFAULT_PROFILE, defaultProfileUpgrade, voiceDefaultProfile, responseDefaults, FEATURES, LAYER_KEYS, sanitizeProfile, processLayers, suggestCalibration } from './tuning.js?v=monitor-fix-20260913';
+import { AudioEngine } from './audio.js?v=response-20261117';
+import { DEFAULT_PROFILE, defaultProfileUpgrade, voiceDefaultProfile, responseDefaults, FEATURES, LAYER_KEYS, sanitizeProfile, processLayers, suggestCalibration } from './tuning.js?v=response-20261117';
 import { store, uid, downloadBlob } from './storage.js';
 import { icon, hydrateIcons } from './icons.js?v=magnifier-20260906';
-import { CORE_MODES, createSessionAccumulator } from './session-metrics.js';
+import { CORE_MODES, createSessionAccumulator } from './session-metrics.js?v=response-20261117';
 import { captureChunksToWav } from './pcm-capture.js?v=pcm24-20260910';
-import { createVoiceMetricsAccumulator, compareVoiceReports } from './pro-metrics.js';
-import { mountGuidedCalibration } from './guided-calibration-controller.js?v=exam-20260916';
+import { createVoiceMetricsAccumulator, compareVoiceReports } from './pro-metrics.js?v=response-20261117';
+import { mountGuidedCalibration } from './guided-calibration-controller.js?v=response-20261117';
 import { mountCalibrationLibrary } from './calibration-library.js';
 import { CalibrationLibraryService, observationFromRecord } from './calibration-library-service.js';
 import { buildPersonalModel } from './personal-calibration.js?v=monitor-fix-20260913';
 import { mountStudioTools } from './studio-tools.js?v=exam-20260916';
-import { FileAnalysisService } from './file-analysis-service.js?v=monitor-fix-20260913';
-import { mountFileAnalysisView } from './file-analysis-view.js?v=history-20260916';
+import { FileAnalysisService } from './file-analysis-service.js?v=response-20261117';
+import { mountFileAnalysisView } from './file-analysis-view.js?v=response-20261117';
 import { ANALYZER_FIELDS } from './analyzer-metrics.js?v=monitor-fix-20260913';
 import { mountParticipantIntake } from './participant-intake.js?v=exam-20260916';
 import { resolveParticipant } from './participant-data.js';
@@ -98,7 +99,7 @@ function ensureAnatomyLoaded(){
 
 const engine = new AudioEngine({
   getProfile:effectiveProfile, beforeStartMic:ensureVoiceSelection,
-  onFrame(frame){guidedCalibration?.onFrame(frame);studioTools?.onFrame(frame);lastFrame=frame;const frameNow=performance.now()/1000;proHistory.push({t:frameNow,f0:frame.features.valid?frame.features.f0:null});while(proHistory.length&&proHistory[0].t<frameNow-10)proHistory.shift();if(freeVoiceAccumulator&&audioState.recording&&!coreRun)freeVoiceAccumulator.add(frame);if(coreRun){const now=performance.now()/1000;const mapped=processLayers(frame.features,coreRun.snapshot.profile,coreRun.levels,Math.min(200,(now-coreRun.lastFrameTime)*1000));coreRun.levels=mapped.levels;coreRun.lastFrameTime=now;coreRun.accumulator.add({...frame,time:now},mapped.levels);coreRun.voiceAccumulator.add(frame);}if(capture){capture.frames.push({...frame.features});if(performance.now()-capture.start>=5000)finishCapture();}},
+  onFrame(frame){guidedCalibration?.onFrame(frame);studioTools?.onFrame(frame);lastFrame=frame;const frameNow=performance.now()/1000;proHistory.push({t:frameNow,f0:frame.features.valid?frame.features.f0:null});while(proHistory.length&&proHistory[0].t<frameNow-10)proHistory.shift();if(freeVoiceAccumulator&&audioState.recording&&!coreRun)freeVoiceAccumulator.add(frame);if(coreRun){const now=performance.now()/1000;const mapped=processLayers(frame.features,coreRun.snapshot.profile,coreRun.levels,Math.min(200,(now-coreRun.lastFrameTime)*1000));coreRun.levels=mapped.levels;coreRun.lastFrameTime=now;coreRun.accumulator.add({...frame,features:{...frame.features,valid:mapped.valid},time:now},mapped.levels);coreRun.voiceAccumulator.add(frame);}if(capture){capture.frames.push({...frame.features});if(performance.now()-capture.start>=5000)finishCapture();}},
   onState(state){if(state.mode!==audioState.mode||state.fileName!==audioState.fileName)clearAnalysisHistory();audioState=state;if(reportedRecording!==(state.recording===true)){reportedRecording=state.recording===true;postParent({type:'tv:recording-state',recording:reportedRecording,branchId:franchiseContext.branchId,studentId:franchiseContext.practice?'':franchiseContext.student.id});}guidedCalibration?.onState(state);renderTransport();updateLocks();if(!state.playing){lastFrame=null;cancelCapture('입력이 중지되어 수집을 취소했습니다. 다시 재생한 뒤 수집하세요.');}if(coreRun&&(!state.playing||(coreRun.source==='mic'&&!state.recording))){const reached=coreRun.source==='file'&&state.mode==='file'&&state.currentTime>=CORE_MODES[coreRun.kind].duration-.1;safe(()=>finishCore(reached));}if(loopPlayback&&!coreRun&&!coreStarting&&!coreFinishing&&!busy&&!studioSuspended&&!document.hidden&&state.mode==='file'&&!state.playing&&state.duration>0&&state.currentTime>=state.duration-.01)safe(()=>engine.play());},
   onError(error){toast(error.message,true);},
   onRecording(recording){recordingSavePromise=safe(()=>saveRecording(recording));},
@@ -269,7 +270,7 @@ async function changeVoicePreset(next){
   const target=variants[next]||{profile:{...voiceDefaultProfile(next),name:profile.name},refs:{},calibrationObservations:[],calibrationAssessment:null};
   const upgraded=!(target.calibrationObservations?.length||target.calibrationAssessment||Object.keys(target.refs||{}).length)&&defaultProfileUpgrade({...target.profile,voicePreset:next});
   if(upgraded){target.previousDefaultProfile=copy(target.profile);target.profile=upgraded;}
-  const nextProfile=sanitizeProfile({...target.profile,voicePreset:next,name:profile.name});
+  const nextProfile=sanitizeProfile(activateResponseProfile({...target.profile,voicePreset:next,name:profile.name}));
   const updated={...prior,...target,id:profileId,profile:nextProfile,voicePresetStates:variants,updatedAt:new Date().toISOString()};
   await store.put('profiles',updated);
   engine.clearInput();stopDemo();cancelCapture();clearAnalysisHistory();replayProfile=null;clearSuggestion();
@@ -292,7 +293,7 @@ async function changeProfile(id){if(id!==franchiseContext.student.id)throw new E
   if(dirty&&!confirm('저장하지 않은 튜닝 값이 있습니다. 변경을 버리고 프로필을 바꿀까요?')){renderProfileSelect();return;}
   cancelCapture();stopDemo();loopPlayback=false;replayProfile=null;engine.clearInput();clearAnalysisHistory();
   profileId=entry.id;
-  profile=sanitizeProfile(entry.profile);saved=copy(profile);refs=copy(entry.refs||{});savedRefs=copy(refs);comparing=false;clearSuggestion();markDirty();renderProfileSelect();renderTuning();renderSessions();
+  profile=sanitizeProfile(activateResponseProfile(entry.profile));saved=copy(profile);refs=copy(entry.refs||{});savedRefs=copy(refs);comparing=false;clearSuggestion();markDirty();renderProfileSelect();renderTuning();renderSessions();
 }
 async function newProfile(){throw new Error('새 학생은 운영 화면에서 등록해 주세요.');}
 async function exportProfile(){const payload={format:'touchingvoice-studio',version:1,exportedAt:new Date().toISOString(),profile:sanitizeProfile(profile),calibrationAssessment:profiles.find(p=>p.id===profileId)?.calibrationAssessment||null};const fileName=profile.name.replace(/[^\p{L}\p{N} _-]/gu,'_');await downloadBlob(new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}),`${fileName}.touchingvoice.json`);}
@@ -459,7 +460,7 @@ async function finishCore(completed){
   const duration=Math.min(CORE_MODES[run.kind].duration,(performance.now()-run.start)/1000,...(run.source==='file'?[engine.currentTime]:[]));
   // Ending a short source or a hidden screen remains a partial record.
   const report=run.accumulator.finalize({elapsed:duration,completed:Boolean(completed&&duration>=CORE_MODES[run.kind].duration-.1)});
-  report.sourceName=run.source==='file'?audioState.fileName:'마이크';run.snapshot.report=report;run.snapshot.voiceMetrics=run.voiceAccumulator.finalize();recordingSnapshot=run.snapshot;renderCore();renderTransport();updateLocks();
+  report.responseVersion=run.snapshot.profile.responseVersion||'legacy-profile-v1';report.sourceName=run.source==='file'?audioState.fileName:'마이크';run.snapshot.report=report;run.snapshot.voiceMetrics=run.voiceAccumulator.finalize();recordingSnapshot=run.snapshot;renderCore();renderTransport();updateLocks();
   try{
     if(run.source==='mic'){
       const blob=await engine.stopRecording();engine.stop();
@@ -512,12 +513,13 @@ function paint(now){
   let f=lastFrame?.features || EMPTY,wave=lastFrame?.waveform;
   if(demo){const t=now/1000;f={valid:true,level:-24,f0:220,rms:.06,clarity:.95};for(const [i,key] of LAYER_KEYS.entries()){const l=responseDefaults(profile).layers[key];f[l.feature]=l.inputMin+(l.inputMax-l.inputMin)*(.5+.4*Math.sin(t*1.4+i*1.2));}wave=Float32Array.from({length:512},(_,i)=>.12*Math.sin(i*.25+t*2)*Math.sin(i*.013));}
   const activeProfile=coreRun?.snapshot.profile||(audioState.recording&&recordingSnapshot?recordingSnapshot.profile:effectiveProfile());
-  const result=processLayers(f,activeProfile,levels,dt);levels=result.levels;
+  const mappingProfile=demo?(()=>{const p={...activeProfile};delete p.responseVersion;return p})():activeProfile;
+  const result=processLayers(f,mappingProfile,levels,dt);levels=result.levels;
   if(stageVisible){
     anatomy.setLevels(levels);
     for(const key of LAYER_KEYS){
       const level=levels[key]||0;
-      textIfChanged('hud-'+key,Math.round(level*100)+'%');
+      textIfChanged('hud-'+key,isNewResponse(mappingProfile)&&!result.valid?'—':Math.round(level*100)+'%');
       const bar=$('hud-bar-'+key),transform=`scaleX(${level.toFixed(4)})`;
       if(bar.style.width!=='100%')bar.style.width='100%';
       if(bar.style.transform!==transform)bar.style.transform=transform;
@@ -533,8 +535,8 @@ function paint(now){
   if(now-lastDetailPaint<(stageVisible?100:32))return;lastDetailPaint=now;
   if(!stageVisible){
     for(const key of LAYER_KEYS){
-      const pct=Math.round((levels[key]||0)*100),label=$('percent-'+key),width=pct+'%';
-      if(label.firstChild?.nodeValue!==String(pct))label.firstChild.nodeValue=String(pct);
+      const pct=isNewResponse(mappingProfile)&&!result.valid?'—':Math.round((levels[key]||0)*100),label=$('percent-'+key),width=typeof pct==='number'?pct+'%':'0%';
+      if(label.firstChild?.nodeValue!==String(pct))label.firstChild.nodeValue=String(pct);if(label.querySelector('small'))label.querySelector('small').textContent=pct==='—'?'':'%';
       if($('bar-'+key).style.width!==width)$('bar-'+key).style.width=width;
     }
   }
@@ -603,7 +605,7 @@ function renderComparison(){
   const table=document.createElement('table');table.className='comparison-data';table.innerHTML='<thead><tr><th>음향 지표</th><th>이전</th><th>이후</th><th>변화</th></tr></thead>';const tbody=document.createElement('tbody');
   for(const m of PRO_METRICS){const stat=m.key==='f0'?'median':'mean';let av=a.voiceMetrics?.metrics?.[m.key]?.[stat],bv=b.voiceMetrics?.metrics?.[m.key]?.[stat];if(m.key==='f0'){av??=a.report?.pitch?.median;bv??=b.report?.pitch?.median;}const delta=!same&&comparison.comparable&&Number.isFinite(av)&&Number.isFinite(bv)?bv-av:null;const tr=document.createElement('tr');for(const text of [m.name+' · '+m.unit,metricText(av,m),metricText(bv,m),deltaText(delta,m)]){const td=document.createElement('td');td.textContent=text;tr.append(td);}tbody.append(tr);}
   if(a.fileAnalysis||b.fileAnalysis)for(const field of ANALYZER_FIELDS.filter(f=>!f.key.endsWith('_relative'))){const av=a.fileAnalysis?.additionalStats?.[field.key]?.median,bv=b.fileAnalysis?.additionalStats?.[field.key]?.median,m={decimals:field.unit==='FS'?5:2},delta=!same&&comparison.comparable&&Number.isFinite(av)&&Number.isFinite(bv)?bv-av:null;const tr=document.createElement('tr');for(const text of [field.label+' · '+field.unit,metricText(av,m),metricText(bv,m),deltaText(delta,m)]){const td=document.createElement('td');td.textContent=text;tr.append(td);}tbody.append(tr);}
-  for(const key of LAYER_KEYS){const av=a.fileAnalysis?a.fileAnalysis.fileLayers?.[key]?.mean:a.report?.layers?.[key]?.mean,bv=b.fileAnalysis?b.fileAnalysis.fileLayers?.[key]?.mean:b.report?.layers?.[key]?.mean,compatible=calibrationSame&&(!(a.fileAnalysis||b.fileAnalysis)||comparison.comparable),delta=!same&&compatible&&Number.isFinite(av)&&Number.isFinite(bv)?(bv-av)*100:null;const tr=document.createElement('tr');tr.className='comparison-region';const m={decimals:0,factor:100};for(const text of [META[key].name+' 반응 · %',metricText(av,m),metricText(bv,m),delta===null?'—':deltaText(delta,{decimals:0})+' %p']){const td=document.createElement('td');td.textContent=text;tr.append(td);}tbody.append(tr);}table.append(tbody);target.append(table);
+  for(const key of LAYER_KEYS){const av=a.fileAnalysis?a.fileAnalysis.fileLayers?.[key]?.mean:a.report?.layers?.[key]?.mean,bv=b.fileAnalysis?b.fileAnalysis.fileLayers?.[key]?.mean:b.report?.layers?.[key]?.mean,compatible=calibrationSame&&sameResponseVersion(a,b)&&(!(a.fileAnalysis||b.fileAnalysis)||comparison.comparable),delta=!same&&compatible&&Number.isFinite(av)&&Number.isFinite(bv)?(bv-av)*100:null;const tr=document.createElement('tr');tr.className='comparison-region';const m={decimals:0,factor:100};for(const text of [META[key].name+' 반응 · %',metricText(av,m),metricText(bv,m),delta===null?'—':deltaText(delta,{decimals:0})+' %p']){const td=document.createElement('td');td.textContent=text;tr.append(td);}tbody.append(tr);}table.append(tbody);target.append(table);
 }
 async function replayComparison(selectId){const s=sessions.find(s=>s.id===$(selectId).value&&s.profileId===profileId);if(s)await replaySession(s);}
 async function blobExport(blob){if(!blob)return null;return await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve({encoding:'base64',mimeType:blob.type,data:String(reader.result).split(',')[1]});reader.onerror=()=>reject(reader.error);reader.readAsDataURL(blob);});}
@@ -756,7 +758,7 @@ await (async()=>{
     const updated={...activeEntry,profile:upgrade,previousDefaultProfile:copy(activeEntry.profile),updatedAt:new Date().toISOString()};
     await store.put('profiles',updated);profiles[0]=updated;
   }
-  profileId=franchiseContext.student.id;const entry=profiles[0];profile=sanitizeProfile({...entry.profile,name:franchiseContext.student.name});saved=copy(profile);refs=copy(entry.refs||{});savedRefs=copy(refs);
+  profileId=franchiseContext.student.id;const entry=profiles[0];profile=sanitizeProfile(activateResponseProfile({...entry.profile,name:franchiseContext.student.name}));saved=copy(profile);refs=copy(entry.refs||{});savedRefs=copy(refs);
   sessions=(await store.all('sessions')).filter(s=>s.profileId===profileId).sort((a,b)=>b.createdAt.localeCompare(a.createdAt));
   renderProfileSelect();renderTuning();renderSessions();
   void refreshServerHistory();

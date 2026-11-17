@@ -1,4 +1,4 @@
-import { GUIDED_TASKS, buildGuidedSequence, evaluateGuidedTask } from './guided-calibration.js';
+import { GUIDED_TASKS, buildGuidedSequence, evaluateGuidedTask } from './guided-calibration.js?v=response-20261117';
 import { createGuidedCalibrationView } from './guided-calibration-view.js?v=cumulative-20260910';
 import { ScaleTrainer } from './scale-trainer.js?v=guided-1';
 import { PcmCaptureRecorder } from './pcm-capture.js?v=pcm24-20260910';

@@ -1,4 +1,4 @@
-import { DEFAULT_PROFILE, LAYER_KEYS, clamp, percentile, sanitizeProfile } from './tuning.js?v=monitor-fix-20260913';
+import { DEFAULT_PROFILE, LAYER_KEYS, clamp, percentile, sanitizeProfile } from './tuning.js?v=response-20261117';
 
 /** Prompted acoustic calibration, not vowel recognition or anatomy assessment. */
 export const GUIDED_PROTOCOL = 'tv-guided-four-layer-v1';

@@ -4,6 +4,8 @@ import { spectralFocus } from './spectral-focus.js?v=monitor-fix-20260913';
 import { BoothMonitor, DEFAULT_MONITOR_SETTINGS, sanitizeMonitorSettings } from './booth-monitor.js?v=monitor-fix-20260913';
 import { PcmCaptureRecorder, PCM_MAX_SECONDS } from './pcm-capture.js?v=pcm24-20260910';
 
+import {createFileSpectrumAnalyzer} from './response-spectrum.js?v=response-20261117';
+import {measureResponseCue,isNewResponse} from './response-policy.js?v=response-20261117';
 const FFT_SIZE = 4096;
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 
@@ -98,6 +100,7 @@ export function analyzeFrame(waveform, spectrum, sampleRate, profile) {
   const lo = Math.max(1.25 * pitch.f0, 260);
   const features = {
     ...spectralFocus(spectrum, sampleRate, settings.resonanceScale, profile?.focusPreset),
+    responseCue:measureResponseCue(waveform,spectrum,sampleRate),
     pitchFloor: settings.pitchFloor, pitchCeiling: settings.pitchCeiling, resonanceScale: settings.resonanceScale,
     brilliance: band(4000, 8000) - band(lo, 4000),
     f1dom: band(lo, 1100) - band(1100, 3500),
@@ -312,7 +315,12 @@ export class AudioEngine {
       if (!this.playing || !this.analyser || !this.context) return;
       this.analyser.getFloatTimeDomainData(this._waveform);
       this.analyser.getFloatFrequencyData(this._spectrum);
-      const features = analyzeFrame(this._waveform, this._spectrum, this.context.sampleRate, this.getProfile());
+      const activeProfile=this.getProfile();
+      const features = analyzeFrame(this._waveform, this._spectrum, this.context.sampleRate, activeProfile);
+      // Keep every legacy acoustic feature on its original analyser path. Only
+      // the new reference cue uses the exact unsmoothed offline Blackman FFT.
+      if(isNewResponse(activeProfile)){this._responseSpectrum ||= createFileSpectrumAnalyzer();
+        features.responseCue=measureResponseCue(this._waveform,this._responseSpectrum(this._waveform),this.context.sampleRate);}
       this.onFrame({ features, waveform: this._waveform.slice(), spectrum: this._spectrum.slice(),
         time: this.currentTime, playing: true });
     };

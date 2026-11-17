@@ -1,15 +1,15 @@
-import { analyzeFrame } from './audio.js?v=monitor-fix-20260913';
-import { createVoiceMetricsAccumulator, VOICE_METRIC_KEYS } from './pro-metrics.js';
+import { analyzeFrame } from './audio.js?v=response-20261117';
+import { createVoiceMetricsAccumulator, VOICE_METRIC_KEYS } from './pro-metrics.js?v=response-20261117';
 import { ANALYZER_FIELDS, extractAnalyzerFeatures } from './analyzer-metrics.js?v=monitor-fix-20260913';
-import { DEFAULT_PROFILE, LAYER_KEYS, processLayers, sanitizeProfile } from './tuning.js?v=monitor-fix-20260913';
+import { DEFAULT_PROFILE, LAYER_KEYS, processLayers, sanitizeProfile } from './tuning.js?v=response-20261117';
 
-export const FILE_ANALYSIS_VERSION = 4;
+export const FILE_ANALYSIS_VERSION = 5;
 export const FILE_FFT_SIZE = 4096;
 export const FILE_TRACE_LIMIT = 1500;
 export const FILE_SPECTRUM_FLOOR_DB = -120;
 const dbFS = amplitude => amplitude > 0 ? 20 * Math.log10(amplitude) : null;
 const zeroLayers = () => Object.fromEntries(LAYER_KEYS.map(key => [key, 0]));
-const datasetFields = () => [
+const datasetFields = (current=false) => [
   { key: 'time', label: '프레임 시작', unit: 's', method: '원본 PCM 홉 시작 / sampleRate', quality: 'measured' },
   { key: 'duration', label: '프레임 담당 시간', unit: 's', method: '중복되지 않는 실제 홉 샘플 수 / sampleRate', quality: 'measured' },
   { key: 'valid', label: '유효 음성', unit: '0/1', method: '기존 F0 검출 + 프로필 노이즈 게이트', quality: 'derived' },
@@ -18,7 +18,7 @@ const datasetFields = () => [
     method: `저장된 프로필의 음성 기준을 적용한 analyzeFrame ${key} · 유효 음성 프레임만${key === 'level' ? ' · 입력 보정 1회 적용' : ''}`, quality: 'derived' })),
   ...ANALYZER_FIELDS.map(field => ({ ...field })),
   ...LAYER_KEYS.map(key => ({ key: `response_${key}`, label: `${key} 보정 시각 반응`, unit: '0–1',
-    method: '저장된 프로필의 보정 및 attack/release 적용 시각 반응. 무효/게이트 미달 프레임은 0. 실제 근육·생리 활동의 직접 측정 아님.',
+    method: current?'v2 사용자 정의 반응 및 프로필 attack/release. 무효는 결측(NaN). 실제 근육·생리 측정 아님.':'저장된 프로필의 보정 및 attack/release 적용 시각 반응. 무효/게이트 미달 프레임은 0. 실제 근육·생리 활동의 직접 측정 아님.',
     quality: 'visualization' })),
 ];
 
@@ -43,60 +43,8 @@ function summarizeDatasetColumn(values, column, width, rowCount) {
     median: quantile(.5), p10: quantile(.1), p90: quantile(.9) };
 }
 
-/**
- * Reusable radix-2 FFT with the Web Audio Blackman window and 1/N magnitude
- * normalization. No analyser temporal smoothing is applied offline.
- * https://webaudio.github.io/web-audio-api/#fft-windowing-and-smoothing-over-time
- * The returned spectrum is scratch storage; copy it if retaining a frame.
- */
-export function createFileSpectrumAnalyzer(size = FILE_FFT_SIZE) {
-  if (!Number.isInteger(size) || size < 32 || size > 32768 || (size & (size - 1))) {
-    throw new TypeError('FFT 크기는 32–32768 범위의 2의 거듭제곱이어야 합니다.');
-  }
-  const real = new Float64Array(size), imaginary = new Float64Array(size);
-  const window = new Float64Array(size), reversed = new Uint32Array(size);
-  const cosines = new Float64Array(size / 2), sines = new Float64Array(size / 2);
-  const spectrum = new Float32Array(size / 2);
-  const bits = Math.log2(size);
-  for (let i = 0; i < size; i++) {
-    window[i] = .42 - .5 * Math.cos(2 * Math.PI * i / size) + .08 * Math.cos(4 * Math.PI * i / size);
-    let value = i, reverse = 0;
-    for (let bit = 0; bit < bits; bit++) { reverse = (reverse << 1) | (value & 1); value >>>= 1; }
-    reversed[i] = reverse;
-  }
-  for (let i = 0; i < size / 2; i++) {
-    cosines[i] = Math.cos(-2 * Math.PI * i / size);
-    sines[i] = Math.sin(-2 * Math.PI * i / size);
-  }
-  return waveform => {
-    if (!waveform || waveform.length !== size) throw new TypeError('FFT 입력 길이가 올바르지 않습니다.');
-    imaginary.fill(0);
-    for (let i = 0; i < size; i++) {
-      const sample = waveform[i];
-      if (!Number.isFinite(sample)) throw new TypeError('오디오에 유효하지 않은 샘플이 있습니다.');
-      real[reversed[i]] = sample * window[i];
-    }
-    for (let length = 2; length <= size; length *= 2) {
-      const half = length / 2, step = size / length;
-      for (let start = 0; start < size; start += length) {
-        for (let j = 0; j < half; j++) {
-          const a = start + j, b = a + half, twiddle = j * step;
-          const re = real[b] * cosines[twiddle] - imaginary[b] * sines[twiddle];
-          const im = real[b] * sines[twiddle] + imaginary[b] * cosines[twiddle];
-          real[b] = real[a] - re;
-          imaginary[b] = imaginary[a] - im;
-          real[a] += re;
-          imaginary[a] += im;
-        }
-      }
-    }
-    for (let i = 0; i < spectrum.length; i++) {
-      const magnitude = Math.hypot(real[i], imaginary[i]) / size;
-      spectrum[i] = magnitude > 0 ? Math.max(FILE_SPECTRUM_FLOOR_DB, 20 * Math.log10(magnitude)) : FILE_SPECTRUM_FLOOR_DB;
-    }
-    return spectrum;
-  };
-}
+export {createFileSpectrumAnalyzer} from './response-spectrum.js?v=response-20261117';
+import {createFileSpectrumAnalyzer} from './response-spectrum.js?v=response-20261117';
 
 /**
  * Analyze every hop of a decoded mono file without playback, a microphone,
@@ -154,7 +102,8 @@ export function analyzePcm({ pcm, sampleRate, profile = DEFAULT_PROFILE, profile
   }
 
   const accumulator = createVoiceMetricsAccumulator({ profile: snapshot, profileId });
-  const fields = datasetFields(), columns = fields.map(field => field.key);
+  const current=!!snapshot.responseVersion;
+  const fields = datasetFields(current), columns = fields.map(field => field.key);
   const columnCount = columns.length, datasetValues = new Float32Array(frameCount * columnCount);
   datasetValues.fill(NaN);
   const fft = createFileSpectrumAnalyzer(), window = new Float32Array(FILE_FFT_SIZE);
@@ -163,7 +112,7 @@ export function analyzePcm({ pcm, sampleRate, profile = DEFAULT_PROFILE, profile
   const traceCount = Math.min(FILE_TRACE_LIMIT, frameCount), traces = [];
   const silenceThresholdDbFS = snapshot.global.noiseGateDb - snapshot.global.inputGainDb;
   const silenceThresholdEnergy = 10 ** (silenceThresholdDbFS / 10);
-  let levels = {}, voicedSamples = 0, silenceSamples = 0, lastProgress = .1;
+  let levels = {}, responseSamples=0, voicedSamples = 0, silenceSamples = 0, lastProgress = .1;
   notify(lastProgress);
   for (let frameIndex = 0; frameIndex < frameCount; frameIndex++) {
     const start = frameIndex * hopSize, end = Math.min(sampleCount, start + hopSize), weight = end - start;
@@ -195,12 +144,15 @@ export function analyzePcm({ pcm, sampleRate, profile = DEFAULT_PROFILE, profile
     }
     const mapped = processLayers(features, snapshot, levels, weight / sampleRate * 1000);
     levels = mapped.levels;
+    const responseAccepted=accepted&&(!current||mapped.valid);
     for (let index = 0; index < LAYER_KEYS.length; index++) {
-      datasetValues[row + 3 + VOICE_METRIC_KEYS.length + ANALYZER_FIELDS.length + index] = accepted ? levels[LAYER_KEYS[index]] : 0;
+      datasetValues[row + 3 + VOICE_METRIC_KEYS.length + ANALYZER_FIELDS.length + index] = responseAccepted ? levels[LAYER_KEYS[index]] : (current?NaN:0);
     }
     if (hopEnergy[frameIndex] / weight < silenceThresholdEnergy) silenceSamples += weight;
     if (accepted) {
       voicedSamples += weight;
+    }
+    if(responseAccepted){responseSamples+=weight;
       for (const key of LAYER_KEYS) {
         layerSums[key] += levels[key] * weight;
         layerPeaks[key] = Math.max(layerPeaks[key], levels[key]);
@@ -211,7 +163,7 @@ export function analyzePcm({ pcm, sampleRate, profile = DEFAULT_PROFILE, profile
     const bucket = Math.floor(frameIndex * traceCount / frameCount);
     let point = traces[bucket];
     if (!point) point = traces[bucket] = { start: start / sampleRate, end: end / sampleRate,
-      samples: 0, voicedSamples: 0, pitchSum: 0, f0Min: Infinity, f0Max: -Infinity,
+      samples: 0, voicedSamples: 0, responseSamples:0, pitchSum: 0, f0Min: Infinity, f0Max: -Infinity,
       levelSum: 0, levelSamples: 0, layerSums: zeroLayers() };
     point.end = end / sampleRate; point.samples += weight;
     if (features.rms > 0 && Number.isFinite(features.level)) {
@@ -222,6 +174,8 @@ export function analyzePcm({ pcm, sampleRate, profile = DEFAULT_PROFILE, profile
       point.voicedSamples += weight;
       point.pitchSum += features.f0 * weight;
       point.f0Min = Math.min(point.f0Min, features.f0); point.f0Max = Math.max(point.f0Max, features.f0);
+    }
+    if(responseAccepted){point.responseSamples+=weight;
       for (const key of LAYER_KEYS) point.layerSums[key] += levels[key] * weight;
     }
     const progress = .1 + .9 * (frameIndex + 1) / frameCount;
@@ -244,14 +198,14 @@ export function analyzePcm({ pcm, sampleRate, profile = DEFAULT_PROFILE, profile
     f0Min: point.voicedSamples ? point.f0Min : null, f0Max: point.voicedSamples ? point.f0Max : null,
     valid: point.voicedSamples > 0, validFraction: point.voicedSamples / point.samples,
     level: point.levelSamples ? point.levelSum / point.levelSamples : null,
-    levels: Object.fromEntries(LAYER_KEYS.map(key => [key, point.voicedSamples ? point.layerSums[key] / point.voicedSamples : null])) }));
+    levels: Object.fromEntries(LAYER_KEYS.map(key => [key, point.responseSamples ? point.layerSums[key] / point.responseSamples : null])) }));
   const fileLayers = Object.fromEntries(LAYER_KEYS.map(key => [key, {
-    mean: voicedSamples ? layerSums[key] / voicedSamples : null,
-    peak: voicedSamples ? layerPeaks[key] : null,
+    mean: responseSamples ? layerSums[key] / responseSamples : null,
+    peak: responseSamples ? layerPeaks[key] : null,
   }]));
   const rms = Math.sqrt(energy / sampleCount);
   const result = {
-    version: FILE_ANALYSIS_VERSION, method: 'offline-full-file',
+    version: FILE_ANALYSIS_VERSION, responseVersion:snapshot.responseVersion||'legacy-profile-v1', responseValidSeconds:responseSamples/sampleRate, method: 'offline-full-file',
     sampleRate, sampleCount, duration, frameCount, windowSize: FILE_FFT_SIZE, hopSize,
     windowSeconds: FILE_FFT_SIZE / sampleRate, hopSeconds: hopSize / sampleRate,
     windowFunction: 'blackman', spectrumNormalization: '1/N', spectrumSmoothing: 0,

@@ -1,4 +1,4 @@
-import { DEFAULT_PROFILE, LAYER_KEYS, sanitizeProfile, clamp } from './tuning.js?v=monitor-fix-20260913';
+import { DEFAULT_PROFILE, LAYER_KEYS, sanitizeProfile, clamp } from './tuning.js?v=response-20261117';
 
 /** Guided observation, not an assessment of vocal health or muscle strength. */
 export const CORE_MODES = Object.freeze({
