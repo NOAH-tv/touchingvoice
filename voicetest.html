@@ -1424,7 +1424,7 @@ if(Q.has("shot"))document.documentElement.classList.add("noanim");
  if(TYPES[qd]){startDemo(qd,true);const v=Q.get("view")||"result";go(v==="guess"||!Object.hasOwn(R,v)?"result":v)}
  /* 11/5 대표: 예시 결과를 먼저 보여 주지 않는다 — 예전에 예시를 열어 둔 기기도 첫 화면부터 */
  /* 11/16 대표: 목소리 검사와 성격 10문항을 하나로 — ?paid 는 녹음 2번 → 10문항 → 분석 → 레포트(결제). ?free 는 같은 길에서 결제 없이 레포트(결과는 기기에 남음). ?free=new 는 이 기기 결과를 비우고 처음부터(시험용) */
- else if(Q.get("free")==="new"||Q.get("paid")==="new"){/* 11/17 대표: 다시 검사하기 — 이 기기 결과를 비우고 처음부터(알림 신청 표시는 남김) */const old=vrGet(),fr=Q.get("free")==="new";S={friend:S.friend};REC.r1=REC.r2=null;save();vrSet({sc:7,a:[],preview:fr,ck:old.ck,waitlisted:old.waitlisted});try{history.replaceState(null,"",fr?"?free":"?paid")}catch(e){}go("landing")}
+ else if(Q.get("free")==="new"||Q.get("paid")==="new"){/* 11/17 대표: 다시 검사하기 — 이 기기 결과를 비우고 처음부터(알림 신청 표시는 남김) */const old=vrGet(),fr=Q.get("free")==="new";S={friend:S.friend};REC.r1=REC.r2=null;recDrop();save();vrSet({sc:7,a:[],preview:fr,ck:old.ck,waitlisted:old.waitlisted});try{history.replaceState(null,"",fr?"?free":"?paid")}catch(e){}go("landing")}
  else if(S.J&&!S.demo){setFam(S.J.code);if(PAID)qDone(vrGet())?(Q.has("hear")||S.at==="hear"?go("hear"):location.replace("voicereport.html")):go("quiz");else go("result");
   recLoad().then(r=>{if(r&&r.x&&!REC.r1){REC.r1=r;if(S.at==="result"||S.at==="hear")go(S.at)}})}else{if(S.demo)newRun();go("landing")}}
 document.fonts&&document.fonts.ready.then(()=>fitLn(document));
