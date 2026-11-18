@@ -424,7 +424,7 @@ p,li,small,.fine,.muted{text-wrap:pretty}
 .tn{grid-template-columns:104px minmax(0,1fr) 70px}.tn em{white-space:nowrap}
 /* 11/5 쉬운 말: 칸 이름(빠르기·소리 색깔·오르내림)이 한 줄에 */
 .trial-row,.ax-line{grid-template-columns:72px minmax(0,1fr)}.trial-row b,.ax-line b{white-space:nowrap}
-.radar{width:100%;max-width:340px;display:block;margin:0 auto}.jobs{display:flex;flex-wrap:wrap;gap:8px}.jobs span{padding:7px 14px;border-radius:999px;background:color-mix(in oklab,var(--fam) 18%,transparent);font-weight:700;font-size:14.5px}.hx-sum{display:flex;align-items:center;gap:12px}.hx-sum img{width:60px;height:60px;border-radius:18px;flex:none;object-fit:cover}details.more>summary{list-style:none;cursor:pointer}details.more>summary::-webkit-details-marker{display:none}details.more[open]>summary{margin-bottom:14px}details.more>section+section{margin-top:14px}</style>
+.radar{width:100%;max-width:340px;display:block;margin:0 auto}.jobs{display:flex;flex-wrap:wrap;gap:8px}.jobs span{padding:7px 14px;border-radius:999px;background:color-mix(in oklab,var(--fam) 18%,transparent);font-weight:700;font-size:14.5px}.hx-sum{display:flex;align-items:center;gap:12px}.hx-sum img{width:60px;height:60px;border-radius:18px;flex:none;object-fit:cover}details.more>summary{list-style:none;cursor:pointer}details.more>summary::-webkit-details-marker{display:none}details.more[open]>summary{margin-bottom:14px}details.more>section+section{margin-top:14px}.lang-sw{display:flex;gap:6px;justify-content:center;margin:0 0 10px}.lang-sw a{padding:6px 14px;border-radius:999px;border:1px solid var(--line2);font-size:13px;font-weight:700;color:var(--fg);text-decoration:none;cursor:pointer}.lang-sw a[aria-current]{background:var(--fam-ui);color:#fff;border-color:transparent;cursor:default}</style>
 <script>
 /* 11/16 광고 측정 — META_PIXEL_ID·GA_ID에 아이디를 넣으면 켜진다(비어 있으면 아무것도 불러오지 않음).
    광고 출처(utm_source·campaign·content, 없으면 fbclid→meta·gclid→google)는 30일 동안 이 기기에 남겨 검사 기록·주문에 같이 저장한다.
@@ -655,6 +655,7 @@ $("#sheetBg").onclick=closeSheet;
 /* ===== 1. 첫 화면 ===== */
 R.landing=()=>{const f=TYPES[S.friend]?S.friend:null;return{html:`
 <section class="hero">
+  <div class="lang-sw" role="group" aria-label="언어 선택 / Language"><a aria-current="true">한국어</a><a href="voicetest_en.html${location.search.replace(/"/g,"")}" onclick="tvEvent('언어:en')">English</a></div>
   <div class="kicker">터칭보이스 · ${PAID?"목소리 × 성격 테스트":"목소리 유형 테스트"}</div>
   <h1 class="display bi">${PAID?words("목소리와 성격이")+"<br>"+words("말해 주는 나",270):words("나는 어떤 유형의")+"<br>"+words("목소리일까?",270)}</h1>
   <p class="lead">${PAID?"녹음 두 번과 성격 10문항으로<br>목소리와 성격을 함께 알아봐요.":"간단한 목소리 테스트로<br>16가지 목소리 유형 중 나를 찾아요."}</p>

@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script>/* 11/18 대표: 결과는 '저장하기'(사진·PDF)로만 남긴다 — 새로고침하거나 새로 들어오면 바로 처음부터.
+   같은 탭에서 페이지를 넘어갈 때(목소리 → 성격 결과 → 다시 듣기)만 이어진다. 앱 출시 알림 신청 표시는 남긴다 */
+(function(){try{var n=performance.getEntriesByType("navigation")[0],t=n?n.type:"navigate";
+ if(t==="reload"||sessionStorage.getItem("tv_flow_en")!=="1"){var w=null;try{w=(JSON.parse(localStorage.getItem("tv_voicereport_v1_en")||"null")||{}).waitlisted}catch(e){}
+  localStorage.removeItem("tv_voicetest_web_v1_en");localStorage.removeItem("tv_voicereport_v1_en");if(w)localStorage.setItem("tv_voicereport_v1_en",JSON.stringify({waitlisted:w}));
+  try{indexedDB.deleteDatabase("tv_vt_en")}catch(e){}}
+ sessionStorage.setItem("tv_flow_en","1")}catch(e){}})();</script>
+
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Voice × Personality Result · Touching Voice</title>
+<meta name="description" content="Your 1-minute voice test result plus a 10-question personality check: your voice × personality result.">
+<meta name="robots" content="noindex"><!-- 시험 중. 정식 공개 때 지운다 -->
+<meta name="theme-color" content="#F5EEE0">
+<style>
+/* 모양은 voicetest.html 과 맞춘다(같은 글꼴·색·글래스). 레포트 문장·지수 계산식은 이 파일에 없다(서버에만 있음) */
+@font-face{font-family:Paperlogy;src:url(Paperlogy-4Regular.woff2) format("woff2"),url(Paperlogy-4Regular.ttf) format("truetype");font-weight:400;font-display:swap}
+@font-face{font-family:Paperlogy;src:url(Paperlogy-5Medium.woff2) format("woff2"),url(Paperlogy-5Medium.ttf) format("truetype");font-weight:500;font-display:swap}
+@font-face{font-family:Paperlogy;src:url(Paperlogy-6SemiBold.woff2) format("woff2"),url(Paperlogy-6SemiBold.ttf) format("truetype");font-weight:600;font-display:swap}
+@font-face{font-family:Paperlogy;src:url(Paperlogy-7Bold.woff2) format("woff2"),url(Paperlogy-7Bold.ttf) format("truetype");font-weight:700;font-display:swap}
+:root{--bg:#F5EEE0;--card:rgba(255,255,255,.6);--card-solid:#FFFCF6;--fg:#22163F;--muted:#5A5070;--line:rgba(67,34,125,.10);--line2:rgba(67,34,125,.18);
+  --pri:#43227D;--pri-fg:#fff;--gold:#A8925A;--ring:rgba(67,34,125,.28);--ok:#2F7D5B;--warn:#A35A2A;
+  --glass-line:rgba(255,255,255,.8);--glass-hi:rgba(255,255,255,.95);--blur:saturate(180%) blur(22px);
+  --shadow:0 1px 2px rgba(34,22,63,.04),0 10px 30px rgba(67,34,125,.10);
+  --pri-grad:linear-gradient(135deg,#6B45BC,#43227D);--mesh1:rgba(196,170,255,.55);--mesh2:rgba(255,200,170,.42);--mesh3:rgba(168,146,90,.38);
+  --fam:#43227D;--fam-deep:#2E1660;--fam-ui:var(--fam);--r:24px;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#100C1A;--card:rgba(255,255,255,.07);--card-solid:#211A33;--fg:#F3EDE1;--muted:#C3BBD7;--line:rgba(255,255,255,.10);--line2:rgba(255,255,255,.18);
+  --pri:#BBA6F0;--pri-fg:#1A1230;--gold:#CDB57C;--ring:rgba(187,166,240,.35);--ok:#72CFA2;--warn:#E3A178;
+  --glass-line:rgba(255,255,255,.13);--glass-hi:rgba(255,255,255,.16);--shadow:0 1px 2px rgba(0,0,0,.3),0 12px 36px rgba(0,0,0,.42);
+  --pri-grad:linear-gradient(135deg,#DCCFFF,#A98BEA);--mesh1:rgba(108,62,214,.42);--mesh2:rgba(160,56,128,.28);--mesh3:rgba(168,146,90,.22);
+  --fam-ui:color-mix(in oklab,var(--fam) 55%,#fff);color-scheme:dark}}
+[hidden]{display:none!important}
+*{box-sizing:border-box}
+html{background:var(--bg);color:var(--fg)}
+body{margin:0;font:500 16px/1.6 Paperlogy,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;-webkit-font-smoothing:antialiased;min-height:100dvh;overflow-x:hidden;word-break:keep-all;overflow-wrap:anywhere}
+img{max-width:100%;display:block}
+button,input{font:inherit;color:inherit}
+a{color:var(--pri)}
+#bgfx{position:fixed;inset:-15%;z-index:-1;pointer-events:none;background:
+  radial-gradient(45% 35% at 82% 8%,color-mix(in oklab,var(--fam) 34%,transparent),transparent 70%),
+  radial-gradient(42% 32% at 8% 26%,var(--mesh1),transparent 70%),
+  radial-gradient(48% 36% at 92% 62%,var(--mesh3),transparent 70%),
+  radial-gradient(46% 34% at 12% 92%,var(--mesh2),transparent 70%)}
+.view{max-width:440px;margin:0 auto;padding:14px max(16px,env(safe-area-inset-right,0px)) calc(48px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:16px}
+.brand{display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:700;color:var(--gold);letter-spacing:.06em;padding:4px 2px}
+.brand a{color:var(--muted);font-weight:600;letter-spacing:0;text-decoration:none}
+.kicker{font-size:13px;letter-spacing:.06em;color:var(--gold);font-weight:700}
+.title{font-size:26px;line-height:1.26;font-weight:700;letter-spacing:-.03em;margin:4px 0 0;text-wrap:balance}
+.sub{color:var(--muted);margin:0;font-size:15px}
+.card{background:var(--card);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);border:1px solid var(--glass-line);box-shadow:inset 0 1px 0 var(--glass-hi),var(--shadow);border-radius:var(--r);padding:22px 20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.card h2{font-size:19px;line-height:1.35;margin:0;letter-spacing:-.02em}
+.card h3{font-size:16px;margin:0;letter-spacing:-.01em}
+.card p{margin:0;line-height:1.7}
+.num{font-size:12.5px;font-weight:700;color:var(--gold);letter-spacing:.08em}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:54px;padding:0 20px;border-radius:999px;border:1px solid var(--glass-line);background:var(--card-solid);color:var(--fg);font-weight:700;font-size:16px;letter-spacing:-.01em;cursor:pointer;text-decoration:none;transition:transform .15s}
+.btn:active{transform:scale(.97)}
+.btn:focus-visible,.dot:focus-visible,.inp:focus-visible{outline:none;box-shadow:0 0 0 4px var(--ring)}
+.btn.pri{background:var(--pri-grad);color:var(--pri-fg);border:0;box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 10px 26px color-mix(in oklab,var(--pri) 36%,transparent)}
+.btn.block{width:100%}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--pri);min-height:44px;font-size:14.5px}
+.btn:disabled{opacity:.45;cursor:default}
+.row{display:flex;gap:10px}.row>*{flex:1}
+.inp{height:50px;border:1px solid var(--line2);border-radius:14px;background:var(--card-solid);padding:0 14px;width:100%}
+.hero-card{border-radius:30px;padding:20px 18px 22px;color:#fff;background:linear-gradient(160deg,var(--fam),var(--fam-deep));display:flex;align-items:center;gap:14px;position:relative;overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 24px 60px color-mix(in oklab,var(--fam) 38%,transparent)}
+.hero-card img{width:120px;height:120px;border-radius:26px;flex:none;object-fit:cover;background:rgba(255,255,255,.12)}
+.hero-card .code{font-size:13px;letter-spacing:.14em;font-weight:700;opacity:.85}
+.hero-card .nm{font-size:22px;font-weight:700;line-height:1.25;letter-spacing:-.02em}
+.hero-card small{opacity:.85;font-size:13px}
+/* 막대 */
+.bar{display:grid;grid-template-columns:76px 1fr 34px;align-items:center;gap:10px;font-size:14.5px;font-weight:600}
+.bar i{display:block;height:12px;border-radius:99px;background:var(--line);overflow:hidden}
+.bar s{display:block;height:100%;border-radius:99px;background:var(--fam-ui);text-decoration:none}
+.bar em{font-style:normal;font-size:13px;color:var(--muted);text-align:right}
+.card p.bar-t{margin:-6px 0 4px;font-size:14.5px;color:var(--muted);line-height:1.6}
+.headline{font-size:20px;font-weight:700;line-height:1.35;letter-spacing:-.02em;color:var(--fam-ui);text-wrap:balance}
+/* 질문 */
+.q p{font-size:17px;font-weight:600;line-height:1.45}
+.dots{display:flex;justify-content:space-between;gap:6px}
+.dot{flex:1;max-width:56px;aspect-ratio:1;border-radius:50%;border:1.5px solid var(--line2);background:var(--card-solid);font-weight:700;font-size:16px;cursor:pointer;color:var(--muted);padding:0}
+.dot[aria-checked=true]{background:var(--pri-grad);color:var(--pri-fg);border-color:transparent}
+.ends{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);margin-top:-6px}
+.stick{position:sticky;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:5}
+.stick .btn:disabled{opacity:1;background:var(--card-solid);color:var(--muted);border:1px solid var(--line2);box-shadow:var(--shadow)}
+/* 잠긴 칸 */
+.lock{position:relative}
+.lock h3{display:flex;align-items:center;gap:8px}
+.lock svg{width:16px;height:16px;flex:none;color:var(--gold)}
+.ph{display:flex;flex-direction:column;gap:8px;filter:blur(3px);opacity:.55}
+.ph b{display:block;height:11px;border-radius:99px;background:var(--line2)}
+.gauge{align-self:center;width:132px;height:132px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--fam-ui) calc(var(--v)*1%),var(--line) 0);position:relative}
+.gauge::before{content:"";position:absolute;inset:11px;border-radius:50%;background:var(--card-solid)}
+.gauge b{position:relative;font-size:44px;font-weight:700;letter-spacing:-.03em;line-height:1}
+.gauge.hide b{filter:blur(9px);opacity:.6}
+.badge{align-self:center;font-size:12.5px;font-weight:700;color:var(--warn);background:color-mix(in oklab,var(--warn) 12%,transparent);padding:5px 12px;border-radius:99px;text-align:center}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:3px 10px;border-radius:99px;background:color-mix(in oklab,var(--ok) 14%,transparent);color:var(--ok);margin-left:6px;vertical-align:2px}
+.tag.d{background:color-mix(in oklab,var(--warn) 14%,transparent);color:var(--warn)}
+.tag.m{background:var(--line);color:var(--muted)}
+.item{display:flex;flex-direction:column;gap:6px;padding-top:14px;border-top:1px solid var(--line)}
+.item:first-of-type{border-top:0;padding-top:0}
+.tip{font-size:14.5px;background:color-mix(in oklab,var(--gold) 13%,transparent);border-radius:14px;padding:10px 14px;line-height:1.6}
+.tip::before{content:"TIP ";font-weight:700;color:var(--gold);font-size:12px;letter-spacing:.08em}
+.scene{border-left:3px solid var(--gold);padding:2px 0 2px 14px;color:var(--muted);font-size:15px;line-height:1.7}
+.say{background:var(--card-solid);border:1px solid var(--line);border-radius:18px 18px 18px 4px;padding:12px 16px;font-size:15.5px;line-height:1.6}
+.small{font-size:13px;color:var(--muted);line-height:1.65}
+.price{display:flex;align-items:baseline;gap:8px}.price b{font-size:30px;letter-spacing:-.03em}.price span{color:var(--muted);font-size:13.5px}
+ul.inc{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px;font-size:15px}
+ul.inc li{padding-left:22px;position:relative}ul.inc li::before{content:"";position:absolute;left:4px;top:.62em;width:8px;height:8px;border-radius:50%;background:var(--gold)}
+.agree{display:flex;gap:12px;align-items:flex-start;font-size:14.5px;line-height:1.55;cursor:pointer}
+.agree input{width:24px;height:24px;flex:none;margin:1px 0 0;accent-color:#43227D}
+.test{font-size:12.5px;font-weight:700;color:var(--warn);text-align:center}
+.biz{font-size:11.5px;color:var(--muted);line-height:1.7;text-align:center;padding-top:12px;border-top:1px solid var(--line);margin-top:4px}
+.biz a{color:inherit}
+.biz details{margin-top:4px}.biz summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:4px;text-decoration:underline;text-underline-offset:3px}.biz summary::-webkit-details-marker{display:none}.biz summary::after{content:"▾";font-size:10px}.biz details[open] summary::after{content:"▴"}.biz details p{margin:6px 0 0}
+.toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--fg);color:var(--bg);padding:11px 16px;border-radius:14px;font-size:14px;font-weight:600;opacity:0;pointer-events:none;transition:all .3s;z-index:50;max-width:calc(100% - 32px);text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.center{text-align:center;align-items:center}
+.spin{width:34px;height:34px;border-radius:50%;border:3px solid var(--line2);border-top-color:var(--pri);animation:sp 1s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation-duration:3s}}
+/* PDF(인쇄): A4, 밝은 색 고정, 버튼·배경 빼기 */
+@page{size:A4;margin:14mm}
+@media print{
+  :root{--bg:#fff;--card:#fff;--card-solid:#fff;--fg:#22163F;--muted:#5A5070;--line:#E6DBC6;--line2:#D6C8AC;--pri:#43227D;--gold:#8F7A45;--ok:#2F7D5B;--warn:#A35A2A;--fam-ui:var(--fam);--shadow:none;--glass-line:#E6DBC6;--glass-hi:transparent;color-scheme:light}
+  html,body{background:#fff}
+  body{font-size:11pt}
+  #bgfx,.noprint,.toast{display:none!important}
+  .view{max-width:none;padding:0;gap:10pt}
+  .card{-webkit-backdrop-filter:none;backdrop-filter:none;break-inside:avoid;padding:12pt 14pt;gap:8pt;border-radius:12pt}
+  .item,.hero-card{break-inside:avoid}
+  .hero-card,.bar s,.gauge,.tag,.tip,.badge{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .hero-card{box-shadow:none}
+  a{text-decoration:none}
+}
+.radar{width:100%;max-width:340px;display:block;margin:0 auto}.jobs{display:flex;flex-wrap:wrap;gap:8px}.jobs span{padding:7px 14px;border-radius:999px;background:color-mix(in oklab,var(--fam) 18%,transparent);font-weight:700;font-size:14.5px}.hx-sum{display:flex;align-items:center;gap:12px}.hx-sum img{width:60px;height:60px;border-radius:18px;flex:none;object-fit:cover}</style>
+<script>
+/* 11/16 광고 측정 — META_PIXEL_ID·GA_ID에 아이디를 넣으면 켜진다(비어 있으면 아무것도 불러오지 않음).
+   광고 출처(utm_source·campaign·content, 없으면 fbclid→meta·gclid→google)는 30일 동안 이 기기에 남겨 검사 기록·주문에 같이 저장한다.
+   voicetest.html·voicereport.html 두 곳에 같은 코드 — 아이디를 바꿀 땐 두 곳 다 */
+(function(){const META_PIXEL_ID="",GA_ID="";
+ const q=new URLSearchParams(location.search),o={};["source","medium","campaign","content"].forEach(k=>{const v=q.get("utm_"+k);if(v)o[k]=v.slice(0,40)});if(!o.source&&q.get("fbclid"))o.source="meta";if(!o.source&&q.get("gclid"))o.source="google";
+ let s=null;try{if(o.source){o.at=Date.now();localStorage.setItem("tv_src",JSON.stringify(o));s=o}else{const x=JSON.parse(localStorage.getItem("tv_src")||"null");if(x&&Date.now()-x.at<30*864e5)s=x}}catch(e){s=o.source?o:null}
+ window.TV_SRC=s?[s.source,s.campaign,s.content].filter(Boolean).join("/").replace(/[^\w\-\/.가-힣]/g,"").slice(0,80):"";
+ if(META_PIXEL_ID){!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init',META_PIXEL_ID);fbq('track','PageView')}
+ if(GA_ID){const sc=document.createElement("script");sc.async=true;sc.src="https://www.googletagmanager.com/gtag/js?id="+GA_ID;document.head.appendChild(sc);window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments)};gtag("js",new Date());gtag("config",GA_ID)}
+ const STD={ViewContent:1,InitiateCheckout:1,Purchase:1};
+ /* 11/17 대표: 가능성 재기 — 단계마다 익명 이벤트 한 줄을 저장 서버 '방문기록' 탭으로(이름·녹음·연락처 없음). 주소에 ?staff 를 붙여 한 번 열면 이 기기는 '내부'로 표시돼 걸러 볼 수 있다 */
+ let sid="",staff=false;try{sid=localStorage.getItem("tv_sid")||"";if(!sid){sid=Date.now().toString(36)+Math.random().toString(36).slice(2,7);localStorage.setItem("tv_sid",sid)}if(q.has("staff"))localStorage.setItem("tv_staff","1");staff=localStorage.getItem("tv_staff")==="1"}catch(e){}
+ window.TV_STAFF=staff;
+ window.tvEvent=(name,code)=>{try{fetch("https://script.google.com/macros/s/AKfycbyTH-Q1YT90015gFUapUB1SBi_sUt45xvQaD0DmbIp4_0fQ1PwpkuAD5q4P_9eobedZ/exec",{method:"POST",mode:"no-cors",keepalive:true,headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({type:"event",ev:String(name).slice(0,40),src:window.TV_SRC||"",sid,staff,page:(location.pathname.split("/").pop()||"")+location.search.slice(0,24),code:code||""})})}catch(e){}};
+ window.tvEvent("방문");
+ const KR={StartTest:"시작",RecordDone:"녹음완료",CompleteTest:"검사완료",ViewContent:"보기",Lead:"알림신청",InitiateCheckout:"결제시작",Purchase:"결제"};
+ window.tvTrack=(ev,p)=>{window.tvEvent((KR[ev]||ev)+(p&&p.content_name?":"+p.content_name:""));try{if(window.fbq)fbq(STD[ev]?"track":"trackCustom",ev,p||{});if(window.gtag)gtag("event",ev,p||{})}catch(e){}};
+})();
+</script>
+</head>
+<body>
+<div id="bgfx"></div>
+<main id="view" class="view"></main>
+<div id="toast" class="toast" role="status"></div>
+<script>
+/* ===== 설정 ===== */
+const API_URL="https://script.google.com/macros/s/AKfycbwTYxs64w_EMMnPYWDq10s0Rm_CBf4KEWmh-oOOOQAm7SDI5Q8ZcnQguZxr2psdzvI/exec";          /* ← Apps Script 웹 앱 주소(…/exec)를 넣는다. 비어 있으면 결제 버튼이 '준비 중' */
+const FP_ENV="develop";    /* 테스트: "develop" · 운영 전환: "product" (서버 스크립트 속성 FP_ENV 와 같아야 한다) */
+const PRICE="2,900원";
+const SDK={develop:"https://dev.firstpay.co.kr/js/firstpay_v2.js",product:"https://pay.firstpay.co.kr/js/firstpay_v2.js"};
+const VT_KEY="tv_voicetest_web_v1_en",KEY="tv_voicereport_v1_en";
+
+/* 성격 10문항 — IPIP 50문항 Big-Five 표지(공개 도메인, ipip.ori.org)에서 특성마다 정방향 1 · 역방향 1. 1~5번 정방향, 6~10번 역방향 */
+const ITEMS=["I start conversations.","I sympathize with others' feelings.","I get chores done right away.","I am relaxed most of the time.","I have a vivid imagination.",
+ "I am quiet around strangers.","I am not interested in other people's problems.","I often forget to put things back in their proper place.","I worry about things.","I am not interested in abstract ideas."];
+const TRAITS=[["E","Extraversion"],["A","Agreeableness"],["C","Conscientiousness"],["N","Neuroticism"],["O","Openness"]];/* 11/18 노아: Big5 정식 이름 *//* 11/16: 성실성 → 계획성 · 11/17 대표: 정서 쪽은 원래 이름 '신경성'으로(점수는 정서 안정의 반대 = 100 − 안정) */
+const ADJ={E:["recharges in quiet time","knows when to step up and step back","draws energy from people"],A:["says what needs saying","balances warmth and honesty","reads feelings first"],C:["goes with the flow","knows how to pace themselves","follows through to the end"],N:["steady under pressure","mostly calm","feels even small things deeply"],O:["trusts proven ways","enjoys both new and familiar","loves new ideas"]};
+/* 유형 이름·가족 색·그림 경로는 voicetest_en.html 과 같다 */
+const TYPE_NM={LADT:"The Chameleon Voice Actor",LADF:"The Rock-Solid Fitness Coach",LABT:"The Magnetic Actor",LABF:"The Easygoing Podcast Host",LUDT:"The Resonant Narrator",LUDF:"The Trusted Airline Captain",LUBT:"The Late-Night Radio DJ",LUBF:"The Kindly School Principal",HADT:"The Bubbly Shopping Host",HADF:"The Quick Field Reporter",HABT:"The Sparkling Pop Idol",HABF:"The Fired-Up Star Tutor",HUDT:"The Warm Schoolteacher",HUDF:"The Polished News Anchor",HUBT:"The Uplifting Motivator",HUBF:"The Empathetic Counselor"};
+const FAM={LA:["#43227D","#2B1459"],LU:["#7A2E46","#4F1A2C"],HA:["#B98A2E","#7A5A18"],HU:["#D07A66","#9C4D3B"]};
+const ALT_SEX={HUDT:"m",HUDF:"m",HUBF:"m",HABT:"m",LUBF:"f",HABF:"f",HUBT:"f"};
+const charImg=(c,sex)=>`voicetype_assets/chars/${c}${ALT_SEX[c]&&ALT_SEX[c]===sex?"_"+sex:""}.webp`;
+const BIZ=`<footer class="biz"><div>Touching Voice · Customer center 010-9947-3682 · <a href="refund.html" target="_blank" rel="noopener">Refund policy</a> · <a href="privacy.html" target="_blank" rel="noopener"><b>Privacy policy (Korean)</b></a></div><details><summary>Business information</summary><p>Business name: Touching Voice · CEO Noah Chun · Business registration no. 649-36-01593<br>Mail-order business no. 제2026-서울서초-0243호<br>Address: 강원특별자치도 평창군 지르메길 33, 102동 1002호<br>Email lubere12@naver.com</p></details></footer>`;/* 노아 11/16: 사업자 정보는 접어 두기(전자상거래법 표시 항목은 펼치면 모두 보임) */
+const LOCK=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>`;
+
+/* ===== 상태 ===== */
+const jget=k=>{try{return JSON.parse(localStorage.getItem(k)||"null")}catch(e){return null}};
+let R=jget(KEY)||{};R.a=Array.isArray(R.a)?R.a:[];if(R.sc!==7){R.a=[];R.sc=7}/* 11/16 5점→7점: 옛 답은 다시 받는다 */
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(R))}catch(e){}};
+/* 11/16 대표: 시험용 링크 voicereport.html?preview — 결제 없이 결과 레포트(서버가 테스트 결제 모드일 때만 열림). ?preview=0 이면 끔 */
+{const q=new URLSearchParams(location.search);if(q.has("preview")){R.preview=q.get("preview")!=="0";save()}}
+const VT=jget(VT_KEY),HAS_VOICE=!!(VT&&!VT.demo&&VT.J&&/^[LH][AU][DB][TF]$/.test(VT.J.code||"")&&VT.m&&VT.m.s&&VT.m.v);
+let PAY=null,REPORT=null;
+const $=s=>document.querySelector(s),view=$("#view");
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function toast(t){const el=$("#toast");el.textContent=t;el.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove("show"),2800)}
+function setFam(code){const f=FAM[(code||"").slice(0,2)];if(f){document.documentElement.style.setProperty("--fam",f[0]);document.documentElement.style.setProperty("--fam-deep",f[1])}}
+function show(html){view.innerHTML=`<div class="brand noprint"><span>Touching Voice</span><a href="voicetest_en.html?paid">Voice test</a></div>`+html;window.scrollTo(0,0)}
+const hl=t=>esc(t).replace(", ",",<br>");/* 한 줄 요약은 쉼표 뒤에서만 줄을 바꾼다 */
+const done=()=>R.a.length===10&&R.a.every(x=>x>=1&&x<=7);
+const big5=a=>{const o=Object.fromEntries(TRAITS.map(([k],i)=>[k,Math.round((a[i]+8-a[i+5]-2)/12*100)]));o.N=100-o.N;return o};
+function headline(B){const lv=x=>x>=75?2:x<=25?0:1,top=TRAITS.map(t=>t[0]).sort((x,y)=>Math.abs(B[y]-50)-Math.abs(B[x]-50)).slice(0,2);return "Someone who "+top.map(k=>ADJ[k][lv(B[k])]).join(" and ")}
+const bars=(list)=>list.map(b=>`<div class="bar"><span>${esc(b.nm)}</span><i><s style="width:${Math.max(4,b.v)}%"></s></i><em>${b.v}</em></div>${b.t?`<p class="bar-t">${esc(b.t)}</p>`:""}`).join("");
+const heroCard=(code,sex,small)=>`<div class="hero-card"><img src="${charImg(code,sex)}" alt="" onerror="this.style.visibility='hidden'"><div><div class="nm">${esc(TYPE_NM[code]||"")}</div><small>${esc(small)}</small></div></div>`;
+/* 11/16: 목소리 테스트에서 문장을 한 번 더 읽었으면(VT.m2) 두 번 평균 — 유형은 첫 결과 그대로 */
+const av=k=>VT.m2&&isFinite(VT.m2[k])?(VT.m.s[k]+VT.m2[k])/2:VT.m.s[k];
+const voiceSum=()=>({code:VT.J.code,sex:VT.sex==="m"||VT.sex==="f"?VT.sex:"x",stRel:VT.J.stRel,rangeSt:av("rangeSt"),rate:av("rate"),hnr:VT.m.v.hnr,dbsd:av("dbsd"),trem:Math.min(VT.m.v.trem,0.6)});
+const api=o=>fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(o)}).then(r=>r.json());
+
+/* ===== 화면 ===== */
+function vNoData(){show(`
+<div><div class="kicker">Voice × Personality Result</div><h1 class="title">Please take the 1-minute voice test first</h1></div>
+<div class="card"><p>This result combines your voice test with 10 personality questions. There is no voice result saved on this device yet.</p>
+<a class="btn pri block" href="voicetest_en.html?paid">Take the 1-minute voice test</a>
+<p class="small">Open this page on the same device and browser where you took the test.</p></div>${BIZ}`)}
+
+function vQuiz(){setFam(VT.J.code);const n=()=>R.a.filter(x=>x>=1&&x<=7).length;
+ show(`<div><div class="kicker">10 questions · 1 min</div><h1 class="title">How much does this<br>sound like you?</h1><p class="sub">There are no right answers. Think of how you are these days, not how you want to be.</p></div>
+${ITEMS.map((t,i)=>`<div class="card q" role="radiogroup" aria-label="Question ${i+1}"><span class="num">${i+1} / 10</span><p>${t}</p>
+<div class="dots">${[1,2,3,4,5,6,7].map(v=>`<button class="dot" role="radio" aria-checked="${R.a[i]===v}" data-i="${i}" data-v="${v}" aria-label="${v}">${v}</button>`).join("")}</div>
+<div class="ends"><span>Not at all</span><span>Very much</span></div></div>`).join("")}
+<div class="stick"><button class="btn pri block" id="go" ${done()?"":"disabled"}>${done()?"See my result":n()+" / 10 answered"}</button></div>`);
+ view.onclick=e=>{const d=e.target.closest(".dot");if(d){const i=+d.dataset.i;R.a[i]=+d.dataset.v;save();
+   d.parentNode.querySelectorAll(".dot").forEach(x=>x.setAttribute("aria-checked",x===d));
+   const g=$("#go");g.disabled=!done();g.textContent=done()?"See my result":n()+" / 10 answered";
+   const next=view.querySelectorAll(".q")[i+1];if(next&&!R.a[i+1])next.scrollIntoView({behavior:"smooth",block:"center"});return}
+  if(e.target.id==="go"&&done()){view.onclick=null;vTeaser()}}}
+
+const LOCKED=[];/* 영어판 미사용 */
+const FIT_JOBS={LADT:["Voice actor","Audiobook narrator","Video game voice actor"],LADF:["Personal trainer","Sports commentator","Field team leader"],LABT:["Actor","Commercial narrator","Musical theater actor"],LABF:["Podcast host","YouTube host","Customer care manager"],LUDT:["Documentary narrator","Museum guide","Audiobook narrator"],LUDF:["Airline captain","Public-address announcer","Project manager"],LUBT:["Radio DJ","ASMR creator","Singer-songwriter"],LUBF:["School principal","Pastor","Counseling psychologist"],HADT:["Shopping show host","Event MC","Live commerce host"],HADF:["Journalist","Field reporter","Sales representative"],HABT:["Pop idol","Musical theater actor","Kids content creator"],HABF:["Test-prep instructor","Corporate trainer","Pitch presenter"],HUDT:["Elementary school teacher","Counselor","Kids content host"],HUDF:["News anchor","Flight attendant","Hotel concierge"],HUBT:["Motivational speaker","Life coach","Event MC"],HUBF:["Counselor","Nurse","Customer care manager"]};
+/* 11/17 대표(피드백 '글보다 육각 그래프'): 꼭짓점 L=[[이름,0~100],…]을 거미줄 그래프로. 색은 유형 가족색 */
+function radarSVG(L){const n=L.length,c=120,R=88,pt=(i,r)=>{const a=-Math.PI/2+2*Math.PI*i/n;return[+(c+r*Math.cos(a)).toFixed(1),+(c+r*Math.sin(a)).toFixed(1)]},poly=r=>L.map((_,i)=>pt(i,r).join(",")).join(" ");
+ return`<svg class="radar" viewBox="-60 -16 360 280" role="img" aria-label="${L.map(x=>x[0]+" "+x[1]).join(", ")}">${[1,.5].map(f=>`<polygon points="${poly(R*f)}" fill="none" stroke="var(--line2)" stroke-width="1"/>`).join("")}${L.map((_,i)=>{const[x,y]=pt(i,R);return`<line x1="${c}" y1="${c}" x2="${x}" y2="${y}" stroke="var(--line)" stroke-width="1"/>`}).join("")}<polygon points="${L.map(([,v],i)=>pt(i,R*Math.max(v,6)/100).join(",")).join(" ")}" fill="var(--fam-ui)" fill-opacity=".32" stroke="var(--fam-ui)" stroke-width="2.5" stroke-linejoin="round"/>${L.map(([k,v],i)=>{const[x,y]=pt(i,R+24);return`<text x="${x}" y="${y-2}" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--fg)">${k}<tspan x="${x}" dy="15" fill="var(--fam-ui)">${v}</tspan></text>`}).join("")}</svg>`}
+const jo=(w,a,b)=>{const c=w.charCodeAt(w.length-1)-44032;return w+(c>=0&&c<11172&&c%28?a:b)};
+const jobChips=L=>`<div class="jobs">${L.map(j=>`<span>${j}</span>`).join("")}</div>`;
+const TRAIT_JOB={E:"Event host",A:"Counselor",C:"Planner",N:"Writer",O:"Creator"};
+/* 11/17 대표: 2,900원 결제는 빼고 성격 결과 → 앱 출시 알림 신청으로 끝낸다(결제 코드는 아래 loadSDK·claim에 그대로 남겨 둠). 알림 신청은 목소리 테스트와 같은 저장 서버의 '앱대기예약' 탭 */
+const SAVE_URL="https://script.google.com/macros/s/AKfycbyTH-Q1YT90015gFUapUB1SBi_sUt45xvQaD0DmbIp4_0fQ1PwpkuAD5q4P_9eobedZ/exec";
+function vTeaser(){setFam(VT.J.code);tvTrack("ViewContent",{content_name:"personality_free"});const B=big5(R.a),c=VT.J.code;
+ /* 11/17 대표: 목소리·성격 데이터 모두 시트에 — 결과를 처음 볼 때(답이 바뀌면 다시) 이름 없이 '성격검사' 탭으로. 짝 코드(rid)로 목소리 행과 이어진다 */
+ const sig=R.a.join("")+(VT.rid||"");if(R.sentP!==sig){R.sentP=sig;save();fetch(SAVE_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({type:"personality",src:"web-en",utm:window.TV_SRC||"",code:c,sex:VT.sex||"",age:VT.age||null,a:R.a,m2:VT.m2||null,rid:VT.rid||"",staff:window.TV_STAFF?1:0})}).catch(()=>{R.sentP=null;save()})}
+ show(`<div><div class="kicker">Voice × Personality Result</div><h1 class="title">${hl(headline(B))}</h1><p class="sub">The big picture of your personality, based on your 10 answers.</p></div>
+${heroCard(c,VT.sex,"Your type from the 1-minute voice test")}
+<div class="card"><h2>Your personality</h2>${radarSVG(TRAITS.map(([k,nm])=>[nm,B[k]]))}<p class="small" style="text-align:center">High or low is not good or bad. It just shows which way you lean.</p>
+<div class="small"><b style="color:var(--fg)">Jobs that suit your voice × personality</b></div>${jobChips([...new Set([(FIT_JOBS[c]||[])[0],...TRAITS.map(t=>t[0]).sort((x,y)=>B[y]-B[x]).slice(0,2).map(k=>TRAIT_JOB[k])].filter(Boolean))])}</div>
+<div class="card"><button class="btn block" id="saveImg">Save result as image</button><p class="small" style="text-align:center;margin:0">Refreshing this page clears your result. Save it if you want to keep it.</p></div>
+<div class="card" id="wl"><div class="kicker">App launch alert</div><h2>Practice made for your voice<br>continues in the app</h2>
+<ul class="inc"><li>Your daily voice condition from a 5-second "ahh"</li><li>3-minute daily practice matched to your type and personality</li><li>An AI voice teacher you can ask anytime</li></ul>
+${R.waitlisted?`<p><b>Signed up ✓</b> We'll email you when the app launches. <span class="small">(${esc(R.waitlisted)})</span></p>`:`<label class="small" for="wn" style="margin-bottom:-8px">Name</label><input class="inp" id="wn" maxlength="20" autocomplete="name" value="${esc(R.nick||VT.name||"")}">
+<label class="small" for="we" style="margin-bottom:-8px">Email · we'll send one launch notice</label><input class="inp" id="we" type="email" inputmode="email" maxlength="80" placeholder="name@example.com" autocomplete="email">
+<label class="agree"><input type="checkbox" id="wc"><span>I agree that Touching Voice may store my name and email to tell me when the app launches. We delete them after sending the notice. <a href="privacy.html" target="_blank" rel="noopener">Privacy policy (Korean)</a></span></label>
+<p class="small" id="werr" style="color:#c0392b" role="alert"></p>
+<button class="btn pri block" id="wgo">Notify me when the app launches</button>`}</div>
+<a class="btn block" href="voicetest_en.html?paid&hear" onclick="tvEvent('목소리다시듣기')">Hear my changed voice again</a>
+<a class="btn block" href="voicetest_en.html?paid=new" onclick="tvEvent('다시검사')">Start the test again</a>
+${BIZ}`);
+ $("#saveImg").onclick=()=>{tvEvent("결과저장");saveImage({code:c,sex:VT.sex,typeName:TYPE_NM[c]||"",headline:headline(B),sections:[{title:"Your personality",bars:TRAITS.map(([k,nm])=>({nm,v:B[k]}))},{title:"Jobs that suit your voice × personality",lead:[...new Set([(FIT_JOBS[c]||[])[0],...TRAITS.map(t=>t[0]).sort((x,y)=>B[y]-B[x]).slice(0,2).map(k=>TRAIT_JOB[k])].filter(Boolean))].join(" · ")}]}).catch(()=>toast("Could not create the image"))};
+ const g=$("#wgo");if(g)g.onclick=()=>{const name=$("#wn").value.trim(),email=$("#we").value.trim(),e=$("#werr");
+  if(!name){e.textContent="Please enter your name";return}if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){e.textContent="Please check your email address";return}if(!$("#wc").checked){e.textContent="Please tick the consent box";return}
+  fetch(SAVE_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({type:"waitlist",src:"web-en",name,email,phone:"",sex:VT.sex||"",age:VT.age||null,code:c,target:"",trial:"Big5 "+TRAITS.map(([k,nm])=>nm.slice(0,3)+B[k]).join(" "),agree:true})}).catch(()=>{});
+  tvTrack("Lead",{content_name:"app_waitlist"});R.waitlisted=email.replace(/^(.).*(@.*)$/,"$1***$2");save();vTeaser();toast("Signed up ✓ We'll email you when the app launches.")}}
+function loadSDK(){return window.FirstPay?Promise.resolve():new Promise((res,rej)=>{const s=document.createElement("script");s.src=SDK[FP_ENV];s.onload=res;s.onerror=rej;document.head.appendChild(s)})}
+/* 결제는 됐는데 '레포트 열기' 화면을 놓친 경우: 이 기기의 주문번호 + 기기 열쇠로 되찾는다 */
+function claim(){if(!API_URL||R.token||!R.order||!R.ck)return;api({op:"claim",mxIssueNo:R.order.no,ck:R.ck}).then(j=>{if(j.ok&&j.token&&!R.token){R.token=j.token;save();openReport()}}).catch(()=>{})}
+
+function openPreview(){show(`<div class="card center" style="margin-top:20vh"><div class="spin"></div><p>레포트를 만들고 있어요…</p></div>`);
+ api({op:"preview",sc:7,a:R.a,v:voiceSum(),nick:R.nick!=null?R.nick:(VT.name||"")}).then(j=>{if(j.ok)return vReport(j);if(j.error==="not_test"){R.preview=false;save();return vTeaser()}/* 실제 결제로 바뀐 뒤에는 결제 화면으로 */vError("레포트를 만들지 못했어요.")}).catch(()=>vError("인터넷 연결을 확인하고 다시 열어 주세요."))}
+/* ===== 레포트(결제 후) — 문장은 전부 서버가 준다 ===== */
+function openReport(){show(`<div class="card center" style="margin-top:20vh"><div class="spin"></div><p>레포트를 불러오고 있어요…</p></div>`);
+ if(!API_URL)return vError("레포트 서버가 아직 연결되지 않았어요.");
+ api({op:"report",token:R.token}).then(j=>{if(j.ok){REPORT=j;vReport(j)}else{if(j.error==="not_found"||j.error==="bad_token"){R.token="";save()}vError(j.error==="server"?"잠시 문제가 생겼어요.":"레포트를 찾지 못했어요. 결제한 지 1년이 지났거나 주소가 잘못됐어요.")}})
+  .catch(()=>vError("인터넷 연결을 확인하고 다시 열어 주세요."))}
+function vError(msg){show(`<div class="card center" style="margin-top:14vh"><h2>레포트를 열지 못했어요</h2><p>${esc(msg)}</p>
+<button class="btn pri block" onclick="location.reload()">다시 시도</button><a class="btn ghost" href="voicereport.html">처음으로</a>
+<p class="small">결제했는데 열리지 않으면 고객센터 010-9947-3682 로 알려 주세요.</p></div>${BIZ}`)}
+const P=a=>(a||[]).map(t=>`<p>${esc(t)}</p>`).join("");
+function secHtml(s,i){let h=`<span class="num">${String(i+1).padStart(2,"0")}</span><h2>${esc(s.title)}</h2>`;
+ if(s.value!=null)h+=`<div class="gauge" style="--v:${+s.value}"><b>${+s.value}</b></div><p class="headline" style="text-align:center">${esc(s.label)}</p><span class="badge">${esc(s.badge)}</span>`;
+ if(s.headline)h+=`<p class="headline">${hl(s.headline)}</p>`;
+ if(s.lead)h+=`<p class="small" style="font-size:14.5px">${esc(s.lead)}</p>`;
+ if(s.bars)h+=bars(s.bars);
+ if(s.parts)h+=bars(s.parts);
+ h+=P(s.paras);
+ if(s.items)h+=s.items.map(x=>`<div class="item"><h3>${esc(x.h)}${x.tag?`<span class="tag ${x.tag==="다른 점"?"d":x.tag==="사이"?"m":""}">${esc(x.tag)}</span>`:""}</h3><p>${esc(x.t)}</p>${x.tip?`<div class="tip">${esc(x.tip)}</div>`:""}</div>`).join("");
+ if(s.scene)h+=`<h3>이런 장면, 있지 않았나요?</h3><p class="scene">${esc(s.scene)}</p>`;
+ if(s.scripts)h+=`<h3>이렇게 말해 보세요</h3>`+s.scripts.map(t=>`<div class="say">“${esc(t)}”</div>`).join("");
+ if(s.tips)h+=`<h3 style="margin-top:6px;font-size:18px">${esc(s.tipsTitle)}</h3>`+s.tips.map((x,k)=>`<div class="item"><h3>${k+1}. ${esc(x.h)}</h3><p>${esc(x.t)}</p></div>`).join("");
+ if(s.safe)h+=`<p class="small">${esc(s.safe)}</p>`;
+ if(s.cta&&/^https:\/\/touchingvoice\.app\//.test(s.cta.url))h+=`<a class="btn pri block" href="${esc(s.cta.url)}">${esc(s.cta.label)}</a><p class="small" style="text-align:center">${esc(s.cta.note)}</p>`;
+ if(s.box)h+=`<ul class="inc small">${s.box.map(t=>`<li>${esc(t)}</li>`).join("")}</ul>`;
+ return `<section class="card">${h}</section>`}
+function vReport(D){setFam(D.code);if(!D.test&&R.token&&R.tracked!==R.token){tvTrack("Purchase",{value:+PRICE.replace(/\D/g,""),currency:"KRW"});R.tracked=R.token;save()}/* 결제 레포트를 이 기기에서 처음 열 때 한 번만 */
+ show(`<div><div class="kicker">목소리 × 성격 레포트</div><h1 class="title">${D.nick?esc(D.nick)+" 님의":"나의"}<br>목소리 × 성격 레포트</h1></div>
+${heroCard(D.code,D.sex,"내 목소리 유형")}
+${D.sections.map(secHtml).join("")}
+<div class="card noprint"><div class="row"><button class="btn" id="pdf">PDF로 저장</button><button class="btn" id="png">이미지로 저장</button></div>
+<p class="small">새로고침하면 결과가 사라져요. 남겨 두려면 PDF나 이미지로 저장해 주세요.</p>
+${R.token?`<button class="btn ghost" id="link">레포트 주소 복사</button>`:""}</div>
+<a class="btn block" href="voicetest_en.html?${R.preview?"free":"paid"}&hear" onclick="tvEvent('목소리다시듣기')">달라진 내 목소리 다시 듣기</a>
+<a class="btn block" href="voicetest_en.html?${R.preview?"free":"paid"}=new" onclick="tvEvent('다시검사')">처음부터 다시 검사하기</a>
+${BIZ}`);
+ $("#pdf").onclick=()=>window.print();
+ $("#png").onclick=()=>{tvEvent("결과저장");return saveImage(D).catch(()=>toast("Could not create the image"))};
+ if($("#link"))$("#link").onclick=()=>{const u=location.origin+location.pathname+"#t="+R.token;(navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>toast("주소를 복사했어요"),()=>prompt("주소를 복사해 주세요",u))}}
+
+/* ===== 이미지로 저장 — 11/16 대표: PDF처럼 레포트 전체를 긴 이미지 한 장으로(1080 너비, 크림 바탕·흰 카드) =====
+   두 번 돈다: 한 번은 높이만 재고, 한 번은 그린다. 아이폰 캔버스 한계(약 1,600만 화소) 넘으면 통째로 줄인다 */
+async function makeFull(D){const f=FAM[(D.code||"").slice(0,2)]||FAM.LA,ff="Paperlogy,'Apple SD Gothic Neo',sans-serif",ACC=f[0],INK="#2A2035",MUT="#6B6280",GOLD="#A8925A",CREAM="#F5EEE0";
+ try{await Promise.all(["700 40px","600 40px","500 40px"].map(x=>document.fonts.load(x+" Paperlogy")))}catch(e){}
+ let im=null;try{im=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=charImg(D.code,D.sex)})}catch(e){}
+ const W=1080,X0=40,CWc=W-80,IP=48,X=X0+IP,CW=CWc-2*IP,F=(w,px)=>`${w} ${px}px ${ff}`;
+ const run=(g,draw,H)=>{let y=0;const hs=[];
+  const wrap=(t,font,mw)=>{g.font=font;const out=[];String(t==null?"":t).split("\n").forEach(par=>{let line="";par.split(" ").forEach(wd=>{const tl=line?line+" "+wd:wd;if(g.measureText(tl).width<=mw){line=tl;return}if(line)out.push(line);if(g.measureText(wd).width<=mw){line=wd;return}let cur="";for(const ch of wd){if(g.measureText(cur+ch).width>mw){out.push(cur);cur=ch}else cur+=ch}line=cur});if(line)out.push(line)});return out};
+  const T=(t,w,px,color,lh,x=X,mw=CW)=>{const ls=wrap(t,F(w,px),mw);if(draw){g.font=F(w,px);g.fillStyle=color;ls.forEach((l,k)=>g.fillText(l,x,y+lh*k+px))}y+=ls.length*lh};
+  const box=(x,yy,w,h,r,fill)=>{if(!draw)return;g.beginPath();if(g.roundRect)g.roundRect(x,yy,w,h,r);else g.rect(x,yy,w,h);g.fillStyle=fill;g.fill()};
+  const boxed=(t,w,px,color,lh,fill)=>{const n=wrap(t,F(w,px),CW-48).length,h=n*lh+32,t0=y;box(X,t0,CW,h,22,fill);y+=16;T(t,w,px,color,lh,X+24,CW-48);y=t0+h};
+  if(draw){const bg=g.createLinearGradient(0,0,W,600);bg.addColorStop(0,f[0]);bg.addColorStop(1,f[1]);g.fillStyle=CREAM;g.fillRect(0,0,W,g.canvas.height);g.fillStyle=bg;g.fillRect(0,0,W,600)}
+  y=60;T("Touching Voice · Voice × Personality Result",700,30,"rgba(255,255,255,.8)",40,64,W-128);
+  if(draw&&im){g.save();g.beginPath();if(g.roundRect)g.roundRect(64,140,240,240,56);else g.rect(64,140,240,240);g.clip();g.drawImage(im,64,140,240,240);g.restore()}
+  y=170;T((D.code||"").split("").join(" "),700,34,"rgba(255,255,255,.85)",48,340,W-404);T(D.typeName,700,58,"#fff",70,340,W-404);if(D.nick)T(D.nick+"'s result",500,32,"rgba(255,255,255,.85)",44,340,W-404);
+  y=Math.max(y,390)+36;T(D.headline,700,44,"#fff",58,64,W-128);y=Math.max(y,600)+40;
+  (D.sections||[]).forEach((s,i)=>{const top=y;if(H)box(X0,top,CWc,H[i],40,"#fff");y+=IP;
+   T(String(i+1).padStart(2,"0"),700,26,GOLD,38);T(s.title,700,44,INK,58);y+=8;
+   if(s.value!=null){T(String(s.value),700,120,ACC,130);T(s.label,600,34,INK,46);if(s.badge)T(s.badge,500,26,MUT,38);y+=10}
+   if(s.headline){T(s.headline,700,40,ACC,54);y+=6}
+   if(s.lead){T(s.lead,500,30,MUT,44);y+=6}
+   const bars=list=>list.forEach(b=>{y+=10;if(draw){g.font=F(600,30);g.fillStyle=INK;g.fillText(b.nm,X,y+32);const bx=X+210,bw=CW-210-80;box(bx,y+10,bw,24,12,"#EEE8F3");box(bx,y+10,Math.max(24,bw*b.v/100),24,12,ACC);g.font=F(700,30);g.fillStyle=INK;g.textAlign="right";g.fillText(String(b.v),X+CW,y+32);g.textAlign="left"}y+=48;if(b.t)T(b.t,500,28,MUT,42)});
+   if(s.bars)bars(s.bars);if(s.parts)bars(s.parts);
+   (s.paras||[]).forEach(p=>{y+=12;T(p,500,31,INK,50)});
+   (s.items||[]).forEach(it=>{y+=22;T(it.h+(it.tag?"  · "+it.tag:""),700,33,INK,48);T(it.t,500,30,INK,48);if(it.tip){y+=8;boxed(it.tip,500,28,ACC,42,"#F3EEF8")}});
+   if(s.scene){y+=18;T("Ever had a moment like this?",700,32,INK,46);T(s.scene,500,30,MUT,48)}
+   if(s.scripts){y+=18;T("Try saying it like this",700,32,INK,46);s.scripts.forEach(t=>{y+=8;boxed("“"+t+"”",600,30,INK,46,"#F7F2E7")})}
+   if(s.tips){y+=22;T(s.tipsTitle||"",700,36,INK,50);s.tips.forEach((x,k)=>{y+=10;T((k+1)+". "+x.h,700,32,INK,46);T(x.t,500,30,INK,48)})}
+   if(s.safe){y+=12;T(s.safe,500,26,MUT,38)}
+   if(s.cta){y+=16;T("→ "+s.cta.label,700,30,ACC,44);T(s.cta.url.replace(/^https:\/\//,""),500,26,MUT,38)}
+   if(s.box){y+=10;s.box.forEach(t=>T("· "+t,500,28,INK,42))}
+   y+=IP;hs.push(y-top);y+=32});
+  y+=8;T("touchingvoice.app",500,26,MUT,38,64,W-128);y+=56;return{h:Math.ceil(y),hs}};
+ const m=run(document.createElement("canvas").getContext("2d"),false),k=Math.min(1,Math.sqrt(16e6/(W*m.h))),c=document.createElement("canvas");
+ c.width=Math.floor(W*k);c.height=Math.floor(m.h*k);const g=c.getContext("2d");g.scale(k,k);run(g,true,m.hs);return c}
+async function saveImage(D){const c=await makeFull(D),blob=await new Promise(r=>c.toBlob(r,"image/jpeg",0.92)),f=new File([blob],"touchingvoice_result.jpg",{type:"image/jpeg"});
+ if(/iP(hone|ad|od)/.test(navigator.userAgent)&&navigator.canShare&&navigator.canShare({files:[f]})){toast("In the window that opens, tap 'Save Image'");try{await navigator.share({files:[f]})}catch(e){}return}
+ const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=f.name;document.body.appendChild(a);a.click();a.remove();toast("Image saved")}
+
+/* ===== 시작 ===== */
+(function init(){const t=(location.hash.match(/t=([0-9a-f]{64})/)||[])[1];
+ /* 영어판: 결제·레포트 경로 사용 안 함 */
+ if(!HAS_VOICE)return location.replace("voicetest_en.html?paid");/* 11/16: 목소리 결과가 없으면 하나로 이어진 검사부터 */
+ done()?vTeaser():vQuiz()})();
+window.addEventListener("pageshow",e=>{if(e.persisted)claim()});
+window.addEventListener("hashchange",()=>{if(/t=[0-9a-f]{64}/.test(location.hash))location.reload()});/* 같은 탭에서 레포트 주소(#t=)로 바뀌면 다시 읽는다 */
+</script>
+</body>
+</html>

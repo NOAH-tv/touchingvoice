@@ -1,0 +1,1453 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script>/* 11/18 대표: 결과는 '저장하기'(사진·PDF)로만 남긴다 — 새로고침하거나 새로 들어오면 바로 처음부터.
+   같은 탭에서 페이지를 넘어갈 때(목소리 → 성격 결과 → 다시 듣기)만 이어진다. 앱 출시 알림 신청 표시는 남긴다 */
+(function(){try{var n=performance.getEntriesByType("navigation")[0],t=n?n.type:"navigate";
+ if(t==="reload"||sessionStorage.getItem("tv_flow_en")!=="1"){var w=null;try{w=(JSON.parse(localStorage.getItem("tv_voicereport_v1_en")||"null")||{}).waitlisted}catch(e){}
+  localStorage.removeItem("tv_voicetest_web_v1_en");localStorage.removeItem("tv_voicereport_v1_en");if(w)localStorage.setItem("tv_voicereport_v1_en",JSON.stringify({waitlisted:w}));
+  try{indexedDB.deleteDatabase("tv_vt_en")}catch(e){}}
+ sessionStorage.setItem("tv_flow_en","1")}catch(e){}})();</script>
+
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>What's Your Voice Type? · Touching Voice Voice-Type Test</title>
+<meta name="description" content="Find your type among 16 voice types with a 1-minute recording. See how your voice sounds to others — plus your voice age.">
+<meta name="robots" content="noindex"><!-- 숨김 주소 시험 중. 정식 공개 때 지운다 -->
+<meta name="theme-color" content="#F5EEE0">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Touching Voice">
+<meta property="og:title" content="What's Your Voice Type? — The 16 Voice Types Test">
+<meta property="og:description" content="Find your voice type with a 1-minute recording. See how your voice sounds to others — plus your voice age.">
+<meta property="og:image" content="https://touchingvoice.app/voicetype_assets/og_voicetest.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+/* 글꼴: 라이브 루트의 Paperlogy(협회·결제 페이지와 같은 파일) */
+@font-face{font-family:Paperlogy;src:url(Paperlogy-4Regular.woff2) format("woff2"),url(Paperlogy-4Regular.ttf) format("truetype");font-weight:400;font-display:swap}
+@font-face{font-family:Paperlogy;src:url(Paperlogy-5Medium.woff2) format("woff2"),url(Paperlogy-5Medium.ttf) format("truetype");font-weight:500;font-display:swap}
+@font-face{font-family:Paperlogy;src:url(Paperlogy-6SemiBold.woff2) format("woff2"),url(Paperlogy-6SemiBold.ttf) format("truetype");font-weight:600;font-display:swap}
+@font-face{font-family:Paperlogy;src:url(Paperlogy-7Bold.woff2) format("woff2"),url(Paperlogy-7Bold.ttf) format("truetype");font-weight:700;font-display:swap}
+:root{
+  --bg:#F5EEE0;--bg2:#EDE3CF;--card:#FFFCF6;--fg:#22163F;--muted:#5A5070;--line:#E6DBC6;--line2:#D6C8AC;
+  --pri:#43227D;--pri-fg:#FFFFFF;--gold:#A8925A;--ring:rgba(67,34,125,.28);--ok:#2F7D5B;--warn:#A35A2A;
+  --shadow:0 1px 2px rgba(34,22,63,.05),0 10px 30px rgba(34,22,63,.08);
+  --glass:rgba(255,252,246,.58);--glass-line:rgba(255,255,255,.75);--glass-hi:rgba(255,255,255,.85);
+  --fam:#43227D;--fam-deep:#2E1660;--fam-ui:var(--fam);
+  --r:20px;--r-sm:14px;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){
+  --bg:#15111F;--bg2:#1B1628;--card:#201A31;--fg:#F3EDE1;--muted:#C3BBD7;--line:#2F2746;--line2:#3D3459;
+  --pri:#BBA6F0;--pri-fg:#1A1230;--gold:#CDB57C;--ring:rgba(187,166,240,.35);--ok:#72CFA2;--warn:#E3A178;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+  --glass:rgba(32,26,49,.55);--glass-line:rgba(255,255,255,.12);--glass-hi:rgba(255,255,255,.16);
+  --fam-ui:color-mix(in oklab,var(--fam) 55%,#fff);color-scheme:dark}}
+:root[data-theme=dark]{
+  --bg:#15111F;--bg2:#1B1628;--card:#201A31;--fg:#F3EDE1;--muted:#C3BBD7;--line:#2F2746;--line2:#3D3459;
+  --pri:#BBA6F0;--pri-fg:#1A1230;--gold:#CDB57C;--ring:rgba(187,166,240,.35);--ok:#72CFA2;--warn:#E3A178;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+  --glass:rgba(32,26,49,.55);--glass-line:rgba(255,255,255,.12);--glass-hi:rgba(255,255,255,.16);
+  --fam-ui:color-mix(in oklab,var(--fam) 55%,#fff);color-scheme:dark}
+[hidden]{display:none!important}
+*{box-sizing:border-box}
+html,body{background:var(--bg);color:var(--fg)}
+body{margin:0;font:500 16px/1.6 Paperlogy,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased;min-height:100dvh;overflow-x:hidden;word-break:normal;overflow-wrap:break-word}
+img{max-width:100%;display:block}
+button{font:inherit;color:inherit}
+#bgfx{position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(42% 30% at 88% 6%,color-mix(in oklab,var(--fam) 20%,transparent),transparent 70%),
+             radial-gradient(48% 34% at 6% 96%,color-mix(in oklab,var(--gold) 24%,transparent),transparent 70%)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:30}
+
+/* 레이아웃 */
+.view{max-width:440px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px 40px;display:flex;flex-direction:column;gap:16px}
+.view.with-tab{padding-block-end:calc(110px + env(safe-area-inset-bottom,0px))}
+.view.enter{animation:viewIn .45s cubic-bezier(.2,.7,.2,1)}
+@keyframes viewIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;max-width:440px;margin:0 auto;display:flex;align-items:center;gap:12px;
+  padding-block:10px;padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  background:linear-gradient(var(--bg) 65%,color-mix(in oklab,var(--bg) 0%,transparent))}
+.icon-btn{width:40px;height:40px;border-radius:12px;border:0;background:transparent;display:grid;place-items:center;cursor:pointer;color:var(--fg);flex:none}
+.icon-btn:active{background:var(--bg2)}
+.prog{flex:1;height:6px;border-radius:99px;background:var(--line);overflow:hidden}
+.prog i{display:block;height:100%;width:0;background:var(--pri);border-radius:99px;transition:width .4s cubic-bezier(.2,.7,.2,1)}
+.prog-n{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;min-width:44px;text-align:right;margin-left:auto}
+
+/* 타이포 */
+.kicker{font-size:13px;letter-spacing:.12em;color:var(--gold);font-weight:700}
+.display{font-size:31px;line-height:1.25;font-weight:700;letter-spacing:-.02em;margin:6px 0 0;text-wrap:balance}
+.title{font-size:24px;line-height:1.3;font-weight:700;letter-spacing:-.01em;margin:4px 0 0;text-wrap:balance}
+h2{font-size:18px;line-height:1.35;margin:0;font-weight:700;letter-spacing:-.01em}
+h3{font-size:15px;margin:0;font-weight:700}
+p{margin:0}
+.lead{color:var(--muted);font-size:16px}
+.muted{color:var(--muted)}
+small,.small{font-size:14px;color:var(--muted)}
+.fine{font-size:13px;color:var(--muted);line-height:1.55}
+.num{font-variant-numeric:tabular-nums}
+.sec-h{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+
+/* 컴포넌트 (shadcn 계열: 얇은 테두리·둥근 모서리·절제된 그림자) */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px;min-width:0}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:0 20px;border-radius:16px;border:1px solid var(--line2);background:var(--card);color:var(--fg);font-weight:600;font-size:16px;cursor:pointer;transition:transform .15s,background .2s,box-shadow .2s;text-decoration:none}
+.btn:active{transform:scale(.97)}
+.btn:focus-visible,.dot:focus-visible,.opt:focus-visible,.tab:focus-visible,.seg button:focus-visible{outline:none;box-shadow:0 0 0 4px var(--ring)}
+.btn.pri{background:var(--pri);color:var(--pri-fg);border-color:transparent}
+.btn.fam{background:var(--fam-deep);color:#fff;border-color:transparent}
+.btn.block{width:100%}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--muted)}
+.btn.sm{min-height:40px;font-size:14px;padding:0 14px;border-radius:12px}
+.btn:disabled{opacity:.45}
+.shine{background-image:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.28) 50%,transparent 65%);background-size:250% 100%;animation:shine 3.2s ease-in-out infinite}
+@keyframes shine{0%{background-position:120% 0}60%,100%{background-position:-120% 0}}
+.badge{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 11px;border-radius:999px;border:1px solid var(--line2);font-size:12.5px;font-weight:600;color:var(--muted);background:var(--card);white-space:nowrap}
+.badge.solid{background:var(--fam-deep);border-color:transparent;color:#fff}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.glass{background:var(--glass);-webkit-backdrop-filter:blur(22px) saturate(1.8);backdrop-filter:blur(22px) saturate(1.8);border:1px solid var(--glass-line);box-shadow:inset 0 1px 0 var(--glass-hi),var(--shadow)}
+.err{color:var(--warn);font-size:14px;min-height:1em}
+.bar{display:block;height:10px;border-radius:99px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;width:0;border-radius:99px;background:var(--fam-ui);transition:width 1s cubic-bezier(.2,.7,.2,1)}
+details{border-top:1px solid var(--line);padding-top:10px}
+summary{cursor:pointer;font-weight:600;font-size:14px;color:var(--muted)}
+pre{white-space:pre-wrap;font-size:12px;background:var(--bg2);border-radius:12px;padding:12px;margin:8px 0;overflow-x:auto}
+
+/* 움직임 (React Bits 계열: 흐림→선명, 튀어오름, 숫자 올라가기) */
+.bi span{display:inline-block;opacity:0;animation:blurIn .7s cubic-bezier(.2,.7,.2,1) forwards}
+@keyframes blurIn{from{opacity:0;filter:blur(10px);transform:translateY(10px)}to{opacity:1;filter:none;transform:none}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes wobble{0%,100%{transform:rotate(0)}15%{transform:rotate(-7deg)}30%{transform:rotate(6deg)}45%{transform:rotate(-4deg)}60%{transform:rotate(3deg)}75%{transform:rotate(-1deg)}}
+@keyframes pop{0%{transform:scale(.55);opacity:0}60%{transform:scale(1.07);opacity:1}100%{transform:scale(1)}}
+@keyframes flash{0%{opacity:0}25%{opacity:1}100%{opacity:0}}
+@keyframes drop{from{transform:translateY(-26px) scale(.8);opacity:0}to{transform:none;opacity:1}}
+@keyframes stamp{0%{transform:scale(2.3) rotate(-20deg);opacity:0}60%{transform:scale(.92) rotate(-8deg);opacity:1}100%{transform:scale(1) rotate(-10deg)}}
+@keyframes rise{0%{transform:translate(0,0) scale(.8);opacity:0}15%{opacity:1}100%{transform:translate(var(--dx,0),-140px) scale(1.15);opacity:0}}
+@keyframes ping{0%{transform:scale(1);opacity:.6}100%{transform:scale(2.4);opacity:0}}
+@keyframes bounce{0%,100%{transform:translateY(0) scale(1)}30%{transform:translateY(-14px) scale(1.04,.96)}55%{transform:translateY(0) scale(.97,1.03)}75%{transform:translateY(-4px)}}
+.float{animation:float 3.6s ease-in-out infinite}
+.wobble{animation:wobble 1.1s ease-in-out infinite}
+.popin{animation:pop .7s cubic-bezier(.34,1.56,.64,1) both}
+.bounce{animation:bounce .7s cubic-bezier(.34,1.56,.64,1)}
+/* 화면 캡처용(?shot) — 움직임 끄고 최종 모습으로 */
+.noanim *,.noanim *::before,.noanim *::after{animation:none!important;transition:none!important}.noanim .bi span{opacity:1}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* 첫 화면 */
+.hero{display:flex;flex-direction:column;gap:14px;padding-top:8px}
+.orb{align-self:center;width:min(260px,70vw);aspect-ratio:1;max-width:100%;border-radius:50%;display:grid;place-items:center;position:relative;margin:4px 0}
+.orb img{width:82%;border-radius:50%}
+.fam-grid{display:flex;flex-direction:column;gap:14px}
+.fam-row h3{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.fam-row h3 i{width:10px;height:10px;border-radius:50%;background:var(--c)}
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.tile{border:1px solid var(--line);background:var(--card);border-radius:16px;padding:6px 6px 8px;cursor:pointer;display:flex;flex-direction:column;gap:4px;align-items:center;text-align:center;min-width:0;transition:transform .15s}
+.tile:active{transform:scale(.96)}
+.tile img{border-radius:12px;width:100%;aspect-ratio:1;object-fit:cover}
+.tile b{font-size:13px;line-height:1.2}
+.tile span{font-size:10.5px;color:var(--muted);line-height:1.25;word-break:keep-all}
+.steps3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;text-align:center}
+.steps3 b{display:block;font-size:20px}
+
+/* 폼 */
+.lbl{font-weight:600;font-size:15px;display:flex;flex-direction:column;gap:2px}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;background:var(--bg2);padding:4px;border-radius:14px}
+.seg button{border:0;background:transparent;border-radius:11px;min-height:42px;font-weight:600;cursor:pointer;color:var(--muted)}
+.seg button.on{background:var(--card);color:var(--fg);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.inp{height:48px;border:1px solid var(--line2);border-radius:14px;background:var(--card);color:var(--fg);padding:0 14px;font:inherit;width:100%}
+.inp:focus{outline:none;box-shadow:0 0 0 4px var(--ring);border-color:var(--pri)}
+.chip{border:1px solid var(--line2);background:var(--card);border-radius:999px;min-height:38px;padding:0 14px;font-size:14px;font-weight:600;cursor:pointer;color:var(--muted)}
+.chip.on{background:var(--pri);border-color:transparent;color:var(--pri-fg)}
+.chk{display:flex;gap:12px;align-items:flex-start;font-size:14.5px;cursor:pointer}
+.chk input{width:22px;height:22px;margin:1px 0 0;accent-color:var(--pri);flex:none}
+
+/* 질문 (MBTI식 한 화면 한 문항) */
+.q-wrap{min-height:58dvh;display:flex;flex-direction:column;justify-content:center;gap:18px;text-align:center}
+.q{font-size:27px;line-height:1.35;font-weight:700;letter-spacing:-.02em;margin:0;text-wrap:balance}
+.likert{display:flex;justify-content:space-between;align-items:center;gap:4px;margin-top:10px}
+.dot{border-radius:50%;border:2.5px solid;background:transparent;cursor:pointer;flex:none;padding:0;transition:transform .15s,background .2s}
+.dot:active{transform:scale(.9)}
+.d0,.d6{width:48px;height:48px}.d1,.d5{width:40px;height:40px}.d2,.d4{width:32px;height:32px}.d3{width:24px;height:24px}
+.d0,.d1,.d2{border-color:var(--pri)}.d3{border-color:var(--line2)}.d4,.d5,.d6{border-color:var(--gold)}
+.d0.on,.d1.on,.d2.on{background:var(--pri)}.d3.on{background:var(--line2)}.d4.on,.d5.on,.d6.on{background:var(--gold)}
+.scale-choice{flex:1;min-width:0;min-height:44px;border:1px solid var(--line2);border-radius:12px;background:var(--card);color:var(--fg);font:inherit;cursor:pointer}.scale-choice[aria-pressed="true"]{background:var(--pri);color:var(--bg)}
+.trait-ends{display:flex;justify-content:space-between;gap:12px;font-size:13px;color:var(--muted)}.trait-ends span:last-child{text-align:right}.axis meter{width:100%;accent-color:var(--pri)}
+.likert-lab{display:flex;justify-content:space-between;font-size:14px;font-weight:600}
+.likert-lab span:first-child{color:var(--pri)}.likert-lab span:last-child{color:var(--gold)}
+.opts{display:grid;gap:10px}
+.opt{display:flex;align-items:center;gap:14px;padding:18px;border-radius:18px;border:1.5px solid var(--line2);background:var(--card);cursor:pointer;text-align:left;font-size:18px;font-weight:600;transition:transform .15s,border-color .2s}
+.opt:active{transform:scale(.98)}
+.opt.on{border-color:var(--pri);box-shadow:0 0 0 3px var(--ring)}
+.opt i{font-style:normal;width:44px;height:44px;border-radius:14px;background:var(--bg2);display:grid;place-items:center;font-size:20px;flex:none}
+
+/* 녹음 */
+.sentence{font-size:20px;line-height:1.75;font-weight:600;border-left:4px solid var(--fam-ui);padding:4px 0 4px 14px;text-wrap:pretty}
+.mic-box{display:flex;flex-direction:column;align-items:center;gap:12px;padding:8px 0}
+.wave{width:100%;height:72px;max-width:100%}
+.timer{font-size:34px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.mic{position:relative;width:96px;height:96px;border-radius:50%;border:0;background:var(--pri);color:var(--pri-fg);display:grid;place-items:center;cursor:pointer;box-shadow:0 10px 30px color-mix(in oklab,var(--pri) 40%,transparent);transition:transform .15s}
+.mic:active{transform:scale(.95)}
+.mic::before,.mic::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid var(--pri);opacity:0}
+.mic.on{background:var(--warn);color:#fff}
+.mic.on::before{border-color:var(--warn);animation:ping 1.6s ease-out infinite}
+.mic.on::after{border-color:var(--warn);animation:ping 1.6s ease-out .8s infinite}
+.mic-msg{font-size:14px;color:var(--muted);text-align:center;min-height:1.5em}
+.file-alt{font-size:13px;color:var(--muted);text-decoration:underline;cursor:pointer}
+
+/* 결과 */
+.hero-card{border-radius:28px;padding:18px 18px 22px;color:#fff;background:linear-gradient(160deg,var(--fam),var(--fam-deep));display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;position:relative;overflow:hidden;box-shadow:0 20px 50px color-mix(in oklab,var(--fam) 35%,transparent)}
+.hero-card::after{content:"";position:absolute;inset:-40% -20% auto;height:70%;background:radial-gradient(closest-side,rgba(255,255,255,.22),transparent);pointer-events:none}
+.hc-top{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.pill-g{display:inline-flex;align-items:center;height:28px;padding:0 12px;border-radius:99px;font-size:13.5px;font-weight:600;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.hc-img{width:min(260px,72%);border-radius:24px;margin:8px 0 4px;box-shadow:0 12px 30px rgba(0,0,0,.25)}
+.code{display:flex;gap:6px;justify-content:center}
+.code span{width:48px;height:56px;border-radius:13px;display:grid;place-items:center;font-size:31px;font-weight:700;background:rgba(255,255,255,.95);color:var(--fam-deep);animation:drop .5s cubic-bezier(.34,1.56,.64,1) both}
+.hc-name{font-size:32px;font-weight:700;margin:0;letter-spacing:-.02em}
+.hc-tag{font-size:16px;font-weight:600;line-height:1.5;text-wrap:balance}
+.hc-line{position:relative;display:inline-block;max-width:92%;margin:6px auto 2px;padding:9px 16px;border-radius:18px;background:#fff;color:var(--fam-deep);font-size:17px;font-weight:700;line-height:1.4;word-break:keep-all;box-shadow:0 6px 16px rgba(0,0,0,.18)}
+.hc-line::before{content:"";position:absolute;left:50%;top:-7px;width:14px;height:14px;background:#fff;transform:translateX(-50%) rotate(45deg);border-radius:2px}
+.chem-sc{display:flex;flex-direction:column;align-items:center;gap:2px;margin:6px 0}.chem-sc b{font-size:52px;line-height:1;color:var(--gold)}.chem-sc span{font-size:12.5px;color:var(--muted)}.mch{grid-template-columns:repeat(3,1fr)!important}.mch img{width:72px!important}.cvr{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin:8px 0}.cvr span{font-size:13.5px;color:var(--muted);width:100%;text-align:center}.cvr .btn.on{background:var(--fam-ui);color:#fff;border-color:transparent}
+.gmap{display:grid;grid-template-columns:repeat(auto-fill,minmax(62px,1fr));gap:8px;margin:4px 0 6px}.gmap>div{text-align:center}.gmap img{width:56px;border-radius:14px;margin:0 auto 3px;display:block}.gmap small{display:block;font-size:11px;line-height:1.3;color:var(--muted)}.gmap .me img{outline:3px solid var(--gold);outline-offset:1px}.gmap .me small{color:var(--fg);font-weight:700}.gmini{display:grid;grid-template-columns:repeat(2,30px);gap:4px;flex:none}.friend .gmini img{width:30px;height:30px;min-width:0;border-radius:8px;object-fit:cover;margin:0}
+.mch{display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:center}.mch>div{background:var(--bg2);border-radius:18px;padding:12px 8px}.mch img{width:84px;border-radius:18px;margin:0 auto 6px}.mch b{display:block;font-size:15px}.mch small{display:block;font-size:12px;color:var(--muted);line-height:1.35}.mch em{display:block;font-style:normal;font-size:12.5px;color:var(--gold);margin-top:6px;font-weight:700}
+.cmp{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;text-align:center}
+.cmp img{width:76px;border-radius:16px;margin:0 auto 4px}
+.cmp b{display:block;font-size:15px}
+.axes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.axis{border:1px solid var(--line);border-radius:16px;padding:12px;background:var(--card);display:flex;flex-direction:column;gap:4px;min-width:0}
+.axis-top{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:var(--muted);font-weight:600}
+.axis-top{gap:6px;flex-wrap:wrap}.axis-top>*{white-space:nowrap}.axis-top b{min-width:28px;height:28px;padding:0 9px;border-radius:9px;display:grid;place-items:center;background:var(--fam-deep);color:#fff;font-size:13px}
+.axis strong{font-size:16px}
+.axis p{font-size:13px;color:var(--muted);line-height:1.45}
+.bands{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;align-items:end;height:150px;padding-top:6px;background:repeating-linear-gradient(to top,var(--line) 0 1px,transparent 1px 25px)}
+.band{display:flex;flex-direction:column;align-items:center;gap:6px;height:144px;justify-content:flex-end}
+.band i{display:block;width:70%;border-radius:10px 10px 4px 4px;background:var(--fam-ui);height:0;transition:height 1s cubic-bezier(.2,.7,.2,1)}
+.band b{font-size:15px;font-variant-numeric:tabular-nums}
+.band-lab{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;text-align:center;font-size:12px;color:var(--muted)}
+.rmap{display:flex;flex-direction:column;gap:6px}
+.rm-lab,.rm-notes{display:grid;grid-template-columns:repeat(4,1fr);text-align:center}
+.rm-lab span{font-size:13px;font-weight:700}.rm-notes small{font-size:11px;color:var(--muted)}
+.rm-track{position:relative;height:46px;border-radius:14px;overflow:hidden;display:grid;grid-template-columns:repeat(4,1fr);background:var(--bg2)}
+.rm-track>i{display:block;border-right:1px solid var(--line)}.rm-track>i:nth-child(even){background:color-mix(in oklab,var(--fg) 4%,transparent)}.rm-track>i:nth-child(4){border-right:0}
+.rm-band{position:absolute;top:12px;bottom:12px;border-radius:99px;background:color-mix(in oklab,var(--fam-ui) 45%,transparent)}
+.rm-dot{position:absolute;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:var(--fam-ui);box-shadow:0 0 0 3px rgba(255,255,255,.85)}
+.rm-tick{position:absolute;top:6px;bottom:6px;border-left:1.5px dashed var(--muted);opacity:.7}
+.big-num{font-size:44px;font-weight:700;letter-spacing:-.03em;line-height:1.05;font-variant-numeric:tabular-nums}
+.ring{width:110px;height:110px;flex:none}
+.ring .bg{fill:none;stroke:var(--line);stroke-width:9}
+.ring .fg{fill:none;stroke:var(--fam-ui);stroke-width:9;stroke-linecap:round;transition:stroke-dashoffset 1.2s cubic-bezier(.2,.7,.2,1)}
+.ring .tk{stroke:var(--gold);stroke-width:3;stroke-linecap:round}
+.ring text{fill:var(--fg);font-size:22px;font-weight:700;text-anchor:middle;font-family:inherit}
+.row{display:flex;align-items:center;gap:16px}
+.cta{border:1.5px solid color-mix(in oklab,var(--fam-ui) 45%,var(--line));background:linear-gradient(160deg,color-mix(in oklab,var(--fam) 9%,var(--card)),var(--card))}
+.list{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.list li::marker{color:var(--fam-ui)}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;background:var(--bg2);padding:4px;border-radius:14px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 60px);z-index:5}
+.tabs button{border:0;background:transparent;border-radius:11px;min-height:40px;font-weight:600;font-size:14px;cursor:pointer;color:var(--muted)}
+.tabs button.on{background:var(--card);color:var(--fg);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.gap-row{display:grid;grid-template-columns:76px 1fr;gap:10px;align-items:start;padding:12px 0;border-top:1px solid var(--line)}
+.gap-row:first-child{border-top:0}
+.gap-bars{display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--muted)}
+.gap-bars div{display:grid;grid-template-columns:52px 1fr 28px;gap:6px;align-items:center}
+.gap-bars .bar{height:8px}
+.gap-bars .bar.self i{background:var(--gold)}
+.tip{font-size:14px;margin-top:6px;line-height:1.5}
+.target{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;background:var(--bg2);font-size:14px}
+.target b{font-size:18px}
+.target.stack{display:block}.target.stack span{display:block;font-size:13.5px;font-weight:700;color:var(--pri);margin-bottom:6px;white-space:normal}.target.stack b{display:block;font-size:17px;line-height:1.55;word-break:keep-all}
+.ap{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.ap div{display:flex;flex-direction:column;gap:3px;padding:8px 10px;border-radius:12px;background:var(--bg2)}
+.ap small{font-size:12px;color:var(--muted)}.ap b{font-size:18px}
+.ap i{display:block;height:5px;border-radius:3px;background:var(--line);overflow:hidden}.ap s{display:block;height:100%;background:var(--fam-ui);text-decoration:none}
+.pbar{display:flex;align-items:center;gap:12px;width:100%;padding:10px 14px 10px 10px;border-radius:16px;background:var(--bg2);border:1px solid var(--line)}
+.pbar .pb-btn{flex:none;width:46px;height:46px;border-radius:50%;border:0;background:var(--pri);color:var(--pri-fg);display:grid;place-items:center;cursor:pointer}
+.pbar .pb-btn svg{width:18px;height:18px;fill:currentColor}
+.pbar .pb-mid{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.pbar .pb-lab{font-size:13.5px;font-weight:700}
+.pbar .pb-track{height:20px;display:flex;align-items:center;cursor:pointer;touch-action:none}
+.pbar .pb-track span{position:relative;flex:1;height:6px;border-radius:3px;background:var(--line)}
+.pbar .pb-track i{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:3px;background:var(--pri)}
+.pbar .pb-t{flex:none;font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+/* 시트·토스트 */
+.sheet{position:fixed;inset:0;z-index:40;display:flex;align-items:flex-end;justify-content:center}
+.sheet-bg{position:absolute;inset:0;background:rgba(20,12,40,.42);animation:flash .01s}
+.sheet-panel{position:relative;width:min(480px,100%);max-height:88dvh;overflow:auto;background:var(--card);border-radius:28px 28px 0 0;padding:10px max(18px,env(safe-area-inset-left,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:14px;animation:sheetUp .4s cubic-bezier(.2,.8,.2,1)}
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:none}}
+.grab{width:42px;height:5px;border-radius:9px;background:var(--line2);align-self:center}
+.share-prev{width:min(260px,70%);margin:0 auto;border-radius:18px;box-shadow:var(--shadow)}
+.toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--fg);color:var(--bg);padding:11px 16px;border-radius:14px;font-size:14px;font-weight:600;opacity:0;pointer-events:none;transition:all .3s;z-index:50;max-width:calc(100% - 32px);text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* 결과 공개 */
+.reveal{min-height:78dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center}
+.rv-stage{position:relative;width:min(280px,78vw);aspect-ratio:1;max-width:100%}
+.rv-stage img{position:absolute;inset:0;width:100%;border-radius:32px}
+.rv-flash{position:absolute;inset:-30%;border-radius:50%;background:radial-gradient(closest-side,#fff,transparent);opacity:0;pointer-events:none}
+.rv-flash.go{animation:flash .7s ease-out}
+.crack{animation:wobble .35s ease-in-out 3}
+.wait-steps{display:flex;flex-direction:column;gap:8px;font-size:15px}
+.wait-steps div{display:flex;gap:10px;align-items:center;color:var(--muted);transition:color .3s}
+.wait-steps div.on{color:var(--fg);font-weight:600}
+.wait-steps i{width:8px;height:8px;border-radius:50%;background:var(--line2)}
+.wait-steps div.on i{background:var(--fam-ui)}
+.sentence{transition:text-shadow .08s,border-color .3s;text-shadow:0 0 calc(var(--lv,0) * 26px) color-mix(in oklab,var(--gold) 85%,transparent)}
+.sentence.kept{border-left-color:var(--gold)}
+/* 11/4 대표: 코드 뜻은 2개씩 균형 있게(2×2) */
+.cm{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;width:100%;max-width:360px;margin:4px auto}
+.cm span{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:9px 8px;border-radius:14px;background:var(--bg2);color:var(--fg);text-align:center;line-height:1.3;word-break:keep-all}
+.cm b{font-weight:700;font-size:17px}.cm em{font-style:normal;font-size:14px;opacity:.95}
+.cm.on-dark span{background:rgba(255,255,255,.16);color:#fff}
+.play-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.big-num.sm{font-size:30px;white-space:nowrap}.big-num.ok{color:var(--ok)}.big-num.no{color:var(--warn)}
+.more-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.more-grid div{border:1px dashed var(--line2);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.fun2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.fun2>div{display:flex;flex-direction:column;gap:2px;min-width:0}
+/* 웹 테스트 전용 */
+.friend{display:grid;grid-template-columns:64px minmax(0,1fr);gap:12px;align-items:center;padding:12px 14px;border-radius:18px;border:1.5px dashed color-mix(in oklab,var(--fam-ui) 50%,var(--line2));background:var(--card);text-align:left}
+.friend img{width:64px;border-radius:14px}
+.price{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}.price b{font-size:28px;letter-spacing:-.02em}
+.share-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.biz{font-size:11.5px;color:var(--muted);line-height:1.7;text-align:center;padding-top:12px;border-top:1px solid var(--line);margin-top:4px}
+.biz a{color:inherit}
+.fine a{color:inherit}
+.cond{display:flex;flex-direction:column;gap:6px}
+.cond div{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:14px;padding:8px 12px;border-radius:12px;background:var(--bg2)}
+.cond b{font-size:13.5px;text-align:right}.cond b.ok{color:var(--ok)}.cond b.no{color:var(--warn)}
+
+.ax-line{display:grid;grid-template-columns:44px minmax(0,1fr);gap:2px 10px;padding:9px 0;border-top:1px solid var(--line);font-size:14.5px;align-items:center}
+.ax-line small{grid-column:2}.ax-line.goal b{color:var(--fam-ui)}.ax-line.soft b{color:var(--gold)}
+.megoal{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;text-align:center}
+.megoal .av{width:92px;height:92px;border-radius:50%;margin:0 auto 6px;overflow:hidden;background:var(--bg2);box-shadow:var(--shadow);display:grid;place-items:center;font-size:34px;font-weight:700;color:var(--muted);border:3px solid var(--card-solid,#fff)}
+.megoal .av img{width:100%;height:100%;object-fit:cover}.megoal .av.goal{box-shadow:0 0 0 3px var(--ring),var(--shadow)}
+.fam-legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--muted);font-weight:600}
+.fam-legend i{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--c);margin-right:5px}
+.rgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px 10px}
+.rt{border:0;background:transparent;padding:0;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;color:var(--fg);min-width:0;font:inherit}
+.rt span{width:100%;aspect-ratio:1;border-radius:22px;overflow:hidden;display:block;transition:transform .15s}
+.rt:active span{transform:scale(.95)}.rt img{width:100%;height:100%;object-fit:cover}
+.rt b{font-size:12.5px;line-height:1.2}.rt{position:relative}.me-badge{position:absolute;top:4px;right:4px;font-style:normal;font-size:11px;font-weight:700;padding:2px 7px;border-radius:99px;background:var(--pri);color:var(--pri-fg)}.rt small{line-height:1.25;text-align:center;color:var(--muted)}
+.rt.pick span{box-shadow:0 0 0 3px var(--pri),0 8px 24px color-mix(in oklab,var(--pri) 35%,transparent)}
+.rt.me span{outline:2px dashed var(--gold);outline-offset:2px}
+.sticky-cta .btn:disabled{opacity:1;background:var(--card);color:var(--muted);border:1px solid var(--line2)}.sticky-cta{position:sticky;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:6}
+.trial-row{display:grid;grid-template-columns:44px minmax(0,1fr);gap:2px 10px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}.trial-row small{grid-column:2}
+.trial-row:first-child{border-top:0}.trial-row b{font-size:14.5px}.trial-row .num{font-weight:700}
+.trial-row .ok{color:var(--ok)}.trial-row .no{color:var(--muted)}
+.tips{margin:0;padding-left:1.1em;display:flex;flex-direction:column;gap:6px}.tips li b{color:var(--fam-ui)}
+.win{display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center;padding-top:6px}
+.tone{display:flex;flex-direction:column;gap:10px}
+.tn{display:grid;grid-template-columns:84px minmax(0,1fr) 54px;gap:10px;align-items:center}
+.tn span{display:flex;flex-direction:column;line-height:1.25}.tn b{font-size:14.5px}.tn small{font-size:11.5px}
+.tn i{display:block;height:12px;border-radius:99px;background:var(--line);overflow:hidden}.tn s{display:block;height:100%;border-radius:99px;background:var(--fam-ui);text-decoration:none}
+.tn em{font-style:normal;font-size:12.5px;color:var(--muted);text-align:right}
+.rm-avg{position:absolute;top:3px;bottom:3px;width:0;border-left:2px dashed var(--gold);margin-left:-1px}
+.rm-keys{position:relative;height:30px;border-radius:8px;overflow:hidden;background:#f4efe4}.rm-keys i{position:absolute;top:0;bottom:0;border-right:1px solid rgba(40,30,60,.14);background:#f4efe4}.rm-keys i.b{background:#2b2236;bottom:38%;z-index:1}.rm-keys i.on{background:#e8d9ae}.rm-keys i.b.on{background:#7a6230}.rm-keys i.me{background:var(--fam-ui)}.rm-keys em{position:absolute;bottom:2px;left:-6px;right:-6px;text-align:center;font-style:normal;font-size:10px;font-weight:700;color:#5b5170}
+.bchars{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 8px;margin:0 -4px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}.bc{flex:none;width:76px;display:flex;flex-direction:column;align-items:center;gap:5px;background:none;border:0;padding:0;cursor:pointer;color:inherit;font:inherit;scroll-snap-align:start}.bc img,.bc .bc-fill{width:64px;height:64px;border-radius:18px;border:2.5px solid transparent;object-fit:cover;display:grid;place-items:center;background:var(--bg2);font-weight:700;font-size:13px}.bc.on img,.bc.on .bc-fill{border-color:var(--gold)}.bc small{font-size:11px;line-height:1.25;text-align:center;color:var(--muted);word-break:keep-all}.bc.on small{color:var(--fg);font-weight:700}.bc:focus-visible{outline:none}.bc:focus-visible img,.bc:focus-visible .bc-fill{box-shadow:0 0 0 4px var(--ring)}
+.tn i.ctr{position:relative;overflow:visible}.tn i.ctr s{position:absolute;top:0;bottom:0}.tn i.ctr::after{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;border-left:2px dashed var(--gold)}.tn.low b{color:var(--gold)}
+.q p{font-size:17px;font-weight:600;line-height:1.45}.qds{display:flex;justify-content:space-between;gap:6px}.qd{flex:1;max-width:56px;aspect-ratio:1;border-radius:50%;border:1.5px solid var(--line);background:var(--bg2);font:inherit;font-weight:700;font-size:16px;cursor:pointer;color:var(--muted);padding:0}.qd[aria-checked=true]{background:var(--fam-ui);color:#fff;border-color:transparent}.qd:focus-visible{outline:none;box-shadow:0 0 0 4px var(--ring)}.ends{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted)}.stick{position:sticky;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:5}.stick .btn:disabled{opacity:1;background:var(--bg2);color:var(--muted);border:1px solid var(--line)}
+/* ===== 11/5 대표: 그라데이션 + 글래스(애플풍). 이 블록이 위 스타일을 덮어쓴다 ===== */
+:root{--r:24px;--card:rgba(255,255,255,.6);--card-solid:#FFFCF6;--line:rgba(67,34,125,.10);--line2:rgba(67,34,125,.18);
+  --glass-line:rgba(255,255,255,.8);--glass-hi:rgba(255,255,255,.95);--blur:saturate(180%) blur(22px);
+  --shadow:0 1px 2px rgba(34,22,63,.04),0 10px 30px rgba(67,34,125,.10);
+  --pri-grad:linear-gradient(135deg,#6B45BC,#43227D);--mesh1:rgba(196,170,255,.55);--mesh2:rgba(255,200,170,.42);--mesh3:color-mix(in oklab,var(--gold) 38%,transparent)}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#100C1A;--card:rgba(255,255,255,.07);--card-solid:#211A33;--line:rgba(255,255,255,.10);--line2:rgba(255,255,255,.18);
+  --glass-line:rgba(255,255,255,.13);--glass-hi:rgba(255,255,255,.16);--shadow:0 1px 2px rgba(0,0,0,.3),0 12px 36px rgba(0,0,0,.42);
+  --pri-grad:linear-gradient(135deg,#DCCFFF,#A98BEA);--mesh1:rgba(108,62,214,.42);--mesh2:rgba(160,56,128,.28);--mesh3:color-mix(in oklab,var(--gold) 22%,transparent)}}
+:root[data-theme=dark]{--bg:#100C1A;--card:rgba(255,255,255,.07);--card-solid:#211A33;--line:rgba(255,255,255,.10);--line2:rgba(255,255,255,.18);
+  --glass-line:rgba(255,255,255,.13);--glass-hi:rgba(255,255,255,.16);--shadow:0 1px 2px rgba(0,0,0,.3),0 12px 36px rgba(0,0,0,.42);
+  --pri-grad:linear-gradient(135deg,#DCCFFF,#A98BEA);--mesh1:rgba(108,62,214,.42);--mesh2:rgba(160,56,128,.28);--mesh3:color-mix(in oklab,var(--gold) 22%,transparent)}
+body{background:transparent}/* html 배경만 두어야 뒤 그라데이션이 보인다 */
+#bgfx{inset:-15%;will-change:transform;animation:mesh 26s ease-in-out infinite alternate;background:
+  radial-gradient(45% 35% at 82% 8%,color-mix(in oklab,var(--fam) 34%,transparent),transparent 70%),
+  radial-gradient(42% 32% at 8% 26%,var(--mesh1),transparent 70%),
+  radial-gradient(48% 36% at 92% 62%,var(--mesh3),transparent 70%),
+  radial-gradient(46% 34% at 12% 92%,var(--mesh2),transparent 70%)}
+@keyframes mesh{0%{transform:none}50%{transform:translate3d(3%,-2%,0) scale(1.06)}100%{transform:translate3d(-3%,2%,0) scale(1.1)}}
+/* 유리 면 */
+.card,.opt,.st-row,.tipcard,.friend,.inp,.seg,.chip,.badge,.chip-sm,.btn:where(:not(.pri,.fam,.ghost)){background:var(--card);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);border:1px solid var(--glass-line);box-shadow:inset 0 1px 0 var(--glass-hi),var(--shadow)}
+.badge,.chip-sm{box-shadow:inset 0 1px 0 var(--glass-hi)}
+.card{border-radius:var(--r);padding:20px}
+.seg button.on{background:var(--card-solid)}
+.chip.on{background:var(--pri-grad);color:var(--pri-fg);border-color:transparent}
+.top{background:color-mix(in oklab,var(--bg) 55%,transparent);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur)}
+.sheet-panel{background:color-mix(in oklab,var(--card-solid) 84%,transparent);-webkit-backdrop-filter:saturate(180%) blur(30px);backdrop-filter:saturate(180%) blur(30px);border:1px solid var(--glass-line);border-bottom:0;box-shadow:0 -12px 40px rgba(20,10,40,.18)}
+.sheet-bg{background:rgba(16,10,30,.32);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.orb.glass{box-shadow:inset 0 1px 0 var(--glass-hi),0 30px 80px color-mix(in oklab,var(--pri) 22%,transparent)}
+/* 버튼: 알약 모양, 주 버튼은 그라데이션 */
+.btn{border-radius:999px;min-height:54px;font-weight:700;letter-spacing:-.01em}
+.btn.sm{border-radius:999px}
+.btn.pri{background:var(--pri-grad);border:0;box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 10px 26px color-mix(in oklab,var(--pri) 36%,transparent)}
+.btn.pri.shine{background-image:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.28) 50%,transparent 65%),var(--pri-grad);background-size:250% 100%,100% 100%}
+.btn.ghost{color:var(--pri)}
+.mic{background:var(--pri-grad)}
+.prog i{background:var(--pri-grad)}
+/* 결과 카드: 유리 테두리 */
+.hero-card{border-radius:30px;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),inset 0 0 0 1px rgba(255,255,255,.10),0 24px 60px color-mix(in oklab,var(--fam) 38%,transparent)}
+.cm.on-dark span{-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.22)}
+/* 16유형 칸: 이름 두 줄 고정 */
+.card:has(.fam-grid){padding:18px 12px}
+.tiles{gap:6px}
+.tile{background:color-mix(in oklab,var(--card-solid) 50%,transparent);border:1px solid var(--glass-line);border-radius:18px;padding:4px 0 9px;box-shadow:inset 0 1px 0 var(--glass-hi)}
+.tile img{width:calc(100% - 8px);border-radius:14px}
+.tile span{font-size:11px;line-height:1.3;color:var(--fg);opacity:.85;width:100%}
+.rt span{background:color-mix(in oklab,var(--card-solid) 50%,transparent);border:1px solid var(--glass-line)}
+.rt small{font-size:10.5px;width:100%}
+.ln{display:block;font-style:normal;white-space:nowrap;overflow:hidden}
+.nw{white-space:nowrap}
+/* 글자: 큰 제목은 촘촘하게, 줄은 고르게 */
+.display{font-size:34px;line-height:1.18;letter-spacing:-.035em}
+.title{font-size:26px;line-height:1.26;letter-spacing:-.03em}
+.title-xl{letter-spacing:-.035em}
+h2{font-size:19px;letter-spacing:-.02em}
+.q{letter-spacing:-.03em}
+.kicker{letter-spacing:.06em}
+h1,h2,h3,.q,.lead,.title,.display,.title-xl{text-wrap:balance}
+p,li,small,.fine,.muted{text-wrap:pretty}
+.card :is(.inp,.seg,.chip,.btn:where(:not(.pri,.fam,.ghost))){-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:inset 0 1px 0 var(--glass-hi),0 1px 3px rgba(34,22,63,.06)}
+.hc-line{text-wrap:balance}
+.list small.sub{display:block;font-size:14px;line-height:1.4;margin-top:1px}
+/* 11/5 대표: 목소리 나이·호감도를 각각 박스로 — 두 문장이 섞여 읽히지 않게 */
+.fun2{gap:10px}.fun2>div{background:color-mix(in oklab,var(--card-solid) 55%,transparent);border:1px solid var(--glass-line);border-radius:18px;padding:14px 14px 12px;box-shadow:inset 0 1px 0 var(--glass-hi);gap:4px}
+.shr{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+.shr .btn{grid-column:span 2;min-height:46px;font-size:14px;padding:0 6px;gap:6px}
+.shr .sh-ig,.shr .sh-tt{grid-column:span 3;min-height:54px;font-size:16px;color:#fff;border:0}
+.shr .sh-ig{background:linear-gradient(45deg,#F58529,#DD2A7B 45%,#8134AF 75%,#515BD4)}
+.shr .sh-tt{background:#111;box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}
+.shr svg{flex:none}
+/* 11/5 대표: 결과 글자가 오밀조밀·답답 → 카드 사이·안쪽 여백과 줄 간격을 넓히고, 네 가지 축은 한 줄씩 */
+.view{gap:22px}
+.card{padding:22px 20px;gap:14px}
+.card p,.card li,.card small{line-height:1.65}
+.fine{line-height:1.7}
+.list{gap:10px}.list small.sub{line-height:1.55;margin-top:2px}
+.card .axis p{line-height:1.45}.card .axis small{line-height:1.6}/* 네 가지 축은 처음 모양(2×2) 그대로 */
+.tn{gap:12px}.tn small{font-size:12px}
+.cond{gap:8px}.cond div{padding:11px 14px}
+.fun2>div{padding:16px 14px 14px}
+.ap em{font-style:normal;font-size:11.5px;line-height:1.4;color:var(--muted);margin-top:2px}
+/* 11/5 쉬운 말: 톤 칸 이름·결과 말이 한 줄에 들어가게 */
+.tn{grid-template-columns:104px minmax(0,1fr) 70px}.tn em{white-space:nowrap}
+/* 11/5 쉬운 말: 칸 이름(빠르기·소리 색깔·오르내림)이 한 줄에 */
+.trial-row,.ax-line{grid-template-columns:72px minmax(0,1fr)}.trial-row b,.ax-line b{white-space:nowrap}
+.radar{width:100%;max-width:340px;display:block;margin:0 auto}.jobs{display:flex;flex-wrap:wrap;gap:8px}.jobs span{padding:7px 14px;border-radius:999px;background:color-mix(in oklab,var(--fam) 18%,transparent);font-weight:700;font-size:14.5px}.hx-sum{display:flex;align-items:center;gap:12px}.hx-sum img{width:60px;height:60px;border-radius:18px;flex:none;object-fit:cover}details.more>summary{list-style:none;cursor:pointer}details.more>summary::-webkit-details-marker{display:none}details.more[open]>summary{margin-bottom:14px}details.more>section+section{margin-top:14px}.lang-sw{display:flex;gap:6px;justify-content:center;margin:0 0 10px}.lang-sw a{padding:6px 14px;border-radius:999px;border:1px solid var(--line2);font-size:13px;font-weight:700;color:var(--fg);text-decoration:none;cursor:pointer}.lang-sw a[aria-current]{background:var(--fam-ui);color:#fff;border-color:transparent;cursor:default}
+/* ===== EN: Latin-text adjustments ===== */
+.seg button{font-size:14px;line-height:1.15;padding:4px 2px}
+.hc-name{line-height:1.2;margin:6px 0 2px}
+.sec-h h2{flex:none}.sec-h small{text-align:right}
+.sec-h>a.fine{flex:none;text-decoration:underline;text-underline-offset:3px}
+</style>
+<script>
+/* 11/16 광고 측정 — META_PIXEL_ID·GA_ID에 아이디를 넣으면 켜진다(비어 있으면 아무것도 불러오지 않음).
+   광고 출처(utm_source·campaign·content, 없으면 fbclid→meta·gclid→google)는 30일 동안 이 기기에 남겨 검사 기록·주문에 같이 저장한다.
+   voicetest_en.html·voicereport_en.html 두 곳에 같은 코드 — 아이디를 바꿀 땐 두 곳 다 */
+(function(){const META_PIXEL_ID="",GA_ID="";
+ const q=new URLSearchParams(location.search),o={};["source","medium","campaign","content"].forEach(k=>{const v=q.get("utm_"+k);if(v)o[k]=v.slice(0,40)});if(!o.source&&q.get("fbclid"))o.source="meta";if(!o.source&&q.get("gclid"))o.source="google";
+ let s=null;try{if(o.source){o.at=Date.now();localStorage.setItem("tv_src",JSON.stringify(o));s=o}else{const x=JSON.parse(localStorage.getItem("tv_src")||"null");if(x&&Date.now()-x.at<30*864e5)s=x}}catch(e){s=o.source?o:null}
+ window.TV_SRC=s?[s.source,s.campaign,s.content].filter(Boolean).join("/").replace(/[^\w\-\/.\uac00-\ud7a3]/g,"").slice(0,80):"";
+ if(META_PIXEL_ID){!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init',META_PIXEL_ID);fbq('track','PageView')}
+ if(GA_ID){const sc=document.createElement("script");sc.async=true;sc.src="https://www.googletagmanager.com/gtag/js?id="+GA_ID;document.head.appendChild(sc);window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments)};gtag("js",new Date());gtag("config",GA_ID)}
+ const STD={ViewContent:1,InitiateCheckout:1,Purchase:1};
+ /* 11/17 대표: 가능성 재기 — 단계마다 익명 이벤트 한 줄을 저장 서버 '방문기록' 탭으로(이름·녹음·연락처 없음). 주소에 ?staff 를 붙여 한 번 열면 이 기기는 '내부'로 표시돼 걸러 볼 수 있다 */
+ let sid="",staff=false;try{sid=localStorage.getItem("tv_sid")||"";if(!sid){sid=Date.now().toString(36)+Math.random().toString(36).slice(2,7);localStorage.setItem("tv_sid",sid)}if(q.has("staff"))localStorage.setItem("tv_staff","1");staff=localStorage.getItem("tv_staff")==="1"}catch(e){}
+ window.TV_STAFF=staff;
+ window.tvEvent=(name,code)=>{try{fetch("https://script.google.com/macros/s/AKfycbyTH-Q1YT90015gFUapUB1SBi_sUt45xvQaD0DmbIp4_0fQ1PwpkuAD5q4P_9eobedZ/exec",{method:"POST",mode:"no-cors",keepalive:true,headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({type:"event",ev:String(name).slice(0,40),src:window.TV_SRC||"",sid,staff,page:(location.pathname.split("/").pop()||"")+location.search.slice(0,24),code:code||""})})}catch(e){}};
+ window.tvEvent("방문");
+ const KR={StartTest:"시작",RecordDone:"녹음완료",CompleteTest:"검사완료",ViewContent:"보기",Lead:"알림신청",InitiateCheckout:"결제시작",Purchase:"결제"};
+ window.tvTrack=(ev,p)=>{window.tvEvent((KR[ev]||ev)+(p&&p.content_name?":"+p.content_name:""));try{if(window.fbq)fbq(STD[ev]?"track":"trackCustom",ev,p||{});if(window.gtag)gtag("event",ev,p||{})}catch(e){}};
+})();
+</script>
+</head>
+<body>
+<div id="bgfx" aria-hidden="true"></div>
+<header id="top" class="top" hidden>
+  <button class="icon-btn" id="topBack" aria-label="Back"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+  <div class="prog" id="prog"><i id="progBar"></i></div>
+  <span class="prog-n" id="progN"></span>
+</header>
+<main id="view" class="view"></main>
+<div id="sheet" class="sheet" hidden><div class="sheet-bg" id="sheetBg"></div><div class="sheet-panel" role="dialog" aria-modal="true"><div class="grab"></div><div id="sheetBody" style="display:flex;flex-direction:column;gap:14px"></div></div></div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* 세미콜론 목소리 날씨 엔진 — semi-bible-beta/voice-care.js 원본 그대로(10/20 라이브판) */
+/* 목소리 날씨 · 으·이·아 연습 — 기기 안에서만 재고 판정한다.
+   사용자 화면에는 숫자를 보여 주지 않는다(날씨 아이콘과 한 줄만). 숫자는 기록과 지도사·관리자 확인용.
+   의료기기가 아니다: 병명·진단을 말하지 않고, 병원으로 보내지 않는다.
+   기획: 목소리날씨_으이아_연습기획_v1 (2026-10-06) */
+const VoiceCare=(()=>{
+ // ---------- 신호 처리 ----------
+ function fft(re,im){const n=re.length;for(let i=1,j=0;i<n;i++){let bit=n>>1;for(;j&bit;bit>>=1)j^=bit;j^=bit;if(i<j){let t=re[i];re[i]=re[j];re[j]=t;t=im[i];im[i]=im[j];im[j]=t;}}
+  for(let len=2;len<=n;len<<=1){const a=-2*Math.PI/len,wr=Math.cos(a),wi=Math.sin(a),h=len>>1;for(let i=0;i<n;i+=len){let cr=1,ci=0;for(let j=0;j<h;j++){const k=i+j,q=k+h,tr=cr*re[q]-ci*im[q],ti=cr*im[q]+ci*re[q];re[q]=re[k]-tr;im[q]=im[k]-ti;re[k]+=tr;im[k]+=ti;const t=cr*wr-ci*wi;ci=cr*wi+ci*wr;cr=t;}}}}
+ // 앱과 같은 YIN(실시간 음높이)
+ function pitch(input,sampleRate){const step=Math.max(1,Math.floor(sampleRate/8000)),rate=sampleRate/step,n=Math.floor(input.length/step),x=new Float32Array(n);let mean=0,power=0;for(let i=0;i<n;i++){let sum=0;for(let j=0;j<step;j++)sum+=input[i*step+j];x[i]=sum/step;mean+=x[i];}mean/=n;for(let i=0;i<n;i++){x[i]-=mean;power+=x[i]*x[i];}if(Math.sqrt(power/n)<.003)return null;const lo=Math.floor(rate/800),hi=Math.ceil(rate/65),w=Math.min(384,n-hi-2);if(w<160)return null;const d=new Float32Array(hi+2);for(let t=1;t<=hi+1;t++){let sum=0;for(let j=0;j<w;j++){const a=x[j]-x[j+t];sum+=a*a;}d[t]=sum;}let run=0;d[0]=1;for(let t=1;t<=hi+1;t++){run+=d[t];d[t]=run?d[t]*t/run:1;}let best=-1;for(let t=lo;t<=hi;t++){if(d[t]<.15){while(t<hi&&d[t+1]<d[t])t++;best=t;break;}}if(best<0)return null;const a=d[best-1],b=d[best],z=d[best+1],den=a-2*b+z,hz=rate/(best+(den?.5*(a-z)/den:0));return hz>=65&&hz<=800?hz:null;}
+ const db=v=>10*Math.log10(v+1e-12);
+ function rmsDb(x,from=0,to=x.length){let s=0;for(let i=from;i<to;i++)s+=x[i]*x[i];return db(s/Math.max(1,to-from));}
+ function quantile(values,p){const a=values.filter(Number.isFinite).sort((a,b)=>a-b);if(!a.length)return null;const at=(a.length-1)*p,i=Math.floor(at);return a[i]+(a[Math.min(i+1,a.length-1)]-a[i])*(at-i);}
+ const median=v=>quantile(v,.5);
+ function concat(chunks){let n=0;for(const c of chunks)n+=c.length;const out=new Float32Array(n);let o=0;for(const c of chunks){out.set(c,o);o+=c.length;}return out;}
+ // 16kHz 안팎으로 낮추기: 7kHz 저역 통과(63탭 윈도 sinc) 뒤 솎기 — 높은 배음이 접혀 들어와 고르기 값이 흔들리지 않게
+ const FIR=new Map();
+ function lowpass(sr,cut,taps=63){const key=sr+':'+cut;if(FIR.has(key))return FIR.get(key);const h=new Float32Array(taps),m=(taps-1)/2,fc=cut/sr;let sum=0;for(let i=0;i<taps;i++){const t=i-m,sinc=t===0?2*fc:Math.sin(2*Math.PI*fc*t)/(Math.PI*t),w=.42-.5*Math.cos(2*Math.PI*i/(taps-1))+.08*Math.cos(4*Math.PI*i/(taps-1));h[i]=sinc*w;sum+=h[i];}for(let i=0;i<taps;i++)h[i]/=sum;FIR.set(key,h);return h;}
+ function decimate(x,sr){const f=Math.max(1,Math.floor(sr/16000));if(f===1)return {y:x,sr};const h=lowpass(sr,7000),T=h.length,m=(T-1)>>1,n=Math.floor(x.length/f),y=new Float32Array(n);for(let i=0;i<n;i++){const c=i*f;let s=0;for(let k=0;k<T;k++){const j=c+k-m;if(j>=0&&j<x.length)s+=h[k]*x[j];}y[i]=s;}return {y,sr:sr/f};}
+ // 주변 소음: 20ms 덩어리의 중앙값(dBFS). 소리 내기 전 0.5초로 잰다
+ function noiseDb(x,sr){const h=Math.round(sr*.02),v=[];for(let i=0;i+h<=x.length;i+=h)v.push(rmsDb(x,i,i+h));return median(v);}
+
+ /* 한 구간을 잰다. 결과(숫자)는 사용자에게 보여 주지 않는다.
+    voiced 유성 시간(초) · level 소리 크기(dBFS) · hz 음높이 중앙값 · cpps 고르기(dB, 기기 근사) ·
+    breaks 음높이 끊김(9반음 이상 튐/유성 1초) · breath 숨 새는 소리(4–8kHz − 2–4kHz, dB) · hf 2–4kHz 세기(dB) */
+ function analyze(pcm,sr,opt={}){
+  const out={voiced:0,level:null,hz:null,cpps:null,breaks:null,breath:null,hf:null,frames:0};if(!pcm||pcm.length<sr*.3)return out;
+  const {y,sr:sr2}=decimate(pcm,sr),N=1024,hop=Math.round(sr2*.01),half=N>>1,win=new Float32Array(N);for(let i=0;i<N;i++)win[i]=.5-.5*Math.cos(2*Math.PI*i/(N-1));
+  const floor=Math.max(-62,(Number.isFinite(opt.noise)?opt.noise:-70)+6),pitches=[],levels=[],ceps=[];let prev=null,breaks=0,voicedFrames=0;
+  const re=new Float64Array(N),im=new Float64Array(N);
+  for(let at=0,k=0;at+N<=y.length;at+=hop,k++){const L=rmsDb(y,at,at+N);if(L<floor){prev=null;continue;}const hz=pitch(y.subarray(at,at+N),sr2);if(!hz){prev=null;continue;}
+   voicedFrames++;pitches.push(hz);levels.push(L);if(prev&&Math.abs(12*Math.log2(hz/prev))>=9)breaks++;prev=hz;
+   if(k%2)continue;// 고르기는 20ms마다
+   for(let i=0;i<N;i++){re[i]=y[at+i]*win[i];im[i]=0;}fft(re,im);
+   const spec=new Float64Array(N);for(let i=0;i<=half;i++){const v=db(re[i]*re[i]+im[i]*im[i]);spec[i]=v;if(i&&i<half)spec[N-i]=v;}
+   for(let i=0;i<N;i++){re[i]=spec[i];im[i]=0;}fft(re,im);const c=new Float32Array(half);for(let i=0;i<half;i++)c[i]=db(re[i]*re[i]+im[i]*im[i]);ceps.push(c);}
+  out.frames=voicedFrames;out.voiced=voicedFrames*hop/sr2;if(!voicedFrames)return out;
+  out.level=median(levels);out.hz=median(pitches);out.breaks=out.voiced>0?breaks/out.voiced:null;
+  // CPPS: 7프레임(시간)·3칸(켑스트럼) 평균 → 60–600Hz 봉우리와 회귀선 사이의 높이
+  if(ceps.length>=7){const qLo=Math.ceil(sr2/600),qHi=Math.min(half-2,Math.floor(sr2/60)),fLo=Math.ceil(sr2/1000),vals=[];
+   for(let f=3;f<ceps.length-3;f++){const s=new Float32Array(half);for(let t=f-3;t<=f+3;t++){const c=ceps[t];for(let i=0;i<half;i++)s[i]+=c[i]/7;}
+    const sm=new Float32Array(half);for(let i=1;i<half-1;i++)sm[i]=(s[i-1]+s[i]+s[i+1])/3;
+    let n=0,sx=0,sy=0,sxx=0,sxy=0;for(let q=fLo;q<=qHi;q++){n++;sx+=q;sy+=sm[q];sxx+=q*q;sxy+=q*sm[q];}const b=(n*sxy-sx*sy)/(n*sxx-sx*sx),a=(sy-b*sx)/n;
+    let pk=qLo;for(let q=qLo;q<=qHi;q++)if(sm[q]>sm[pk])pk=q;vals.push(sm[pk]-(a+b*pk));}
+   out.cpps=median(vals);}
+  // 숨 새는 소리: 원래 표본률에서(8kHz까지 있어야 함)
+  if(sr>=16000){const M=2048,w2=new Float32Array(M);for(let i=0;i<M;i++)w2[i]=.5-.5*Math.cos(2*Math.PI*i/(M-1));const r2=new Float64Array(M),i2=new Float64Array(M),hop2=Math.round(sr*.03),br=[],hf=[];
+   for(let at=0;at+M<=pcm.length;at+=hop2){const L=rmsDb(pcm,at,at+M);if(L<floor)continue;const hz=pitch(pcm.subarray(at,at+M),sr);if(!hz)continue;for(let i=0;i<M;i++){r2[i]=pcm[at+i]*w2[i];i2[i]=0;}fft(r2,i2);
+    const band=(lo,hi)=>{let s=0,n=0;for(let j=Math.ceil(lo*M/sr);j<=Math.floor(hi*M/sr)&&j<=M/2;j++){s+=r2[j]*r2[j]+i2[j]*i2[j];n++;}return db(s/Math.max(1,n));};const mid=band(2000,4000);br.push(band(4000,8000)-mid);hf.push(mid);}
+   out.breath=median(br);out.hf=median(hf);}
+  return out;}
+
+ // ---------- 기준선과 날씨 ----------
+ const LEARN_DAYS=7,FLOOR={cpps:.4,breaks:.05,breath:1},CPPS_DROP=.6;
+ function stat(v,floor){const m=median(v);if(m==null)return null;const mad=median(v.filter(Number.isFinite).map(x=>Math.abs(x-m)));return {med:m,spread:Math.max(floor,1.4826*(mad||0))};}
+ // days: 이 기기에서 잰 날들(최신 먼저). 처음 7일 + 그 뒤 맑은 날, 최근 28개로 기준선
+ function baseline(days){const ok=days.filter(d=>d.m&&!d.noisy);const learn=ok.slice(-LEARN_DAYS),later=ok.slice(0,Math.max(0,ok.length-LEARN_DAYS)).filter(d=>d.w==='sun'),use=[...later,...learn].slice(0,28),pick=k=>use.map(d=>d.m[k]).filter(Number.isFinite);
+  return {count:ok.length,ready:ok.length>=LEARN_DAYS,cpps:stat(pick('cpps'),FLOOR.cpps),breaks:stat(pick('breaks'),FLOOR.breaks),breath:stat(pick('breath'),FLOOR.breath),top:stat(use.map(d=>d.top).filter(Number.isFinite),.5)};}
+ // 임시 문턱(검증 전): 고르기 0.6dB 이상 하락 또는 지표 1개가 흔들림 폭(2σ) 밖 = 조금 다름, 2개 이상 = 많이 다름
+ function judge(m,base){if(!base?.ready)return {w:'learn',flags:{}};const f={};
+  if(base.cpps&&Number.isFinite(m.cpps)){const drop=base.cpps.med-m.cpps;f.cpps=drop>=CPPS_DROP||drop>2*base.cpps.spread;}
+  if(base.breaks&&Number.isFinite(m.breaks))f.breaks=m.breaks-base.breaks.med>Math.max(2*base.breaks.spread,FLOOR.breaks);
+  if(base.breath&&Number.isFinite(m.breath))f.breath=m.breath-base.breath.med>Math.max(2*base.breath.spread,FLOOR.breath);
+  const n=Object.values(f).filter(Boolean).length;return {w:n>=2?'cloud':n===1?'partly':'sun',flags:f};}
+ // 4주 카드(식약처 검토 전이라 화면에는 쓰지 않음): 최근 28일 측정한 날의 절반 이상이 많이 다름, 첫 흐린 날이 3주 이상 전
+ function referral(days,now=Date.now()){const recent=days.filter(d=>now-d.ts<28*864e5&&d.m&&!d.noisy),cloud=recent.filter(d=>d.w==='cloud');return recent.length>=8&&cloud.length*2>=recent.length&&now-Math.min(...cloud.map(d=>d.ts))>=21*864e5;}
+
+ // ---------- 날씨별 처방(으·이·아 6동작) ----------
+ // kind: u1 으 고르게 · u2 으 길게 · i1 이 작게 올라가기 · i1hold 이 편한 음 근처 · i2 이 통통 끊기 · a1 으~아/이~아 열기 · a2 아 길게
+ function plan(w,flags={},base=null,todayHz=null){const sun=w==='sun'||w==='learn',steps=[];let u1=w==='cloud'?3:2;if(flags.cpps||flags.breaks)u1=Math.min(3,u1+1);
+  steps.push({kind:'u1',reps:u1});if(sun)steps.push({kind:'u2'});
+  const capTop=w==='partly'&&base?.top?.med?base.top.med*Math.pow(2,-1/12):null;
+  if(w==='cloud')steps.push({kind:'i1hold',soft:!!flags.breath});else steps.push({kind:'i1',reps:2,cap:capTop,soft:!!flags.breath});
+  if(sun)steps.push({kind:'i2'});
+  steps.push({kind:'a1',variants:w==='cloud'?['eu','i'].slice(0,1):['eu','i']});if(sun)steps.push({kind:'a2'});return steps;}
+
+ return {analyze,noiseDb,concat,baseline,judge,referral,plan,median,quantile,pitch,LEARN_DAYS};
+})();
+if(typeof module!=='undefined')module.exports=VoiceCare;
+
+</script>
+<script>
+(()=>{
+"use strict";
+/* 터칭보이스 목소리 유형 테스트 — 독립 웹 테스트. 앱(voicetype_app_v3.html)과 따로 기획한다(11/4 대표).
+   녹음 결과를 기기에서 제공하고, 성격검사(Big Five)는 11/5 대표 결정으로 뺐다. 웹은 이름·녹음 없이 측정 숫자만 익명 저장. */
+/* ===== 데이터 (유형·문항은 voicetype_test.html과 같음, 직업 이름 1차본) ===== */
+const TYPES={
+LADT:["Laditi","The Chameleon Voice Actor","Low, lively, crisp and musical — one voice, a whole cast of characters"],
+LADF:["Ladif","The Rock-Solid Fitness Coach","Low, lively, crisp and steady — keeps you going to the very end"],
+LABT:["Labiti","The Magnetic Actor","Low, lively, breathy and musical — one line changes the whole mood"],
+LABF:["Labif","The Easygoing Podcast Host","Low, lively, soft and steady — as easy as chatting with a friend"],
+LUDT:["Luditi","The Resonant Narrator","Low, unhurried, crisp and musical — a voice you trust and follow"],
+LUDF:["Ludif","The Trusted Airline Captain","Low, unhurried, crisp and steady — just hearing it puts you at ease"],
+LUBT:["Lubiti","The Late-Night Radio DJ","Low, unhurried, breathy and musical — you want to listen to the very end"],
+LUBF:["Lubif","The Kindly School Principal","Low, unhurried, soft and steady — reassuring just to have nearby"],
+HADT:["Haditi","The Bubbly Shopping Host","High, lively, crisp and musical — gets everyone excited"],
+HADF:["Hadif","The Quick Field Reporter","High, lively, crisp and steady — delivers exactly what matters"],
+HABT:["Habiti","The Sparkling Pop Idol","High, lively, breathy and musical — lights up the whole stage"],
+HABF:["Habif","The Fired-Up Star Tutor","High, lively, breathy and steady — every word sticks"],
+HUDT:["Huditi","The Warm Schoolteacher","High, unhurried, crisp and musical — easy to take in"],
+HUDF:["Hudif","The Polished News Anchor","High, unhurried, crisp and steady — clean and polished"],
+HUBT:["Hubiti","The Uplifting Motivator","High, unhurried, breathy and musical — moves people's hearts"],
+HUBF:["Hubif","The Empathetic Counselor","High, unhurried, soft and steady — makes people want to open up"]};
+/* 11/5 대표: 직업 이름은 정한 자리에서만 줄을 바꾼다(앞|뒤). 좁은 칸은 두 줄 고정, 넓은 곳은 그 자리에서만 끊김 */
+const NBR={LADT:"The Chameleon",LADF:"The Rock-Solid",LABT:"The Magnetic",LABF:"The Easygoing",LUDT:"The Resonant",LUDF:"The Trusted",LUBT:"The Late-Night",LUBF:"The Kindly",HADT:"The Bubbly",HADF:"The Quick",HABT:"The Sparkling",HABF:"The Fired-Up",HUDT:"The Warm",HUDF:"The Polished",HUBT:"The Uplifting",HUBF:"The Empathetic"};
+const nmParts=c=>{const n=TYPES[c][1],a=NBR[c];return a&&n.startsWith(a+" ")?[a,n.slice(a.length+1)]:[n]};
+const nmLN=c=>nmParts(c).map(p=>`<i class="ln">${p}</i>`).join("");
+const nmNW=c=>nmParts(c).map(p=>`<span class="nw">${p}</span>`).join(" ");
+const nmWords=(c,d0=0)=>nmParts(c).map((p,i)=>`<span style="animation-delay:${d0+i*90}ms">${p}</span>`).join(" ");
+/* 두 줄 칸에서 한 줄이 칸보다 길면 그 줄만 글자를 줄인다 */
+/* 한 글자 낱말이 줄 끝에 홀로 남으면 어색해서 다음 낱말과 붙인다(줄바꿈 안 되는 공백) */
+function glue(){}/* EN: the Korean one-letter-word glue is not needed for English */
+function fitLn(root){(root||document).querySelectorAll(".ln").forEach(e=>{e.style.fontSize="";const w=e.clientWidth,s=e.scrollWidth;if(w>0&&s>w)e.style.fontSize=(parseFloat(getComputedStyle(e).fontSize)*w/s*.97).toFixed(1)+"px"})}
+
+/* 유형별 대표 대사 — 결과 화면·공유 카드 말풍선. 실존 인물·방송·광고 문구는 쓰지 않는다 */
+const LINES={LADT:"You've heard this voice before, haven't you?",LADF:"Just one more! You've got this!",LABT:"Did you really mean that?",LABF:"Sit back, relax, and enjoy the show.",LUDT:"And so... the young lion left the pride.",LUDF:"Ladies and gentlemen, this is your captain speaking.",LUBT:"You did well today. Get some rest.",LUBF:"Ahem... and one last thing before we go...",HADT:"Almost sold out! Call right now!",HADF:"Reporting live from the scene.",HABT:"I love you all so much!",HABF:"Listen up — this WILL be on the test!",HUDT:"Okay, friends, eyes on me!",HUDF:"And now, our next story.",HUBT:"People, you only get one life!",HUBF:"I see... that must have been really hard."};
+const LET={
+L:{ax:"pitch",nm:"Deep",imp:"Sounds strong and dependable",pro:"Trust and weight — your important words land",con:"Spoken softly, it can sound mumbled or heavy",fix:"Lift the first word of each sentence clearly",ex:"Say just the first word a little louder, and the rest as usual",good:["Presentations","Explaining"],care:["Small talk"]},
+H:{ax:"pitch",nm:"Bright",imp:"Sounds bright and friendly",pro:"Bright energy — lifts the mood and feels approachable",con:"When you're nervous it climbs higher and can sound sharp or young",fix:"Let the end of each sentence drop slightly for a steadier feel",ex:"Say a statement and let just the last word fall a little",good:["First meetings","Giving directions"],care:["Delivering heavy decisions"]},
+A:{ax:"pace",nm:"Quick",imp:"Sounds energetic and upbeat",pro:"Efficiency — you get a lot across in a short time",con:"Key points can rush by, which may feel hurried or pushy",fix:"Pause half a beat before your key point",ex:"Read a sentence, taking one breath at every comma",good:["Running meetings","Sharing news"],care:["Comforting someone","Talking with older people"]},
+U:{ax:"pace",nm:"Relaxed",imp:"Sounds calm and trustworthy",pro:"Stability — listeners follow along comfortably",con:"Over a long stretch it can sound slow or dull",fix:"Raise your volume on the word you want to stress",ex:"In one sentence, make just one key word louder and stronger",good:["Lectures","Reading aloud"],care:["Short presentations"]},
+D:{ax:"tone",nm:"Clear",imp:"Every word comes through clearly",pro:"Clarity — crisp to the last word, even from the back of the room",con:"A firm sound can come across as cold or stiff",fix:"Smile and start your first sound gently",ex:"Smiling, hum 'mmm' for 3 seconds → then say 'Hello'",good:["Announcements","Classroom teaching"],care:["Counseling","Comforting someone"]},
+B:{ax:"tone",nm:"Airy",imp:"Sounds soft and cozy",pro:"Comfort — warm, like someone talking right beside you",con:"It doesn't carry as far, and you may tire quickly when talking for long",fix:"Focus the sound forward to make it clearer",ex:"Hum 'mmm' to find the buzz at the tip of your nose → then open to 'ah'",good:["Counseling","One-on-one talks"],care:["Large lecture halls","Noisy places"]},
+T:{ax:"melody",nm:"Musical",imp:"Sounds fun, like storytelling",pro:"Engagement — listeners stay with you to the end",con:"Too much can seem over-excited or less serious",fix:"Wrap up important conclusions low and level",ex:"Read your concluding sentence calmly on a single pitch",good:["Storytelling","Opening a lesson"],care:["Apologies","Solemn occasions"]},
+F:{ax:"melody",nm:"Steady",imp:"Plain and clean, so your words sink in",pro:"Credibility — steady, with clear conclusions",con:"Less emotion shows, so it can sound cold or flat",fix:"Move your pitch widely on questions",ex:"Read a question in a singsong way, like going up and down do-re-mi",good:["Explaining","Negotiating"],care:["Long lectures","Talking with children"]}};
+const FAM={LA:["LA family","Voices that lead","#43227D","#2B1459"],LU:["LU family","Voices that resonate","#7A2E46","#4F1A2C"],HA:["HA family","Voices that energize","#B98A2E","#7A5A18"],HU:["HU family","Voices that soothe","#D07A66","#9C4D3B"]};
+/* 11/4 대표: '안녕하세요' 없이 말하는 목적이 다른 문장 5개(37~40음절). 첫 검사는 자기소개로 기본 유형을 정하고, 다시 할 때 상황을 고른다.
+   상황 문장 결과는 '이 상황에서는 이렇게 들린다'로 보여 준다(기본 유형이 바뀐 게 아님). 앱에서는 더 세분화하고 문장마다 훈련법을 달리한다(앱 기획).
+   [이름, 결과에 붙는 말, 문장, 읽기 안내] */
+/* EN: new English sentences (not translations), each about 6-7 s aloud. 5th item = syllable count, hard-coded (Korean counted Hangul characters).
+   Rate threshold TH.rate / NORM.rate stay at 4.8 syll/s: the value sits mid-range for English read speech (about 4-5.5 syll/s, pauses over 0.25 s excluded). Recalibrate once real English recordings exist. */
+const SITS={intro:["Self-intro","When introducing myself","If I had to describe myself in a few words, I'm someone who always finishes what I start. It's really nice to meet you.","Read it the way you normally talk",31],
+ info:["Sharing info","When sharing information","Today's meeting starts at three and ends at five. I've emailed you the materials, so please take a look before we begin.","Read it as if you're announcing a meeting schedule",30],
+ nego:["Negotiating","When negotiating","With those terms, I think we can absolutely work together. I'd just ask for one more week on the timeline, if that's possible.","Read it as if you're working out terms with someone",31],
+ care:["Comforting","When comforting someone","That must have been so hard. I know how much you've been carrying all by yourself. Today, I'm staying right here beside you.","Read it as if you're comforting someone who's struggling",29],
+ pers:["Presenting","When presenting","Everyone, if we start right now, we can truly turn this around. Let's take the very first step together, right here, today.","Read it as if you're presenting to a group",30]};
+const SIT_ORDER=["intro","info","nego","care","pers"],RUNS_KEY="tv_voicetest_runs_en",BASE_KEY="tv_voicetest_base_en";
+const SENT=SITS.intro[2];
+/* 11/4 대표: 하는 일을 넓힘(연구·개발 등). 값(영문 키)은 시트에 그대로 저장된다 */
+const JOBS=[["teacher","Teacher"],["speaker","Speaker / trainer"],["research","Research / engineering"],["office","Office / management"],["sales","Sales / marketing"],["service","Customer service"],["medical","Healthcare"],["religion","Ministry / faith"],["public","Public sector / law"],["creator","Media / creator"],["singer","Singing / performing"],["art","Art / design"],["business","Self-employed"],["student","Student"],["etc","Other"]];
+/* 임시 기준(보정 전) */
+/* 11/5 대표 승인 — 예전 말소리 녹음 76명(축제 자기소개 26 · 세미나 50)에 같은 규칙을 돌려 보니 남 L 75% · 여 L 70~100% · 억양 T 92%로 몰림(LUT 49%).
+   성인 중앙(남 109Hz · 여 193Hz · 억양 폭 9.6반음)에 맞춰 높이 남 110 · 여 195Hz, 억양 9.5반음으로 → 세 글자 8조합 모두 · 가장 많은 것 22%.
+   13세 미만은 남녀 같이 260Hz(축제 아이 중앙 261Hz, 지금은 14세 이상만 검사라 미래용). 속도 4.8 · 숨 17dB는 실제 테스트 30건 뒤 재보정.
+   목소리 나이 식은 옛 기준(120·210)으로 맞춘 식이라 AGE_REF로 그대로 둔다. 보고서 06_연구·데이터/MD(연구·전략 문서)/터칭보이스_유형판정기준_점검_2026-11-05.md */
+const REF_F0={m:110,f:195,x:152},REF_KID=260,AGE_REF={m:120,f:210,x:165};
+const TH={rate:4.8,hnr:17,range:9.5};
+const NORM={rate:[4.8,0.8],range:[9.5,2.5],dyn:[18,5],hnr:[16,4],dbsd:[5,2],trem:[0.35,0.15],end:[0,4],st:[0,2.5]};
+const AX_N=["pitch","pace","tone","melody"],AXD={pitch:"Pitch",pace:"Pace",tone:"Texture",melody:"Melody"};
+const BIZ=`<footer class="biz">Business info: Touching Voice (터칭보이스) · CEO Noah Chun · Business Reg. No. 649-36-01593<br>Mail-order Business Reg. No. 2026-Seoul Seocho-0243 · 102-1002, 33 Jireume-gil, Pyeongchang-gun, Gangwon-do, Republic of Korea<br>Customer service +82 10-9947-3682 · lubere12@naver.com · <a href="refund.html" target="_blank" rel="noopener">Refund policy (Korean)</a> · <a href="privacy.html" target="_blank" rel="noopener"><b>Privacy policy (Korean)</b></a></footer>`;
+
+/* ===== 상태 ===== */
+const KEY="tv_voicetest_web_v1_en";
+let S=load()||{};
+const REC={};
+let timers=[],raf=0;
+const Q=new URLSearchParams(location.search);
+/* 11/16 대표: 유료 링크(voicetest_en.html?paid)는 다시 하기 없이 한 번 잰 결과로 바로 레포트(voicereport_en.html)로 이어진다. 결과는 이 기기에 남아 새로고침·재방문에도 그대로 */
+const PAID=Q.has("paid")||Q.has("free");/* 11/16 대표: ?free = 같은 하나로 이은 검사인데 마지막 '레포트 보기'에서 결제 없이 바로 레포트(테스트 결제 모드 서버에서만) */
+function load(){try{return JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){return null}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+/* 이 기기에서 끝낸 검사 수 · 자기소개 기본 유형 — 다시 할 때 상황 문장을 고르게 한다 */
+const lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
+const runs=()=>+lsGet(RUNS_KEY)||0;
+const sitKey=()=>SITS[S.sit]?S.sit:"intro";
+/* 11/4 대표: 한 번 끝낸 사람은 정보·질문 없이 '다시 녹음하기'로 바로 다시 잰다(상황 문장은 녹음 화면에서 바꿀 수 있다) */
+function reRecord(){const keep={};["friend","friendRate","group","cv","name","sex","age","job","teacher","sit"].forEach(k=>{if(S[k]!==undefined)keep[k]=S[k]});S={...keep};REC.r1=REC.r2=REC.t=null;recDrop();save();go("prep")}
+function newRun(){const keep=S.demo?{}:{name:S.name,sex:S.sex,age:S.age,job:S.job},n=runs();REC.r1=REC.r2=REC.t=null;recDrop();S={friend:S.friend,friendRate:S.friendRate,group:S.group,cv:S.cv,...keep,sit:n?SIT_ORDER[n%SIT_ORDER.length]:"intro"};save()}
+const $=s=>document.querySelector(s);
+const view=$("#view");
+const later=(fn,ms)=>{const t=setTimeout(fn,ms);timers.push(t);return t};
+function r1(v){return Math.round(v*10)/10}
+function cl(v,a,b){return Math.max(a,Math.min(b,v))}
+function lin(v,lo,hi){return cl((v-lo)/(hi-lo),0,1)}
+/* 11/5 대표: 성별 티가 뚜렷한 7종은 반대 성별 그림이 따로 있다(_m 남자용 · _f 여자용). 말하지 않음·성별 입력 전은 기본 그림 */
+const ALT_SEX={HUDT:"m",HUDF:"m",HUBF:"m",HABT:"m",LUBF:"f",HABF:"f",HUBT:"f"};
+const img={char:c=>`voicetype_assets/chars/${c}${ALT_SEX[c]&&ALT_SEX[c]===S.sex?"_"+S.sex:""}.webp`,egg:"voicetype_assets/stage/egg.webp",baby:"voicetype_assets/stage/baby.webp"};
+function setFam(code){const f=FAM[code.slice(0,2)],r=document.documentElement.style;r.setProperty("--fam",f[2]);r.setProperty("--fam-deep",f[3])}
+const words=(t,d0=0)=>t.split(" ").map((w,i)=>`<span style="animation-delay:${d0+i*90}ms">${w}</span>`).join(" ");
+function toast(t){const el=$("#toast");el.textContent=t;el.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove("show"),2400)}
+/* 첫 장면의 rAF 시각이 t0보다 이를 수 있어 0~1로 자른다(음수 표시 방지). ?shot이면 바로 최종값 */
+function countUp(el,from,to,ms=900,fmt=v=>Math.round(v)){if(!el)return;if(document.documentElement.classList.contains("noanim")){el.textContent=fmt(to);return}const t0=performance.now();const step=t=>{const p=cl((t-t0)/ms,0,1),e=1-Math.pow(1-p,3);el.textContent=fmt(from+(to-from)*e);if(p<1)requestAnimationFrame(step)};requestAnimationFrame(step)}
+
+/* ===== 화면 전환 ===== */
+const R={};
+function go(name,arg){timers.forEach(clearTimeout);timers=[];cancelAnimationFrame(raf);if(rec)stopRec();closeSheet();document.documentElement.style.setProperty("--lv","0");
+  const r=R[name](arg)||{};S.at=name;
+  view.innerHTML=r.html;glue(view);requestAnimationFrame(()=>fitLn(view));view.className="view";void view.offsetWidth;view.className="view enter";save();
+  const top=$("#top");if(r.top){top.hidden=false;$("#topBack").onclick=r.top.back;$("#prog").hidden=!r.top.total;$("#progN").textContent=r.top.total?`${r.top.step} / ${r.top.total}`:(r.top.label||"");$("#progBar").style.width=r.top.total?(100*r.top.step/r.top.total)+"%":"0"}else top.hidden=true;
+  window.scrollTo(0,0);if(r.bind)r.bind()}
+function openSheet(html,bind){$("#sheetBody").innerHTML=html;glue($("#sheetBody"));$("#sheet").hidden=false;if(bind)bind()}
+function closeSheet(){$("#sheet").hidden=true}
+$("#sheetBg").onclick=closeSheet;
+
+/* ===== 1. 첫 화면 ===== */
+R.landing=()=>{const f=TYPES[S.friend]?S.friend:null;return{html:`
+<section class="hero">
+  <div class="lang-sw" role="group" aria-label="Language"><a href="voicetest.html${location.search.replace(/"/g,"")}" lang="ko" onclick="tvEvent('언어:ko')">한국어</a><a aria-current="true">English</a></div>
+  <div class="kicker">Touching Voice · ${PAID?"Voice × Personality Test":"Voice Type Test"}</div>
+  <h1 class="display bi">${PAID?words("What your voice and")+"<br>"+words("personality say about you",270):words("What's my")+"<br>"+words("voice type?",270)}</h1>
+  <p class="lead">${PAID?"Two recordings and 10 personality questions<br>show your voice and personality together.":"A quick voice test finds your type<br>among 16 voice types."}</p>
+  ${S.group&&S.group.length&&!S.J?`<div class="friend"><div class="gmini">${S.group.slice(-4).map(c=>`<img src="${img.char(c)}" alt="">`).join("")}</div><div style="min-width:0"><small>Your group's voice map has</small><br><b>${S.group.length} ${S.group.length>1?"people":"person"} so far</b><br><small>Take the test to join the map</small></div></div>`:f?`<div class="friend"><img src="${img.char(f)}" alt="${TYPES[f][1]}"><div style="min-width:0"><small>Your friend's voice is</small><br><b>${f} · ${TYPES[f][1]}</b><br><small>Take the test to see your voice chemistry together</small></div></div>`:`<div class="orb glass"><img class="float" src="${img.egg}" alt="Voice egg"></div>`}
+  <button class="btn pri block shine" id="start">${PAID?"Start":"Find my voice type"}</button>
+</section>
+<!-- 11/5 대표: 첫 화면은 안내만. 예시 결과·16가지 캐릭터는 보여 주지 않고, 결과는 검사 마지막에 -->
+<section class="card"><h2>How the test works</h2>
+  <ol class="list"><li><b>Two recordings</b><small class="sub">Read one sentence · Hold a long 'ah'</small></li>${PAID?`<li><b>10 personality questions</b><small class="sub">Think of how you are these days. It takes about 1 minute.</small></li><li><b>Voice × personality results</b><small class="sub">See your voice type and personality together, then keep practicing in the app.</small></li>`:`<li><b>See your voice type</b><small class="sub">Meet your character and learn your pitch, pace, texture and melody.</small></li><li><b>Hear your voice with the gaps filled in</b><small class="sub">Hear right away how your voice sounds when we fill in what's missing.</small></li>`}</ol></section>
+<p class="fine">This isn't a health check — it's a self-discovery and practice test that shows how your voice sounds to others. The job names are playful nicknames for the impression a voice gives (not a career aptitude test).</p>
+${BIZ}`,
+ bind(){$("#start").onclick=()=>{tvTrack("StartTest");newRun();if(PAID)S.sit="intro";go("info")}}}};
+function typeSheet(c){const T=TYPES[c];openSheet(`<img src="${img.char(c)}" alt="" style="width:200px;border-radius:24px;margin:0 auto"><div style="text-align:center"><div class="kicker">${c}</div><h2 style="font-size:22px;margin-top:4px">${nmNW(c)}</h2><p style="margin-top:6px;font-weight:700;color:var(--pri)">“${LINES[c]}”</p><p class="muted" style="margin-top:6px">${T[2]}</p></div>${codeMeanHTML(c)}<button class="btn block" id="sx">Close</button>`,()=>$("#sx").onclick=closeSheet)}
+
+/* ===== 2. 시작 정보 ===== */
+R.info=()=>({top:{back:()=>go("landing"),label:"About you"},html:`
+<div><div class="kicker">Before we start</div><h1 class="title">Tell us a few things first</h1></div>
+<div class="card">
+  <label class="lbl" for="nm">Name or nickname <small>We'll use it on your results</small></label>
+  <input class="inp" id="nm" type="text" maxlength="20" autocomplete="name" placeholder="e.g. Alex" value="${esc(S.name||"")}">
+  <div class="lbl" style="margin-top:6px">Sex <small>We compare your pitch with others of the same sex</small></div>
+  <div class="seg" id="sex">${[["f","Female"],["m","Male"],["x","Rather not say"]].map(o=>`<button data-v="${o[0]}" class="${S.sex===o[0]?"on":""}">${o[1]}</button>`).join("")}</div>
+  <label class="lbl" for="age">Age <small>We compare it with your voice age</small></label>
+  <input class="inp" id="age" type="number" inputmode="numeric" min="14" max="100" placeholder="e.g. 38" value="${S.age||""}">
+  <div class="lbl" style="margin-top:6px">What you do <small>Optional</small></div>
+  <div class="chips" id="job">${JOBS.map(j=>`<button class="chip ${S.job===j[0]?"on":""}" data-v="${j[0]}">${j[1]}</button>`).join("")}</div>
+</div>
+<div class="card">
+  <label class="chk"><input type="checkbox" id="c1"><span>I'm 14 or older</span></label>
+  <p class="small">Your recording is analyzed only on this device. This is a practice test that looks at the impression your voice makes.</p>
+  <p class="small">Recordings are saved only if you give the [Optional] consent on the next screen. Otherwise we collect just your sex, age, occupation and measurement numbers — with no name — to make the test more accurate.</p>
+</div>
+<p class="err" id="err" role="alert"></p>
+<button class="btn pri block" id="next">Get ready to record</button>`,
+ bind(){$("#sex").onclick=e=>{const b=e.target.closest("button");if(!b)return;S.sex=b.dataset.v;$("#sex").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b))};
+  $("#job").onclick=e=>{const b=e.target.closest("button");if(!b)return;S.job=S.job===b.dataset.v?"":b.dataset.v;$("#job").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x.dataset.v===S.job))};
+  const ok=()=>{const age=+$("#age").value,nm=$("#nm").value.trim();if(!nm){$("#err").textContent="Please enter a name or nickname.";$("#nm").focus();return false}S.name=nm;if(!S.sex||!age||age<14||age>100){$("#err").textContent="Please check your sex and age (14–100).";$(S.sex?"#age":"#sex button").focus();return false}
+   if(!$("#c1").checked){$("#err").textContent="Please confirm you're 14 or older.";$("#c1").focus();return false}
+   S.age=age;S.teacher=S.job==="teacher";return true};
+  $("#next").onclick=()=>{if(ok())go("prep")}}});
+
+/* ===== 5. 녹음/* ===== 5. 녹음 ===== */
+const AC=window.AudioContext||window.webkitAudioContext;let ctx=null,rec=null;
+function ensureCtx(){if(!ctx)ctx=new AC();if(ctx.state==="suspended")ctx.resume();return ctx}
+function startRec(){const c=ensureCtx();if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)return Promise.reject(new Error("no mic"));
+  return navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false,voiceIsolation:false,channelCount:1,sampleRate:{ideal:48000}}}).then(stream=>{
+  const src=c.createMediaStreamSource(stream),pr=c.createScriptProcessor(4096,1,1),mute=c.createGain(),an=c.createAnalyser();an.fftSize=2048;mute.gain.value=0;const chunks=[];let peak=0;
+  pr.onaudioprocess=e=>{const d=e.inputBuffer.getChannelData(0);chunks.push(new Float32Array(d));for(let i=0;i<d.length;i++){const a=Math.abs(d[i]);if(a>peak)peak=a}};
+  src.connect(an);src.connect(pr);pr.connect(mute);mute.connect(c.destination);
+  rec={stream,src,pr,mute,an,chunks,sr:c.sampleRate,peak:()=>peak,micHz:(()=>{try{return stream.getAudioTracks()[0].getSettings().sampleRate||null}catch(e){return null}})()};return rec})}
+function stopRec(){if(!rec)return null;const r=rec;rec=null;try{r.src.disconnect();r.pr.disconnect();r.mute.disconnect()}catch(e){}r.stream.getTracks().forEach(t=>t.stop());
+  let n=0;r.chunks.forEach(c=>n+=c.length);const out=new Float32Array(n);let o=0;r.chunks.forEach(c=>{out.set(c,o);o+=c.length});return{x:out,sr:r.sr,peak:r.peak(),micHz:r.micHz}}
+function decodeFile(file){const c=ensureCtx();return file.arrayBuffer().then(ab=>new Promise((res,rej)=>c.decodeAudioData(ab,res,rej))).then(buf=>{const n=buf.length,x=new Float32Array(n);
+  for(let ch=0;ch<buf.numberOfChannels;ch++){const d=buf.getChannelData(ch);for(let i=0;i<n;i++)x[i]+=d[i]/buf.numberOfChannels}let p=0;for(let i=0;i<n;i++){const a=Math.abs(x[i]);if(a>p)p=a}return{x,sr:buf.sampleRate,peak:p,file:true}})}
+const MIC_SVG=`<svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>`;
+const STOP_SVG=`<svg viewBox="0 0 24 24" width="30" height="30"><rect x="6" y="6" width="12" height="12" rx="3" fill="currentColor"/></svg>`;
+const micHTML=hint=>`<div class="mic-box"><canvas class="wave" id="wave" width="680" height="144"></canvas><div class="timer" id="timer">0.0s</div>
+<button class="mic" id="mic" aria-label="Start recording">${MIC_SVG}</button><p class="mic-msg" id="micmsg">${hint}</p>
+<input type="file" accept="audio/*" id="file" hidden></div>`;
+function bindMic({maxSec,minSec=1.5,onDone}){const mic=$("#mic"),msg=$("#micmsg"),tm=$("#timer"),cv=$("#wave"),g=cv.getContext("2d");let t0=0,lv=[];
+  const col=getComputedStyle(document.documentElement).getPropertyValue("--fam-ui").trim()||"#43227D";
+  const draw=()=>{g.clearRect(0,0,cv.width,cv.height);const n=56,w=cv.width/n;for(let i=0;i<n;i++){const v=lv[lv.length-n+i]||0,h=Math.max(6,v*cv.height*2.6);g.fillStyle=col;g.globalAlpha=.35+.65*(i/n);g.beginPath();const x=i*w+w*.2,y=(cv.height-h)/2;if(g.roundRect)g.roundRect(x,y,w*.6,Math.min(h,cv.height),6);else g.rect(x,y,w*.6,Math.min(h,cv.height));g.fill()}g.globalAlpha=1};draw();
+  const loop=()=>{if(!rec)return;const a=new Float32Array(rec.an.fftSize);rec.an.getFloatTimeDomainData(a);let s=0;for(const v of a)s+=v*v;lv.push(Math.sqrt(s/a.length));document.documentElement.style.setProperty("--lv",Math.min(1,Math.sqrt(s/a.length)*9).toFixed(3));if(lv.length>200)lv=lv.slice(-120);draw();
+    const sec=(performance.now()-t0)/1000;tm.textContent=sec.toFixed(1)+"s";if(sec>maxSec){finish();return}raf=requestAnimationFrame(loop)};
+  const finish=()=>{cancelAnimationFrame(raf);document.documentElement.style.setProperty("--lv","0");const r=stopRec();mic.classList.remove("on");mic.innerHTML=MIC_SVG;mic.setAttribute("aria-label","Start recording");if(!r)return;const dur=r.x.length/r.sr;
+    if(dur<minSec){msg.textContent="That was too short. Please record again.";return}msg.textContent=r.peak>0.98?"That was loud enough to distort. Next time, hold the phone a little farther away.":"Nice!";onDone(r)};
+  const fail=()=>{msg.textContent="Can't use the microphone. Please allow microphone access in your browser settings."};
+  mic.onclick=()=>{if(rec){finish();return}msg.textContent="Getting ready...";startRec().then(()=>{t0=performance.now();lv=[];mic.classList.add("on");mic.innerHTML=STOP_SVG;mic.setAttribute("aria-label","Stop recording");msg.textContent="Tap again when you're done";loop()}).catch(fail)};
+  $("#file").onchange=e=>{const f=e.target.files[0];if(!f)return;msg.textContent="Reading the file...";decodeFile(f).then(r=>{tm.textContent=(r.x.length/r.sr).toFixed(1)+"s";onDone(r)}).catch(()=>msg.textContent="Can't read this file. Please try a wav or m4a.")};
+}
+
+R.prep=()=>({top:{back:()=>go("info"),label:"Get ready"},html:`
+<div><div class="kicker">Get ready</div><h1 class="title">Find a quiet spot,<br>phone a hand's width away</h1></div>
+<div class="card"><p>First we'll listen to the room for 2 seconds. Please stay quiet while we do.</p><p class="muted" id="nmsg">The quieter the room, the more accurate your result.</p><p class="muted">Take out AirPods or other earbuds and record with your phone's mic. Earbud mics have lower sound quality and blur the result.</p>
+</div>
+<section class="card"><label class="chk"><input type="checkbox" id="devConsent" autocomplete="off" aria-describedby="devTerms"><span><strong>[Optional] I agree to share my recordings with Touching Voice for voice research and service development</strong></span></label>
+  <div id="devTerms"><p class="small">We use them to build more accurate voice analysis and training. If you leave this unchecked, you still get exactly the same test and results.</p>
+  <p class="small"><strong>We keep them for up to 3 years. After that they're deleted automatically, and if you withdraw your consent we delete them right away.</strong></p><details><summary>What we store and how to request deletion</summary><p class="small">We store your two recordings (the sentence and the 'ah'), your measurements and voice type, and the name or nickname, sex, age and occupation you entered. We never sell or hand them over to anyone outside Touching Voice.</p>
+  <p class="small">To withdraw or request deletion, email lubere12@naver.com with the date you took the test and your nickname.</p></details></div></section>
+<button class="btn pri block" id="noise">Check room noise</button>
+<button class="btn ghost block" id="again2" hidden>Check room noise again</button>`,
+ /* 11/5 대표: 주변 소리 확인이 끝나면 같은 버튼이 '녹음하기'로 바뀐다 */
+ bind(){let ready=false;const b=$("#noise"),ag=$("#again2"),done=loud=>{ready=true;b.textContent="Next";b.disabled=false;ag.hidden=!loud};const check=()=>{b.disabled=true;ag.hidden=true;ready=false;$("#nmsg").textContent="Listening... (please stay quiet)";
+  startRec().then(()=>later(()=>{const r=stopRec();resample(r.x,r.sr).then(x=>{const db=[];frameDb(x,SR,882,441,v=>db.push(v));db.sort((a,c)=>a-c);S.noiseDb=db.length?db[Math.floor(db.length*.5)]:-70;
+   $("#nmsg").textContent=S.noiseDb>-45?`It's a little noisy here. A quieter spot gives a more accurate result.`:`Great, nice and quiet.`;done(S.noiseDb>-45)})},2000))
+  .catch(()=>{$("#nmsg").textContent="Can't use the microphone. Please allow microphone access in your browser settings.";S.noiseDb=null;done(false)})};
+    b.onclick=()=>{if(!ready){check();return}
+    (()=>{const c=$("#devConsent");S.developmentConsent=c&&c.checked?{version:"voice-dev-2026-11-05",acceptedAt:new Date().toISOString(),retentionYears:3}:null;save()})(),go("rec1")};ag.onclick=check;}});
+R.rec1=err=>({top:{back:()=>go("prep"),label:"Recording 1 / 2"},html:`
+<div><div class="kicker">Recording 1 · Read a sentence${sitKey()==="intro"?"":" · "+SITS[sitKey()][0]}</div><h1 class="title">${SITS[sitKey()][3]}</h1></div>
+${runs()&&!PAID?`<div class="card"><div class="lbl">Which situation would you like to hear your voice in this time?</div><div class="chips" id="sit">${SIT_ORDER.map(k=>`<button class="chip ${sitKey()===k?"on":""}" data-v="${k}">${SITS[k][0]}</button>`).join("")}</div></div>`:""}
+<p class="sentence">${SITS[sitKey()][2]}</p>${err?`<p class="err">${err}</p>`:""}
+${micHTML("Tap the button, then read aloud")}`,
+ bind(){const sc=$("#sit");if(sc)sc.onclick=e=>{const b=e.target.closest("button");if(!b)return;S.sit=b.dataset.v;save();go("rec1")};bindMic({maxSec:20,onDone:r=>{REC.r1=r;recKeep(r);later(()=>go("rec2"),500)}})}});
+R.rec2=()=>({top:{back:()=>go("rec1"),label:"Recording 2 / 2"},html:`
+<div><div class="kicker">Recording 2 · A long 'ah'</div><h1 class="title">Take a deep breath and say 'ah' at a comfortable pitch</h1></div>
+<div class="card"><p>Hold one steady note until you run out of breath. It's fine to stop whenever you need to.</p></div>
+${micHTML("Tap the button, then start your 'ah'")}`,
+ bind(){bindMic({maxSec:45,onDone:r=>{REC.r2=r;tvTrack("RecordDone");later(()=>go(PAID&&!qDone(vrGet())?"quiz":"wait"),500)}})}});
+
+/* ===== 신호 처리 (voicetype_test.html과 같은 계산) ===== */
+const SR=22050;
+function resample(x,sr){if(sr===SR)return Promise.resolve(x);const OC=window.OfflineAudioContext||window.webkitOfflineAudioContext;
+  try{const len=Math.ceil(x.length*SR/sr),oc=new OC(1,len,SR),b=oc.createBuffer(1,x.length,sr);b.getChannelData(0).set(x);const s=oc.createBufferSource();s.buffer=b;s.connect(oc.destination);s.start(0);
+    const p=oc.startRendering();if(p&&p.then)return p.then(r=>r.getChannelData(0));return new Promise(res=>{oc.oncomplete=e=>res(e.renderedBuffer.getChannelData(0))})}
+  catch(e){const ratio=sr/SR,n=Math.floor(x.length/ratio),y=new Float32Array(n);for(let i=0;i<n;i++)y[i]=x[Math.floor(i*ratio)];return Promise.resolve(y)}}
+function frameDb(x,sr,win,hop,cb){for(let i=0;i+win<=x.length;i+=hop){let s=0;for(let j=0;j<win;j++)s+=x[i+j]*x[i+j];cb(10*Math.log10(s/win+1e-12),i)}}
+function noiseFloor(x){const db=[];frameDb(x,SR,882,441,v=>db.push(v));return pct(db,0.1)}
+function yin(x,off,W,tmin,tmax){const d=new Float32Array(tmax+1);let cm=1e9,best=-1,sum=0;
+  for(let t=1;t<=tmax;t++){let s=0;for(let j=0;j<W;j++){const v=x[off+j]-x[off+j+t];s+=v*v}sum+=s;const c=s*t/(sum||1e-12);d[t]=c;if(t>=tmin&&c<0.2&&best<0)best=t}
+  if(best<0){for(let t=tmin;t<=tmax;t++)if(d[t]<cm){cm=d[t];best=t}}else{while(best+1<=tmax&&d[best+1]<d[best])best++}
+  const ap=d[best];if(best>tmin&&best<tmax){const a=d[best-1],b=d[best],c2=d[best+1],den=a-2*b+c2;const sh=den?0.5*(a-c2)/den:0;return{T:best+sh,ap}}return{T:best,ap}}
+function pitchTrack(x,noiseDb){const lim={m:[60,320],f:[110,520],x:[60,520]}[S.sex]||[60,520];const W=Math.round(0.025*SR),hop=Math.round(0.01*SR),tmin=Math.floor(SR/lim[1]),tmax=Math.ceil(SR/lim[0]),fr=[];
+  for(let i=0;i+W+tmax<x.length;i+=hop){let s=0;for(let j=0;j<W+tmax;j++)s+=x[i+j]*x[i+j];const db=10*Math.log10(s/(W+tmax)+1e-12);const o={t:i/SR,db,f0:0,ap:1,i};
+    if(db>noiseDb+10){const r=yin(x,i,W,tmin,tmax);o.ap=r.ap;if(r.ap<0.3){o.f0=SR/r.T;o.T=r.T}}fr.push(o)}
+  return fr}
+function pct(a,p){if(!a.length)return NaN;const b=a.slice().sort((x,y)=>x-y);const k=(b.length-1)*p,f=Math.floor(k),c=Math.ceil(k);return b[f]+(b[c]-b[f])*(k-f)}
+function mean(a){let s=0;a.forEach(v=>s+=v);return a.length?s/a.length:NaN}
+function sd(a){const m=mean(a);let s=0;a.forEach(v=>s+=(v-m)*(v-m));return a.length>1?Math.sqrt(s/(a.length-1)):0}
+function st(f,ref){return 12*Math.log(f/ref)/Math.LN2}
+function fft(re,im){const n=re.length;for(let i=1,j=0;i<n;i++){let bit=n>>1;for(;j&bit;bit>>=1)j^=bit;j^=bit;if(i<j){let t=re[i];re[i]=re[j];re[j]=t;t=im[i];im[i]=im[j];im[j]=t}}
+  for(let l=2;l<=n;l<<=1){const ang=-2*Math.PI/l,wr=Math.cos(ang),wi=Math.sin(ang);for(let i=0;i<n;i+=l){let cr=1,ci=0;for(let k=0;k<l/2;k++){const ar=re[i+k+l/2]*cr-im[i+k+l/2]*ci,ai=re[i+k+l/2]*ci+im[i+k+l/2]*cr;re[i+k+l/2]=re[i+k]-ar;im[i+k+l/2]=im[i+k]-ai;re[i+k]+=ar;im[i+k]+=ai;const tr=cr*wr-ci*wi;ci=cr*wi+ci*wr;cr=tr}}}}
+function aw(f){const f2=f*f,ra=(148840000*f2*f2)/((f2+424.36)*Math.sqrt((f2+11599.29)*(f2+544496.41))*(f2+148840000));return ra*ra*Math.pow(10,0.2)}
+function hnrAt(x,i,T,W){const Ti=Math.round(T);let best=0;for(let t=Ti-2;t<=Ti+2;t++){if(t<2)continue;let a=0,b=0,c=0;for(let j=0;j<W;j++){const u=x[i+j],v=x[i+j+t];a+=u*v;b+=u*u;c+=v*v}const r=a/Math.sqrt(b*c+1e-12);if(r>best)best=r}
+  best=Math.min(0.9999,Math.max(0.01,best));return 10*Math.log10(best/(1-best))}
+function cppAt(x,i){const N=1024,re=new Float64Array(N),im=new Float64Array(N);for(let j=0;j<N;j++){const w=0.5-0.5*Math.cos(2*Math.PI*j/(N-1));re[j]=(x[i+j]||0)*w}fft(re,im);
+  const ld=new Float64Array(N),z=new Float64Array(N);for(let j=0;j<N;j++)ld[j]=10*Math.log10(re[j]*re[j]+im[j]*im[j]+1e-12);fft(ld,z);
+  const q0=Math.floor(SR/330),q1=Math.ceil(SR/60);let pk=-1e9,pq=q0;const xs=[],ys=[];for(let j=q0;j<=q1;j++){const v=Math.abs(ld[j])/N;xs.push(j);ys.push(v);if(v>pk){pk=v;pq=j}}
+  const mx=mean(xs),my=mean(ys);let sxy=0,sxx=0;for(let j=0;j<xs.length;j++){sxy+=(xs[j]-mx)*(ys[j]-my);sxx+=(xs[j]-mx)*(xs[j]-mx)}const b=sxy/sxx,a=my-b*mx;return pk-(a+b*pq)}
+function analyzeSentence(x,noiseDb,syl){const fr=pitchTrack(x,noiseDb),v=fr.filter(f=>f.f0>0);
+  if(v.length<40)throw new Error("We couldn't pick up enough of your voice");
+  const med0=pct(v.map(f=>f.f0),0.5);v.forEach(f=>{const d=st(f.f0,med0);if(d>9&&Math.abs(d-12)<3)f.f0/=2;else if(d<-9&&Math.abs(d+12)<3)f.f0*=2});
+  const f0s=v.map(f=>f.f0),med=pct(f0s,0.5),sts=f0s.map(f=>st(f,med));
+  const range=pct(sts,0.95)-pct(sts,0.05),sdst=sd(sts),f0lo=pct(f0s,0.05),f0hi=pct(f0s,0.95);
+  const act=fr.map(f=>f.db>noiseDb+10),first=act.indexOf(true),last=act.lastIndexOf(true);let pause=0,run=0;
+  let pauses=0;for(let k=first;k<=last;k++){if(!act[k])run++;else{if(run*0.01>0.25){pause+=run*0.01;pauses++}run=0}}
+  const dur=(last-first+1)*0.01-pause,rate=syl/Math.max(0.5,dur);
+  const dbs=v.map(f=>f.db),dbsd=sd(dbs),dyn=pct(dbs,0.95)-pct(dbs,0.05),snr=pct(dbs,0.5)-noiseDb;
+  const tail=v.filter(f=>f.t>=v[v.length-1].t-0.4);let endSlope=0;if(tail.length>4){const tx=tail.map(f=>f.t),ty=tail.map(f=>st(f.f0,med)),mx=mean(tx),my=mean(ty);let sxy=0,sxx=0;for(let k=0;k<tx.length;k++){sxy+=(tx[k]-mx)*(ty[k]-my);sxx+=(tx[k]-mx)*(tx[k]-mx)}endSlope=sxx?sxy/sxx:0}
+  const N=2048,band=[0,0,0,0],edges=[[60,300],[300,1100],[1100,4000],[4000,8000]];
+  for(let k=0;k<v.length;k+=3){const i=v[k].i;if(i+N>x.length)break;const re=new Float64Array(N),im=new Float64Array(N);for(let j=0;j<N;j++)re[j]=x[i+j]*(0.5-0.5*Math.cos(2*Math.PI*j/(N-1)));fft(re,im);
+    for(let j=1;j<N/2;j++){const f=j*SR/N,p=(re[j]*re[j]+im[j]*im[j])*aw(f);for(let e=0;e<4;e++)if(f>=edges[e][0]&&f<edges[e][1])band[e]+=p}}
+  const tot=band[0]+band[1]+band[2]+band[3]||1;
+  const dbt=fr.map(f=>f.db),dips=[];for(let k=1;k<dbt.length-1;k++)if(dbt[k]>noiseDb+15&&dbt[k]>=dbt[k-1]&&dbt[k]>dbt[k+1]){let lo=dbt[k];for(let j=Math.max(0,k-15);j<k;j++)lo=Math.min(lo,dbt[j]);dips.push(dbt[k]-lo)}
+  /* 11/4 대표: 소리 비중 4구역(저음·중저음·중고음·고음) = 목소리 높이(F0)를 음역대별로 나눈 비율 70% + 실제 소리에 담긴 Hz 분포(위 4대역, 귀가 느끼는 크기) 30%로 보강.
+     높은 음(파#5)이면 고음 70% 넘게, 숨소리가 많으면 높은 Hz 성분이 늘어 위쪽 구역이 보강된다.
+     F0 경계(11/5 대표 수정): 남 저음 G2~C3 · 중저음 C3~C4 · 중고음 C4~G4 · 고음 G4~D5 (경계 C3 131 · C4 262 · G4 392Hz, G2 아래는 저음 · D5 위는 고음).
+     여는 남자 음에서 완전5도 위: 저음 D3~G3 · 중저음 G3~G4 · 중고음 G4~D5 · 고음 D5~A5 (경계 G3 196 · G4 392 · D5 587Hz). 말하지 않음은 그 가운데(+3.5반음). (11/4판: 남 C2·A2·E3·A3, E3~A3 반반) */
+  const RB={m:[130.81,261.63,392],f:[196,392,587.33],x:[160.1,320.2,479.8]}[S.sex]||[160.1,320.2,479.8],zw=[0,0,0,0];
+  v.forEach(f=>{const g=Math.pow(Math.pow(10,f.db/10),0.3),q=f.f0;if(q<RB[0])zw[0]+=g;else if(q<RB[1])zw[1]+=g;else if(q<RB[2])zw[2]+=g;else zw[3]+=g});
+  const zt=zw.reduce((a,c)=>a+c,0)||1,hz=band.map(b=>Math.pow(100*b/tot,0.3)),ht=hz.reduce((a,c)=>a+c,0)||1,regs4=zw.map((z,k)=>0.7*100*z/zt+0.3*100*hz[k]/ht);
+  const loud=pct(v.map(f=>f.db),0.5),F1=[],F2=[];v.forEach((f,k)=>{if(k%2||f.db<loud)return;const r=lpcFormants(x,f.i);if(r){F1.push(r[0]);F2.push(r[1])}});
+  const vspace=F1.length>=20?(pct(F1,0.95)-pct(F1,0.05))*(pct(F2,0.95)-pct(F2,0.05))/1000:null;
+  return{f0:med,f0lo,f0hi,rangeSt:range,sdSt:sdst,rate,speakDur:dur,syl,dbsd,dyn,snr,endSlope,bands:band.map(b=>100*b/tot),voicedSec:v.length*0.01,regs4,pauses,sylc:dips.length?pct(dips,0.5):null,vspace}}
+/* 발음 또렷함용 F1·F2 — 25ms 창을 반으로 줄여(약 11kHz) LPC 12차로 0~5kHz 포락선 꼭짓점을 찾는다(11/4 목소리 학습의 '모음 공간'을 폰에서도) */
+function lpcFormants(x,i){const N=Math.round(0.025*SR);if(i+N>x.length)return null;const M=N>>1,y=new Float64Array(M);for(let j=0;j<M;j++)y[j]=(x[i+2*j]+x[i+2*j+1])/2;
+  for(let j=M-1;j>0;j--)y[j]-=0.97*y[j-1];for(let j=0;j<M;j++)y[j]*=0.54-0.46*Math.cos(2*Math.PI*j/(M-1));
+  const p=12,r=new Float64Array(p+1);for(let k=0;k<=p;k++){let a=0;for(let j=k;j<M;j++)a+=y[j]*y[j-k];r[k]=a}if(!(r[0]>0))return null;r[0]*=1.0001;
+  let a=new Float64Array(p+1);a[0]=1;let e=r[0];for(let k=1;k<=p;k++){let acc=r[k];for(let j=1;j<k;j++)acc+=a[j]*r[k-j];const kk=-acc/e,b=a.slice();for(let j=1;j<k;j++)a[j]=b[j]+kk*b[k-j];a[k]=kk;e*=1-kk*kk;if(!(e>0))return null}
+  const fs=SR/2,K=256,env=new Float64Array(K);for(let q=0;q<K;q++){const w=2*Math.PI*(q*5000/K)/fs;let re=0,im=0;for(let j=0;j<=p;j++){re+=a[j]*Math.cos(w*j);im-=a[j]*Math.sin(w*j)}env[q]=-10*Math.log10(re*re+im*im+1e-12)}
+  const pk=[];for(let q=1;q<K-1;q++)if(env[q]>env[q-1]&&env[q]>=env[q+1])pk.push(q*5000/K);
+  const f1=pk.find(f=>f>=250&&f<=1000);if(f1==null)return null;const f2=pk.find(f=>f>f1+200&&f>=700&&f<=3000);return f2==null?null:[f1,f2]}
+function analyzeVowel(x,noiseDb){const fr=pitchTrack(x,noiseDb),runs=[];let cur=null,gap=0;
+  fr.forEach((f,k)=>{if(f.f0>0){if(!cur)cur={a:k,b:k};else cur.b=k;gap=0}else if(cur){gap++;if(gap>15){runs.push(cur);cur=null;gap=0}}});if(cur)runs.push(cur);
+  if(!runs.length)throw new Error("We couldn't pick up your voice in the 'ah'");
+  runs.sort((a,b)=>(b.b-b.a)-(a.b-a.a));const Rn=runs[0],mpt=(Rn.b-Rn.a+1)*0.01;
+  const a0=Rn.a+Math.floor((Rn.b-Rn.a)*0.2),a1=Rn.a+Math.floor((Rn.b-Rn.a)*0.8),hn=[],cp=[],sts=[],W=Math.round(0.04*SR);
+  for(let k=a0;k<=a1;k+=2){const f=fr[k];if(!(f.f0>0))continue;if(f.i+W+f.T+3<x.length)hn.push(hnrAt(x,f.i,f.T,W));if(k%6===0&&f.i+1024<x.length)cp.push(cppAt(x,f.i));sts.push(12*Math.log(f.f0)/Math.LN2)}
+  const dif=[];for(let k=1;k<sts.length;k++){const d=sts[k]-sts[k-1];if(Math.abs(d)<1)dif.push(d)}/* 11/16 대표: 작은 소리·속삭임에서 10ms 사이 1반음 넘게 튀는 건 떨림이 아니라 추적 오류(시트 42명 중 6명이 떨림 0.9~4.9로 목소리 나이 41~75살) */
+  return{mpt,hnr:pct(hn,0.5),cpp:pct(cp,0.5),trem:sd(dif),f0:Math.pow(2,mean(sts)/12)}}
+const SYL=Object.fromEntries(Object.values(SITS).map(s=>[s[2],s[4]]));
+const sylOf=t=>SYL[t]||Math.round(t.split(/\s+/).length*1.4);/* ponytail: fallback is a rough words×1.4 guess; only the 5 fixed sentences are ever read */
+
+/* ===== 판정 ===== */
+const mptRef=()=>S.sex==="m"?22:S.sex==="f"?17:19;
+function z(v,k){return(v-NORM[k][0])/NORM[k][1]}
+function judge(m){const s=m.s,v=m.v,ref=S.age>0&&S.age<13?REF_KID:REF_F0[S.sex]||REF_F0.x,stRel=st(s.f0,ref);
+  const code=(stRel<0?"L":"H")+(s.rate>=TH.rate?"A":"U")+(v.hnr>=TH.hnr?"D":"B")+(s.rangeSt>=TH.range?"T":"F");
+  const sc={breath:Math.round(25*lin(v.mpt,4,mptRef())),clear:Math.round(25*lin(v.hnr,7,22)),tune:Math.round(25*lin(s.rangeSt,2,10)),steady:Math.round(25*(1-lin(s.dbsd,3,10)))};
+  const total=sc.breath+sc.clear+sc.tune+sc.steady,target=total<80?80:Math.min(100,total+10);
+  const zr=z(s.rate,"rate"),zg=z(s.rangeSt,"range"),zd=z(s.dyn,"dyn"),zh=z(v.hnr,"hnr"),zs=z(s.dbsd,"dbsd"),zt=z(v.trem,"trem"),ze=z(s.endSlope,"end");
+  const P=a=>Math.round(cl(50+15*mean(a),0,100));
+  const voice={E:P([zr,zg,zd]),S:P([zh,-zs,-zt]),A:P([zg*0.5,ze,-zh*0.5]),C:P([1-Math.min(2,Math.abs(zr)),zh,-zs]),O:P([zg,zd])};
+  let age=35-(s.rate-4.8)*4-st(s.f0,AGE_REF[S.sex]||AGE_REF.x)*(S.sex==="f"?1.6:0.6)+(Math.min(v.trem,0.6)-0.35)*15-(Math.max(v.hnr,10)-16)*0.4;/* 11/16: 숨 섞인 작은 소리가 나이를 크게 올리지 않게 떨림·숨결 몫 상한(최대 +3.8·+2.4살) */age=cl(age,15,75);
+  return{code,stRel,sc,total,target,voice,age}}
+/* 소리 균형 — 10/29 대표 기준 "저·중·고음이 한쪽으로 크게 쏠리지 않고 고르게 퍼진 목소리가 좋다"를 좋은 목소리 녹음으로 맞췄다.
+   대표 글 읽기 36개(스튜디오·아이폰)는 낮은 소리(저음+중저음) : 높은 소리(중고음+고음) ≈ 66 : 34,
+   일반인 자기소개 52개는 남 82 : 18 · 여 89 : 11로 낮은 쪽에 몰려 있었다. 네 칸 25%씩 고르기(엔트로피)는 둘을 가르지 못해 버렸다.
+   → 높은 소리 비중으로 점수: 남 10%→0점 · 30%→만점, 여 4%→0점 · 24%→만점(여성은 기본 높이 때문에 저음 칸이 커서 6%p 낮춤).
+   50%를 넘으면 높은 쪽 쏠림으로 깎는다. 여성 좋은 목소리 말하기 녹음이 아직 없어 여성 기준은 임시값 */
+const BAL_REF={m:[10,30],f:[4,24],x:[7,27]};
+function bandBalance(b){const tot=b.reduce((a,x)=>a+x,0)||1,hi=100*(b[2]+b[3])/tot,[lo,full]=BAL_REF[S.sex]||BAL_REF.x;
+ let score=lin(hi,lo,full);if(hi>50)score=Math.min(score,1-lin(hi,50,70));
+ return{hi,score,kind:hi>55?"high":score>=.8?"even":"low"}}
+/* (11/4판 기록 — 11/5에 경계가 G2·C3·C4·G4·D5로 바뀌어 아래 숫자는 옛 경계 값. 지금 기준은 regScore 위 주석) 소리 비중 4구역 기준(11/4 대표 경계, 같은 계산) — 대표 글 읽기 18개 중앙 저 6·중저 28·중고 59·고 6 · 기업가 6·32·53·9 · 개발자 5·33·50·12 · 리더 6·23·55·17 · 배우 7·28·55·10
+   일반인 자기소개 남 25명 8·47·35·6 / 여 28명 10·30·44·7 · 맥북 파#5 0·12·13·75. 좋은 목소리는 중고음이 중심(50~60%)이고 중저음이 받친다. 일반인 남은 중저음 쪽으로 내려가 있다.
+   점수: 중고음 30%→0·50%→만점, 중고음 75% 넘게 한 곳에 몰리면 95%에서 0, 말소리 고음 25% 넘으면 50%에서 0 */
+/* 11/4 대표: 말소리는 대부분 좁은 구간에 모여 퍼센트로 보이면 다 '중음'으로 몰려 보인다 → 사람들에게는 '음역 지도'로 보여 준다.
+   4칸(저음·중저음·중고음·고음)을 같은 너비로 그리고, 칸 안은 반음 간격으로 펼친다. 띠 = 말하면서 오르내린 범위(5~95%), 점 = 평소 중심.
+   칸 경계(11/5) 남 G2·C3·C4·G4·D5(98·131·262·392·587Hz), 여 완전5도 위 D3·G3·G4·D5·A5(147·196·392·587·880Hz).
+   음 이름은 G2·C3 같은 국제 표기로 쓴다 — '솔2'처럼 쓰면 노래하는 사람은 '2옥타브 솔'(=G4)로 읽어 두 옥타브 헷갈린다 */
+const RM={m:[98,130.81,261.63,392,587.33],f:[146.83,196,392,587.33,880]};RM.x=RM.m.map(h=>h*Math.pow(2,3.5/12));
+const NOTE=["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+function noteName(hz){const n=Math.round(69+12*Math.log2(hz/440));return NOTE[(n%12+12)%12]+(Math.floor(n/12)-1)}
+/* 11/5 대표: '목소리 톤' = 소리의 Hz 성분 — 높낮이(음역 지도)와 따로 보여 준다. 4대역 에너지를 귀 기준 dB로, 가장 센 대역이 꽉 찬 막대 */
+const TONE=[["Resonance","The deep, booming sound"],["Body","The sound that carries your words"],["Clarity","The sound that makes words crisp"],["Air","The breathy sound"]];
+/* 11/16 대표: 몸통(300~1,100Hz)은 말소리에서 원래 가장 많다(42명 중 37명이 1등) → '많다'는 뜻이 없다. 몸통이 평균보다 모자랄 때를 문제로 본다.
+   기준 = 테스트 42명(11/16 시트) 대역 비중 dB의 중앙값·표준편차. 울림은 마이크 저음 차단 차이로 편차가 커서(7.8dB) 각 대역 편차로 나눠 본다 */
+const TONE_MED=[-8.9,-1.9,-8.5,-18.5],TONE_SD=[7.8,1.35,3.2,4.6];
+/* 11/16 대표: '몸통 부족·울림 많음'만으로는 뜻을 모른다 → 조합을 생활 속 결과로 풀어 준다(예: 사람들이 다시 물어봐요). 위에서부터 먼저 맞는 한 줄 */
+const toneLo=(z,i)=>i===1?z[1]<-0.5:z[i]<-1,toneHi=(z,i)=>z[i]>1;
+const TONE_READ=[
+ [z=>toneLo(z,1)&&(toneHi(z,0)||toneHi(z,3)),"Your words can sound mumbled, so people may ask <span style=white-space:nowrap>'Sorry, what?'</span>"],
+ [z=>toneLo(z,1)&&toneLo(z,2),"Your voice can sound small and blurry, so it may be hard to hear in noisy places"],
+ [z=>toneLo(z,1),"Your voice carries less power, so it may be hard to hear from far away or in front of a group"],
+ [z=>toneHi(z,0)&&toneLo(z,2),"The ends of your words can sound boomy and muffled, so you may be hard to follow on the phone or a mic"],
+ [z=>toneHi(z,3)&&toneLo(z,2),"A lot of air makes your voice sound weak, so people may say you sound unsure"],
+ [z=>toneHi(z,2)&&toneHi(z,3),"Your sound can come across as sharp, so listeners may get tired after a while"],
+ [z=>toneHi(z,3),"Lots of air makes your voice soft, but your throat may tire easily when you talk for long"],
+ [z=>toneLo(z,2),"Your words can sound blurred, so people may ask you to repeat names or numbers"],
+ [z=>toneHi(z,2),"Your voice cuts through clearly, but up close it can sound a little strong"],
+ [z=>toneHi(z,0),"Your voice sounds weighty but a bit muffled, so the ends of your words may get lost in big rooms"],
+ [z=>toneLo(z,0),"Your voice sounds light and fresh, but it may feel less weighty or dependable"],
+ [()=>true,"All four sounds are well balanced, so you're easy to hear in most places"]];
+function toneRead(z){return{line:TONE_READ.find(r=>r[0](z))[1],why:[0,1,2,3].map(i=>toneLo(z,i)?BOOST_NM_[i]+" low":toneHi(z,i)?BOOST_NM_[i]+" high":"").filter(Boolean)}}
+const BOOST_NM_=["Resonance","Body","Clarity","Air"];
+function toneZ(b){const t=b.reduce((a,x)=>a+x,0)||1;return b.map((x,i)=>(10*Math.log10(Math.max(x,1e-3)/t)-TONE_MED[i])/TONE_SD[i])}
+function toneCard(b){if(!b||!b.length)return"";const z=toneZ(b),lab=v=>v<-1?"Low":v<-0.5?"A bit low":v<=0.5?"About average":v<=1?"A bit high":"High";
+ return`<section class="card"><div class="sec-h"><h2>Voice tone</h2><small>Four layers of your sound</small></div>
+ <div class="tone">${TONE.map((t,i)=>{const w=Math.max(1.5,Math.min(50,Math.abs(z[i])*25));return`<div class="tn${i===1&&z[1]<-0.5?" low":""}"><span><b>${t[0]}</b><small>${t[1]}</small></span><i class="ctr"><s style="left:${(z[i]<0?50-w:50).toFixed(1)}%;width:${w.toFixed(1)}%"></s></i><em class="num">${lab(z[i])}</em></div>`}).join("")}</div>
+ <p class="small" style="text-align:center"><small>Center dashed line = other people's average · Body is normally the biggest part, so it matters most when it is below average</small></p>
+ ${(t=>`<div class="target stack"><span>So this is how you sound</span><b>${t.line}</b>${t.why.length?`<small>${t.why.join(" · ")}</small>`:""}</div>`)(toneRead(z))}</section>`}
+function regCard(r,s){const ref=S.age>0&&S.age<13?REF_KID:REF_F0[S.sex]||REF_F0.x,lo=s.f0lo||s.f0*Math.pow(2,-s.rangeSt/24),hi=s.f0hi||s.f0*Math.pow(2,s.rangeSt/24),
+  m=hz=>12*Math.log2(hz/ref),SP=Math.max(12,Math.ceil(Math.max(-m(lo),m(hi),Math.abs(m(s.f0))))+3),P=hz=>hz>0?cl(0.5+m(hz)/(2*SP),0,1):0,a=P(lo),b=P(hi),c=P(s.f0);
+ /* 11/16 대표: 높은 목소리는 끝에 붙어 버려서 칸을 넉넉하게(평균 위아래 최소 12반음, 내 소리가 넘치면 3반음 더) + 피아노 몇 옥타브 무슨 음인지 */
+ const mr=69+12*Math.log2(ref/440),kw=100/(2*SP),mk=k=>440*Math.pow(2,(k-69)/12),k0=Math.round(mr-SP),k1=Math.round(mr+SP),me=Math.round(69+12*Math.log2(s.f0/440)),keys=[];
+ for(let k=k0;k<=k1;k++){const pc=((k%12)+12)%12,hz=mk(k);keys.push(`<i class="${[1,3,6,8,10].includes(pc)?"b ":""}${k===me?"me":hz>=lo*0.97&&hz<=hi*1.03?"on":""}" style="left:${(100*P(hz)-kw/2).toFixed(2)}%;width:${kw.toFixed(2)}%">${pc===0?`<em>${noteName(hz)}</em>`:""}</i>`)}
+ return`<section class="card"><div class="sec-h"><h2>Pitch range</h2><small>How far it rose and fell</small></div>
+  <div class="rmap"><div class="rm-lab"><span>Much lower</span><span>A bit lower</span><span>A bit higher</span><span>Much higher</span></div>
+   <div class="rm-track"><i></i><i></i><i></i><i></i><b class="rm-band" style="left:${(100*a).toFixed(1)}%;width:${Math.max(2,100*(b-a)).toFixed(1)}%"></b><b class="rm-avg" style="left:50%"></b><b class="rm-dot" style="left:${(100*c).toFixed(1)}%"></b></div>
+   <div class="rm-keys" aria-hidden="true">${keys.join("")}</div>
+   </div>
+  <p class="small" style="text-align:center">On a piano, your usual pitch is <b>${noteName(s.f0)}</b>, and your voice moved between <b>${noteName(lo)} ~ ${noteName(hi)}</b> as you spoke (about${Math.round(m(hi)-m(lo))+1} keys).<br><small>Dot = your usual pitch · Shaded area and keys = the range you used · Center dashed line = average for ${S.age>0&&S.age<13?"kids your age":S.sex==="m"?"men":S.sex==="f"?"women":"everyone"} (${noteName(ref)}) · Middle C = C4</small></p>
+  <div class="target stack"><span>In short</span><b>${regLine(r)}</b></div>
+  <small>Voices that are easy to listen to usually sit near the average pitch and move widely up and down while speaking.</small></section>`}
+/* 11/5 새 경계로 다시 잼(저·중저·중고·고 %): 좋은 목소리 = 기업가(남) 44·42·10·5 · 개발자(남) 39·46·10·6 · 리더(여) 30·58·8·5 · 배우(여) 46·43·7·5 → 저음과 중저음이 반반쯤.
+   일반인 자기소개 남 25명 65·22·8·4 · 여 28명 56·33·7·5 → 저음 쪽으로 가라앉음. F#5 노래 0·12·13·75.
+   중저음 몫 q = 중저/(저+중저)가 0.2→0.45에서 점수가 차고, 중저음이 70% 넘게 몰리거나 중고+고음이 30% 넘으면 깎는다 */
+function regScore(r){const[l,m,u,h]=r,q=m/((l+m)||1);let s=lin(q,0.2,0.45);if(m>70)s=Math.min(s,1-lin(m,70,90));if(u+h>30)s=Math.min(s,1-lin(u+h,30,55));return cl(s,0,1)}
+const regKind=r=>{const[l,m,u,h]=r,q=m/((l+m)||1);return u+h>30?"high":m>70?"stuck":q<0.35?"low":"even"};
+const regLine=r=>({even:"Your low notes give solid support, and you used your range evenly",low:"You stay low a lot — try lifting your pitch a little, as if asking a question",stuck:"You stay on one pitch a lot — try moving more widely up and down",high:"Lots of high notes — your throat may be tense. Relax and speak easily"})[regKind(r)];
+const balanceLine=b=>({even:"Low and high sounds are evenly mixed",low:"More low sound (resonance and body)",high:"More high sound (clarity and air)"})[bandBalance(b).kind];
+/* 목소리 호감도 — 10/29 대표: '이성 호감도' 대신 모두 '목소리 호감도'. 성별 방향 높이는 빼고,
+   소리 균형(대표 기준·좋은 목소리 녹음으로 보정, 가장 크게) + 숨결 · 고르기 · 여유·억양(근거조사 v1 B장, 계명대 일반 호감 연구) */
+/* 11/4 대표: 목소리 호감도 = 적당한 호흡 + 안정적인 발음 + 소리 비중(저·중·고 비율, 원래 4대역 그대로).
+   호흡 = '아~' 길이 · 숨이 새지도 누르지도 않는 정도(맑기 15dB 근처) · 문장 중 쉼표에서 쉬었는지
+   발음 = 모음 공간(F1 폭×F2 폭, 입·혀 움직임) · 음절 대비(또렷이 끊기는 정도) · 고르기(떨림·크기)
+   ⚠️ 발음 기준(ART_REF·음절 대비 범위)은 임시값 — 원음(대표·여성 강사) 녹음으로 다시 맞출 것 */
+/* 11/5 대표: 발음은 '목소리 좋은 여배우'(목소리 학습 샘플 C) 기준 — 테스트와 같은 계산으로 18초 4토막 모음 공간 809·1056·1040·1066(중앙 약 1,050), 음절 대비 약 11dB → 만점.
+   남자는 성도 길이 차이로 ×0.72. 보통 사람(240~650)이 0점 근처로 몰리지 않게 (내 값/기준)^0.6 — 예: 아내 녹음 347 → 모음 0.51(예전 0) */
+const ART_REF={m:760,f:1050,x:900};
+function attrScore(m){const s=m.s,v=m.v,bb=bandBalance(s.bands),aref=ART_REF[S.sex]||ART_REF.x;
+ const pz=s.pauses==null?1:s.pauses===0?0.6:s.pauses>3?0.7:1;
+ const breath=0.4*lin(v.mpt,4,mptRef())+0.4*(1-cl(Math.abs(v.hnr-15)/8,0,1))+0.2*pz;
+ const steady=1-0.6*lin(v.trem,.2,.6)-0.4*lin(s.dbsd,3,9);
+ const artic=s.vspace==null?0.5+0.5*steady:0.5*Math.pow(cl(s.vspace/aref,0,1),0.6)+0.3*(s.sylc==null?0.6:lin(s.sylc,4,11))+0.2*steady;
+ const rg=s.regs4,parts={breath:cl(breath,0,1),artic:cl(artic,0,1),balance:rg?0.5*regScore(rg)+0.5*bb.score:bb.score};
+ const W={breath:.35,artic:.30,balance:.35},NAME={breath:"Breath",artic:"Diction",balance:"Balance"},DESC={breath:"Air neither leaks nor gets stuck",artic:"Open wide, word by word",balance:"Lows and highs evenly mixed"};
+ let sum=0;Object.keys(W).forEach(k=>sum+=W[k]*parts[k]);const pct=Math.round(55+42*cl(sum,0,1));
+ const weak=Object.keys(W).sort((a,b)=>parts[a]-parts[b])[0];
+ const TIP={breath:v.mpt<mptRef()*0.6?"Take a deep breath and hold a long 'ah' on one pitch":v.hnr<12?"Focus the sound at the front of your mouth so air doesn't leak out":v.hnr>19?"Start your first sound softly, like a gentle 'ha'":"Take a breath at each comma, then carry on",
+  artic:"Open your mouth a little wider and say each word crisply",
+  balance:(rg?regKind(rg)==="high":bb.kind==="high")?"Relax your shoulders and jaw, and speak easily while feeling your chest vibrate":rg&&regKind(rg)==="stuck"?"Let the end of each sentence settle down comfortably":rg&&regKind(rg)==="low"?"Lift the end of your phrases slightly, as if asking a question, and speak gently":"Open your mouth a little more and send the sound forward — on 'mmm', you should feel a tickle at the tip of your nose"};
+ return{pct,label:"Voice appeal",tip:TIP[weak],line:pct>=88?"A voice people want to keep listening to":pct>=75?"Smooth and pleasant to listen to":"A comfortable voice — practice will take it higher",parts,names:NAME,descs:DESC,W}}
+function ageBand(a){const d=Math.floor(a/10)*10,r=a-d,w=r<4?"Early":r<7?"Mid":"Late";return d===10?w+" teens":w+" "+d+"s"}
+function weakest(sc){const w=[["breath",sc.breath,"Breath"],["clear",sc.clear,"Clarity"],["tune",sc.tune,"Pitch range"],["steady",sc.steady,"Volume stability"]];w.sort((a,b)=>a[1]-b[1]);return w}
+function pr(d,w){const map={melody:"tune",tone:"clear",pace:"breath",pitch:"steady"},k=map[d.ax];for(let i=0;i<w.length;i++)if(w[i][0]===k)return 4-i;return 0}
+
+/* ===== 6. 분석 대기 → 결과 공개 ===== */
+R.wait=()=>({html:`<div class="reveal"><div class="rv-stage" style="width:min(200px,60vw)"><img class="wobble" src="${img.egg}" alt=""></div>
+<h1 class="title">Listening to your voice...</h1><div class="wait-steps" id="ws">${["Measuring pitch","Measuring pace","Listening to your breath","Tracking rise and fall","Checking voice condition"].map(t=>`<div><i></i>${t}</div>`).join("")}</div></div>`,
+ bind(){const ds=[...view.querySelectorAll("#ws div")];ds.forEach((d,i)=>later(()=>d.classList.add("on"),300+i*450));
+  later(()=>{Promise.all([resample(REC.r1.x,REC.r1.sr),resample(REC.r2.x,REC.r2.sr)]).then(a=>{const nd=S.noiseDb==null?noiseFloor(a[0]):S.noiseDb;
+   const s=analyzeSentence(a[0],nd,sylOf(SITS[sitKey()][2])),v=analyzeVowel(a[1],nd);S.m={s,v,noiseDb:nd,c:condMeasure(a[1])};const sp=finishTest();if(PAID)go("hear");else go("reveal")}).catch(e=>go("rec1",(e&&e.message?e.message:"We couldn't analyze that")+" — please record again."))},2100)}});
+function finishTest(){const J=judge(S.m);S.J=J;setFam(J.code);save();if(!S.demo){tvTrack("CompleteTest",{content_name:J.code});try{localStorage.setItem(RUNS_KEY,String(runs()+1));if(sitKey()==="intro")localStorage.setItem(BASE_KEY,J.code)}catch(e){}}return sendRecord()||Promise.resolve()}
+R.reveal=()=>{const J=S.J,T=TYPES[J.code];return{html:`
+<div class="reveal">
+  <div class="kicker">In this recording, your voice is</div>
+  <div class="rv-stage"><img id="rvEgg" class="wobble" src="${img.egg}" alt=""><img id="rvChar" src="${img.char(J.code)}" alt="${T[1]}" hidden><div class="rv-flash" id="rvF"></div></div>
+  <div class="code" id="rvCode" hidden style="--x:0">${J.code.split("").map((l,i)=>`<span style="animation-delay:${i*120}ms;background:var(--fam-deep);color:#fff">${l}</span>`).join("")}</div>
+  <div id="rvTxt" hidden><h1 class="hc-name bi">${nmWords(J.code,500)}</h1>${codeMeanHTML(J.code)}</div>
+  <button class="btn pri block" id="see" hidden>See full results</button>
+</div>`,
+ bind(){later(()=>$("#rvEgg").className="crack",1300);later(()=>{$("#rvF").classList.add("go");$("#rvEgg").hidden=true;const c=$("#rvChar");c.hidden=false;c.classList.add("popin")},2300);
+  later(()=>$("#rvCode").hidden=false,2900);later(()=>$("#rvTxt").hidden=false,3300);later(()=>$("#see").hidden=false,4300);$("#see").onclick=()=>go("result")}}};
+
+/* ===== 내 목소리 컨디션 — '아~' 한 번을 세미콜론 voice-care 엔진으로 재서 일반 기준과 비교한다.
+   앱의 '목소리 날씨'는 7일 동안 쌓은 내 기준과 비교하지만, 웹은 한 번뿐이라 일반 기준(임시값)을 쓴다. 진단 아님·숫자는 숨김.
+   임시 기준 근거: 이 엔진으로 잰 건강한 '아~' CPPS 약 14~17(목 긁은 소리 12.3), 음높이 끊김 건강 0.1 안팎(쉰 목소리 0.3~0.45) ===== */
+const COND_TH={cpps:13,breaks:.25,mpt:7};
+function condMeasure(x22){try{const fr=[];frameDb(x22,SR,441,441,v=>fr.push(v));const nd=Math.min(pct(fr,0.05),-45),c=VoiceCare.analyze(REC.r2.x,REC.r2.sr,{noise:nd});
+ return{cpps:c.cpps,breaks:c.breaks,voiced:c.voiced,snr:c.level-nd}}catch(e){return null}}
+function condOf(m){const c=m.c;if(!c)return null;if(!(c.voiced>=1.5)||!(c.snr>=18))return{w:"noisy",items:[]};
+ const it=[["Sound clarity",Number.isFinite(c.cpps)&&c.cpps<COND_TH.cpps,"Clear and even","A little rough"],
+  ["Sound flow",Number.isFinite(c.breaks)&&c.breaks>COND_TH.breaks,"Smooth, no breaks","Breaks here and there"],
+  ["Breath length",m.v.mpt<COND_TH.mpt,"Plenty long","On the short side"]],n=it.filter(i=>i[1]).length;
+ return{w:n>=2?"cloud":n?"partly":"sun",items:it}}
+const COND_TXT={sun:["Sunny","Your voice is clear and flows evenly. Keep taking good care of it."],
+ partly:["Partly cloudy","Your throat may be a little tired, or the room may have been noisy. Have a glass of water and speak easily."],
+ cloud:["Cloudy","Your sound came through a little rough today. Your throat may be tired, so go easy on loud or long talking."],
+ noisy:["Let's try again","The room was too loud or your 'ah' was too short to check your condition. Try again somewhere quiet."]};
+function wIcon(k,s=48){const C="#C9C1D8",C2="#A79DB9",sun=(x,y,r)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="#E9B949"/>`+[0,45,90,135,180,225,270,315].map(a=>{const t=a*Math.PI/180;return`<line x1="${x+(r+4)*Math.cos(t)}" y1="${y+(r+4)*Math.sin(t)}" x2="${x+(r+9)*Math.cos(t)}" y2="${y+(r+9)*Math.sin(t)}" stroke="#E9B949" stroke-width="3.5" stroke-linecap="round"/>`}).join(""),
+ cloud=(x,y,c)=>`<g fill="${c}"><circle cx="${x}" cy="${y}" r="9"/><circle cx="${x+12}" cy="${y-5}" r="12"/><circle cx="${x+25}" cy="${y+1}" r="8"/><rect x="${x-3}" y="${y}" width="31" height="10" rx="5"/></g>`;
+ const body={sun:sun(32,32,11),partly:sun(25,24,9)+cloud(24,42,C),cloud:cloud(10,30,C2)+cloud(22,42,C),
+  learn:`<path d="M32 52V30" stroke="#5E9E6E" stroke-width="3.5" stroke-linecap="round"/><path d="M32 36c-11 0-15-7-15-14 9 0 15 5 15 14z" fill="#7CB88A"/><path d="M32 31c0-9 6-14 15-14 0 8-5 14-15 14z" fill="#7CB88A"/>`,
+  noisy:`<g fill="none" stroke="${C2}" stroke-width="3.5" stroke-linecap="round"><path d="M12 26q5-6 10 0t10 0t10 0t10 0"/><path d="M12 38q5-6 10 0t10 0t10 0t10 0"/></g>`,
+  none:`<circle cx="32" cy="32" r="18" fill="none" stroke="${C2}" stroke-width="3" stroke-dasharray="4 6"/>`}[k]||"";
+ return`<svg viewBox="0 0 64 64" width="${s}" height="${s}" aria-hidden="true">${body}</svg>`}
+function condCard(){const k=condOf(S.m);if(!k)return"";const t=COND_TXT[k.w];
+ return`<section class="card"><div class="sec-h"><h2>Voice condition</h2><small>Based on your 'ah'</small></div>
+ <div class="row" style="gap:14px">${wIcon(k.w,64)}<div style="min-width:0"><b style="font-size:20px">${t[0]}</b><p class="small" style="margin-top:2px">${t[1]}</p></div></div>
+ ${k.items.length?`<div class="cond">${k.items.map(i=>`<div><span>${i[0]}</span><b class="${i[1]?"no":"ok"}">${i[1]?i[3]:i[2]}</b></div>`).join("")}</div>`:""}
+ ${k.w==="cloud"?`<details><summary>See a doctor if symptoms like these last</summary><p class="small" style="margin-top:6px">If your voice stays hoarse for more than 3 weeks, it hurts to speak, swallowing is difficult, or you're short of breath, see an ENT (ear, nose and throat) doctor.</p></details>`:""}
+ <small>This comes from a single 'ah', so it can vary with where you recorded. It's not a medical test.</small></section>`}
+
+/* ===== 7. 결과 (무료) ===== */
+function axisVal(L,m,J){const d=LET[L];if(d.ax==="pitch"){const who=S.age>0&&S.age<13?"kids your age":S.sex==="m"?"the average for men":S.sex==="f"?"the average for women":"the overall average",x=Math.abs(J.stRel);return x<1?`Close to ${who}`:`${x<3?"A bit":"Well"} ${J.stRel<0?"below":"above"} ${who}`}if(d.ax==="pace")return`About ${Math.round(m.s.rate)} syllables/sec`;if(d.ax==="tone")return m.v.hnr>=TH.hnr?"Clean, with no breathiness":m.v.hnr<TH.hnr-4?"Quite breathy":"A touch of breathiness";return m.s.rangeSt>=TH.range?"Rises and falls a lot":"Stays fairly level"}
+/* 11/16 대표 결정 — 목소리 케미 설계안(06_연구·데이터/MD(연구·전략 문서)/목소리케미_설계안_2026-11-16.md, 추천안): 하면서 고친다.
+   · 나쁜 케미는 없다: 네 가지(높이·빠르기·소리 색깔·오르내림) 같음/다름 16조합마다 이름·한 줄·Where you click·작은 팁.
+   · 점수(72~98)는 근거가 있는 '말 빠르기 비슷함'(대화 중 말 속도 수렴과 호감 — Schweitzer & Lewandowski 2013)이 대부분, 닮은 칸 수는 조금만.
+   · 진짜 케미는 '같이 읽기'(두 사람이 번갈아 읽으며 말 속도가 가까워지는지)로 잰다. 👍/👎는 시트 '케미응답'에 모아 보정.
+   · 목소리로 성격을 말하지 않는다 — 두 목소리가 대화에서 어떻게 들리는지만. 친구·동료 대화만(연애 궁합 아님) */
+const CHEM_NM={ /* 칸 순서: 높이·빠르기·소리 색깔·오르내림, s=같음 d=다름 → [이름, 한 줄, Where you click, 작은 팁] */
+ ssss:["Twin Duet","Your voices are so alike that you fall into the same rhythm","Chatting · Singing together","You both lean the same way. For important points, let one of you slow down and spell it out"],
+ sssd:["Rhythm Buddies","Same pitch, pace and texture — one voice rises and falls, the other stays level","Explaining · Presentation practice","Let the level voice give the conclusion and the musical voice give the examples"],
+ ssds:["Best Friends, Different Textures","Same pitch and pace, with clear and soft sounds mixed","Sharing worries · Giving advice","It works well when the clear voice sums up and the soft voice wraps up"],
+ ssdd:["Plot-Twist Pals","Same pitch and pace, but different texture and melody — never a dull moment","Trip planning · Chatting","If you talk over each other, let one of you wait half a beat"],
+ sdss:["Fast-and-Slow Pals","Your sounds are alike, but one of you is quick and the other relaxed","Wrapping up meetings · Listening to each other","You'll match better if the quick one pauses half a beat at the end of a sentence"],
+ sdsd:["The Pacemakers","One of you drives the pace and rhythm, the other keeps things steady","Working out together · Studying together","It's okay for the relaxed one to say 'hold on' and pause things"],
+ sdds:["The Fill-In Combo","Different pace and texture, so you fill each other's gaps","Projects · Splitting roles","Let the quick one say just the key words slowly and clearly"],
+ sddd:["Puzzle-Piece Duo","Only your pitch matches — each of you has sounds the other doesn't","Brainstorming","Try matching each other's pace once, and you'll feel closer fast"],
+ dsss:["Harmony Duet","Only your pitch differs, so talking or singing together sounds like harmony","Singing together · Reading aloud","It sounds even better when the lower voice supports the ends of sentences"],
+ dssd:["Duet on Stage","Different pitch and melody — one lifts the mood, the other holds it steady","Presentations · Hosting events","Let the musical voice open and the level voice close"],
+ dsds:["Radio Combo","Same pace and melody, different pitch and texture — easy on the ears","Podcasts · Chat shows","Take turns asking each other questions"],
+ dsdd:["Ping-Pong Combo","Your pace matches, so the back-and-forth is quick, and your different sounds add fun","Chatting · Brainstorming","When you get excited you both speed up. Slow down for big decisions"],
+ ddss:["Lead & Support","Different pitch and pace — one leads, the other backs them up","Preparing a presentation · Giving directions","Let the leader match the other's pace now and then"],
+ ddsd:["Balance Pair","Only your texture matches — your different charms balance out","Working together","Try copying each other's pace once"],
+ ddds:["Contrast Duo","Different pitch, pace and texture — together, the contrast is vivid","Host and guest · Interviews","Your similar melody is the thread that ties you together"],
+ dddd:["Total Opposites","All four are different, so together your sound fills the room","Debates · Role-play","Try reading together to tune in to each other. The more you do, the higher your chemistry"]};
+const chemKey=(a,b)=>[0,1,2,3].map(i=>a[i]===b[i]?"s":"d").join("");
+const chemOf=(a,b)=>CHEM_NM[chemKey(a,b)];
+/* 지수: 말 빠르기 비슷함(둘 다 실측이 있으면 1초당 음절 차이, 없으면 A/U 글자) 20점 + 닮은 칸 6점 → 72~98 */
+function chemScore(a,b,ra,rb){const sim=ra>0&&rb>0?1-Math.min(1,Math.abs(ra-rb)/2):(a[1]===b[1]?.8:.4),same=[0,1,2,3].filter(i=>a[i]===b[i]).length;return Math.round(72+20*sim+6*same/4)}
+const FLIP={L:"H",H:"L",A:"U",U:"A",D:"B",B:"D",T:"F",F:"T"};
+const myRate=()=>S.m&&S.m.s?S.m.s.rate:0;
+function matchCard(){const me=S.J.code,picks=[me,[FLIP[me[0]],me[1],FLIP[me[2]],FLIP[me[3]]].join(""),[FLIP[me[0]],FLIP[me[1]],me[2],me[3]].join("")];
+ return`<section class="card"><div class="kicker">Voice chemistry, just for fun</div><h2>Your chemistry with other voices</h2>
+ <div class="mch">${picks.map(c=>{const k=chemOf(me,c);return`<div><img src="${img.char(c)}" alt="" loading="lazy"><b>${c}</b><small>${nmNW(c)}</small><em>${k[0]} · ${chemScore(me,c)}</em></div>`}).join("")}</div>
+ <p class="small" style="text-align:center">There's no bad chemistry. This only shows how two voices go together in conversation.</p>
+ <button class="btn pri block shine" id="chemShare">Send to a friend to see your chemistry</button>
+ <button class="btn block" id="duoGo">Friend next to you? Read together and measure your real chemistry</button></section>`}
+const cvDone=k=>S.cv&&S.cv[k];
+function chemVote(v,key,extra){if(cvDone(key))return;S.cv=S.cv||{};S.cv[key]=v;save();const rec={type:"chemvote",vote:v,...extra};if(SAVE_URL)fetch(SAVE_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(rec)}).catch(()=>{});
+ view.querySelectorAll(`[data-cvk="${key}"]`).forEach(b=>{b.disabled=true;b.classList.toggle("on",b.dataset.cv===v)});toast("Thanks for telling us!")}
+const voteRow=key=>`<div class="cvr"><span>Do you really click when you talk?</span><button class="btn sm${cvDone(key)==="up"?" on":""}" data-cv="up" data-cvk="${key}" ${cvDone(key)?"disabled":""}>👍 Yes</button><button class="btn sm${cvDone(key)==="down"?" on":""}" data-cv="down" data-cvk="${key}" ${cvDone(key)?"disabled":""}>👎 Not sure</button></div>`;
+function friendCard(){const f=S.friend,me=S.J.code;if(!TYPES[f])return"";const k=chemOf(f,me),sc=chemScore(f,me,S.friendRate,myRate());
+ return`<section class="card"><div class="kicker">You and your friend · Voice chemistry</div><div class="cmp"><div><img src="${img.char(f)}" alt=""><small>Friend</small><b>${f}</b><small>${nmNW(f)}</small></div><div class="muted" style="font-size:18px">×</div><div><img src="${img.char(me)}" alt=""><small>Me</small><b>${me}</b><small>${nmNW(me)}</small></div></div>
+ <div class="chem-sc"><b class="num">${sc}</b><span>Chemistry score</span></div><h2 style="text-align:center">${k[0]}</h2><p style="text-align:center">${k[1]}</p>
+ <div class="target stack"><span>Where you click</span><b>${k[2]}</b></div><p class="small">💡 ${k[3]}</p>
+ ${voteRow("f_"+f)}
+ <button class="btn pri block shine" id="chemCard">Share the chemistry card</button>
+ <button class="btn block" id="duoGo">Read together and measure your real chemistry</button>
+ <p class="small" style="text-align:center">This score is just for fun. It only shows how your voices go together in conversation.</p></section>`}
+/* '우리 모임 목소리 지도' — 링크(?g=유형.유형…)에 참여한 유형이 쌓인다(서버 없음, 이름 없음, 최대 30명). 테스트를 끝내면 내 유형을 붙여 단톡방에 다시 보낸다 */
+const gURL=L=>location.origin+location.pathname+"?g="+L.join(".");
+function groupNow(){const me=S.J.code;if(S.group&&!S.groupJoined){S.group=S.group.concat(me).slice(-30);S.groupJoined=true;save()}return S.group}
+function groupCard(){const me=S.J.code,L=groupNow();
+ if(!L)return`<section class="card"><div class="kicker">Do it with your group chat</div><h2>Make your group's voice map</h2><p class="muted">Send it to your group chat. Each time a friend takes the test, one more character joins the map. You'll also see which chemistry pairs are most common in your group.</p><button class="btn pri block shine" id="grpGo">Send to group chat</button></section>`;
+ const N=L.length,mi=L.lastIndexOf(me),cnt=[0,1,2,3].map(i=>{const c={};L.forEach(x=>c[x[i]]=(c[x[i]]||0)+1);const k=Object.keys(c).sort((a,b)=>c[b]-c[a])[0];return[k,c[k]]}),top=cnt.slice().sort((a,b)=>b[1]-a[1])[0];
+ const nm={};for(let i=0;i<N;i++)for(let j=i+1;j<N;j++){const n=chemOf(L[i],L[j])[0];nm[n]=(nm[n]||0)+1}const tops=Object.keys(nm).sort((a,b)=>nm[b]-nm[a]).slice(0,3);
+ let mb=null;L.forEach((c,i)=>{if(i===mi)return;const s=chemScore(me,c);if(!mb||s>mb[1])mb=[i,s]});
+ return`<section class="card"><div class="kicker">Group voice map · ${N} ${N>1?"people":"person"}</div><h2>${N>1&&top[1]>N/2?`Your group has many ${LET[top[0]].nm.toLowerCase()} voices`:"Your group's voice map"}</h2>
+ <div class="gmap">${L.map((c,i)=>`<div class="${i===mi?"me":""}"><img src="${img.char(c)}" alt="" loading="lazy"><small>${i===mi?"Me":"#"+(i+1)}</small><small>${c}</small></div>`).join("")}</div>
+ ${tops.length?`<div class="target stack"><span>Most common chemistry in your group</span><b>${tops.map(n=>`${n} ×${nm[n]}`).join(" · ")}</b></div>`:""}
+ ${mb?`<p class="small" style="text-align:center">Your highest chemistry score is with <b>#${mb[0]+1} (${L[mb[0]]}) · ${chemOf(me,L[mb[0]])[0]} ${mb[1]}</b></p>`:""}
+ <button class="btn pri block shine" id="grpGo">Add me to the map and share it with the group again</button>
+ <p class="small" style="text-align:center">Names are never in the link. It only shows the order people joined.</p></section>`}
+function groupShare(){const L=S.group&&S.groupJoined?S.group:[S.J.code],N=L.length,url=gURL(L),text=N>1?`Our group voice map now has ${N} people! Take the 1-minute test and post this link back in the chat 👉`:`Let's make our group voice map! Take the 1-minute test and post your result link back in the chat 👉`;
+ if(navigator.share)navigator.share({title:"Your group's voice map",text,url}).catch(()=>{});else copy(text+" "+url)}
+/* 친구와 나 케미 카드 이미지(1080×1920, 공유 카드와 같은 판) */
+async function makeChemCard(){const f=S.friend,me=S.J.code,F=FAM[me.slice(0,2)],k=chemOf(f,me),sc=chemScore(f,me,S.friendRate,myRate()),c=document.createElement("canvas");c.width=1080;c.height=1920;const g=c.getContext("2d"),ff="Paperlogy,'Apple SD Gothic Neo',sans-serif";
+ try{await Promise.all(["700 80px","600 40px","500 40px"].map(x=>document.fonts.load(x+" Paperlogy")))}catch(e){}
+ const rr=(x,y,w,h,r)=>{g.beginPath();if(g.roundRect)g.roundRect(x,y,w,h,r);else g.rect(x,y,w,h)},fnt=(wt,px)=>{g.font=`${wt} ${px}px ${ff}`},fit=(t,wt,px,mw)=>{fnt(wt,px);while(g.measureText(t).width>mw&&px>22){px-=2;fnt(wt,px)}};
+ const gr=g.createLinearGradient(169,-61,911,1981);gr.addColorStop(0,F[2]);gr.addColorStop(1,F[3]);g.fillStyle=gr;g.fillRect(0,0,1080,1920);g.textAlign="center";g.textBaseline="middle";
+ fnt(600,34);const pt="Our Voice Chemistry",pw=g.measureText(pt).width+60;rr(540-pw/2,230,pw,72,36);g.fillStyle="rgba(255,255,255,.16)";g.fill();g.fillStyle="#fff";g.fillText(pt,540,267);
+ const iz=330;for(const [code,x,lab] of [[f,105,"Friend"],[me,645,"Me"]]){try{const im=await loadImg(img.char(code));g.save();rr(x,350,iz,iz,52);g.fillStyle="#F5EEE0";g.fill();g.clip();g.drawImage(im,x,350,iz,iz);g.restore()}catch(e){}
+  g.fillStyle="#fff";fnt(700,56);g.fillText(code,x+iz/2,740);fit(TYPES[code][1],600,34,400);g.fillText(TYPES[code][1],x+iz/2,796);fnt(500,30);g.globalAlpha=.8;g.fillText(lab,x+iz/2,846);g.globalAlpha=1}
+ fnt(700,64);g.fillText("×",540,515);fnt(700,150);g.fillStyle="#FFE08A";g.fillText(String(sc),540,975);fnt(500,30);g.fillStyle="#fff";g.globalAlpha=.85;g.fillText("Chemistry score",540,1072);g.globalAlpha=1;
+ fit(k[0],700,72,960);g.fillText(k[0],540,1150);fit(k[1],500,36,960);g.globalAlpha=.95;g.fillText(k[1],540,1240);g.globalAlpha=1;fit("Where you click · "+k[2],600,34,960);g.fillText("Where you click · "+k[2],540,1310);
+ const qs=156,qy=1480;fnt(700,44);const t1="What's our score?",t2="Scan the QR to see our voice chemistry",t3="touchingvoice.app",tw2=Math.max(g.measureText(t1).width,(fnt(500,30),g.measureText(t2).width)),qx=Math.round(540-(qs+32+tw2)/2);
+ drawQR(g,me,qx,qy,qs);g.textAlign="left";g.fillStyle="#fff";fnt(700,44);g.fillText(t1,qx+qs+32,qy+36);fnt(500,30);g.globalAlpha=.9;g.fillText(t2,qx+qs+32,qy+86);g.globalAlpha=.75;fnt(500,28);g.fillText(t3,qx+qs+32,qy+128);g.globalAlpha=1;return c}
+async function shareChem(){const c=await makeChemCard(),blob=await new Promise(r=>c.toBlob(r,"image/png")),fl=new File([blob],`touchingvoice_chem_${S.friend}_${S.J.code}.png`,{type:"image/png"}),k=chemOf(S.friend,S.J.code),text=`Our voice chemistry: '${k[0]}', ${chemScore(S.friend,S.J.code,S.friendRate,myRate())} points! What would ours be? 👉 `+shareURL();
+ if(canFiles(fl)){try{await navigator.share({files:[fl],text})}catch(e){}return}const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=fl.name;document.body.appendChild(a);a.click();a.remove();toast("Chemistry card saved")}
+/* 같이 읽기(체험판) — 한 폰으로 두 사람이 대화 대본 6줄을 번갈아 읽는다. 줄마다 말 빠르기를 재서, 첫 주고받기보다 마지막 주고받기에서
+   두 사람 빠르기 차이가 얼마나 줄었는지(수렴) = 진짜 케미. 녹음은 이 기기에서만 분석하고 저장하지 않는다. ponytail: 높이 수렴은 앱에서 */
+const DUO=[["A","What should we have for lunch today? I feel like some hot soup.",14],["B","Sounds good. Shall we try the new noodle place by the office?",14],["A","I heard the line is long. Maybe we should leave a little early?",16],["B","Then let's meet in the lobby at eleven fifty. Don't be late!",16],["A","Got it. And today, the coffee is on me.",11],["B","Oh, really? Then I'll have a sweet latte, please.",11]];DUO.forEach(d=>SYL[d[1]]=d[2]);/* EN: 3rd item = syllable count (same idea as SITS) */
+let DUOR=[];
+R.duo=()=>({top:{back:()=>go("result"),label:"Read together"},html:`
+<div><div class="kicker">Read together · 1 minute</div><h1 class="title">Take turns reading<br>one line each</h1><p class="muted">As you read, we measure how much closer your speaking speeds get. People who like each other tend to match speeds the more they talk.</p></div>
+<section class="card"><ol class="list"><li><b>A = you, B = your friend</b><small class="sub">Put the phone between you. On your turn, tap the button and read</small></li><li><b>Read naturally, like a real chat</b><small class="sub">6 lines · about 3 seconds each</small></li><li><b>Recordings are not saved</b><small class="sub">We only measure pace, on this device</small></li></ol></section>
+<button class="btn pri block shine" id="duoStart">Start reading together</button>`,
+ bind(){$("#duoStart").onclick=()=>{DUOR=[];go("duoRec",{i:0})}}});
+R.duoRec=o=>{const i=(o&&o.i)|0,err=o&&o.err;const [who,line]=DUO[i];return{top:{back:()=>go("duo"),label:`Read together ${i+1} / ${DUO.length}`},html:`
+<div><div class="kicker">Turn: ${who==="A"?"A · You":"B · Your friend"}</div><h1 class="title">${who==="A"?"You read":"Your friend reads"}</h1></div>
+${i?`<p class="small" style="opacity:.7">${DUO[i-1][0]}: ${DUO[i-1][1]}</p>`:""}
+<p class="sentence">${line}</p>${err?`<p class="err">${err}</p>`:""}
+${micHTML("Tap the button, then read aloud")}`,
+ bind(){bindMic({maxSec:12,minSec:1,onDone:r=>{$("#micmsg").textContent="Listening...";
+  resample(r.x,r.sr).then(x=>{const nd=S.m&&S.m.noiseDb!=null?S.m.noiseDb:noiseFloor(x),sx=S.sex;S.sex="x";/* 친구는 성별이 다를 수 있어 높이 추적 범위를 넓게 */let a;try{a=analyzeSentence(x,nd,sylOf(line))}finally{S.sex=sx}DUOR[i]=a.rate;i+1<DUO.length?go("duoRec",{i:i+1}):go("duoRes")})
+  .catch(()=>go("duoRec",{i,err:"We couldn't hear that well — please read again a little louder"}))}})}}};
+function duoConv(){const g=k=>Math.abs(DUOR[2*k]-DUOR[2*k+1]),first=g(0),last=g(2);return{first,last,conv:Math.round(cl((first-last)/Math.max(first,.3),-1,1)*100)}}
+R.duoRes=()=>{if(DUOR.length<DUO.length)return R.duo();const d=duoConv(),lab=d.conv>=40?"A pair that tunes in to each other":d.conv>=10?"A pair getting in sync":d.conv>-10?"A pair with two clear rhythms":"A pair with strong paces of their own",key="duo_"+Date.now();
+ const msg=d.conv>=10?`As you read, your speaking speeds got <b>${d.conv}%</b> closer.`:d.conv>-10?"You each kept your own pace from start to finish. Read once more and you may see yourselves syncing up.":"This time your own paces stood out even more. Next time, try following the other person's pace a little.";
+ S.duoLast={conv:d.conv,at:Date.now()};save();
+ return{top:{back:()=>go("result"),label:"Read-together result"},html:`
+<div class="win" style="text-align:center"><div class="kicker">Read-together result</div><h1 class="title">${lab}</h1></div>
+<section class="card"><div class="chem-sc">${d.conv>=10?`<b class="num">+${d.conv}%</b><span>closer in pace</span>`:`<b style="font-size:34px">Own rhythms</b><span>This time you read at different paces</span>`}</div><p style="text-align:center">${msg}</p>
+<p class="small" style="text-align:center">When speaking speeds grow alike in conversation, it's a sign you're tuning in to each other (a pattern known from research). Take it as fun.</p>
+${voteRow(key)}</section>
+<button class="btn pri block shine" id="duoAgain">Read together again</button><button class="btn ghost block" id="duoBack">Back to results</button>`,
+ bind(){$("#duoAgain").onclick=()=>{DUOR=[];go("duoRec",{i:0})};$("#duoBack").onclick=()=>go("result");
+  view.querySelectorAll("[data-cv]").forEach(b=>b.onclick=()=>chemVote(b.dataset.cv,key,{f:S.friend||"",me:S.J.code,name:"Read together",score:null,fr:null,mr:null,conv:d.conv}))}}};
+/* ===== 11/5 대표: 결과 → ③ 원하는 목소리 정하기 → ④ 1분 체험 → 앱(지금은 대기예약) =====
+   APP_LINK에 앱 주소를 넣으면 대기예약 대신 '앱 받기'로 바뀐다 */
+const APP_LINK="";
+const TO_TIP={L:"Let the end of each sentence settle comfortably, and go just a touch lower",H:"Lift the first sound brightly, and go just a touch higher",A:"One sentence in one breath, a little faster and with more energy",U:"Take a breath at every comma and slow down",D:"Focus the sound at the front of your mouth — crisp and strong to the end",B:"Mix a little air into just the first sound to soften it",T:"Rise and fall widely, as if asking a question or singing",F:"Calm and level on one pitch, without wavering"};
+function axisPlan(my,to){return my.split("").map((a,i)=>{const b=to[i],o={i,ax:AX_N[i],from:a,to:b};if(a===b)return{...o,st:"same"};
+ if(i===0)return{...o,st:"soft",note:"We change pitch only a tiny bit — to protect your voice"};if(i===2&&b==="B")return{...o,st:"soft",note:"Add air to the first sound only — constant breathiness tires your voice quickly"};
+ return{...o,st:"goal",note:"Changes well with practice"}})}
+/* 11/16 대표: 유료로 가는 길을 짧게 — 결과 카드 → 'Learn more about my voice' → 성격 10문항 → 문장 한 번 더 읽기 → 결제(voicereport_en.html).
+   10문항 답은 voicereport와 같은 저장 칸(tv_voicereport_v1)에 넣어 그쪽에서 바로 미리 보기·결제가 뜬다. 두 번째 읽기는 S.m2에 두고 레포트 숫자를 두 번 평균 낸다(유형은 그대로) */
+const VR_KEY="tv_voicereport_v1_en",vrGet=()=>{try{return JSON.parse(localStorage.getItem(VR_KEY)||"null")||{}}catch(e){return{}}},vrSet=o=>{try{localStorage.setItem(VR_KEY,JSON.stringify(o))}catch(e){}};
+const ITEMS=["I start conversations.","I sympathize with others' feelings.","I get chores done right away.","I am relaxed most of the time.","I have a vivid imagination.",
+ "I am quiet around strangers.","I am not interested in other people's problems.","I often forget to put things back in their proper place.","I worry about things.","I am not interested in abstract ideas."];/* EN: IPIP public-domain originals — same items and order as voicereport_en.html */
+const qDone=v=>v.sc===7&&Array.isArray(v.a)&&v.a.length===10&&v.a.every(x=>x>=1&&x<=7);
+const SIT3=()=>sitKey()==="info"?"nego":"info";
+function goDeep(){tvTrack("ViewContent",{content_name:"report_offer"});if(!qDone(vrGet()))return go("quiz");if(!S.m2)return go("rec3");location.href="voicereport_en.html"}
+const FIT_JOBS={LADT:["Voice actor","Audiobook narrator","Video game voice actor"],LADF:["Personal trainer","Sports commentator","Field team leader"],LABT:["Actor","Commercial narrator","Musical theater actor"],LABF:["Podcast host","YouTube host","Customer care manager"],
+ LUDT:["Documentary narrator","Museum guide","Audiobook narrator"],LUDF:["Airline captain","Public-address announcer","Project manager"],LUBT:["Radio DJ","ASMR creator","Singer-songwriter"],LUBF:["School principal","Pastor","Counseling psychologist"],
+ HADT:["Shopping show host","Event MC","Live commerce host"],HADF:["Journalist","Field reporter","Sales representative"],HABT:["Pop idol","Musical theater actor","Kids content creator"],HABF:["Test-prep instructor","Corporate trainer","Pitch presenter"],
+ HUDT:["Elementary school teacher","Counselor","Kids content host"],HUDF:["News anchor","Flight attendant","Hotel concierge"],HUBT:["Motivational speaker","Life coach","Event MC"],HUBF:["Counselor","Nurse","Customer care manager"]};
+/* 11/17 대표(피드백 '글보다 육각 그래프'): 꼭짓점 L=[[이름,0~100],…]을 거미줄 그래프로. 색은 유형 가족색 */
+function radarSVG(L){const n=L.length,c=120,R=88,pt=(i,r)=>{const a=-Math.PI/2+2*Math.PI*i/n;return[+(c+r*Math.cos(a)).toFixed(1),+(c+r*Math.sin(a)).toFixed(1)]},poly=r=>L.map((_,i)=>pt(i,r).join(",")).join(" ");
+ return`<svg class="radar" viewBox="-44 -8 328 256" role="img" aria-label="${L.map(x=>x[0]+" "+x[1]).join(", ")}">${[1,.5].map(f=>`<polygon points="${poly(R*f)}" fill="none" stroke="var(--line2)" stroke-width="1"/>`).join("")}${L.map((_,i)=>{const[x,y]=pt(i,R);return`<line x1="${c}" y1="${c}" x2="${x}" y2="${y}" stroke="var(--line)" stroke-width="1"/>`}).join("")}<polygon points="${L.map(([,v],i)=>pt(i,R*Math.max(v,6)/100).join(",")).join(" ")}" fill="var(--fam-ui)" fill-opacity=".32" stroke="var(--fam-ui)" stroke-width="2.5" stroke-linejoin="round"/>${L.map(([k,v],i)=>{const[x,y]=pt(i,R+24);return`<text x="${x}" y="${y+5}" text-anchor="middle" font-size="14" font-weight="700" fill="var(--fg)">${k} <tspan fill="var(--fam-ui)">${v}</tspan></text>`}).join("")}</svg>`}
+const jo=(w,a,b)=>{const c=w.charCodeAt(w.length-1)-44032;return w+(c>=0&&c<11172&&c%28?a:b)};
+const jobChips=L=>`<div class="jobs">${L.map(j=>`<span>${j}</span>`).join("")}</div>`;
+function hexVals(m,A){const b=m.s.bands,z=b&&b.length?toneZ(b):[0,0,0,0],t=x=>Math.round(cl(50+18*x,6,100)),p=k=>Math.round(100*cl(A.parts[k],0,1));
+ return[["Breath",p("breath")],["Diction",p("artic")],["Balance",p("balance")],["Resonance",t(z[0])],["Power",t(z[1])],["Expression",Math.round(6+94*cl(((m.s.rangeSt||0)-3)/12,0,1))]]}
+function hexCard(m,A,code){const L=hexVals(m,A),s=[...L].sort((a,b)=>b[1]-a[1]);
+ return`<section class="card"><div class="kicker">Your voice at a glance</div>${radarSVG(L)}
+ <div class="hx-sum"><img src="${img.char(code)}" alt=""><p style="margin:0"><b>${s[0][0]} is your strongest asset.</b> Build up ${s.at(-1)[0]} to carry further.</p></div>
+ <div class="lbl">Jobs this voice suits</div>${jobChips(FIT_JOBS[code]||[])}
+ <p class="small" style="text-align:center;margin:0">The closer to 100, the stronger it is · Just for fun</p></section>`}
+/* 11/17 대표: '주파수 보강으로 달라진 내 목소리'가 제일 좋은 경험 — 녹음(문장 읽기)은 이 기기 안(IndexedDB)에만 남겨 다시 와도 들을 수 있게. 서버로는 안 보냄 */
+const idb=(mode,fn)=>new Promise((res,rej)=>{const o=indexedDB.open("tv_vt_en",1);o.onupgradeneeded=()=>o.result.createObjectStore("rec");o.onsuccess=()=>{const t=o.result.transaction("rec",mode),q=fn(t.objectStore("rec"));t.oncomplete=()=>res(q&&q.result);t.onerror=()=>rej(t.error)};o.onerror=()=>rej(o.error)});
+const recKeep=r=>idb("readwrite",st=>st.put({x:r.x,sr:r.sr,micHz:r.micHz||null},"r1")).catch(()=>{});
+const recLoad=()=>idb("readonly",st=>st.get("r1")).catch(()=>null);
+const recDrop=()=>idb("readwrite",st=>st.delete("r1")).catch(()=>{});
+let BOOST_C="fill";
+/* 목소리+성격(?paid): 녹음 분석이 끝나면 성격 결과 전에 '달라진 내 목소리'부터 */
+R.hear=()=>{const J=S.J,m=S.m,b=m.s.bands,A=attrScore(m);return{html:`
+<div><div class="kicker">Voice result · ${TYPES[J.code][1]}</div><h1 class="title">First, let's hear<br>your voice transformed</h1><p class="muted">We fill in what's missing, or change it to sound like a character.</p></div>
+${REC.r1?boostCard(b):`<section class="card"><p class="small">Your recording is no longer on this device. Take the test again to hear your transformed voice.</p></section>`}
+${hexCard(m,A,J.code)}
+<button class="btn pri block shine" id="toRep">See my personality results</button>`,
+ bind(){if(REC.r1)mountBoost(b);$("#toRep").onclick=()=>{tvEvent("성격결과로");location.href="voicereport_en.html"}}}};
+const deepCTA=()=>`<section class="card"><div class="kicker">Voice × Personality Test</div><h2>Learn more about my voice</h2><p class="muted">Answer 10 personality questions and read one more sentence, and we'll explain your voice and personality together. It takes 2 minutes.</p><button class="btn pri block shine" id="deep">Learn more about my voice</button></section>`;
+R.quiz=()=>{const v=vrGet();if(v.sc!==7||!Array.isArray(v.a))v.a=[];v.sc=7;const n=()=>v.a.filter(x=>x>=1&&x<=7).length,lbl=()=>qDone(v)?(PAID?"See results":"Next · Read one more sentence"):n()+" / 10 answered";
+ return{top:{back:()=>go(PAID&&!S.J?"rec2":"result"),label:PAID?"10 personality questions":"More detail · 1 / 2"},html:`
+<div><div class="kicker">${PAID?"Last step · 10 personality questions":"More about my voice · 10 personality questions"}</div><h1 class="title">How well does this<br>describe you?</h1><p class="muted">There are no right answers. Think of how you are these days, not how you wish to be.</p></div>
+${ITEMS.map((t,i)=>`<section class="card q" role="radiogroup" aria-label="Question ${i+1}"><div class="kicker">${i+1} / 10</div><p>${t}</p>
+<div class="qds">${[1,2,3,4,5,6,7].map(x=>`<button class="qd" role="radio" aria-checked="${v.a[i]===x}" data-i="${i}" data-v="${x}" aria-label="Score ${x}">${x}</button>`).join("")}</div>
+<div class="ends"><span>Not at all</span><span>Very much</span></div></section>`).join("")}
+<div class="stick"><button class="btn pri block" id="qgo" ${qDone(v)?"":"disabled"}>${lbl()}</button></div>`,
+ bind(){view.querySelectorAll(".qd").forEach(d=>d.onclick=()=>{const i=+d.dataset.i;v.a[i]=+d.dataset.v;vrSet(v);
+   d.parentNode.querySelectorAll(".qd").forEach(x=>x.setAttribute("aria-checked",x===d));const g=$("#qgo");g.disabled=!qDone(v);g.textContent=lbl();
+   const nx=view.querySelectorAll(".q")[i+1];if(nx&&!v.a[i+1])nx.scrollIntoView({behavior:"smooth",block:"center"})});
+  $("#qgo").onclick=()=>{if(!qDone(v))return;if(PAID)S.J?location.href="voicereport_en.html":go("wait");else S.m2?location.href="voicereport_en.html":go("rec3")}}}};
+R.rec3=err=>{const k=SIT3(),T=SITS[k];return{top:{back:()=>go("quiz"),label:"More detail · 2 / 2"},html:`
+<div><div class="kicker">More about my voice · Read once more</div><h1 class="title">This time, please read<br>this sentence</h1><p class="muted">${T[3]}. We combine both readings to make your result more accurate.</p></div>
+<p class="sentence">${T[2]}</p>${err?`<p class="err">${err}</p>`:""}
+${micHTML("Tap the button, then read aloud")}`,
+ bind(){bindMic({maxSec:20,onDone:r=>{$("#micmsg").textContent="Listening...";
+  resample(r.x,r.sr).then(x=>{const nd=S.m&&S.m.noiseDb!=null?S.m.noiseDb:noiseFloor(x),a=analyzeSentence(x,nd,sylOf(T[2]));S.m2={f0:a.f0,rate:a.rate,rangeSt:a.rangeSt,dbsd:a.dbsd,sit:k};save();location.href="voicereport_en.html"})
+  .catch(e=>go("rec3",(e&&e.message?e.message:"We couldn't hear that")+" — please read it again."))}})}}};
+/* 11/16 대표: 원하는 목소리 정하기·1분 체험은 앱에서. 웹은 '부족한 소리를 채워서 들어 보기'까지만(아래 R.goal·R.try·R.tryres는 입구 없음 — 앱 옮길 때 참고).
+   톤 카드와 같은 평균 대비(toneZ)로, 모자란 대역은 올리고 넘치는 대역은 내린다(±2~6dB, 울림은 +4dB까지, 바람은 내리기만). 다 평균쯤이면 몸통 +3·또렷함 +2.
+   크기(RMS)는 원래와 똑같이 맞춘다 — 커져서 좋게 들리는 착각을 막으려고. 녹음은 이 기기 안에서만 바꾼다 */
+const BOOST_EQ=[["lowshelf",250],["peaking",575,0.8],["peaking",2100,0.9],["highshelf",4500]],BOOST_NM=["Resonance","Body","Clarity","Air"];
+function boostPlan(b){const z=toneZ(b),g=z.map((v,i)=>{if(Math.abs(v)<=0.5)return 0;const x=-v*2.5,a=Math.sign(x)*Math.min(6,Math.max(2,Math.abs(x)));return i===0?Math.min(a,4):i===3?Math.min(a,0):a}).map(x=>Math.round(x));
+ if(g.every(x=>!x))return{g:[0,3,2,0],text:"Your voice is balanced and close to average, so we gently brought out a bit more body and clarity, the sounds that carry your words."};
+ const up=g.map((x,i)=>x>0?BOOST_NM[i]:"").filter(Boolean),dn=g.map((x,i)=>x<0?BOOST_NM[i]:"").filter(Boolean);/* 11/5 대표: 결과 문장에 dB 같은 숫자 쓰지 않기 */
+ const U=up.join(" & "),D=dn.join(" & ");return{g,text:up.length&&dn.length?`We filled in ${U}, which was low, and turned down ${D} a little, which was high.`:up.length?`We filled in ${U}, which was low.`:`We turned down ${D} a little, which was high.`}}
+/* 11/16 대표: 캐릭터를 고르면 그 목소리처럼 바꿔 들려준다. 빠르기는 음높이를 그대로 둔 채 늘리거나 당기고(WSOLA), 높이는 늘린 뒤 빠르게 재생해 올리거나 내린다.
+   ponytail: 40ms 창·상관은 4칸 건너 계산(폰에서 20초 녹음 1초 안쪽). 억양 폭(T/F)은 바꾸지 않는다 — 앱 연습에서 */
+/* 11/16 대표: 캐릭터를 누르면 고정값으로 바로 바꿔 들려준다(사용자 조절 없음). L/H 높이 ∓2반음 · A/U 빠르기 1.15/0.85배(음높이 그대로, WSOLA)
+   · D 포먼트 사이(배음 사이) 잡음 빼기 + 또렷함↑ · B 포먼트 모양 그대로의 숨소리 더하기 · T/F 억양 폭 1.5배/0.6배(평소 높이 기준으로 최고·최저음을 벌리거나 모음).
+   ponytail: 40ms 창·상관 4칸 건너·스펙트럼 1024점. 억양은 10ms 높이 추적을 따라 읽는 속도를 바꾼 뒤(높이↑↓) 시간 지도로 원래 길이에 되돌린다 */
+function wsolaMap(x,L,ana,sr){const N=Math.round(sr*0.04)&~1,Hs=N>>1,D=Math.round(sr*0.012),w=new Float32Array(N);for(let j=0;j<N;j++)w[j]=0.5-0.5*Math.cos(2*Math.PI*j/(N-1));
+ const y=new Float32Array(L+N),ws=new Float32Array(L+N);let prev=-1;
+ for(let o=0;o<L;o+=Hs){let p=Math.round(ana(o));
+  if(prev>=0){const t=prev+Hs;let best=0,bv=-Infinity;for(let d=-D;d<=D;d+=3){const q=p+d;if(q<0||q+N>x.length)continue;let c=0;for(let j=0;j<N;j+=4)c+=x[q+j]*(x[t+j]||0);if(c>bv){bv=c;best=d}}p+=best}
+  if(p<0)p=0;if(p+N>x.length)break;for(let j=0;j<N;j++){y[o+j]+=x[p+j]*w[j];ws[o+j]+=w[j]}prev=p}
+ for(let i=0;i<L;i++)if(ws[i]>1e-3)y[i]/=ws[i];return y.subarray(0,L)}
+const wsola=(x,s,sr)=>Math.abs(s-1)<0.01?x:wsolaMap(x,Math.floor(x.length*s),o=>o/s,sr);
+function breathFx(x,sr,mode){const N=1024,H=256,w=new Float64Array(N);for(let j=0;j<N;j++)w[j]=0.5-0.5*Math.cos(2*Math.PI*j/N);
+ const out=new Float32Array(x.length),ws=new Float32Array(x.length),bw=Math.max(3,Math.round(330/(sr/N))),hz=sr/N,re=new Float64Array(N),im=new Float64Array(N),mag=new Float64Array(N/2+1),env=new Float64Array(N/2+1),cs=new Float64Array(N/2+2);
+ for(let p=0;p+N<=x.length;p+=H){for(let j=0;j<N;j++){re[j]=x[p+j]*w[j];im[j]=0}fft(re,im);
+  for(let k=0;k<=N/2;k++){mag[k]=Math.hypot(re[k],im[k]);cs[k+1]=cs[k]+mag[k]}
+  for(let k=0;k<=N/2;k++){const a=Math.max(0,k-bw),b=Math.min(N/2,k+bw);env[k]=(cs[b+1]-cs[a])/(b-a+1)}
+  for(let k=1;k<N/2;k++){const f=k*hz;
+   if(mode<0){const g=f<250?1:Math.max(0.3,Math.min(1,Math.pow(mag[k]/(env[k]+1e-12),1.5)));re[k]*=g;im[k]*=g}
+   else{const a=0.45*env[k]*Math.min(1,f/1000)*(f>7000?0.5:1),th=2*Math.PI*Math.random();re[k]+=a*Math.cos(th);im[k]+=a*Math.sin(th)}
+   re[N-k]=re[k];im[N-k]=-im[k]}
+  for(let j=0;j<N;j++)im[j]=-im[j];fft(re,im);for(let j=0;j<N;j++){const v=re[j]/N*w[j];out[p+j]+=v;ws[p+j]+=w[j]*w[j]}}
+ for(let i=0;i<x.length;i++)out[i]=ws[i]>0.05?out[i]/ws[i]:x[i];return out}
+function intonFx(x,sr,kk){return resample(x,sr).then(xs=>{const fr=pitchTrack(xs,S.m&&S.m.noiseDb!=null?S.m.noiseDb:noiseFloor(xs)),v=fr.filter(f=>f.f0>0);if(v.length<20)return x;/* 잡음 바닥은 검사 때 잰 값(분석과 같게) */
+ const med0=pct(v.map(f=>f.f0),0.5);v.forEach(f=>{const d=st(f.f0,med0);if(d>9&&Math.abs(d-12)<3)f.f0/=2;else if(d<-9&&Math.abs(d+12)<3)f.f0*=2});const med=pct(v.map(f=>f.f0),0.5);
+ const raw=fr.map(f=>f.f0>0?cl(st(f.f0,med)*(kk-1),-4,4):0),sm=raw.map((_,i)=>{let a=0,n=0;for(let j=i-3;j<=i+3;j++)if(j>=0&&j<raw.length){a+=raw[j];n++}return a/n});
+ const rate=pos=>{const k=Math.min(sm.length-1,Math.max(0,Math.floor(pos/sr/0.01)));return Math.pow(2,sm[k]/12)};
+ const cap=Math.ceil(x.length/Math.pow(2,-4/12))+8,y=new Float32Array(cap),pm=new Float64Array(cap);let pos=0,n=0;
+ while(pos<x.length-1&&n<cap){const i=Math.floor(pos),fr2=pos-i;y[n]=x[i]+(x[i+1]-x[i])*fr2;pm[n]=pos;n++;pos+=rate(pos)}
+ let q=0;return wsolaMap(y.subarray(0,n),x.length,o=>{while(q<n-1&&pm[q]<o)q++;while(q>0&&pm[q]>o)q--;return q},sr)})}
+function boostRender(r,pl){const p=Math.pow(2,(pl.st||0)/12),tempo=pl.tempo||1;
+ return Promise.resolve(pl.k&&pl.k!==1?intonFx(r.x,r.sr,pl.k):r.x).then(x1=>{const x2=pl.br?breathFx(x1,r.sr,pl.br):x1,x0=wsola(x2,p/tempo,r.sr),OC=window.OfflineAudioContext||window.webkitOfflineAudioContext,oc=new OC(1,Math.ceil(x0.length/p),r.sr),bf=oc.createBuffer(1,x0.length,r.sr);bf.getChannelData(0).set(x0);
+ const src=oc.createBufferSource();src.buffer=bf;src.playbackRate.value=p;let n=src;BOOST_EQ.forEach(([t,f,q],i)=>{if(!pl.g[i])return;const fl=oc.createBiquadFilter();fl.type=t;fl.frequency.value=f;if(q)fl.Q.value=q;fl.gain.value=pl.g[i];n.connect(fl);n=fl});n.connect(oc.destination);src.start(0);
+ const pr=oc.startRendering();return pr&&pr.then?pr:new Promise(res=>{oc.oncomplete=e=>res(e.renderedBuffer)})}).then(o=>{const y=o.getChannelData(0),rms=a=>{let t=0;for(let i=0;i<a.length;i++)t+=a[i]*a[i];return Math.sqrt(t/(a.length||1))};let k=rms(r.x)/(rms(y)||1),pk=0;for(let i=0;i<y.length;i++)pk=Math.max(pk,Math.abs(y[i]));if(pk*k>0.98)k=0.98/pk;
+  const x=new Float32Array(y.length);for(let i=0;i<y.length;i++)x[i]=y[i]*k;return{x,sr:r.sr}})}
+const charPlan=c=>({st:c[0]==="L"?-2:2,tempo:c[1]==="A"?1.15:0.85,br:c[2]==="D"?-1:1,k:c[3]==="T"?1.5:0.6,g:c[2]==="D"?[0,1,3,-2]:[0,-1,-1,2],
+ text:[c[0]==="L"?"Lower":"Higher",c[1]==="A"?"A little faster":"A little slower",c[2]==="D"?"Clear, with less breath":"With some breath mixed in",c[3]==="T"?"More rise and fall":"Calmer rise and fall"].join(" · ")});
+const boostCard=b=>`<section class="card"><div class="kicker">Your voice, transformed</div><h2>Fill it in, or hear it as a character</h2>
+ <p class="muted">Pick a character and we'll shift your recording toward that voice. Listen back and forth with your original. The volume is matched.</p>
+ <div class="bchars" id="bchars">${["fill",...Object.keys(TYPES)].map(c=>`<button class="bc${c==="fill"?" on":""}" data-c="${c}" type="button">${c==="fill"?`<span class="bc-fill">Fill</span>`:`<img src="${img.char(c)}" alt="" loading="lazy">`}<small>${c==="fill"?"Missing sounds only":TYPES[c][1]}</small></button>`).join("")}</div>
+ <p class="small" id="boostDesc">${boostPlan(b).text}</p>
+ ${pbarHTML("hearOrig","My original voice",REC.r1)}<div id="boostSlot"><p class="small">Making your changed voice...</p></div>
+ <p class="small">Your recording is changed only on this device, and the result is an approximation. In the app, you can choose the voice you want and practice every day.</p>
+ ${APP_LINK?`<a class="btn block" href="${APP_LINK}">Practice the voice you want in the app</a>`:S.waitlisted?`<div class="target"><span>Launch alert</span><b>You're signed up ✓ We'll let you know when the app is out</b></div>`:`<button class="btn block" id="wl2">Notify me at launch</button>`}</section>`;
+function mountBoost(b){const o=$("#hearOrig"),slot=$("#boostSlot"),desc=$("#boostDesc"),row=$("#bchars");if(!o||!slot)return;mountPlayer(o,REC.r1);const w=$("#wl2");if(w)w.onclick=()=>go("waitlist");let tok=0;
+ const make=c=>{BOOST_C=c;const my=++tok,pl=c==="fill"?{...boostPlan(b)}:charPlan(c),lab=c==="fill"?"My voice, filled in":`My voice as ${TYPES[c][1]}`;desc.textContent=pl.text;slot.innerHTML=`<p class="small">Making your changed voice...</p>`;
+  setTimeout(()=>boostRender(REC.r1,pl).then(r=>{if(my!==tok||!slot.isConnected)return;slot.innerHTML=pbarHTML("hearBoost",lab,r);mountPlayer($("#hearBoost"),r)}).catch(()=>{if(my===tok)slot.innerHTML=`<p class="small">This browser couldn't make the changed voice.</p>`}),30)};
+ row.onclick=e=>{const bt=e.target.closest(".bc");if(!bt)return;row.querySelectorAll(".bc").forEach(x=>x.classList.toggle("on",x===bt));make(bt.dataset.c)};make("fill")}
+R.goal=sel=>{const J=S.J,my=J.code,cur=sel||S.target||null,plan=cur?axisPlan(my,cur):null;
+ return{top:{back:()=>go("result"),label:"Goal voice"},html:`
+<div><div class="kicker">The voice you want</div><h1 class="title">How do you want<br>to sound?</h1></div>
+<section class="megoal"><div><div class="av"><img src="${img.char(my)}" alt=""></div><small>You now</small><br><b>${my}</b></div><div class="muted" style="font-size:26px">→</div><div><div class="av goal">${cur?`<img src="${img.char(cur)}" alt="">`:"?"}</div><small>Your goal</small><br><b>${cur||"Pick one"}</b></div></section>
+${plan?`<section class="card"><div class="kicker">${cur===my?"Your voice, just as it is":nmNW(cur)}</div>${cur===my?"<p>We'll keep what's great about your voice and polish it to be even clearer.</p>":plan.map(p=>`<div class="ax-line ${p.st}"><b>${AXD[p.ax]}</b><span>${p.st==="same"?`${LET[p.from].nm} — same ✓`:`${LET[p.from].nm} → ${LET[p.to].nm}`}</span>${p.st==="same"?"":`<small>${p.note}</small>`}</div>`).join("")}</section>`:""}
+<section class="card"><div class="fam-legend">${Object.keys(FAM).map(k=>`<span style="--c:${FAM[k][2]}"><i></i>${FAM[k][0]} · ${FAM[k][1]}</span>`).join("")}</div>
+ <div class="rgrid">${Object.keys(TYPES).map(c=>`<button class="rt ${c===cur?"pick":""} ${c===my?"me":""}" data-c="${c}"><span><img src="${img.char(c)}" alt="${TYPES[c][1]}"></span><b>${c}</b>${c===my?`<em class="me-badge">Me</em>`:""}<small>${nmLN(c)}</small></button>`).join("")}</div></section>
+<p class="fine">This isn't about changing your personality — it's practice for how your voice sounds to others. To protect your voice, we change pitch only a tiny bit.</p>
+<div class="sticky-cta"><button class="btn pri block" id="ok" ${cur?"":"disabled"}>${cur?(cur===my?"Try 1 minute with my own voice":"Try this voice for 1 minute"):"Pick a voice first"}</button></div>`,
+ bind(){view.querySelectorAll(".rt").forEach(b=>b.onclick=()=>go("goal",b.dataset.c));
+  const ok=$("#ok");if(ok&&cur)ok.onclick=()=>{S.target=cur;S.trial=null;save();go("try")}}}};
+const tryTips=()=>{const J=S.J,t=S.target||J.code;if(t===J.code){const k=J.code.split("").map(l=>LET[l]);return[["Just this",k[2].fix||TO_TIP.D]]}
+ return axisPlan(J.code,t).filter(p=>p.st!=="same").map(p=>[AXD[p.ax],TO_TIP[p.to]])};
+R.try=err=>{const t=S.target||S.J.code,sent=SITS[sitKey()][2];return{top:{back:()=>go("goal"),label:"1-minute trial"},html:`
+<div><div class="kicker">1-minute trial · A taste of daily training</div><h1 class="title">${t===S.J.code?"Your own voice,<br>even clearer":"Read it like<br>"+nmNW(t)}</h1></div>
+<section class="card"><div class="kicker">Read it this way</div><ul class="tips">${tryTips().map(x=>`<li><b>${x[0]}</b> — ${x[1]}</li>`).join("")}</ul></section>
+<p class="sentence">${sent}</p>${err?`<p class="err">${err}</p>`:""}
+${micHTML("Tap the button and read it the new way")}`,
+ bind(){bindMic({maxSec:20,onDone:r=>{REC.t=r;$("#micmsg").textContent="Listening...";
+  resample(r.x,r.sr).then(x=>{const nd=S.m&&S.m.noiseDb!=null?S.m.noiseDb:noiseFloor(x),a=analyzeSentence(x,nd,sylOf(sent));S.trial={f0:a.f0,rate:a.rate,rangeSt:a.rangeSt};save();go("tryres")})
+  .catch(e=>go("try",(e&&e.message?e.message:"We couldn't hear that")+" — shall we try again?"))}})}}};
+function trialRows(){const J=S.J,b=S.m.s,a=S.trial,t=S.target||J.code,out=[];
+ const add=(ax,txt,num,to,ok)=>out.push({ax,txt,num,to,ok});
+ const want=i=>t[i]!==J.code[i]?t[i]:null,much=(x,c)=>Math.abs(x)<c?"A little ":"Much ";
+ {const d=12*Math.log2(a.f0/b.f0),w=want(0);add("pitch",Math.abs(d)<0.3?"About the same pitch as before":`${much(d,2)}${d>=0?"higher":"lower"} than before`,Math.abs(d)<0.1?"same as before":`${Math.abs(d).toFixed(1)} semitones ${d>=0?"higher":"lower"}`,w,w==="H"?d>0.3:w==="L"?d<-0.3:Math.abs(d)<1.5)}
+ {const d=a.rate-b.rate,w=want(1);add("pace",Math.abs(d)<0.2?"About the same pace as before":`${much(d,1)}${d>0?"faster":"slower"} than before`,`${b.rate.toFixed(1)} → ${a.rate.toFixed(1)} syllables/sec`,w,w==="A"?a.rate>b.rate+0.2:w==="U"?a.rate<b.rate-0.2:Math.abs(a.rate-b.rate)<0.6)}
+ {const d=a.rangeSt-b.rangeSt,w=want(3);add("melody",Math.abs(d)<0.5?"About the same rise and fall as before":`${much(d,3)}${d>0?"more rise and fall":"flatter"} than before`,`range ${b.rangeSt.toFixed(1)} → ${a.rangeSt.toFixed(1)} semitones`,w,w==="T"?a.rangeSt>b.rangeSt+0.5:w==="F"?a.rangeSt<b.rangeSt-0.5:Math.abs(a.rangeSt-b.rangeSt)<1.5)}
+ return out}
+const trialSummary=()=>S.trial?trialRows().map(r=>`${AXD[r.ax]}: ${r.num}${r.to?(r.ok?" ✓":" ·"):""}`).join(" / "):"";
+R.tryres=()=>{const J=S.J,t=S.target||J.code,rows=trialRows(),goal=rows.filter(r=>r.to),hit=goal.filter(r=>r.ok).length;
+ const head=!goal.length?"Second take done! Compare it with your first":hit===goal.length?"You got closer on the very first try!":hit?"One step closer":"Old habits show up at first — that's normal";
+ const tail=t===J.code?"With 3 minutes a day, you can sound even clearer than you do now.":`With 3 minutes a day, you can sound like ${TYPES[t][1]}.`;
+ return{top:{back:()=>go("try"),label:"1-minute trial"},html:`
+<div class="win"><img class="popin" src="${img.char(t)}" alt="" style="width:132px;border-radius:28px;margin:0 auto"><div class="kicker" style="text-align:center">Trial result</div><h1 class="title" style="text-align:center">${head}</h1></div>
+<section class="card">${rows.map(r=>`<div class="trial-row"><b>${AXD[r.ax]}</b><span class="num">${r.txt}</span><small class="${r.to?(r.ok?"ok":"no"):"no"}">${r.to?(r.ok?`Toward ${LET[r.to].nm.toLowerCase()} ✓`:`A bit more toward ${LET[r.to].nm.toLowerCase()}`):r.ok?"Kept the same ✓":"Try keeping this one the same"}</small></div>`).join("")}
+ ${t[2]!==J.code[2]?`<small>Texture (airy vs. clear) is measured from your 'ah'. Once the app is out, you can check it every day.</small>`:""}</section>
+${REC.r1?pbarHTML("hearA","Your first take",REC.r1):""}${REC.t?pbarHTML("hearB","Your trial take",REC.t):""}
+<section class="card"><div class="kicker">${APP_LINK?"Continue in the app":"Launch alert"}</div><h2>${tail}</h2><p class="muted">Warm up, read sentences and practice diction with your chick — all tailored to your voice.</p>
+ ${APP_LINK?`<a class="btn pri block shine" href="${APP_LINK}">Get the app and keep going 3 minutes a day</a>`:S.waitlisted?`<div class="target"><span>Launch alert</span><b>You're signed up ✓ We'll let you know when the app is out</b></div>`:`<button class="btn pri block shine" id="wl">Notify me at launch</button>`}</section>
+<button class="btn block" id="again">Try once more</button>
+<button class="btn ghost block" id="back">Back to results</button>`,
+ bind(){const a=$("#hearA");if(a)mountPlayer(a,REC.r1);const b=$("#hearB");if(b)mountPlayer(b,REC.t);const w=$("#wl");if(w)w.onclick=()=>go("waitlist");$("#again").onclick=()=>go("try");$("#back").onclick=()=>go("result")}}};
+R.waitlist=()=>({top:{back:()=>go(S.trial?"tryres":"result"),label:"Launch alert"},html:`
+<div><div class="kicker">Launch alert</div><h1 class="title">We'll tell you first<br>when the app launches</h1></div>
+<section class="card"><p>Practice 3 minutes a day with your chick and you can get the voice you want. Warm-ups, sentence reading and diction practice — all tailored to your voice.</p>
+ <label class="lbl">Name<input class="inp" id="wn" maxlength="20" value="${esc(S.name||"")}"></label>
+ <label class="lbl">Email<small>We'll send one email when the app launches</small><input class="inp" id="wp" type="email" inputmode="email" maxlength="80" placeholder="you@example.com" autocomplete="email"></label>
+ <label class="chk"><input type="checkbox" id="wc"><span>I agree that Touching Voice may store my name and email to tell me when the app launches. We delete them after sending the notice.</span></label>
+ <p class="err" id="werr"></p></section>
+<button class="btn pri block" id="wgo">Sign me up</button>`,
+ bind(){$("#wgo").onclick=()=>{const name=$("#wn").value.trim(),email=$("#wp").value.trim(),e=$("#werr");
+  if(!name){e.textContent="Please enter your name";return}if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){e.textContent="Please check your email address";return}if(!$("#wc").checked){e.textContent="Please check the consent box";return}
+  if(SAVE_URL)fetch(SAVE_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({type:"waitlist",src:"web-en",name,email,phone:"",sex:S.sex||"",age:S.age||null,code:S.J?S.J.code:"",target:S.target||"",trial:trialSummary(),agree:true})}).catch(()=>{});
+  S.name=S.name||name;S.waitlisted=email.replace(/^(.{1,2})[^@]*/,"$1***");save();go("waitdone")}}});/* EN: masked email, e.g. jo***@gmail.com */
+R.waitdone=()=>({html:`
+<div class="win" style="text-align:center"><img class="popin" src="${img.char(S.target||(S.J&&S.J.code)||"HUDT")}" alt="" style="width:150px;border-radius:30px;margin:0 auto"><div class="kicker">You're signed up</div><h1 class="title">We'll email you<br>when the app launches</h1><p class="muted">We'll send one email to ${esc(S.waitlisted||"")}.</p></div>
+${shareRow()}
+<button class="btn ghost block" id="back">Back to results</button>`,
+ bind(){bindShare(view);$("#back").onclick=()=>go("result")}});
+R.result=()=>{const J=S.J,m=S.m,T=TYPES[J.code],F=FAM[J.code.slice(0,2)],G=TYPES[S.guess]||T,b=m.s.bands,who=S.teacher?"To your students":"To other people";
+ const A=attrScore(m),ageMsg=J.age<S.age-2?`sounds ${Math.round(S.age-J.age)} yrs younger`:J.age>S.age+2?`sounds ${Math.round(J.age-S.age)} yrs more mature`:"close to your real age";
+ return{html:`
+${S.demo?`<section class="card cta" style="flex-direction:row;align-items:center;justify-content:space-between;gap:10px"><div style="min-width:0"><b>This is a sample result</b><br><small>Yours takes just 1 minute</small></div><button class="btn pri sm" id="mine">Try mine</button></section>`:""}
+<section class="hero-card">
+  <div class="hc-top">${S.name&&!S.demo?`<span class="pill-g">${esc(S.name)}</span>`:""}${sitKey()==="intro"?"":`<span class="pill-g">${SITS[sitKey()][1]}</span>`}<span class="pill-g">${F[0]} · ${F[1]}</span>${S.demo?'<span class="pill-g">Sample</span>':""}</div>
+  <img class="hc-img popin" src="${img.char(J.code)}" alt="${T[1]}">
+  <div class="code">${J.code.split("").map((l,i)=>`<span style="animation-delay:${200+i*110}ms">${l}</span>`).join("")}</div>
+  <h1 class="hc-name bi">${nmWords(J.code,500)}</h1>
+  <p class="hc-tag">${tagSplit(T[2]).join("<br>")}</p>
+  ${codeMeanHTML(J.code,"on-dark")}
+  <p class="hc-line">“${LINES[J.code]}”</p>
+</section>
+${hexCard(m,A,J.code)}
+${S.demo||!REC.r1?"":boostCard(b)}
+${shareRow()}
+${S.demo?"":`<p class="small" style="text-align:center;margin:0">Your result disappears if you refresh. To keep it, tap <b>Save image</b>.</p>`}
+${S.demo?"":deepCTA()}
+<section class="card cmp-card">
+  ${S.guess?`<div class="cmp"><div><img src="${img.char(S.guess)}" alt=""><small>① What you guessed</small><b>${S.guess}</b><small>${codeShort(S.guess)}</small></div><div class="muted" style="font-size:22px">→</div><div><img src="${img.char(J.code)}" alt=""><small>② What listeners hear</small><b>${J.code}</b><small>${codeShort(J.code)}</small></div></div>
+  <p style="text-align:center">${S.guess===J.code?"Just as you guessed! You know your voice well.":`You guessed <b>${G[1]}</b>, but ${who.toLowerCase()} you sound like <b>${T[1]}</b>.`}</p>`:`<p style="text-align:center">${who}, you sound like <b>${T[1]}</b>.</p>`}
+  ${(()=>{const k=sitKey(),b=lsGet(BASE_KEY);return k==="intro"?"":`<p class="small" style="text-align:center">This is how you sound ${SITS[k][1].toLowerCase()}.${TYPES[b]?` In your self-introduction you were <b>${b} ${TYPES[b][1]}</b>.`:""} Your type hasn't changed — this is just how you sound in a moment like this.</p>`})()}
+  ${REC.r1?pbarHTML("hearMe","The voice you just recorded",REC.r1):""}
+</section>
+<details class="more"><summary class="btn block">See details · Four sides · Pitch · Texture</summary>
+<section class="card"><h2>The four sides of your voice</h2><div class="axes">${J.code.split("").map(L=>`<div class="axis"><div class="axis-top">${AXD[LET[L].ax]}<b>${EN[L]}</b></div><strong>${LET[L].ax==="pitch"&&Math.abs(J.stRel)<1?(L==="H"?"Just above average":"Just below average"):LET[L].nm}</strong><small class="num">${axisVal(L,m,J)}</small><p>${LET[L].imp}</p></div>`).join("")}</div></section>
+${m.s.regs4?regCard(m.s.regs4,m.s):""}
+${toneCard(b)}
+</details>
+<section class="card"><div class="kicker">Two just for fun</div>
+  <div class="fun2"><div><small>Voice age</small><div class="big-num"><span id="ageN">0</span><small style="font-size:18px;color:var(--fg)"> yrs</small></div><p class="small">${ageBand(J.age)} · ${ageMsg}</p></div>
+  <div><small>${A.label}</small><div class="big-num" style="color:var(--fam-ui)"><span id="attrN">0</span><small style="font-size:18px;color:var(--fg)">%</small></div><p class="small">${A.line}</p></div></div>
+  <div class="target stack"><span>Try this to sound even better!</span><b>${A.tip}</b></div>
+  <small>Take the scores as fun. Everyone likes different voices.</small></section>
+${condCard()}
+${`<section class="card"><div class="kicker">Share your result</div><h2>Ask a friend, "What's your voice type?"</h2><p class="small">Friends can scan the QR at the bottom of your share image to take the test and compare with you.</p>${shareRow()}</section>`}
+${friendCard()}
+${S.demo?"":matchCard()}
+${S.demo?"":groupCard()}
+<section class="card"><h2>Explore the other types${S.demo?" <small>(sample)</small>":""}</h2>${S.demo?"":`<p class="small">Tap any of the 16 voice characters to take a look.</p>`}<div class="rgrid">${Object.keys(TYPES).map(c=>`<button class="rt ${c===J.code?(S.demo?"pick":"me"):""}" data-c="${c}"><span><img src="${img.char(c)}" alt="${TYPES[c][1]}" loading="lazy"></span><b>${c}</b>${c===J.code&&!S.demo?`<em class="me-badge">Me</em>`:""}<small>${nmLN(c)}</small></button>`).join("")}</div></section>
+${S.demo||PAID?"":`<button class="btn block" id="rerec">Record again</button>`}
+${PAID?`<button class="btn block" id="again">Take the test again</button>`:`<button class="btn ghost block" id="again">Start over from the beginning</button>`}
+<p class="fine">This result is not a medical test. It shows how your voice sounds to other people, and it can vary with where you recorded.</p>
+${BIZ}`,
+ bind(){later(()=>{view.querySelectorAll(".band i").forEach(i=>i.style.height=i.dataset.h+"%");countUp($("#ageN"),0,J.age,1200);countUp($("#attrN"),0,A.pct,1200)},250);
+  bindShare(view);const gl=$("#goal");if(gl)gl.onclick=()=>go("goal");const dp=$("#deep");if(dp)dp.onclick=goDeep;const chs=$("#chemShare");if(chs)chs.onclick=()=>shareAct("more");const cc=$("#chemCard");if(cc)cc.onclick=()=>shareChem().catch(()=>toast("Couldn't make the card"));const gg=$("#grpGo");if(gg)gg.onclick=groupShare;view.querySelectorAll("#duoGo").forEach(b=>b.onclick=()=>go("duo"));view.querySelectorAll("[data-cv]").forEach(b=>b.onclick=()=>{const f=S.friend,me=S.J.code;chemVote(b.dataset.cv,b.dataset.cvk,{f,me,name:chemOf(f,me)[0],score:chemScore(f,me,S.friendRate,myRate()),fr:S.friendRate||null,mr:+myRate().toFixed(2),conv:null})});mountBoost(b);const hm=$("#hearMe");if(hm)mountPlayer(hm,REC.r1);
+  const mi=$("#mine");if(mi)mi.onclick=()=>{newRun();go("info")};
+  const ag=$("#again");if(ag)ag.onclick=()=>{tvEvent("다시검사");if(PAID){location.href="voicetest_en.html?"+(vrGet().preview?"free":"paid")+"=new";return}newRun();go("landing")};const rr=$("#rerec");if(rr)rr.onclick=reRecord;
+  view.querySelectorAll(".rgrid .rt").forEach(p=>p.onclick=()=>S.demo?startDemo(p.dataset.c,true):typeSheet(p.dataset.c))}}};
+function wavBlob(x,sr){const n=x.length,b=new ArrayBuffer(44+n*2),v=new DataView(b),w=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i))};w(0,"RIFF");v.setUint32(4,36+n*2,true);w(8,"WAVE");w(12,"fmt ");v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,sr,true);v.setUint32(28,sr*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);w(36,"data");v.setUint32(40,n*2,true);for(let i=0;i<n;i++){const s=Math.max(-1,Math.min(1,x[i]));v.setInt16(44+i*2,s<0?s*0x8000:s*0x7fff,true)}return new Blob([b],{type:"audio/wav"})}
+/* 재생 바 — 재생·일시정지·위치 옮기기 */
+const IC_PLAY='<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>',IC_PAUSE='<svg viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>';
+const esc=t=>String(t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]);
+const fmtT=t=>{t=Math.max(0,Math.floor(t));return Math.floor(t/60)+":"+String(t%60).padStart(2,"0")};
+function pbarHTML(id,label,r){return`<div class="pbar" id="${id}"><button class="pb-btn" type="button" aria-label="Play">${IC_PLAY}</button><div class="pb-mid"><span class="pb-lab">${label}</span><div class="pb-track" aria-label="Playback position"><span><i></i></span></div></div><span class="pb-t">0:00 / ${fmtT(r.x.length/r.sr)}</span></div>`}
+function mountPlayer(el,r){const a=new Audio(URL.createObjectURL(wavBlob(r.x,r.sr))),btn=el.querySelector(".pb-btn"),bar=el.querySelector(".pb-track i"),tm=el.querySelector(".pb-t"),dur=r.x.length/r.sr;
+ const ui=()=>{const t=a.currentTime;bar.style.width=cl(100*t/dur,0,100)+"%";tm.textContent=fmtT(t)+" / "+fmtT(dur);const on=!a.paused;btn.innerHTML=on?IC_PAUSE:IC_PLAY;btn.setAttribute("aria-label",on?"Pause":"Play")};
+ const tick=()=>{if(!el.isConnected){a.pause();return}ui();if(!a.paused)requestAnimationFrame(tick)};
+ a.onplay=tick;a.onpause=ui;a.onended=()=>{a.currentTime=0;ui()};
+ btn.onclick=()=>{if(a.paused){if(el.id==="hearBoost")tvEvent("바뀐목소리재생:"+BOOST_C,S.J&&S.J.code);else if(el.id==="hearOrig")tvEvent("원래목소리재생");a.play().catch(()=>toast("Couldn't play it"))}else a.pause()};
+ const tr=el.querySelector(".pb-track"),seek=e=>{const R=tr.getBoundingClientRect();a.currentTime=cl((e.clientX-R.left)/R.width,0,1)*dur;ui()};
+ tr.onpointerdown=e=>{seek(e);try{tr.setPointerCapture(e.pointerId)}catch(_){}tr.onpointermove=seek};tr.onpointerup=tr.onpointercancel=()=>{tr.onpointermove=null};ui()}
+/* 측정값은 화면에 보여 주지 않고 터칭보이스 내부 서버로만 보낸다. 받는 곳 = 시트 "터칭보이스_목소리유형테스트"(machlayim)의 쓰기 전용 Apps Script(voicetype_store.gs). 비우면 보내지 않는다. */
+const SAVE_URL="https://script.google.com/macros/s/AKfycbyTH-Q1YT90015gFUapUB1SBi_sUt45xvQaD0DmbIp4_0fQ1PwpkuAD5q4P_9eobedZ/exec";
+/* 11/5 대표: 녹음 품질 기록 — 마이크가 실제로 받은 샘플레이트. 블루투스 이어폰(에어팟 등)은 16~24kHz라 48kHz로 저장해도 음질이 안 오른다 → 시트 '녹음 품질'에 남겨 거를 수 있게. 파일로 했으면 '파일' */
+function recQ(){const rs=[REC.r1,REC.r2].filter(Boolean);if(!rs.length)return"";if(rs.some(r=>r.file))return"파일";const hz=Math.min(...rs.map(r=>r.micHz||r.sr)),k=+(hz/1000).toFixed(1)+"kHz";return hz>=44100?k:k+" 낮음(이어폰 추정)"}
+function serverRecord(){const m=S.m,J=S.J,s=m.s,v=m.v,A=attrScore(m),n=(x,d)=>x==null||!isFinite(x)?null:+(+x).toFixed(d);
+ if(!S.rid)S.rid=Date.now().toString(36)+Math.random().toString(36).slice(2,8);/* 11/17 짝 코드: 성격검사 탭과 같은 사람 잇기 */
+ return{type:"voicetype",ver:3,src:"web",lang:"en",rid:S.rid,staff:window.TV_STAFF?1:0,utm:window.TV_SRC||"",sit:sitKey(),sitName:SITS[sitKey()][0],at:new Date().toISOString(),sex:S.sex,age:S.age,job:S.job||"",code:J.code,
+  f0:n(s.f0,1),stRel:n(J.stRel,2),rangeSt:n(s.rangeSt,2),sdSt:n(s.sdSt,2),rate:n(s.rate,2),syl:s.syl,speakDur:n(s.speakDur,2),dbsd:n(s.dbsd,2),dyn:n(s.dyn,1),snr:n(s.snr,1),endSlope:n(s.endSlope,2),bands:s.bands.map(b=>n(b,1)),
+  mpt:n(v.mpt,2),hnr:n(v.hnr,2),regs4:s.regs4?s.regs4.map(x=>n(x,1)):null,vspace:n(s.vspace,0),sylc:n(s.sylc,1),pauses:s.pauses,voiceOnly:true,cpp:n(v.cpp,3),trem:n(v.trem,3),noiseDb:n(m.noiseDb,1),cond:m.c||null,
+  score:J.sc,total:J.total,voice:J.voice,voiceAge:n(J.age,1),attr:A.pct,attrParts:Object.fromEntries(Object.entries(A.parts).map(([k,x])=>[k,n(x,2)])),recQ:recQ()}}
+/* 11/5 대표: 웹 검사는 이름·녹음 없이 측정 숫자만 익명으로 보낸다(기준 보정용). 녹음은 앱에서 동의(구독 할인)로 */
+/* 11/16 대표: 녹음 제공에 동의한 사람만 녹음 2개를 48kHz(최소 44.1kHz) wav로 함께 보낸다(ver2 — 서버가 드라이브에 저장, 3년 뒤 자동 삭제). 동의 안 하면 ver3 익명 숫자만 */
+const b64of=blob=>blob.arrayBuffer().then(buf=>{const u=new Uint8Array(buf);let t="";for(let i=0;i<u.length;i+=0x8000)t+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));return btoa(t)});
+function resampleTo(x,sr,to){const OC=window.OfflineAudioContext||window.webkitOfflineAudioContext,oc=new OC(1,Math.ceil(x.length*to/sr),to),b=oc.createBuffer(1,x.length,sr);b.getChannelData(0).set(x);const s=oc.createBufferSource();s.buffer=b;s.connect(oc.destination);s.start(0);
+  const p=oc.startRendering();return p&&p.then?p.then(r=>r.getChannelData(0)):new Promise(res=>{oc.oncomplete=e=>res(e.renderedBuffer.getChannelData(0))})}
+async function audioPayload(){const o={};for(const [k,r] of [["sent",REC.r1],["ah",REC.r2]]){if(!r)continue;const to=r.sr===44100?44100:48000;o[k]=await b64of(wavBlob(r.sr===to?r.x:await resampleTo(r.x,r.sr,to),to))}return o}
+const post=rec=>fetch(SAVE_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(rec)});
+function sendRecord(){const run=S;if(!SAVE_URL||run.demo||run.sent)return;let rec;try{rec=serverRecord()}catch(e){return}run.sent=true;save();
+ const dc=run.developmentConsent,fail=()=>{if(S===run){run.sent=false;save()}};
+ if(dc&&dc.version==="voice-dev-2026-11-05"&&dc.acceptedAt){return audioPayload().then(audio=>{if(!audio.sent||!audio.ah)return post(rec);return post({...rec,ver:2,name:run.name||"",developmentConsent:dc,audio})}).catch(fail)}
+ return post(rec).catch(fail)}
+function copy(t){const ok=()=>toast("Copied");if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(ok,()=>toast("Copying is blocked. Press and hold to copy it yourself."));else toast("Press and hold to copy it yourself.")}
+/* ===== 8. 공유 카드 ===== */
+function loadImg(src){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=src})}
+/* 한 줄 설명은 쉼표 뒤나 "—" 앞에서 두 줄로 고르게 끊는다(줄 끝에 "—"가 걸리지 않게) */
+function tagSplit(t){const w=t.split(" ");let best=null,bm=1e9;for(let i=1;i<w.length;i++){if(!(w[i-1].endsWith(",")||w[i]==="—"))continue;const a=w.slice(0,i).join(" "),b=w.slice(i).join(" "),m=Math.max(a.length,b.length);if(m<bm){bm=m;best=[a,b]}}return best||[t]}
+/* 11/5 대표: 공유 이미지 QR = 검사 주소(?f=내 유형) — python qrcode(M)로 미리 만든 33×33 칸, 외부 코드 없음 */
+const QR_N=33,QRS={"LADT":"/hz1P8EP5VBur1srt1dRNduvljLsF25hB/qqqv4B1k4Avg9DvjgwXJv5qmuawKtS9ejjgmXWotxNnL54y/SBITjcc6RT3OYabLtT2dOO2gIcg8Lo+W3XB8krNohGiQ1balwNk0nD/gBXT8X/jutq0FXT8euuY+/V1jxqbusgjNEEUVic/rBjkQA=","LADF":"/hz1P8Ef5VBut1srt15RNduvFjLsFy5hB/qqqv4B5k4Avg9DvjwQXJvrsmuawadS9eHtAmXXK9xNnPw4y/SDMTjccrRT3OI4bLtj0NOOwgpcg8bm2W3VA0krNkpmiQ1YenwNslnD/gB3T8X/nmtq0FFT8eusw2/V1uxqbusAjNEEcVic/qBjkQA=","LABT":"/lz1P8EP5VBup1srt1NRNdusljLsF25hB/qqqv4B1k4Avh9DvjwwXJvLumuayKtS9emngmXUrtxNnD4Yy/TjETjcc6RT3KY4bLtgwVOO2wqcg8Nu2W3VDpkrNkgGiQ16WlwNs1nD/gBVT8X/jutq0FnT8euso+/V1+xqbusAjNEEYWic/qBjkQA=","LABF":"/mouP8F/Z1Buv1srt1Yg9dukFjLsESZBB/qqqv4BZEYAgp9D5yRhm4eZomuay69yd+Zyb9MNpdRtHHxYy/SQxiStcrRT3Ko67rNLpeVVoQr8Acdg+W3WzQVa8oomiQ1ZyHQt//8Y+4BVzcX/nmtq0EEiMfumA2/V0TRK7un74WcEw2C8/rBjkQA=","LUDT":"/n97P8EzlJBumyrrt0zfBdui5/LsF9+lB/qqqv4Al4kAlv6E0Bq+ZHhl06yGvR6V6ZvhuoZZaptR7Iuf14UKOdtSInNPrVLdcMqc8bAA+w1A8golRRwTrqq1D8k6+MqaRi3KqqpN/oBrPkb/m5or0Fbd0Quk8i/N1t2tcujutDMEAJ+A/tGkjQA=","LUDF":"/iouP8FfZ1Buv1srt1og9dumFjLsEeZBB/qqqv4BVEYAgo9D52Bhm4erumuawityd+e6b9MMAFRtHLgYy/Tz1iStUqRT3K4Y7rN5reVVsIo8Ac/seW3WRdVK8swGiQ16yHQt3u8Y+4B3zcX/l2vq0E2iMfuiI2/V0HRK7umb4WcE01C8/rBjkQA=","LUBT":"/lz1P8Ev5VBur1srt1tRNdutljLsF65hB/qqqv4B5k4Avh9DvnwwXJvLsmuayS9S9ekrgmXXB1xNnHo4y/TiMTjcU7RT3OI4bLth0dOOy4Lcg8pkeW3Xjxk7Ns5miQ14alwNslnD/gB1T8X/h+vq0FlT8euqQ+/V13xqbutAjNEEQWic/rBjkQA=","LUBF":"/mouP8FfZ1But1srt14g9dulFjLsEeZBB/qqqv4BVEYAgp9D52Rhm4eZqmuayityd+b+b9MODFRtHDh4y/SR5iStUqRT3O467rNKtWVVsYK8Ac5qWW3UTIVK8gxGiQ1b+HQt/v8Y+4B1zcX/l2vq0EGiMfug42/V0aRK7um74WcE42C8/qBjkQA=","HADT":"/hz1P8Ev5VBur1srt1pRNduuFjLsFy5hB/qqqv4B5k4Avg9DvnwwXJvbumuawa9S9e1vAmXXgtxNnD54y/TAMTjcc7RT3OI6bLtByFMO0orcg8fq2W3WC4krNooGiQ1aWlwNs1nD/gB1T8X/jmtq0FFT8euuo+/V1ixqbusAjNEEQVic/qBjkQA=","HADF":"/hz1P8E/5VBut1srt1NRNduuljLsF25hB/qqqv4B1k4Avg9DvngQXJvJomuawKNS9eRhgmXWC9xNnHw4y/TCITjccqRT3OYYbLtxwVMOyoKcg8Pk+W3UDwkrNkgmiQ1ZSnwNkknD/gBVT8X/nutq0FXT8eusA2/V1vxqbusgjNEEYVic/rBjkQA=","HABT":"/lz1P8Ev5VBup1srt15RNdutFjLsFy5hB/qqqv4B5k4Avh9DvngwXJvpqmuaya9S9ewrAmXVjtxNnL4Yy/SiATjcc7RT3KIYbLty0NMO04Jcg8Zs+W3UAtkrNkpGiQ17alwNk0nD/gB3T8X/jmtq0F1T8eusY+/V1/xqbusgjNEEcWic/rBjkQA=","HABF":"/lz1P8E/5VBuv1srt1dRNdutljLsF25hB/qqqv4B1k4Avh9DvnwQXJv7smuayKNS9eUlgmXUB9xNnPxYy/SgETjccqRT3KY6bLtC2dMOy4ocg8Ji2W3WBlkrNohmiQ14enwNslnD/gBXT8X/nutq0FnT8euuw2/V1yxqbusAjNEEUWic/qBjkQA=","HUDT":"/hz1P8EP5VBup1srt1JRNduvFjLsF+5hB/qqqv4B1k4Avg9DvjwwXJvbsmuawCtS9e3jAmXUK1xNnHpYy/TBETjcU6RT3KY6bLtA2NMOwgKcg87geW3Uigk7NgxmiQ1YalwNslnD/gBVT8X/h2vq0FHT8euoQ+/V1rxqbutAjNEEYVic/rBjkQA=","HUDF":"/hz1P8Ef5VBuv1srt1tRNduvljLsF65hB/qqqv4B5k4Avg9DvjgQXJvJqmuawSdS9eTtgmXVolxNnDgYy/TDATjcUrRT3KIYbLtw0dMO2grcg8ruWW3Wjok7Ns5GiQ1benwNk0nD/gB1T8X/l+vq0FVT8euq42/V1mxqbutgjNEEQVic/qBjkQA=","HUBT":"/mouP8FvZ1Bur1srt1og9dukFjLsEeZBB/qqqv4BVEYAgp9D5yRBm4epomuayiNyd+p8b9MOpVRtHPo4y/TS5iStU6RT3O447rNoreXVoQI8Ac9mWW3XREVK8swmiQ1Z2FQt//8Y+4B3zcX/h2vq0EGiMfuig+/V0WRK7um74WcE02C8/qBjkQA=","HUBF":"/lz1P8Ef5VBut1srt19RNdusljLsF65hB/qqqv4B5k4Avh9DvjwQXJv7umuaySdS9eWpgmXXrlxNnLh4y/ShMTjcUrRT3OI6bLtDyVMO2wJcg8toeW3Uh9k7Ng4GiQ16SnwNs1nD/gB3T8X/l+vq0FlT8euoI2/V17xqbutAjNEEcWic/rBjkQA="};
+function drawQR(g,code,x,y,s){const q=QRS[code];if(!q)return;const b=atob(q),N=QR_N,pad=Math.round(s*0.07),u=(s-2*pad)/N;
+ g.save();g.fillStyle="#fff";g.beginPath();if(g.roundRect)g.roundRect(x,y,s,s,Math.round(s*0.12));else g.rect(x,y,s,s);g.fill();g.fillStyle="#1A1230";
+ for(let i=0;i<N*N;i++)if((b.charCodeAt(i>>3)>>(7-(i&7)))&1){const r=Math.floor(i/N),c=i%N;g.fillRect(Math.floor(x+pad+c*u),Math.floor(y+pad+r*u),Math.ceil(u)+0.5,Math.ceil(u)+0.5)}g.restore()}
+async function makeCard(){const J=S.J,T=TYPES[J.code],F=FAM[J.code.slice(0,2)],c=document.createElement("canvas");c.width=1080;c.height=1920;const g=c.getContext("2d"),ff="Paperlogy,'Apple SD Gothic Neo',sans-serif";
+ /* 11/5 대표: 결과 카드 그대로 + 아래 검사 QR. 인스타 스토리 위·아래 가림(약 220px)을 피해 내용은 y 230~1680 안에 둔다 */
+ try{await Promise.all(["700 80px","600 40px","500 40px"].map(x=>document.fonts.load(x+" Paperlogy")))}catch(e){}
+ const rr=(x,y,w,h,r)=>{g.beginPath();if(g.roundRect)g.roundRect(x,y,w,h,r);else g.rect(x,y,w,h)},fnt=(wt,px)=>{g.font=`${wt} ${px}px ${ff}`};
+ const gr=g.createLinearGradient(169,-61,911,1981);gr.addColorStop(0,F[2]);gr.addColorStop(1,F[3]);g.fillStyle=gr;g.fillRect(0,0,1080,1920);
+ g.save();g.translate(540,-96);g.scale(1,672/756);const hl=g.createRadialGradient(0,0,0,0,0,756);hl.addColorStop(0,"rgba(255,255,255,.22)");hl.addColorStop(1,"rgba(255,255,255,0)");g.fillStyle=hl;g.fillRect(-756,-756,1512,1512);g.restore();
+ g.textAlign="center";g.textBaseline="middle";
+ const pills=[...document.querySelectorAll(".hero-card .hc-top .pill-g")].map(e=>e.textContent.trim()).filter(Boolean);if(!pills.length)pills.push(F[0]+" · "+F[1]);
+ let pp=34,pw,tot;const pm=()=>{fnt(600,pp);pw=pills.map(t=>g.measureText(t).width+60);tot=pw.reduce((a,b)=>a+b,0)+20*(pills.length-1)};pm();while(tot>960&&pp>24){pp-=1;pm()}
+ let x=540-tot/2;pills.forEach((t,i)=>{rr(x,230,pw[i],72,36);g.fillStyle="rgba(255,255,255,.16)";g.fill();g.strokeStyle="rgba(255,255,255,.3)";g.lineWidth=3;g.stroke();g.fillStyle="#fff";g.fillText(t,x+pw[i]/2,267);x+=pw[i]+20});
+ const im=await loadImg(img.char(J.code)),iz=420,ix=330,iy=322;g.save();g.shadowColor="rgba(0,0,0,.25)";g.shadowBlur=60;g.shadowOffsetY=26;rr(ix,iy,iz,iz,56);g.fillStyle="#F5EEE0";g.fill();g.restore();g.save();rr(ix,iy,iz,iz,56);g.clip();g.drawImage(im,ix,iy,iz,iz);g.restore();
+ const tw=124,th=136,tg=16,tx=540-(4*tw+3*tg)/2,ty=iy+iz+24;fnt(700,76);J.code.split("").forEach((l,i)=>{rr(tx+i*(tw+tg),ty,tw,th,30);g.fillStyle="rgba(255,255,255,.95)";g.fill();g.fillStyle=F[3];g.fillText(l,tx+i*(tw+tg)+tw/2,ty+th/2+4)});
+ g.fillStyle="#fff";let np=84;fnt(700,np);{const w=g.measureText(T[1]).width;if(w>980){np=Math.floor(np*980/w);fnt(700,np)}}const ny=ty+th+62;g.fillText(T[1],540,ny);
+ const lines=tagSplit(T[2]);let tp=40;for(;;){fnt(600,tp);if(Math.max(...lines.map(t=>g.measureText(t).width))<=980||tp<=30)break;tp-=2}
+ const ly=ny+76;lines.forEach((t,i)=>g.fillText(t,540,ly+i*56));
+ const cy=ly+(lines.length-1)*56+50,cw=481,ch=104,cg=14;codeParts(J.code).forEach((p,i)=>{const cx=50+(i%2)*(cw+cg),y=cy+Math.floor(i/2)*(ch+cg);rr(cx,y,cw,ch,34);g.fillStyle="rgba(255,255,255,.16)";g.fill();g.fillStyle="#fff";fnt(700,42);g.fillText(p[0],cx+cw/2,y+35);fnt(500,30);g.globalAlpha=.95;g.fillText(p[1],cx+cw/2,y+78);g.globalAlpha=1});
+ {const t="“"+LINES[J.code]+"”";let bp=40;fnt(700,bp);let w=g.measureText(t).width;if(w>880){bp=Math.floor(bp*880/w);fnt(700,bp);w=g.measureText(t).width}const by=cy+2*ch+cg+34,bw=w+88,bh=90,bx=540-bw/2;
+  g.save();g.shadowColor="rgba(0,0,0,.12)";g.shadowBlur=36;g.shadowOffsetY=14;rr(bx,by,bw,bh,47);g.fillStyle="#fff";g.fill();g.restore();g.beginPath();g.moveTo(520,by+2);g.lineTo(540,by-18);g.lineTo(560,by+2);g.fillStyle="#fff";g.fill();g.fillStyle=F[3];g.fillText(t,540,by+bh/2+3);
+  const qs=156,qy=by+bh+26;fnt(700,44);const t1="What's your voice type?",t2="Scan the QR to see our voice chemistry",t3="touchingvoice.app",tw2=Math.max(g.measureText(t1).width,(fnt(500,30),g.measureText(t2).width)),qx=Math.round(540-(qs+32+tw2)/2);
+  drawQR(g,J.code,qx,qy,qs);g.textAlign="left";g.fillStyle="#fff";fnt(700,44);g.fillText(t1,qx+qs+32,qy+36);fnt(500,30);g.globalAlpha=.9;g.fillText(t2,qx+qs+32,qy+86);g.globalAlpha=.75;fnt(500,28);g.fillText(t3,qx+qs+32,qy+128);g.globalAlpha=1;g.textAlign="center"}
+ return c}
+/* 11/5 대표: 공유 — 인스타그램·틱톡은 필수. 웹에서 공유 창으로 보내면 인스타 스토리에 '스티커'로 작게 붙는다 →
+   ① 사진에 저장 ② 앱에서 그 사진을 고르기 순서로 안내(1080×1920 그대로 화면에 꽉 참). 카톡 등은 공유 창으로 이미지+링크 */
+const IC_IG='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>';
+const IC_TT='<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M14 3h3a4 4 0 0 0 4 4v3a7 7 0 0 1-4-1.3V15a6 6 0 1 1-6-6h1v3.2a2.8 2.8 0 1 0 2 2.7V3z"/></svg>';
+const shareRow=()=>`<div class="shr"><button class="btn sh-ig" data-sh="ig">${IC_IG}Instagram</button><button class="btn sh-tt" data-sh="tt">${IC_TT}TikTok</button><button class="btn sm" data-sh="more">More</button><button class="btn sm" data-sh="save">Save image</button><button class="btn sm" data-sh="link">Copy link</button></div>`;
+const isIOS=()=>/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+const canFiles=f=>!!(navigator.canShare&&navigator.canShare({files:[f]}));
+let CARD=null;
+async function cardFile(){if(!CARD||CARD.code!==S.J.code){const c=await makeCard(),blob=await new Promise(r=>c.toBlob(r,"image/png"));CARD={code:S.J.code,blob,url:URL.createObjectURL(blob)}}return new File([CARD.blob],`touchingvoice_${S.J.code}.png`,{type:"image/png"})}
+async function saveCard(){const f=await cardFile();if(isIOS()&&canFiles(f)){toast("Tap 'Save Image' in the sheet that appears");try{await navigator.share({files:[f]})}catch(e){}return}
+ const a=document.createElement("a");a.href=CARD.url;a.download=f.name;document.body.appendChild(a);a.click();a.remove();toast("Image saved")}
+function bindShare(root){root.querySelectorAll("[data-sh]").forEach(b=>b.onclick=()=>shareAct(b.dataset.sh))}
+async function shareAct(k){tvEvent("공유:"+k,S.J&&S.J.code);
+ if(k==="link"){copy(shareText()+" "+shareURL());return}
+ if(k==="save"){saveCard();return}
+ if(k==="more"){const f=await cardFile();if(canFiles(f)){try{await navigator.share({files:[f],text:shareText()+" "+shareURL()})}catch(e){}}else if(navigator.share){navigator.share({title:"What's your voice type?",text:shareText(),url:shareURL()}).catch(()=>{})}else copy(shareText()+" "+shareURL());return}
+ storySheet(k==="ig")}
+function storySheet(ig){const app=ig?"Instagram":"TikTok";
+ openSheet(`<div class="kicker">Post to ${app}${ig?" Stories":""}</div><h2>How to post it full-screen</h2>
+ <div id="cardBox" style="min-height:120px;display:grid;place-items:center"><small>Making your card...</small></div>
+ <ol class="list"><li><b>Save the image</b><small class="sub">${isIOS()?"Tap 'Save Image' in the sheet that appears":"It saves to your phone's gallery"}</small></li><li><b>Open ${app}</b><small class="sub">${ig?"Create a story and pick the image you just saved — it fills the screen":"Tap + Create → Upload and pick the image you just saved"}</small></li></ol>
+ <button class="btn pri block" id="stSave">① Save the image</button>
+ <button class="btn block" id="stOpen">② Open ${app}</button>
+ <small style="text-align:center">${ig?"If you send it straight from the share sheet, Instagram adds the image as a small sticker. Picking the saved image yourself posts it full-screen.":"TikTok often doesn't show up in the share sheet. Saving the image first and then uploading is the most reliable way."}</small>`,
+ async()=>{$("#stSave").onclick=saveCard;$("#stOpen").onclick=()=>openApp(ig);
+  try{await cardFile();$("#cardBox").innerHTML=`<img class="share-prev" src="${CARD.url}" alt="Result card">`}catch(e){$("#cardBox").innerHTML="<small>Couldn't make the card.</small>"}})}
+function openApp(ig){const t=Date.now();location.href=ig?"instagram://story-camera":"snssdk1233://";setTimeout(()=>{if(!document.hidden&&Date.now()-t<3000)location.href=ig?"https://www.instagram.com/":"https://www.tiktok.com/upload"},1600)}
+const shareURL=()=>location.origin+location.pathname+"?f="+S.J.code+(myRate()>0?"&r="+Math.round(myRate()*10):"");/* 11/16: Chemistry score용 말 빠르기(1초 음절×10, 이름·녹음 없음) */
+function shareText(){const T=TYPES[S.J.code],A=attrScore(S.m);return`${sitKey()==="intro"?"":SITS[sitKey()][1]+", "}I'm ${S.J.code} ${T[1]}. Voice age ${Math.round(S.J.age)} · ${A.label} ${A.pct}%. What's your voice type? Take the test and see our voice chemistry too!`}
+/* 11/4 대표: 한글 읽기(라디티)와 알파벳 한 글자(L 낮은) 대신 영어 단어로 보여 준다 (단어는 기획서 v2 축 정의) */
+const EN={L:"Low",H:"High",A:"Active",U:"Unhurried",D:"Dry",B:"Breathy",T:"Tuneful",F:"Firm"};
+const enName=c=>c.split("").map(l=>EN[l]).join("-");
+function codeParts(c){const near=S.J&&S.J.code===c&&Math.abs(S.J.stRel)<1;return c.split("").map((l,i)=>[EN[l],i===0&&near?(l==="H"?"Just above average":"Just below average"):LET[l].nm])}
+const codeMean=c=>codeParts(c).map(p=>`${p[0]} ${p[1]}`).join(" · ");
+const codeKo=c=>c.split("").map(l=>LET[l].nm).join(" · ");
+const codeShort=c=>`${c[0]==="L"?"Low":"High"}, ${c[1]==="A"?"quick":"unhurried"} · ${c[2]==="D"?"clear":"breathy"} · ${c[3]==="T"?"musical":"steady"}`;
+const codeMeanHTML=(c,cls="")=>`<div class="cm ${cls}">${codeParts(c).map(p=>`<span><b>${p[0]}</b><em>${p[1]}</em></span>`).join("")}</div>`;
+
+/* ===== 예시(데모) ===== */
+function startDemo(code,stay){const tc=Q.has("teacher");S={demo:true,friend:S.friend,sex:"f",age:38,job:tc?"teacher":"",teacher:tc};
+ const L=code[0]==="L",A=code[1]==="A",D=code[2]==="D",T=code[3]==="T",ref=REF_F0[S.sex],stRel=L?-2.6:2.2,f0=ref*Math.pow(2,stRel/12);
+ S.m={s:{f0,rangeSt:T?11.2:5.2,sdSt:T?2.4:1.4,rate:A?5.5:4.1,speakDur:A?7.1:9.5,syl:sylOf(SENT),dbsd:D?4.4:5.6,dyn:T?19:15.5,snr:31,endSlope:L?-1.2:0.6,bands:L?(D?[33,39,22,6]:[31,37,22,10]):(D?[22,37,33,8]:[20,35,32,13]),regs4:L?[48,38,9,5]:[28,55,11,6],voicedSec:5.2},
+  v:{mpt:D?15.2:11.4,hnr:D?19.6:13.8,cpp:D?0.62:0.41,trem:0.28,f0},noiseDb:-62};
+ const qb=(Q.get("bands")||"").split(",").map(Number);if(qb.length===4&&qb.every(Number.isFinite))S.m.s.bands=qb;/* 시안 확인용 ?bands=33,57,9,1 */
+ const qc=Q.get("cond");S.m.c={cpps:qc==="cloud"?11.6:qc==="partly"?12.5:D?16.2:14.8,breaks:qc==="cloud"?.38:.05,voiced:5.1,snr:qc==="noisy"?11:32};
+ finishTest();S.J.code=code;setFam(code);save();go(stay?"result":"reveal")}
+
+if(Q.has("free")){const v=vrGet();if(!v.preview){v.preview=true;vrSet(v)}}
+/* 시작 — ?f=코드(친구 링크) · 시안 확인용 ?demo=HUDT&view=result&teacher&shot */
+if(Q.has("shot"))document.documentElement.classList.add("noanim");
+{const qf=(Q.get("f")||"").toUpperCase(),qd=(Q.get("demo")||"").toUpperCase();if(TYPES[qf]){S.friend=qf;const qr=+Q.get("r");S.friendRate=qr>=20&&qr<=90?qr/10:0;save()}
+ const qg=(Q.get("g")||"").toUpperCase().split(".").filter(c=>TYPES[c]).slice(-30);if(qg.length){S.group=qg;S.groupJoined=false;save()}/* 모임 지도 링크 — 테스트를 끝내면 내 유형이 붙는다 */
+ if(TYPES[qd]){startDemo(qd,true);const v=Q.get("view")||"result";go(v==="guess"||!Object.hasOwn(R,v)?"result":v)}
+ /* 11/5 대표: 예시 결과를 먼저 보여 주지 않는다 — 예전에 예시를 열어 둔 기기도 첫 화면부터 */
+ /* 11/16 대표: 목소리 검사와 성격 10문항을 하나로 — ?paid 는 녹음 2번 → 10문항 → 분석 → 레포트(결제). ?free 는 같은 길에서 결제 없이 레포트(결과는 기기에 남음). ?free=new 는 이 기기 결과를 비우고 처음부터(시험용) */
+ else if(Q.get("free")==="new"||Q.get("paid")==="new"){/* 11/17 대표: 다시 검사하기 — 이 기기 결과를 비우고 처음부터(알림 신청 표시는 남김) */const old=vrGet(),fr=Q.get("free")==="new";S={friend:S.friend};REC.r1=REC.r2=null;recDrop();save();vrSet({sc:7,a:[],preview:fr,ck:old.ck,waitlisted:old.waitlisted});try{history.replaceState(null,"",fr?"?free":"?paid")}catch(e){}go("landing")}
+ else if(S.J&&!S.demo){setFam(S.J.code);if(PAID)qDone(vrGet())?(Q.has("hear")||S.at==="hear"?go("hear"):location.replace("voicereport_en.html")):go("quiz");else go("result");
+  recLoad().then(r=>{if(r&&r.x&&!REC.r1){REC.r1=r;if(S.at==="result"||S.at==="hear")go(S.at)}})}else{if(S.demo)newRun();go("landing")}}
+document.fonts&&document.fonts.ready.then(()=>fitLn(document));
+})();
+</script>
+</body>
+</html>
