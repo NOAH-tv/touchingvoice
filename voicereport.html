@@ -2,6 +2,14 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
+<script>/* 11/18 대표: 결과는 '저장하기'(사진·PDF)로만 남긴다 — 새로고침하거나 새로 들어오면 바로 처음부터.
+   같은 탭에서 페이지를 넘어갈 때(목소리 → 성격 결과 → 다시 듣기)만 이어진다. 앱 출시 알림 신청 표시는 남긴다 */
+(function(){try{var n=performance.getEntriesByType("navigation")[0],t=n?n.type:"navigate";
+ if(t==="reload"||sessionStorage.getItem("tv_flow")!=="1"){var w=null;try{w=(JSON.parse(localStorage.getItem("tv_voicereport_v1")||"null")||{}).waitlisted}catch(e){}
+  localStorage.removeItem("tv_voicetest_web_v1");localStorage.removeItem("tv_voicereport_v1");if(w)localStorage.setItem("tv_voicereport_v1",JSON.stringify({waitlisted:w}));
+  try{indexedDB.deleteDatabase("tv_vt")}catch(e){}}
+ sessionStorage.setItem("tv_flow","1")}catch(e){}})();</script>
+
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>목소리 × 성격 결과 · 터칭보이스</title>
 <meta name="description" content="1분 목소리 테스트 결과에 10문항 성격 검사를 더한 나의 목소리 × 성격 결과.">
@@ -236,6 +244,7 @@ function vTeaser(){setFam(VT.J.code);tvTrack("ViewContent",{content_name:"person
 ${heroCard(c,VT.sex,"1분 목소리 테스트로 찾은 내 유형")}
 <div class="card"><h2>나의 성격</h2>${radarSVG(TRAITS.map(([k,nm])=>[nm,B[k]]))}<p class="small" style="text-align:center">높고 낮음은 좋고 나쁨이 아니라 성향의 방향이에요.</p>
 <div class="small"><b style="color:var(--fg)">목소리 × 성격으로 본 어울리는 일</b></div>${jobChips([...new Set([(FIT_JOBS[c]||[])[0],...TRAITS.map(t=>t[0]).sort((x,y)=>B[y]-B[x]).slice(0,2).map(k=>TRAIT_JOB[k])].filter(Boolean))])}</div>
+<div class="card"><button class="btn block" id="saveImg">결과 이미지로 저장하기</button><p class="small" style="text-align:center;margin:0">새로고침하면 결과가 사라져요. 남겨 두려면 저장해 주세요.</p></div>
 <div class="card" id="wl"><div class="kicker">출시 알림</div><h2>내 목소리에 맞춘 연습은<br>앱에서 이어 가요</h2>
 <ul class="inc"><li>매일 '아~' 5초로 보는 오늘의 목소리 컨디션</li><li>내 유형과 성격에 맞춘 하루 3분 연습</li><li>언제든 물어보는 AI 목소리 선생님</li></ul>
 ${R.waitlisted?`<p><b>신청했어요 ✓</b> 앱이 나오면 ${esc(R.waitlisted)} 번호로 문자 한 번 보내 드릴게요.</p>`:`<label class="small" for="wn" style="margin-bottom:-8px">이름</label><input class="inp" id="wn" maxlength="20" autocomplete="name" value="${esc(R.nick||VT.name||"")}">
@@ -246,6 +255,7 @@ ${R.waitlisted?`<p><b>신청했어요 ✓</b> 앱이 나오면 ${esc(R.waitliste
 <a class="btn block" href="voicetest.html?${R.preview?"free":"paid"}&hear" onclick="tvEvent('목소리다시듣기')">달라진 내 목소리 다시 듣기</a>
 <a class="btn block" href="voicetest.html?${R.preview?"free":"paid"}=new" onclick="tvEvent('다시검사')">처음부터 다시 검사하기</a>
 ${BIZ}`);
+ $("#saveImg").onclick=()=>{tvEvent("결과저장");saveImage({code:c,sex:VT.sex,typeName:TYPE_NM[c]||"",headline:headline(B),sections:[{title:"나의 성격",bars:TRAITS.map(([k,nm])=>({nm,v:B[k]}))},{title:"목소리 × 성격으로 본 어울리는 일",lead:[...new Set([(FIT_JOBS[c]||[])[0],...TRAITS.map(t=>t[0]).sort((x,y)=>B[y]-B[x]).slice(0,2).map(k=>TRAIT_JOB[k])].filter(Boolean))].join(" · ")}]}).catch(()=>toast("이미지를 만들지 못했어요"))};
  const g=$("#wgo");if(g)g.onclick=()=>{const name=$("#wn").value.trim(),phone=$("#wp").value.replace(/\D/g,""),e=$("#werr");
   if(!name){e.textContent="이름을 적어 주세요";return}if(!/^01[016789]\d{7,8}$/.test(phone)){e.textContent="휴대폰 번호를 확인해 주세요";return}if(!$("#wc").checked){e.textContent="동의에 체크해 주세요";return}
   fetch(SAVE_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({type:"waitlist",src:"report",name,phone,sex:VT.sex||"",age:VT.age||null,code:c,target:"",trial:"성격 "+TRAITS.map(([k,nm])=>nm.slice(0,2)+B[k]).join(" "),agree:true})}).catch(()=>{});
@@ -285,13 +295,13 @@ function vReport(D){setFam(D.code);if(!D.test&&R.token&&R.tracked!==R.token){tvT
 ${heroCard(D.code,D.sex,"내 목소리 유형")}
 ${D.sections.map(secHtml).join("")}
 <div class="card noprint"><div class="row"><button class="btn" id="pdf">PDF로 저장</button><button class="btn" id="png">이미지로 저장</button></div>
-<p class="small">이 기기에서는 언제든 다시 열려요.</p>
+<p class="small">새로고침하면 결과가 사라져요. 남겨 두려면 PDF나 이미지로 저장해 주세요.</p>
 ${R.token?`<button class="btn ghost" id="link">레포트 주소 복사</button>`:""}</div>
 <a class="btn block" href="voicetest.html?${R.preview?"free":"paid"}&hear" onclick="tvEvent('목소리다시듣기')">달라진 내 목소리 다시 듣기</a>
 <a class="btn block" href="voicetest.html?${R.preview?"free":"paid"}=new" onclick="tvEvent('다시검사')">처음부터 다시 검사하기</a>
 ${BIZ}`);
  $("#pdf").onclick=()=>window.print();
- $("#png").onclick=()=>saveImage(D).catch(()=>toast("이미지를 만들지 못했어요"));
+ $("#png").onclick=()=>{tvEvent("결과저장");return saveImage(D).catch(()=>toast("이미지를 만들지 못했어요"))};
  if($("#link"))$("#link").onclick=()=>{const u=location.origin+location.pathname+"#t="+R.token;(navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>toast("주소를 복사했어요"),()=>prompt("주소를 복사해 주세요",u))}}
 
 /* ===== 이미지로 저장 — 11/16 대표: PDF처럼 레포트 전체를 긴 이미지 한 장으로(1080 너비, 크림 바탕·흰 카드) =====

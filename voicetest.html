@@ -2,6 +2,14 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
+<script>/* 11/18 대표: 결과는 '저장하기'(사진·PDF)로만 남긴다 — 새로고침하거나 새로 들어오면 바로 처음부터.
+   같은 탭에서 페이지를 넘어갈 때(목소리 → 성격 결과 → 다시 듣기)만 이어진다. 앱 출시 알림 신청 표시는 남긴다 */
+(function(){try{var n=performance.getEntriesByType("navigation")[0],t=n?n.type:"navigate";
+ if(t==="reload"||sessionStorage.getItem("tv_flow")!=="1"){var w=null;try{w=(JSON.parse(localStorage.getItem("tv_voicereport_v1")||"null")||{}).waitlisted}catch(e){}
+  localStorage.removeItem("tv_voicetest_web_v1");localStorage.removeItem("tv_voicereport_v1");if(w)localStorage.setItem("tv_voicereport_v1",JSON.stringify({waitlisted:w}));
+  try{indexedDB.deleteDatabase("tv_vt")}catch(e){}}
+ sessionStorage.setItem("tv_flow","1")}catch(e){}})();</script>
+
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>너는 어떤 목소리야? · 터칭보이스 목소리 유형 테스트</title>
 <meta name="description" content="1분 녹음으로 16가지 목소리 유형 중 내 유형을 찾아보세요. 남에게 들리는 내 목소리, 목소리 나이까지.">
@@ -1272,6 +1280,7 @@ ${S.demo?`<section class="card cta" style="flex-direction:row;align-items:center
 ${hexCard(m,A,J.code)}
 ${S.demo||!REC.r1?"":boostCard(b)}
 ${shareRow()}
+${S.demo?"":`<p class="small" style="text-align:center;margin:0">새로고침하면 결과가 사라져요. 남겨 두려면 <b>사진에 저장</b>을 눌러 주세요.</p>`}
 ${S.demo?"":deepCTA()}
 <section class="card cmp-card">
   ${S.guess?`<div class="cmp"><div><img src="${img.char(S.guess)}" alt=""><small>① 내가 생각한 목소리</small><b>${S.guess}</b><small>${codeShort(S.guess)}</small></div><div class="muted" style="font-size:22px">→</div><div><img src="${img.char(J.code)}" alt=""><small>② 듣는 사람이 느끼는</small><b>${J.code}</b><small>${codeShort(J.code)}</small></div></div>
