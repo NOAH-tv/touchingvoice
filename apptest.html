@@ -916,6 +916,14 @@ body:not(.pro) [data-pro]::after{box-shadow:none}
 .sc-steps{margin:10px 0;padding-left:22px;display:grid;gap:10px;font-size:17px;line-height:1.5;text-align:left;align-self:stretch}.sc-steps li.on{font-weight:700;color:var(--brand)}.sc-steps li.on b{margin-left:4px}.sc-steps li.done{opacity:.45}
 .tw{display:flex;gap:6px;align-items:flex-end;height:60px;margin-top:6px}.tw span{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:2px;height:100%}.tw i{display:block;width:70%;max-width:18px;border-radius:4px;background:var(--brand)}
 .evtform{display:grid;gap:8px}.evtform input[name=n],.evt-r input{font:inherit;padding:9px 12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:inherit;min-width:0}.evt-r{display:grid;grid-template-columns:1fr;gap:8px}.evt-w{display:flex;gap:6px;align-items:center;font-size:14px}
+
+
+@media (max-width:959px) and (not ((orientation:landscape) and (max-height:520px))){
+  .tabbar button,.tabbar button[aria-pressed="true"]{flex:1 1 0;flex-direction:column;gap:2px;min-width:0;height:54px;padding:4px 6px;font-size:11.5px;font-weight:600;letter-spacing:0}
+  .tabbar button svg{width:23px;height:23px}
+}
+.coach-when{scroll-margin-bottom:calc(168px + env(safe-area-inset-bottom,0px))}
+.ob-more{margin:-4px 0 0;text-align:left}.ob-more summary{cursor:pointer;color:var(--muted);font-size:14px}.ob-more p{margin:6px 0 0}
 </style>
 <script>try{var TH0=document.documentElement.getAttribute("data-theme")||"",_t=localStorage.getItem("tv_theme");if(_t==="light"||_t==="dark")document.documentElement.setAttribute("data-theme",_t);["rs","rl"].forEach(function(k){var v=+localStorage.getItem("tv_"+k);if(v>=.5&&v<=2)document.documentElement.style.setProperty("--"+k,v)})}catch(e){}</script>
 
@@ -1011,7 +1019,7 @@ body:not(.pro) [data-pro]::after{box-shadow:none}
   <div class="pm-act" id="ob-act"></div>
 </div>
 <div class="pm" id="pm" hidden role="dialog" aria-modal="true" aria-labelledby="pm-title">
-  <div class="pm-top"><button type="button" class="pm-x" id="pm-x" aria-label="이전"><span class="ico" data-i="back"></span></button><div class="dots" id="pm-dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div><span class="pm-n" id="pm-n"></span><button type="button" class="pm-x" id="pm-home" aria-label="홈으로"><span class="ico" data-i="home"></span></button></div>
+  <div class="pm-top"><button type="button" class="pm-x" id="pm-x" aria-label="이전"><span class="ico" data-i="back"></span></button><div class="dots" id="pm-dots" aria-hidden="true"><i></i><i></i><i></i></div><span class="pm-n" id="pm-n"></span><button type="button" class="pm-x" id="pm-home" aria-label="홈으로"><span class="ico" data-i="home"></span></button></div>
   <div class="pm-body" id="pm-body"></div>
   <div class="pm-act" id="pm-act"></div>
 </div>
@@ -1409,10 +1417,11 @@ const PM={};
 function openPractice(src){Object.keys(PM).forEach(k=>delete PM[k]);Object.assign(PM,src,{step:1,demo:false});
  PM.plain=strip(PM.text);{const n=sylOf(PM.plain);REC.quiet=n>80?3:1.8;REC.max=Math.min(300,Math.max(40,n/2.5+15))*1000}$("pm").hidden=false;document.body.style.overflow="hidden";renderPM()}
 function closePractice(){pmRecOff();recCancel();stopPlay();stopAud();$("pm").hidden=true;document.body.style.overflow=$("rd").hidden&&$("sc").hidden?"":"hidden"}
-function dots(n){[...$("pm-dots").children].forEach((d,i)=>d.classList.toggle("on",i<n));$("pm-n").textContent=n+" / 5"}
+function dots(s){const n=s<3?1:s===3?2:3;[...$("pm-dots").children].forEach((d,i)=>d.classList.toggle("on",i<n));$("pm-n").textContent=n+" / 3"}
 function renderPM(){const s=PM.step;
  
  if(PM.flow===1&&s===2){PM.flow=2;closePractice();return}
+ if(s===2){PM.coach=coach(PM,$("tgt").value);PM.step=3;renderPM();return}
  $("pm-dots").hidden=$("pm-n").hidden=!!PM.flow;dots(s);const B=$("pm-body"),A=$("pm-act"),tgt=$("tgt").value;
  const srcLine=PM.src?`<div class="pm-src">— ${esc(PM.src)}</div>`:"";
  if(s===1){B.innerHTML=`<div class="pm-kick">${PM.flow?"② 스크립트 읽기":"먼저 읽기"}</div><h2 class="pm-title" id="pm-title">먼저 편하게 읽어 보세요</h2><p class="pm-text">${paras(PM.plain)}</p>${srcLine}`;
@@ -1423,9 +1432,9 @@ function renderPM(){const s=PM.step;
   $("pl1").disabled=PM.demo;$("pl1").onclick=e=>play(PM.take1,e.currentTarget,true);$("nx").onclick=()=>{stopPlay();if(PM.flow===1){PM.flow=2;closePractice();return}PM.coach=coach(PM,tgt);PM.step=3;renderPM()}}
  else if(s===3||s===4){const c=PM.coach;
   B.innerHTML=`<div class="pm-kick">${s===3?"코치 표시":"다시 읽기"}</div><h2 class="pm-title" id="pm-title">${s===3?"이렇게 읽어 볼까요":"표시를 보며 다시 읽어 보세요"}</h2>
-  <p class="pm-text${s===3?" anim":""}" id="pmt">${c.html}</p>${srcLine}${s===3?`<ul class="tips">${c.tips.map(t=>`<li>${t}</li>`).join("")}</ul>${c.more?`<button type="button" class="lockline" data-up>${ICON.lock}자세한 코칭 ${c.more}가지 더 보기 · 구독</button>`:""}`:""}`;
+  <p class="pm-text${s===3?" anim":""}" id="pmt">${c.html}</p>${srcLine}${s===3?`<ul class="tips"><li>${c.tips[0]}</li></ul>${c.more?`<button type="button" class="lockline" data-up>${ICON.lock}자세한 코칭 ${c.more}가지 더 보기 · 구독</button>`:""}`:""}`;
   if(s===3){[...$("pmt").querySelectorAll(".p,b,.end,.cue")].forEach((e,i)=>e.style.animationDelay=(0.25+i*0.18)+"s");
-   A.innerHTML=`<button type="button" class="mic" id="nx" aria-label="표시대로 다시 읽기 (누르면 바로 녹음)">${MIC}</button><p class="hint">누르면 바로 녹음돼요 · 표시대로 다시 읽어 보세요</p>`;$("nx").onclick=()=>{PM.step=4;renderPM();if(!PM.demo)$("mic").click()}}
+   A.innerHTML=`<button type="button" class="mic" id="nx" aria-label="표시대로 다시 읽기 (누르면 바로 녹음)">${MIC}</button><p class="hint">누르면 바로 녹음돼요 · 표시대로 다시 읽어 보세요</p>${PM.demo?"":`<button type="button" class="link" id="pl1">방금 읽은 내 목소리 듣기</button>`}`;$("nx").onclick=()=>{stopPlay();PM.step=4;renderPM();if(!PM.demo)$("mic").click()};{const p=$("pl1");if(p)p.onclick=e=>play(PM.take1,e.currentTarget,true)}}
   else{A.innerHTML=recUI("/ 에서 쉬고, 굵은 말에 힘을 주세요");bindRec(2)}}
  else if(s===5){const R=compare(PM,tgt),up=R.rows.filter(r=>r.k==="up").length;
   B.innerHTML=`<div class="pm-kick">얼마나 나아졌을까</div><h2 class="verdict" id="pm-title">${up?`${up}가지가 좋아졌어요!`:"비슷하게 읽었어요"}</h2>${say(up>=3?"와, 처음보다 훨씬 좋아졌어!":up?"좋아지고 있어! 한 번 더 하면 더 좋아질 거야.":"처음엔 다 그래. 표시대로 한 번 더 해 보자!",{size:"s"})}
@@ -1543,14 +1552,14 @@ const band=t=>{if(GOAL&&t===$("tgt").value){const r=3.3+GOAL.r*.03;return[+(r-.4
 const isStatement=t=>/[.。]\s*$/.test(t)||!/[?!]\s*$/.test(t);
 function coach(P,tgt){const m=P.m1,tips=[],cues=[],plain=P.plain,pl=pole(tgt);
  const commas=(plain.match(/[,，]/g)||[]).length,ends=Math.max(0,(plain.match(/[.?!]/g)||[]).length-1),wantP=Math.max(1,commas+ends+(sylOf(plain)>26?1:0));
- const pauseAll=m.pauses<wantP;if(pauseAll)tips.push(`쉼이 <b>${m.pauses}번</b>이었어요. <b>/</b> 자리마다 숨을 한 번씩 쉬어 보세요.`);
- const b=band(tgt);if(m.rate>b[1]){cues.push("천천히");tips.push(`1초에 <b>${m.rate.toFixed(1)}글자</b>로 빨랐어요. ${b[1].toFixed(1)}글자 아래로 천천히 읽어 보세요.`)}
- else if(m.rate<b[0]){cues.push("빠르게");tips.push(`1초에 <b>${m.rate.toFixed(1)}글자</b>로 느렸어요. 한 호흡에 조금 더 이어 읽어 보세요.`)}
+ const pauseAll=m.pauses<wantP;if(pauseAll)tips.push(m.pauses?"쉼이 조금 적었어요. <b>/</b> 자리마다 숨을 한 번씩 쉬어 보세요.":"쉬지 않고 이어 읽었어요. <b>/</b> 자리마다 숨을 한 번씩 쉬어 보세요.");
+ const b=band(tgt);if(m.rate>b[1]){cues.push("천천히");tips.push(m.rate>b[1]+.8?"꽤 빨랐어요. <b>한 마디씩 끊어</b> 천천히 읽어 보세요.":"조금 빨랐어요. 조금만 <b>천천히</b> 읽어 보세요.")}
+ else if(m.rate<b[0]){cues.push("빠르게");tips.push("조금 느렸어요. 한 호흡에 조금 더 <b>이어</b> 읽어 보세요.")}
  if((pl==="A"||tgt[3]==="T")&&m.range<10){tips.push("높낮이가 평평했어요. <b>굵은 말</b>에서 살짝 올렸다 내려 보세요.")}
  else if((pl==="B"||tgt[3]==="F")&&m.range>12){tips.push("높낮이가 컸어요. <b>한 높이로</b> 차분하게 읽어 보세요.")}
  if(isStatement(plain)&&m.end>0.5)tips.push("문장 끝이 올라갔어요. <b>↘</b> 표시처럼 끝을 편하게 내려놓아 보세요.");
  if(m.clear!=null&&m.clear<7)tips.push("글자가 조금 뭉쳤어요. 입을 조금 더 열고 <b>또박또박</b> 읽어 보세요.");
- if(m.match!=null&&m.match<85)tips.push(`기계가 알아들은 비율이 <b>${m.match}%</b>였어요. 받침을 끝까지 소리 내 보세요.`);
+ if(m.match!=null&&m.match<85)tips.push("몇 글자가 흐리게 들렸어요. <b>받침</b>을 끝까지 소리 내 보세요.");
  if(!tips.length)tips.push("이미 잘 읽었어요! <b>굵은 말</b>에 힘을 실어 한 번 더 읽어 보세요.");
  const minor=true;let src=P.text;
  if(!/[|¦*]/.test(src))src=autoMark(plain,P.bold,pauseAll);
@@ -1770,7 +1779,7 @@ document.addEventListener("keydown",e=>{if($("tp").hidden||!$("sheet").hidden)re
  else if(k==="PageUp"){e.preventDefault();v.scrollTop-=v.clientHeight*.4}
  else if(k==="Home"){e.preventDefault();$("tp-back").click()}});
 
-function pmBack(){const s=PM.step;recCancel();stopPlay();if(s<=1){const f=PM.flow;closePractice();if(f)openD3(3);return}if(s===5)PM.saved=false;PM.step=s===5?4:s-1;renderPM()}
+function pmBack(){const s=PM.step;recCancel();stopPlay();if(s<=1){const f=PM.flow;closePractice();if(f)openD3(3);return}if(s===5)PM.saved=false;PM.step=s===5?4:s===3?1:s-1;renderPM()}
 function goHome(){if(!$("sc").hidden)closeSc();if(!$("rd").hidden)closeRd();if(!$("vc").hidden)closeVC();if(!$("tr").hidden)closeTrk();if(!$("pm").hidden)closePractice();if(!$("tp").hidden)closeTP();if(!$("d3").hidden)closeD3();$("setsheet").hidden=true;$("sheet").hidden=true;tab("today");window.scrollTo(0,0)}
 
 
@@ -2057,7 +2066,7 @@ const OB_SENT=LANG==="en"&&EN.sent?EN.sent:"저를 한마디로 소개하자면,
 const LET={L:["높이","낮은","힘 있고 듬직하게 들려요"],H:["높이","높은","밝고 다정하게 들려요"],A:["빠르기","빠르고 활발한","힘차고 신나게 들려요"],U:["빠르기","천천히 말하는","차분해서 믿음이 가요"],
  D:["소리 색깔","또렷한","한 글자 한 글자 잘 들려요"],B:["소리 색깔","바람이 섞인","부드럽고 포근하게 들려요"],T:["오르내림","노래하듯 말하는","이야기처럼 재미있게 들려요"],F:["오르내림","흔들림 없는","차분해서 말이 귀에 잘 들어와요"]};
 const obCode=(s,v,sex)=>(st(s.f0,{m:110,f:195}[sex]||152)<0?"L":"H")+(s.rate>=4.8?"A":"U")+(v.hnr>=17?"D":"B")+(s.rangeSt>=9.5?"T":"F");
-const OB_STEPS=["hi","join","info","guess","rec1","rec2","wait","result","target","read","done"],OB_PREV={join:"hi",info:"join",guess:"info",rec1:"guess",rec2:"rec1",result:"rec1",target:"result",read:"target",done:"read"};
+const OB_STEPS=["hi","join","info","rec1","rec2","wait","result","job"],OB_PREV={join:"hi",info:"join",rec1:"info",rec2:"rec1",result:"rec1",job:"result"};
 let OB={k:"hi",u:{}};
 function loadUser(){try{return JSON.parse(localStorage.getItem("tv_user")||"null")}catch(e){return null}}
 function saveUser(u){try{localStorage.setItem("tv_user",JSON.stringify(u))}catch(e){}}
@@ -2066,7 +2075,7 @@ const syncUser=w=>{const u={...(loadUser()||{}),sex:$("sex").value,cur:$("cur").
  if(w==="tgt"||!u.goal||codeOfGoal(u.goal)!==u.tgt)u.goal=presetFor(u.tgt,u.now);saveUser(u);GOAL=u.goal;NOWP=u.now};
 function openOB(){OB={k:"hi",u:{...(loadUser()||{})}};$("ob").hidden=false;document.body.style.overflow="hidden";renderOB()}
 function obAuthed(me){if(!me||$("ob").hidden||!["hi","join"].includes(OB.k))return;const u=OB.u;u.via=me.via||"google";if(!u.name&&me.name)u.name=me.name.split(" ")[0].slice(0,20);
- if(OB.gate){closeOB();maybeAd()}else if(OB.login&&u.cur&&u.tgt)obGo("done");else obGo("info")}
+ if(OB.gate){closeOB();maybeAd()}else if(OB.login&&u.cur&&u.tgt)obFinish(false);else obGo("info")}
 
 function authGate(){if(!/(^|\.)touchingvoice\.app$|^localhost$|^127\.0\.0\.1$/.test(location.hostname))return;let ob=null;try{ob=localStorage.getItem("tv_ob")}catch(e){}if(!ob){if($("ob").hidden)openOB();return}
  if(!$("ob").hidden&&OB.gate)return;OB={k:"join",u:{...(loadUser()||{})},login:true,gate:true};$("ob").hidden=false;document.body.style.overflow="hidden";renderOB()}
@@ -2084,10 +2093,10 @@ async function obAnalyze(){try{let s,v;
   else{const a=await resample(OB.r1.x,OB.r1.sr),b=await resample(OB.r2.x,OB.r2.sr),nd=noiseFloor(a);s=analyzeSentence(a,nd,sylOf(OB_SENT));v=analyzeVowel(b,nd)}
   OB.u.cur=obCode(s,v,OB.u.sex);OB.u.m={f0:Math.round(s.f0),rate:+(+s.rate).toFixed(2),range:+(+s.rangeSt).toFixed(1),hnr:+(+v.hnr).toFixed(1),demo:!!OB.demo};OB.u.now=fixSide(nowOfM(OB.u.m,OB.u.sex),OB.u.cur);OB.u.goal=null;setTimeout(()=>{if(OB.k==="wait")obGo("result")},1800)}
  catch(e){OB.err=((e&&e.message)||"분석하지 못했어요")+" — 다시 녹음해 주세요.";obGo("rec1")}}
-function obFinish(go3){if(OB.u.ints&&OB.u.ints.length){ints.clear();OB.u.ints.forEach(t=>ints.add(t));renderInts()}OB.u.at=OB.u.at||new Date().toISOString();saveUser(OB.u);applyUser(OB.u);try{localStorage.setItem("tv_ob","1");localStorage.setItem("tv_hello_day",dayKey())}catch(e){}
+function obFinish(go3){if(!OB.u.tgt)OB.u.tgt=OB.u.cur;if(!OB.u.goal&&OB.u.now)OB.u.goal={...OB.u.now};if(OB.u.ints&&OB.u.ints.length){ints.clear();OB.u.ints.forEach(t=>ints.add(t));renderInts()}OB.u.at=OB.u.at||new Date().toISOString();saveUser(OB.u);applyUser(OB.u);try{localStorage.setItem("tv_ob","1");localStorage.setItem("tv_hello_day",dayKey())}catch(e){}
  closeOB();renderToday();renderHome();renderTrain();renderSetChars();tab("today");window.scrollTo(0,0);if(go3)openD3(1)}
-function renderOB(){const k=OB.k,u=OB.u,B=$("ob-body"),A=$("ob-act"),i=["join","info","guess","rec1","rec2","result","target","read","done"].indexOf(k==="wait"?"rec2":k);
- $("ob-back").style.visibility=OB_PREV[k]&&!(OB.gate&&k==="join")?"visible":"hidden";$("ob-dots").innerHTML=k==="hi"?"":Array.from({length:9},(_,j)=>`<i class="${j<=i?"on":""}"></i>`).join("");$("ob-n").textContent="";
+function renderOB(){const k=OB.k,u=OB.u,B=$("ob-body"),A=$("ob-act"),i=["join","info","rec1","rec2","result","job"].indexOf(k==="wait"?"rec2":k);
+ $("ob-back").style.visibility=OB_PREV[k]&&!(OB.gate&&k==="join")?"visible":"hidden";$("ob-dots").innerHTML=k==="hi"?"":Array.from({length:6},(_,j)=>`<i class="${j<=i?"on":""}"></i>`).join("");$("ob-n").textContent="";
  if(k==="hi"){B.innerHTML=`<div class="ob-hero">${["HUBT","LADT","HADF","LUBF"].map(c=>`<img src="${charSrc(c)}" alt="">`).join("")}</div>
   <div class="chips" id="ob-lang" role="group" aria-label="언어 · Language" style="justify-content:center"><button type="button" data-l="ko" aria-pressed="${LANG==="ko"}">한국어</button><button type="button" data-l="en" aria-pressed="${LANG==="en"}">English</button></div>
   <h1 class="ob-h" id="ob-h">내 목소리,<br>매일 3분이면 달라져요</h1><p class="ob-sub ob-c">듣는 사람이 느끼는 내 목소리를 알고,<br>원하는 목소리까지 병아리와 함께 가요.</p>`;
@@ -2102,16 +2111,13 @@ function renderOB(){const k=OB.k,u=OB.u,B=$("ob-body"),A=$("ob-act"),i=["join","
    try{obAuthed(TVAuth.info()||await TVAuth.signIn(b.dataset.via))}
    catch(err){b.disabled=false;const el=$("ob-err");if(el)el.textContent=TVAuth.msg(err)}};return}
  if(k==="info"){B.innerHTML=`<div class="pm-kick">시작 전에</div><h2 class="ob-h2" id="ob-h">나에 대해 조금만 알려 주세요</h2>
-  <label class="ed-l">부를 이름 <small>선택 · 인사할 때 불러 드려요</small><input id="ob-nm" class="inp" maxlength="20" autocomplete="nickname" placeholder="예: 우경" value="${esc(u.name||"")}"></label>
   <div class="ed-l">성별 <small>목소리 높이를 같은 성별 기준으로 비교하고, 맞는 연습 트랙을 골라요</small><div class="chips feel" id="ob-sex" role="group" aria-label="성별">${[["f","여"],["m","남"]].map(([v,t])=>`<button type="button" data-v="${v}" aria-pressed="${u.sex===v}">${t}</button>`).join("")}</div></div>
-  <label class="ob-chk"><input type="checkbox" id="ob-ok"${u.ok?" checked":""}><span>만 14세 이상이에요. 목소리 분석은 이 폰 안에서 하고, 녹음은 이 폰에만 저장돼요. 말을 글자로 알아듣는 '음성 인식'은 꺼져 있고, 직접 켤 때만 브라우저(구글·애플) 기능을 써요. 건강 진단이 아니라 목소리 인상과 연습을 위한 것이라는 걸 확인했어요.</span></label>
+  <label class="ob-chk"><input type="checkbox" id="ob-ok"${u.ok?" checked":""}><span>만 14세 이상이고, 녹음은 이 폰에만 저장돼요.</span></label>
+  <details class="ob-more"><summary>자세히</summary><p class="meta">목소리 분석은 이 폰 안에서 해요. 말을 글자로 알아듣는 '음성 인식'은 꺼져 있고, 직접 켤 때만 브라우저(구글·애플) 기능을 써요. 건강 진단이 아니라 목소리 인상과 연습을 위한 것이에요.</p></details>
   <p class="ob-err" id="ob-err"></p>`;
   A.innerHTML=obBtn("ob-next","next","다음",1);
   $("ob-ok").onchange=()=>{$("ob-err").textContent=""};$("ob-sex").onclick=e=>{const b=e.target.closest("button");if(!b)return;u.sex=b.dataset.v;$("ob-err").textContent="";[...$("ob-sex").children].forEach(x=>x.setAttribute("aria-pressed",x===b))};
-  $("ob-next").onclick=()=>{u.name=$("ob-nm").value.trim();u.ok=$("ob-ok").checked;if(!u.sex){$("ob-err").textContent="성별을 골라 주세요";return}if(!u.ok){$("ob-err").textContent="확인란에 체크해 주세요";return}obGo("guess")};return}
- if(k==="guess"){B.innerHTML=`<div class="pm-kick">① 내가 생각하는 내 목소리</div><h2 class="ob-h2" id="ob-h">내 목소리는 어떤 느낌일 것 같아요?</h2><p class="ob-sub">하나 골라 두면, 녹음 결과와 비교해 드려요.</p>${obTiles(u.guess)}`;
-  const nx=()=>{A.innerHTML=obBtn("ob-next","next",u.guess?"다음":"잘 모르겠어요",!!u.guess);$("ob-next").onclick=()=>obGo("rec1")};nx();
-  $("ob-grid").onclick=e=>{const b=e.target.closest("button");if(!b)return;u.guess=u.guess===b.dataset.c?null:b.dataset.c;[...$("ob-grid").children].forEach(x=>x.setAttribute("aria-pressed",x.dataset.c===u.guess));nx()};return}
+  $("ob-next").onclick=()=>{u.ok=$("ob-ok").checked;if(!u.sex){$("ob-err").textContent="성별을 골라 주세요";return}if(!u.ok){$("ob-err").textContent="확인란에 체크해 주세요";return}obGo("rec1")};return}
  if(k==="rec1"||k==="rec2"){const one=k==="rec1",err=one&&OB.err;OB.err=null;OB.demo=false;
   B.innerHTML=one?`<div class="pm-kick">② 듣는 사람이 느끼는 내 목소리 · 녹음 1/2</div><h2 class="ob-h2" id="ob-h">평소 말하듯 읽어 주세요</h2><p class="ob-sent">${OB_SENT.replace(/(?<=[.?!])\s+/g,"<br>")}</p>${err?`<p class="ob-err">${esc(err)}</p>`:""}`
    :`<div class="pm-kick">② 듣는 사람이 느끼는 내 목소리 · 녹음 2/2</div><h2 class="ob-h2" id="ob-h">숨을 크게 채우고, 편한 높이로 '아~'</h2><p class="ob-sub">숨이 다할 때까지 한 음으로 길게 내 주세요.<br>힘들면 언제든 멈춰도 괜찮아요.</p>`;
@@ -2125,25 +2131,14 @@ function renderOB(){const k=OB.k,u=OB.u,B=$("ob-body"),A=$("ob-act"),i=["join","
   ${g?`<p class="ob-sub ob-c">내가 생각한 목소리(${esc(TYPES[g])})와 <b>${same}가지</b>가 같아요${same===4?" — 정확해요!":same<=1?" — 남이 듣는 내 목소리는 꽤 달라요":""}</p>`:""}
   <div class="ob-let">${c.split("").map(l=>`<div><b>${LET[l][0]}</b><span>${LET[l][1]}</span><small>${LET[l][2]}</small></div>`).join("")}</div>
   <p class="meta ob-c" style="margin:0">${u.m&&u.m.demo?"데모 결과예요 · ":""}휴대폰 마이크로 본 목소리 인상이에요 · 건강 진단이 아니에요</p>`;
-  A.innerHTML=`${obBtn("ob-next","next","원하는 목소리 고르기",1)}<button type="button" class="link" id="ob-redo">다시 녹음할래요</button>`;
-  $("ob-next").onclick=()=>obGo("target");$("ob-redo").onclick=()=>obGo("rec1");return}
- if(k==="target"){if(!u.now)u.now=posOfCode(u.cur);if(!u.goal)u.goal={...u.now};
-  B.innerHTML=`<div class="pm-kick">③ 내가 원하는 목소리</div><h2 class="ob-h2" id="ob-h">어떤 목소리가 되고 싶어요?</h2><p class="ob-sub">막대를 원하는 만큼 움직여요. <b style="color:var(--gold-ink)">지금</b> 표시가 지금 내 목소리예요.</p>
-  <div class="goal" id="ob-goal"></div><details class="vb-table"><summary>캐릭터로 고르기</summary><div style="margin-top:10px">${obTiles(null,u.cur)}</div></details>`;
-  const nx=c=>{u.tgt=c;const same=GAX.every(([k])=>Math.abs(u.goal[k]-u.now[k])<8);A.innerHTML=obBtn("ob-next","check",same?"지금 내 목소리 다듬기":"이 목표로 정하기",1);$("ob-next").onclick=()=>obGo("read")};
-  const G=goalUI($("ob-goal"),u.goal,u.now,nx);
-  $("ob-grid").onclick=e=>{const b=e.target.closest("button");if(!b)return;G.set(presetFor(b.dataset.c,u.now));[...$("ob-grid").children].forEach(x=>x.setAttribute("aria-pressed",x===b))};return}
- if(k==="read"){if(!u.ints)u.ints=[];
-  B.innerHTML=`<div class="pm-kick">④ 오늘의 읽기</div><h2 class="ob-h2" id="ob-h">매일 읽을 글은 AI가 골라 드려요</h2>
-  <p class="ob-sub">AI가 내 목표에 맞춰 매일 연습할 문장을 추천해 줘요.<br>읽고 싶은 분야를 골라 주세요. 여러 개 골라도 돼요.</p>
-  <div class="chips feel" id="ob-ints" role="group" aria-label="읽고 싶은 분야">${Object.entries(D.reading.tags).map(([t,v])=>`<button type="button" data-t="${t}" aria-pressed="${u.ints.includes(t)}"${t==="news"?" disabled":""}>${ICON[t]||""}${v}${t==="news"?" (준비 중)":""}</button>`).join("")}</div>
-  <p class="meta ob-c" style="margin:0">고른 분야의 글이 홈에 매일 하나씩 나와요 · 나중에 설정에서 바꿀 수 있어요</p><p class="ob-err" id="ob-err"></p>`;
-  A.innerHTML=obBtn("ob-next","next","다음",1);
-  $("ob-ints").onclick=e=>{const b=e.target.closest("button");if(!b||b.disabled)return;const t=b.dataset.t;u.ints=u.ints.includes(t)?u.ints.filter(x=>x!==t):[...u.ints,t];b.setAttribute("aria-pressed",u.ints.includes(t));$("ob-err").textContent=""};
-  $("ob-next").onclick=()=>{if(!u.ints.length){$("ob-err").textContent="하나 이상 골라 주세요";return}obGo("done")};return}
- if(k==="done"){applyUser(u);B.innerHTML=`${pairCh()}<h2 class="ob-h2 ob-c" id="ob-h">${u.name?esc(u.name)+"님, ":""}준비 끝!</h2>
-  <p class="ob-sub ob-c"><b>${esc(TYPES[u.cur]||"")}</b>에서 <b>${esc(TYPES[u.tgt]||"")}</b>까지,<br>매일 3분이면 돼요. 오늘 목소리부터 볼까요?</p>${u.goal&&u.now?gSum(u.goal,u.now):""}`;
-  A.innerHTML=`<div class="rrow">${obBtn("ob-home","home","홈 둘러보기")}${obBtn("ob-go","mic","오늘의 3분",1)}</div>`;$("ob-home").onclick=()=>obFinish(false);$("ob-go").onclick=()=>obFinish(true)}}
+  A.innerHTML=`${obBtn("ob-next","next","다음",1)}<button type="button" class="link" id="ob-redo">다시 녹음할래요</button>`;
+  $("ob-next").onclick=()=>obGo("job");$("ob-redo").onclick=()=>obGo("rec1");return}
+ if(k==="job"){if(!Array.isArray(u.jobs))u.jobs=[];
+  B.innerHTML=`<div class="pm-kick">마지막</div><h2 class="ob-h2" id="ob-h">목소리를 주로 어디에 쓰세요?</h2><p class="ob-sub">여러 개 골라도 돼요. 고른 일에 맞춰 '말하기 전·말한 뒤'에 할 것을 바로 띄워 드려요.</p>
+  <div class="chips feel" id="ob-job" role="group" aria-label="목소리를 쓰는 곳">${JOBS.map(([v,t])=>`<button type="button" data-v="${v}" aria-pressed="${u.jobs.includes(v)}">${t}</button>`).join("")}</div><p class="ob-err" id="ob-err"></p>`;
+  A.innerHTML=obBtn("ob-next","next","시작하기",1);
+  $("ob-job").onclick=e=>{const b=e.target.closest("button");if(!b)return;const v=b.dataset.v;u.jobs=u.jobs.includes(v)?u.jobs.filter(x=>x!==v):[...u.jobs,v];b.setAttribute("aria-pressed",u.jobs.includes(v));$("ob-err").textContent=""};
+  $("ob-next").onclick=()=>{if(!u.jobs.length){$("ob-err").textContent="하나 이상 골라 주세요. 잘 모르겠으면 '일상'을 눌러 주세요.";return}u.jobAsked=1;obFinish(false)}}}
 $("ob-back").onclick=()=>{if(REC.on)recCancel();const p=OB_PREV[OB.k];if(p)obGo(p)};
 
 const GAX=[["h","높이","낮게","높게"],["r","말 빠르기","느리게","빠르게"],["m","억양 폭","차분하게","다양하게"],["c","소리 색깔","부드럽게","단단하고 또렷하게"]];
@@ -3437,7 +3432,7 @@ function flowRtGo(k){if(k==="breath"||k==="scale"){const L=trkLevels(k),t=L.find
  const g=k==="high"?"high":"mid",p=genPlan(g),i=p.steps.findIndex((_,j)=>genBest(p.id,j)<60);openGen(p,i<0?p.steps.length-1:i)}
 function flowReread(){if(PM.m1&&(PM.flow===2||PM.flow===3)){delete PM.m2;delete PM.take2;PM.saved=false;PM.flow=3;PM.coach=coach(PM,$("tgt").value);PM.step=3;$("pm").hidden=false;document.body.style.overflow="hidden";renderPM()}else openPractice({...flowText(),flow:3})}
 function flowMission(){const t=today(),f=CHAT.flow||(CHAT.flow={step:"check"});if(t&&t.flow)f.step="done";if(f.step==="check"&&t&&t.steps&&t.steps.check)f.step="read";
- if(f.step==="check")return{id:"f-check",name:"① 목소리 체크",min:"20초",ico:"mic",say:"오늘 순서는 <b>① 목소리 체크 → ② 스크립트 읽기 → ③ 변화 결과</b>예요.<br>먼저 편하게 <b>'아~' 5초</b> 내 주세요!",why:"매일 같은 소리로 재야 어제와 견줄 수 있어요.",go:()=>{openD3(1);F.only=true}};
+ if(f.step==="check")return{id:"f-check",name:"① 목소리 체크 · '아~' 5초",min:"10초",ico:"mic",say:"오늘의 3분은 <b>'아~' 5초</b>로 시작해요.",why:"매일 같은 소리로 재야 어제와 견줄 수 있어요.",go:()=>{openD3(1);F.only=true}};
  if(f.step==="read"){const x=strip(flowText().text).replace(/\s+/g," ");return{id:"f-read",name:"② 스크립트 읽기",min:"1분",ico:"book",say:`② 오늘의 스크립트예요. 평소처럼 편하게 <b>한 번만</b> 읽어 주세요. 다 읽으면 ③ 변화 결과를 바로 보여 드릴게요.<i class="flow-q">“${esc(x.length>46?x.slice(0,46)+"…":x)}”</i>`,why:"지금 내 말소리를 먼저 들어 봐야 무엇을 연습할지 알 수 있어요.",go:()=>openPractice({...flowText(),flow:1})}}
  if(f.step==="routine"){const r=FLOW_RT[f.rt]||FLOW_RT.mid;return{id:"f-rt",name:"③ "+r[0],min:"2분",ico:"stairs",say:r[1],why:"방금 읽은 결과에서 고른 오늘의 연습이에요.",go:()=>flowRtGo(f.rt)}}
  if(f.step==="reread")return{id:"f-re",name:"④ 같은 문장 다시 읽기",min:"1분",ico:"again",say:"연습했으니 <b>아까 그 문장</b>을 다시 읽어 봐요. 처음 소리와 이어서 들어 볼 수 있어요.",why:"전과 후를 귀로 견줘 봐야 달라진 걸 알 수 있어요.",go:flowReread};
@@ -3516,7 +3511,7 @@ function coachReview(){const p=CHAT.pend;if(!p)return;CHAT.pend=null;if(flowRevi
  if(p.mid==="boost"&&BST.done){const o=BST_OPT.find(x=>x[0]===BST.k);out.push(`'${o[1]}' 쪽을 들어 봤죠? 그 소리에 가까워지려면 <b>${o[6]}</b>가 좋아요.`);COACH.want=o[7]}
  if(p.mid==="train"&&!out.length&&!rc.length){renderCoach();return}
  chatPush("c",out.length?out.join("<br>"):"도중에 멈췄네요. 괜찮아요, 준비되면 이어서 해요.");
- if(out.length)COACH.skip=0;giveMission(out.length?"다음은 이거 어때요?":"",out.length?p.mid:null);renderCoach()}
+ if(out.length)COACH.skip=0;if(out.length&&situNext())return;giveMission(out.length?"다음은 이거 어때요?":"",out.length?p.mid:null);renderCoach()}
 
 
 const kbS=x=>typeof kbSafety==="function"?kbSafety(x):null,kbF=x=>typeof kbFind==="function"?kbFind(x):null;
@@ -3565,7 +3560,7 @@ function coachReply(txt){const x=txt.replace(/\s+/g," ").trim();if(!x)return;cha
  else chatPush("c","아직은 몇 가지 말만 알아들어요 😅 이렇게 물어봐 주세요: <b>오늘 컨디션 어제랑 비교해 줘 · 이번 주 어땠어 · 오늘 뭐 할까 · 목이 쉬었어 · 시간이 없어</b>");
  renderCoach()}
 
-function coachAsk(mid){{const s=SITU_M().find(q=>q.id===mid);if(s){s.go();return}}const m=aiMissions().find(x=>x.id===mid);if(!m){chatPush("c","그건 오늘 벌써 했어요! 다른 걸 해 봐요.");giveMission();renderCoach();return}
+function coachAsk(mid){{const s=SITU_M().find(q=>q.id===mid);if(s){if(mid==="rd"){CHAT.pend={mid,snap:coachSnap()};chatSave()}s.go();return}}const m=aiMissions().find(x=>x.id===mid);if(!m){chatPush("c","그건 오늘 벌써 했어요! 다른 걸 해 봐요.");giveMission();renderCoach();return}
  
  if(/^f-/.test(mid)){CHAT.pend={mid,snap:coachSnap()};chatSave();m.go();return}
  $("sheet").innerHTML=`<div role="dialog" aria-modal="true" aria-labelledby="ca-h"><h2 class="sh-h" id="ca-h">${m.name}</h2>${say("지금 시작할까요? 시작하면 화면 전체가 연습 화면으로 바뀌어요. 끝나면 여기서 결과를 같이 봐요.",{size:"s",pop:false})}
@@ -3577,18 +3572,18 @@ function coachAsk(mid){{const s=SITU_M().find(q=>q.id===mid);if(s){s.go();return
 function renderCoach(){const e=$("coach");if(!e||!COACH)return;
  chatDay();
  if(!CHAT.list.length){const u=loadUser()||{},sk=streak();
-  if(!u.coach){chatPush("c",`${u.name?esc(u.name)+", ":""}안녕하세요! 저는 매일 목소리를 같이 봐 드릴 선생님이에요.<br><b>저를 뭐라고 부를까요?</b> 이름을 지어 주세요! (예: 소리쌤 · 보이 · 하루쌤)`);CHAT.ask="name";chatSave()}
-  else giveMission(`${u.name?esc(u.name)+", ":""}안녕하세요! 저는 ${esc(coachName())}${ya(coachName())}. 오늘 ${dayN()}일째${sk>1?` · ${sk}일 연속!`:"."}<br>궁금한 건 물어보세요. 예: <b>"오늘 내 목소리 컨디션 어제랑 비교하면 어때?"</b>`)}
- if(!COACH.boot){COACH.boot=1;situBoot();const fm=flowMission(),lm=[...CHAT.list].reverse().find(m=>m.mid);if(fm&&!CHAT.pend&&!(CHAT.list.at(-1)||{}).of&&(!lm||lm.mid!==fm.id||CHAT.list.at(-1)!==lm))chatPush("c",(CHAT.list.length>1?"다시 오셨네요! 오늘 순서 이어서 해요.<br>":"")+fm.say,fm.id)}
+  
+  const fm=flowMission();chatPush("c",`${u.name?esc(u.name)+"님, ":""}안녕하세요!${sk>1?` ${sk}일 연속이에요.`:""} <b>지금 어떤 때예요?</b> 아래 단추를 눌러 주세요.${fm?"<br>특별한 일이 없으면 이것부터 해요.":""}`,fm?fm.id:null);chatSave()}
+ if(!COACH.boot){COACH.boot=1;situBoot();const fm=flowMission(),lm=[...CHAT.list].reverse().find(m=>m.mid);if(fm&&!CHAT.pend&&!(CHAT.list.at(-1)||{}).of&&(!lm||lm.mid!==fm.id||CHAT.list.at(-1)!==lm))chatPush("c","다시 오셨네요! 이어서 해요.<br>"+fm.say,fm.id)}
  const D=chatOld(),v=COACH.view=Math.max(0,Math.min(COACH.view||0,D.length)),past=v?D[D.length-v]:null,list=past?past.list:CHAT.list,lastM=past?-1:CHAT.list.reduce((a,m,i)=>m.mid?i:a,-1),lastR=past?-1:CHAT.list.reduce((a,m,i)=>m.rec?i:a,-1),L=aiMissions();
  e.innerHTML=`${D.length?dayBar(v,past,D.length):""}<div class="chat" id="chat-log" aria-live="polite">${list.map((m,i)=>m.w==="u"?`<p class="msg me">${m.t}</p>`
   :`<div class="msg c">${i===0||list[i-1].w!=="c"?`<img class="say-img" src="${charSrc($("tgt").value)}" alt="">`:`<span class="say-img" style="visibility:hidden"></span>`}<div class="bubble">${i===0||list[i-1].w!=="c"?`<b class="msg-n">${esc(coachName())}</b>`:""}${m.t}${m.x?`<details class="cx"><summary>측정 자세히 보기</summary>${m.x}</details>`:""}${m.rec&&RECK[m.rec]&&i===lastR?recBtn(m.rec):""}${m.ch&&!m.done&&!past?`<div class="chs">${m.ch.map(([id,l])=>`<button type="button" data-ch="${id}" data-i="${i}">${l}</button>`).join("")}</div>`:""}${m.mid&&!past?(()=>{const x=L.find(q=>q.id===m.mid);return x?`<button type="button" class="mis${i===lastM?" now":""}" data-m="${m.mid}"><span class="c">${ICON[x.ico]||ICON.play}</span><span><b>${x.name}</b><small>약 ${x.min} · 누르면 시작</small></span></button>`:m.mid==="d3"?`<span class="mis done">${ICON.check} 했어요</span>`:""})():""}</div></div>`).join("")}</div>${past?`<button type="button" class="btn" data-dv="0" style="align-self:center">오늘 대화로 돌아가기</button>`:`
-  ${whenRow()}<div class="chips coach-chips" role="group" aria-label="빠른 대답">${["지금 내 목소리 들어 봐","오늘 컨디션 어제랑 비교해 줘","내 목소리 미리 들어볼래","오늘 뭐 할까?","이번 주 어땠어?","목이 좀 쉬었어"].map(x=>`<button type="button" data-q="${x}">${x}</button>`).join("")}</div>
+  ${whenRow()}
   <div class="chat-dock${COACH.kb?" kb":""}" id="chat-dock"><button type="button" class="dock-kb" id="chat-kb" aria-label="${COACH.kb?"목소리로 말하기로":"글로 쓰기"}" aria-pressed="${!!COACH.kb}">${COACH.kb?ICON.wave:ICON.pen}</button>
    <form class="chat-in" id="chat-in"><input id="chat-tx" enterkeyhint="send" autocomplete="off" placeholder="물어보기 · 말로는 키보드 🎤" aria-label="선생님에게 물어보기"><button type="submit" class="chat-send" aria-label="보내기">${ICON.next}</button></form>
    <button type="button" class="dock-hint" id="chat-say">눌러서 목소리를 들려주세요…</button>
    <button type="button" class="chat-mic" id="chat-mic" aria-label="목소리 들려주기">${MIC}</button></div>`}`;
- const lg=$("chat-log");lg.scrollTop=lg.scrollHeight;requestAnimationFrame(()=>{const c=lg.lastElementChild;if(c&&!$("v-today").hidden&&c.getBoundingClientRect().bottom>innerHeight)c.scrollIntoView({block:"end"})})}
+ const lg=$("chat-log");lg.scrollTop=lg.scrollHeight;requestAnimationFrame(()=>{const c=e.querySelector(".coach-when")||lg.lastElementChild;if(c&&!$("v-today").hidden&&c.getBoundingClientRect().bottom>innerHeight-170)c.scrollIntoView({block:"end"})})}
 function dayBar(v,past,n){let t="오늘";if(past){const d=new Date(past.day+"T00:00"),y=new Date();y.setDate(y.getDate()-1);t=(dayKey(y)===past.day?"어제 · ":"")+`${d.getMonth()+1}/${d.getDate()} (${"일월화수목금토"[d.getDay()]})`}
  return`<div class="chat-day" role="group" aria-label="날짜별 대화"><button type="button" data-dv="1"${v>=n?" disabled":""} aria-label="이전 날 대화">${ICON.back}</button><span>${t}<small>${past?"지난 대화 · 보기만 돼요":"옆으로 밀면 지난 대화"}</small></span><button type="button" data-dv="-1"${v?"":" disabled"} aria-label="다음 날 대화">${ICON.back}</button></div>`}
 {let sx=0,sy=0;const c=$("coach");c.addEventListener("touchstart",e=>{const t=e.touches[0];sx=t.clientX;sy=t.clientY},{passive:true});
@@ -3633,8 +3628,8 @@ async function chatCheck(){if(VT.on||REC.on)return;if(!quota("chk").left){chatPu
   await vcResult(VoiceCare.analyze(t.x,t.sr,{noise:nd}),nd,false,t);const card=vcChat(VC.res)+(VC.res.noisy||!VC.res.mv?"":pitchCard(VC.res.mv.hz)),pb=VC.res.w?playBtn("v",VC.res.id):"";
   if(!VC.res.noisy&&aiCan()&&csOn("ai")&&quota("ai").left){const r=VC.res,W=v=>v==null?null:v>=70?"아주 좋음":v>=50?"좋음":v>=30?"보통":"낮음",sc=[["clear","소리 맑음"],["flow","소리 이어짐"],["breath","숨 길이"]].filter(([k])=>r.sc&&r.sc[k]!=null).map(([k,n])=>n+" "+W(r.sc[k])).join(", ");
    const line=`상태 ${["좋아요","조금 지쳤어요","쉬어 주세요"][r.lv]||"?"}, ${sc}${r.mv&&r.mv.hz?`, 높이 ${noteLabel(Math.round(12*Math.log2(r.mv.hz/440)))} 근처`:""}\n${baseCmp(r).txt}`;
-   chatPush("u",`🎙 '아~' ${Math.round(t.x.length/t.sr)}초${pb}`);if(askFeel(VC.res,card,line,true))return;aiReply(voiceLine("ah",line),{kind:"voice",x:card})}
-  else{if(!VC.res.noisy){chatPush("u",`🎙 '아~' ${Math.round(t.x.length/t.sr)}초${pb}`);if(askFeel(VC.res,card,"",false))return}chatPush("c",VC.res.noisy?card+pb:card)}renderCoach()};
+   chatPush("u",`🎙 '아~' ${Math.round(t.x.length/t.sr)}초${pb}`);if(askFeel(VC.res,card,line,true))return;aiReply(voiceLine("ah",line),{kind:"voice",x:card}).then(situNext)}
+  else{if(!VC.res.noisy){chatPush("u",`🎙 '아~' ${Math.round(t.x.length/t.sr)}초${pb}`);if(askFeel(VC.res,card,"",false))return}chatPush("c",VC.res.noisy?card+pb:card)}if(!situNext())renderCoach()};
 
 function askFeel(r,card,line,ai){const bc=baseCmp(r);if(!bc.low.length||feelToday())return false;const L=bc.low.map(k=>BW[k]);
  chatPush("c",`평소와 비교해 보니 ${L.slice(0,-1).map(x=>x[3]+" ").join("")}${L.at(-1)[4]}. 오늘 컨디션은 어떠세요?`);const it=CHAT.list.at(-1);it.ch=FEEL.map(([k,l])=>["fl-"+k,l]);it.fl={card,line,ai,d:bc.d};chatSave();renderCoach();return true}
@@ -3779,15 +3774,15 @@ const SIT={
  cast:{before:["방송 전이네요. 중음 연습으로 입 안을 넓히고, 1분 루틴으로 첫 멘트를 준비해요.",["g-mid","sc-pre"]],after:["방송 끝! 마무리 1분으로 목을 내려놓고, 오늘 말한 시간을 남겨요.",["sc-cool","talk"]]},
  study:{before:["준비하고 있군요! '아~'로 지금 상태를 보고, 자기소개나 발표 첫 부분을 한 번 읽어 봐요.",["chk","rd"]],after:["수고했어요. 결과와 상관없이 오늘 해낸 게 중요해요. '아~'로 상태만 남겨요.",["chk"]]},
  daily:{before:["좋아요! 오늘의 글을 편하게 한 번 읽어 봐요.",["rd"]],after:["수고했어요! '아~'로 상태만 남겨요.",["chk"]]}};
-const SIT_BAD="목이 안 좋은 날엔 연습보다 쉬는 게 먼저예요. 오늘은 '아~'로 상태만 남기고, 말을 줄이고 물을 자주 마셔요. 아프거나 쉰 목소리가 4주 넘게 가면 이비인후과에서 확인받아 보세요.";
+const SIT_BAD="목이 안 좋은 날엔 연습보다 쉬는 게 먼저예요. 오늘은 '아~'로 상태만 남기고(소리 내기 어려우면 건너뛰어도 돼요), 말을 줄이고 물을 자주 마셔요. 아프거나 쉰 목소리가 4주 넘게 가면 이비인후과에서 확인받아 보세요.";
 let SITU={pre:null,fresh:false};try{SITU.pre=JSON.parse(localStorage.getItem("tv_pre")||"null")}catch(e){}
-function situ(when,x){x=x||"";const first=!myJobs().length,j=pickJob(x);SITU.job=j;
- if(when==="bad"){COACH.light=true;COACH.skip=0;chatPush("c",SIT_BAD,"chk");chatPush("c","소리 내기 어려우면 소리 없이 하는 30초 이완도 좋아요.","sc-quiet")}
+function situNext(){const n=SITU.next,last=CHAT.list.at(-1);SITU.next=null;if(!n||(last&&last.of))return false;chatPush("c","좋아요! 그다음엔 이것.",n);chatSave();renderCoach();return true}
+function situ(when,x){x=x||"";SITU.next=null;if(!myJobs().length&&!x){SITU.wait=when;chatPush("c",jobAsk());chatSave();renderCoach();return}const j=pickJob(x);SITU.job=j;
+ if(when==="bad"){COACH.light=true;COACH.skip=0;chatPush("c",SIT_BAD,"chk");SITU.next="sc-quiet"}
  else{const s=SIT[j][when],later=/내일|모레|다음 ?주|주말|[월화수목금토일]요일/.test(x);if(when==="before")SITU.fresh=true;
   chatPush("c",(later?"그날 말하기 직전에 이걸 해요. ":"")+s[0]+(myJobs().length>1?`<br><small class="meta">${esc(JOBN[j])} 기준이에요</small>`:""),s[1][0]);
-  if(s[1][1])chatPush("c","그다음엔 이것.",s[1][1]);
-  if(later)chatPush("c","일정으로 넣어 두면 휴대폰 달력이 30분 전에 알려 줘요.","evt")}
- if(first)chatPush("c",jobAsk());chatSave();renderCoach()}
+  SITU.next=later?"evt":s[1][1]||null}
+ chatSave();renderCoach()}
 function jobAsk(){const J=myJobs();return`<div class="jobpick"><p>목소리를 주로 어디에 쓰세요? <b>여러 개</b> 골라도 돼요. 고르면 '말하기 전·말한 뒤'에 딱 맞는 걸 바로 띄워 드려요.</p><div class="chips">${JOBS.map(([k,n])=>`<button type="button" data-job="${k}" aria-pressed="${J.includes(k)}">${n}</button>`).join("")}</div><button type="button" class="btn pri" data-jobok>이렇게 할게요</button></div>`}
 const whenRow=()=>`<div class="chips coach-when" role="group" aria-label="지금은"><button type="button" data-when="before">${ICON.play}말하기 전</button><button type="button" data-when="after">${ICON.check}말한 뒤</button><button type="button" data-when="bad">${ICON.wind}목이 안 좋아요</button></div>`;
 
@@ -3799,7 +3794,7 @@ function openShort(id){const c=SHORT[id],S=$("sheet");let i=-1,t=0,tm=null;
   $("sc-x").onclick=()=>{clearInterval(tm);S.hidden=true};$("sc-go").onclick=()=>{if(end){S.hidden=true;scDone(id)}else step(i+1)}};
  const step=k=>{clearInterval(tm);i=k;t=i<c[2].length?c[2][i][1]:0;draw();if(i>=c[2].length)return;tm=setInterval(()=>{t--;if(t<=0){step(i+1);return}const b=S.querySelector("li.on b");if(b)b.textContent=t+"초"},1000)};
  S.hidden=false;draw()}
-function scDone(id){chatPush("c",`<b>${SHORT[id][0]}</b> 했어요! ${id==="sc-cool"?"오늘 수고했어요. 남은 시간엔 말을 아껴 주세요.":"몸이 한결 편해졌을 거예요."}`);chatSave();renderCoach()}
+function scDone(id){chatPush("c",`<b>${SHORT[id][0]}</b> 했어요! ${id==="sc-cool"?"오늘 수고했어요. 남은 시간엔 말을 아껴 주세요.":"몸이 한결 편해졌을 거예요."}`);if(!situNext()){chatSave();renderCoach()}}
 
 const JOB_LINES={teach:["자, 모두 선생님 쪽을 봐 주세요. 지금부터 오늘 배울 내용을 천천히 이야기해 볼게요.","다 같이 숨 한 번 크게 쉬고, 책 스물네 쪽을 펴 볼까요?","좋아요, 방금 발표한 친구에게 다 같이 박수를 보내 줍시다."],
  faith:["오늘 이 자리에 함께해 주셔서 감사합니다. 잠시 마음을 모으고 말씀을 나누겠습니다.","우리는 서로의 짐을 나누어 질 때 더 멀리 갈 수 있습니다.","지친 마음으로 오신 분이 계시다면, 오늘 이 시간이 쉼이 되기를 바랍니다."],
@@ -3839,12 +3834,11 @@ function evtMake(f){const n=f.n.value.replace(/[\\;,\n<>]/g," ").trim().slice(0,
  chatSave();renderCoach();if(box)box.remove()}
 
 function situBoot(){const u=loadUser()||{},dk=dayKey();let seen={};try{seen=JSON.parse(localStorage.getItem("tv_situ_seen")||"{}")||{}}catch(e){}if(seen.day!==dk)seen={day:dk};
- if(u.coach&&!myJobs().length&&!u.jobAsked){u.jobAsked=1;saveUser(u);chatPush("c",jobAsk())}
  if(talkDay(1)>=6&&!seen.rest){seen.rest=1;COACH.light=true;chatPush("c",`어제 ${talkDay(1)>=8?"8시간 넘게":talkDay(1)+"시간"} 말했어요. 오늘은 <b>쉬어 가는 날</b>로 해요. '아~'로 상태만 남겨요.`,"chk")}
  const now=Date.now();for(const e of EVTS){const x=evtNext(e),dt=x-now;if(dt>-30*6e4&&dt<3*36e5&&!seen["e"+e.at]){seen["e"+e.at]=1;chatPush("c",`<b>${esc(e.n)}</b>${dt>0?` ${Math.max(1,Math.round(dt/6e4))}분 전`:" 시간"}이네요!`);situ("before",e.n);break}}
  try{localStorage.setItem("tv_situ_seen",JSON.stringify(seen))}catch(e){}}
 const SITU_M=()=>{const p=readPick();return[
- {id:"chk",name:"'아~' 20초 체크",min:"20초",ico:"mic",say:"",why:"지금 상태를 남겨 평소와 견줘요",go:()=>chatCheck()},
+ {id:"chk",name:"'아~' 5초 체크",min:"10초",ico:"mic",say:"",why:"지금 상태를 남겨 평소와 견줘요",go:()=>chatCheck()},
  {id:"rd",name:"글 한 번 읽기 · "+(p.k==="mine"?"내 대본":p.k==="job"?"직업 문장":"오늘의 글"),min:"1분",ico:"book",say:"",why:"말하기 직전 한 번, 끝난 뒤 같은 글로 한 번",go:rdGo},
  {id:"sc-pre",name:"말하기 전 1분",min:"1분",ico:"wind",say:"",why:"목을 깨우고 첫 문장 준비",go:()=>openShort("sc-pre")},
  {id:"sc-quiet",name:"소리 없이 30초",min:"30초",ico:"wind",say:"",why:"소리 낼 수 없는 곳에서도",go:()=>openShort("sc-quiet")},
@@ -3853,7 +3847,7 @@ const SITU_M=()=>{const p=readPick();return[
  {id:"evt",name:"일정 넣고 30분 전 알림 받기",min:"20초",ico:"set",say:"",why:"휴대폰 달력이 알려 줘요",go:()=>{chatPush("c",evtAsk());chatSave();renderCoach()}}]};
 $("coach").addEventListener("click",e=>{const jb=e.target.closest("[data-job]");if(jb){jb.setAttribute("aria-pressed",jb.getAttribute("aria-pressed")==="true"?"false":"true");return}
  if(e.target.closest("[data-jobok]")){const box=e.target.closest(".jobpick"),L=[...box.querySelectorAll('[data-job][aria-pressed="true"]')].map(b=>b.dataset.job);if(!L.length){box.querySelector("p").innerHTML="하나 이상 골라 주세요. 잘 모르겠으면 <b>일상</b>을 눌러 주세요.";return}
-  setJobs(L);const m=[...CHAT.list].reverse().find(x=>String(x.t).includes('class="jobpick"'));if(m)m.t=`좋아요! <b>${L.map(k=>JOBN[k]).join(" · ")}</b> 기준으로 챙길게요. 말하기 전·말한 뒤에 아래 단추를 눌러 주세요. 바꾸고 싶으면 "직업 바꿀래"라고 말해 주세요.`;chatSave();renderCoach();return}
+  setJobs(L);const m=[...CHAT.list].reverse().find(x=>String(x.t).includes('class="jobpick"'));if(m)m.t=`좋아요! <b>${L.map(k=>JOBN[k]).join(" · ")}</b> 기준으로 챙길게요. 바꾸고 싶으면 "직업 바꿀래"라고 말해 주세요.`;const w=SITU.wait;SITU.wait=null;if(w){situ(w,"");return}chatSave();renderCoach();return}
  const wb=e.target.closest("[data-when]");if(wb){chatPush("u",esc(wb.textContent.trim()));situ(wb.dataset.when,"");return}
  const tb=e.target.closest("[data-talk]");if(tb){const m=[...CHAT.list].reverse().find(x=>String(x.t).includes('class="talkpick"'));if(m)m.t="오늘 말한 시간을 남겼어요.";talkSet(+tb.dataset.talk);return}
  const en=e.target.closest("[data-evn]");if(en){const f=en.closest(".evtform");if(f)f.n.value=en.dataset.evn}});
