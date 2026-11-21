@@ -914,7 +914,7 @@ body:not(.pro) [data-pro]::after{box-shadow:none}
 .coach-when{margin-bottom:6px}.coach-when button{font-weight:700}.coach-when button svg{width:16px;height:16px;vertical-align:-3px;margin-right:4px}
 .jobpick .chips,.talkpick .chips,.evtform .chips{margin:8px 0}.jobpick .btn{margin-top:4px}
 .sc-steps{margin:10px 0;padding-left:22px;display:grid;gap:10px;font-size:17px;line-height:1.5;text-align:left;align-self:stretch}.sc-steps li.on{font-weight:700;color:var(--brand)}.sc-steps li.on b{margin-left:4px}.sc-steps li.done{opacity:.45}
-.tw{display:flex;gap:6px;align-items:flex-end;height:60px;margin-top:6px}.tw span{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:2px;height:100%}.tw i{display:block;width:70%;max-width:18px;border-radius:4px;background:var(--brand)}
+.twk{display:flex;gap:6px;align-items:flex-end;height:60px;margin-top:6px}.twk span{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:2px;height:100%}.twk i{display:block;width:70%;max-width:18px;border-radius:4px;background:var(--brand)}
 .evtform{display:grid;gap:8px}.evtform input[name=n],.evt-r input{font:inherit;padding:9px 12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:inherit;min-width:0}.evt-r{display:grid;grid-template-columns:1fr;gap:8px}.evt-w{display:flex;gap:6px;align-items:center;font-size:14px}
 
 
@@ -930,6 +930,12 @@ body:not(.pro) [data-pro]::after{box-shadow:none}
 .ob-fix small{display:block;font-size:12px;opacity:.75;margin-bottom:2px}
 .ob-fix b{display:block;font-size:16px;margin-bottom:4px}
 .ob-fix p{margin:0;font-size:14px;line-height:1.5}
+
+
+.msg.c .mt{display:contents}
+.bubble.typing .chs,.bubble.typing .mis,.bubble.typing details,.bubble.typing .rbtn{visibility:hidden}
+.chips.sugg{justify-content:flex-start;flex-wrap:wrap;gap:8px;margin:2px 0 6px}
+.chips.sugg button{font-size:14px;opacity:.9;border-style:dashed}
 </style>
 <script>try{var TH0=document.documentElement.getAttribute("data-theme")||"",_t=localStorage.getItem("tv_theme");if(_t==="light"||_t==="dark")document.documentElement.setAttribute("data-theme",_t);["rs","rl"].forEach(function(k){var v=+localStorage.getItem("tv_"+k);if(v>=.5&&v<=2)document.documentElement.style.setProperty("--"+k,v)})}catch(e){}</script>
 
@@ -1013,6 +1019,7 @@ body:not(.pro) [data-pro]::after{box-shadow:none}
   <div class="ed-l">음성 인식 <small>처음엔 꺼져 있어요. 켜면 읽기 연습의 '알아들은 비율' · 프롬프터 '목소리 따라' · 대본 연습에서 말을 알아들어요. 브라우저(크롬·사파리)의 기능이라 켜 둔 동안 말하는 소리가 구글·애플 서버에서 글자로 바뀔 수 있어요.</small><div class="chips" id="asr-pick" role="group" aria-label="음성 인식"><button type="button" data-a="1">켜기</button><button type="button" data-a="0">끄기</button></div></div>
   <div class="ed-l">마이크 <small id="mic-fx"></small></div>
   <label class="ed-l">내 목소리 선생님 이름 <small>채팅에서 이 이름으로 불러요</small><input id="coach-nm" class="inp" maxlength="10" placeholder="예: 소리쌤" autocomplete="off"></label>
+  <div class="ed-l">선생님이 기억하는 것 <small>대화에서 직접 말한 것만 · 이 폰에만 저장 · 언제든 지울 수 있어요</small><p class="meta" id="mem-t" style="margin:6px 0"></p><button type="button" class="btn" id="mem-x">기억 지우기</button></div>
   <div class="ed-l">계정 <small id="acct-s"></small><small>지금은 계정 확인만 해요. 연습 기록은 로그인해도 이 기기에만 저장돼요.</small><button type="button" class="btn" id="acct-b" style="align-self:flex-start"></button><p class="ob-err" id="acct-e" style="text-align:left"></p></div>
   <div class="ed-l">내 기록 <small>대본 · 녹음 · 목소리 기록은 이 기기 안에만 저장돼요. 앱이 서버로 보내지 않아요. 브라우저의 사이트 데이터를 지우면 함께 지워져요.</small><button type="button" class="btn" id="wipe" style="align-self:flex-start">이 기기의 내 기록 모두 지우기</button></div>
   <div class="ed-l">내 목소리 데이터 <small>녹음을 기기 밖으로 보내는 기능만 따로 동의를 받아요. 동의하지 않아도 분석 · 연습 · 기록은 이 기기에서 그대로 돼요.</small><div id="cs-list"></div></div>
@@ -1342,18 +1349,33 @@ const LIBS={pdf:[["pdf.js/3.11.174/pdf.min.js","sha512-q+4liFwdPC/bNdhUpZx6aXDx/
  pako:[["pako/2.1.0/pako.min.js","sha512-g2TeAWw5GPnX7z0Kn8nFbYfeHcvAu/tx6d6mrLe/90mkCxO+RcptyYpksUz35EO337F83bZwcmUyHiHamspkfg=="]]},LIB_P={};
 const lib=k=>LIB_P[k]||(LIB_P[k]=LIBS[k].reduce((p,[u,h])=>p.then(()=>new Promise((ok,no)=>{const e=document.createElement("script");e.src="https://cdnjs.cloudflare.com/ajax/libs/"+u;e.integrity=h;e.crossOrigin="anonymous";e.referrerPolicy="no-referrer";
  e.onload=ok;e.onerror=()=>{delete LIB_P[k];e.remove();no(new Error("파일 읽기 도구를 불러오지 못했어요 — 인터넷 연결을 확인해 주세요"))};document.head.appendChild(e)})),Promise.resolve()));
-async function pdfText(file){await lib("pdf");const pdf=await pdfjsLib.getDocument({data:await file.arrayBuffer(),isEvalSupported:false}).promise,out=[];
- for(let i=1;i<=Math.min(pdf.numPages,200);i++){const tc=await(await pdf.getPage(i)).getTextContent();out.push(...pdfBlocks(tc.items))}
- return{text:richOut(out),pages:pdf.numPages}}
+async function pdfText(file){await lib("pdf");const pdf=await pdfjsLib.getDocument({data:await file.arrayBuffer(),isEvalSupported:false}).promise,pg=[];
+ for(let i=1;i<=Math.min(pdf.numPages,200);i++){const tc=await(await pdf.getPage(i)).getTextContent();pg.push(pdfBlocks(tc.items))}
+ return{text:pdfJoin(pg),pages:pdf.numPages}}
 
 function pdfBlocks(items){const T=items.map(x=>({...x,str:String(x.str||"").replace(/[\u0000-\u001F\u00A0]/g," ")})).filter(x=>x.str.trim()).map(x=>({s:x.str,x:x.transform[4],y:x.transform[5],w:x.width||0,h:Math.abs(x.transform[3])||x.height||10})).sort((a,b)=>b.y-a.y||a.x-b.x),L=[],B=[];
  for(const t of T){const l=L[L.length-1];if(l&&Math.abs(l.y-t.y)<Math.min(l.h,t.h)*.5){l.it.push(t);l.h=Math.max(l.h,t.h)}else L.push({y:t.y,h:t.h,it:[t]})}
- const join=(a,b)=>/\s$/.test(a)||/^\s/.test(b)?a+b:a+(/-$/.test(a)?"":" ")+b;
  for(const l of L){l.it.sort((a,b)=>a.x-b.x);const S=[];let g=null;
   for(const t of l.it){const gap=g?t.x-g.x1:0;if(!g||gap>.8*l.h)S.push(g={x0:t.x,x1:t.x+t.w,y:l.y,h:l.h,s:t.s});else{g.s=gap>.15*l.h&&!/\s$/.test(g.s)&&!/^\s/.test(t.s)?g.s+" "+t.s:g.s+t.s;g.x1=Math.max(g.x1,t.x+t.w)}}
-  for(const s of S){const b=B.find(b=>b.y>s.y&&b.y-s.y<(b.pitch?b.pitch*1.4:s.h*2)&&Math.min(b.x1,s.x1)-Math.max(b.x0,s.x0)>0&&Math.abs(b.h-s.h)<s.h*.3&&!(/[.?!…。"”」』)]\s*$/.test(b.t)&&b.lx1<b.x1-2*s.h));
-   if(b){b.pitch=b.pitch||b.y-s.y;b.t=join(b.t,s.s);b.y=s.y;b.lx1=s.x1;b.x0=Math.min(b.x0,s.x0);b.x1=Math.max(b.x1,s.x1)}else B.push({t:s.s,y:s.y,h:s.h,x0:s.x0,x1:s.x1,lx1:s.x1,sz:s.h})}}
- return B.map(b=>({t:b.t,sz:b.sz}))}
+  for(const s of S){s.s=s.s.replace(/\s+/g," ").trim();const b=B.find(b=>b.y>s.y&&b.y-s.y<(b.pitch?b.pitch*1.4:s.h*2)&&Math.min(b.x1,s.x1)-Math.max(b.x0,s.x0)>0&&Math.abs(b.h-s.h)<s.h*.3&&!(/[.?!…。"”」』)]$/.test(b.P.at(-1).s)&&b.lx1<b.x1-2*s.h));
+   if(b){b.pitch=b.pitch||b.y-s.y;b.P.push({s:s.s,x1:s.x1});b.y=s.y;b.lx1=s.x1;b.x0=Math.min(b.x0,s.x0);b.x1=Math.max(b.x1,s.x1)}else B.push({P:[{s:s.s,x1:s.x1}],y:s.y,h:s.h,x0:s.x0,x1:s.x1,lx1:s.x1,sz:s.h})}}
+ return B}
+
+const PDF_END=/[은는이가을를의에도로와과고며면서다요죠까만지게록듯니라야나데함음됨임들께랑]$/;
+function pdfJoin(pg){const all=pg.flat(),ends=[];
+ for(const b of all)for(let i=0;i<b.P.length-1;i++){const a=b.P[i].s,n=b.P[i+1].s;if(/[가-힣]$/.test(a)&&/^[가-힣]/.test(n)&&b.x1-b.P[i].x1<b.h*1.2)ends.push(PDF_END.test(a))}
+ const charWrap=ends.length>=4&&ends.filter(Boolean).length/ends.length<.45;
+ const glue=(a,b)=>!a?b:/-$/.test(a)&&/^[a-z]/.test(b)?a.slice(0,-1)+b:charWrap&&/[가-힣]$/.test(a)&&/^[가-힣]/.test(b)&&!PDF_END.test(a)?a+b:a+" "+b;
+ 
+ const cnt={};pg.forEach(p=>new Set(p.map(b=>b.P.map(x=>x.s).join(" ").replace(/\d+/g,"#"))).forEach(k=>cnt[k]=(cnt[k]||0)+1));
+ const junk=b=>{const k=b.P.map(x=>x.s).join(" ");return/^[-–—·\s]*(\d{1,3}|[ivx]{1,5})\s*(\/\s*\d{1,3})?[-–—·\s]*$/i.test(k)||pg.length>=3&&k.length<60&&cnt[k.replace(/\d+/g,"#")]>=Math.max(3,pg.length*.5)};
+ const out=[];let prev=null;
+ for(const p of pg){p.filter(b=>!junk(b)).forEach((b,j)=>{const t=b.P.reduce((s,x)=>glue(s,x.s),"");
+  
+  if(j===0&&prev&&Math.abs(prev.sz-b.sz)<b.sz*.15&&!/[.?!…。"”」』):]$/.test(prev.t)&&/[가-힣a-z,]$/.test(prev.t)){prev.t=glue(prev.t,t);return}
+  out.push(prev={t,sz:b.sz})})}
+ const txt=out.map(o=>o.t).join(""),letters=(txt.match(/[가-힣A-Za-z]/g)||[]).length;
+ return letters<10?"":richOut(out)}
 
 function cleanPdf(t){t=t.replace(/[\u0000-\u0009\u000B-\u001F ]/g," ").replace(/[ \t]+/g," ");
  const L=t.split("\n").map(x=>x.trim()),lens=L.filter(Boolean).map(x=>x.length).sort((a,b)=>a-b),med=lens[Math.floor(lens.length/2)]||0,out=[];let cur="",prevLen=0;
@@ -2188,7 +2210,8 @@ function parseScript(lines){const nm={};lines.forEach(l=>{const t=l.trim();if(t.
   out.push({t:"dir",text:l})}
  return out}
 function scInfo(g){const items=parseScript(g.ss),L=items.filter(x=>x.t==="line"&&x.say),R={};L.forEach(x=>R[x.who]=(R[x.who]||0)+1);
- const roles=Object.entries(R).sort((a,b)=>b[1]-a[1]).map(([name,n])=>({name,n}));return{items,roles,lines:L.length,ok:L.length>=3&&roles.length>=2}}
+ const roles=Object.entries(R).sort((a,b)=>b[1]-a[1]).map(([name,n])=>({name,n}));
+ const rep=roles.filter(r=>r.n>=2),rn=rep.reduce((a,r)=>a+r.n,0);return{items,roles,lines:L.length,ok:L.length>=3&&rep.length>=2&&rn>=items.length*.3}}
 
 const SC_CUE=[[/속삭|작게|조용히|낮게|숨죽/,"작게 · 천천히 — 숨은 길게, 소리는 앞으로"],[/소리치|외치|화내|버럭|크게|고함/,"크게 — 목 말고 배로 받쳐요, 끝까지 밀어붙이지 않기"],[/울먹|울며|흐느|눈물/,"숨을 섞어 천천히 — 목에 힘 빼기"],[/웃으며|밝게|신나|들떠/,"밝게 — 높이를 살짝 위로"],[/떨리|긴장|망설|머뭇/,"짧게 끊어 쉬며 — 쉼으로 망설임 보여 주기"],[/^E$/i,"화면 밖에서 들리는 목소리"],[/^F$/i,"전화·기계 너머 목소리"],[/^(N|Na)$/i,"내레이션 — 차분하고 또렷하게"]];
 const scCue=p=>{for(const x of p)for(const [re,t] of SC_CUE)if(re.test(x))return t;return""};
@@ -3522,6 +3545,7 @@ function coachReview(){const p=CHAT.pend;if(!p)return;CHAT.pend=null;if(flowRevi
  if(a.mine>b.mine)out.push("대본 넣었어요! 다음엔 이걸로 같이 읽어 봐요.");
  if(p.mid==="boost"&&BST.done){const o=BST_OPT.find(x=>x[0]===BST.k);out.push(`'${o[1]}' 쪽을 들어 봤죠? 그 소리에 가까워지려면 <b>${o[6]}</b>가 좋아요.`);COACH.want=o[7]}
  if(p.mid==="train"&&!out.length&&!rc.length){renderCoach();return}
+ if(out.length&&aiLive()){const nm=(aiMissions().find(x=>x.id===p.mid)||{}).name||"연습";chatPush("u",`✓ ${plain(nm)} 마쳤어요`);COACH.skip=0;aiReply(`[방금 끝낸 연습과 결과] ${plain(nm)} — ${plain(out.join(" "))}${rc.length?" (결과 그래프는 위에 보여 줬음)":""}. 결과를 숫자 대신 말로 한두 문장 풀어 주고, 아까 말한 상황과 이어서 다음 한 가지만 말한다.`);return}
  chatPush("c",out.length?out.join("<br>"):"도중에 멈췄네요. 괜찮아요, 준비되면 이어서 해요.");
  if(out.length)COACH.skip=0;if(out.length&&situNext())return;giveMission(out.length?"다음은 이거 어때요?":"",out.length?p.mid:null);renderCoach()}
 
@@ -3546,7 +3570,7 @@ function coachReply(txt){const x=txt.replace(/\s+/g," ").trim();if(!x)return;cha
  if(/직업.*(바꿔|바꿀|다시|고를|정할)|내 직업|무슨 일.*(바꿔|다시)/.test(x)){chatPush("c",jobAsk());chatSave();renderCoach();return}
  if(/말한 ?시간|몇 ?시간.*말했|시간.*말했어/.test(x)){chatPush("c",talkAsk());chatSave();renderCoach();return}
  if(/일정.*(넣|등록|알림|알려)|알림.*(받|설정)|미리 알려/.test(x)){chatPush("c",evtAsk());chatSave();renderCoach();return}
- {const w=whenOf(x);if(w){situ(w,x);return}}
+ {const w=whenOf(x);if(w){if(aiLive()){const kc=kbF(x);aiOK().then(ok=>ok?aiReply(situHint(w,x),{kb:kc}):situ(w,x));renderCoach();return}situ(w,x);return}}
  
  if(aiCan()&&!quota("ai").left&&!COACH.aiOut&&!CHIPS.includes(x)){COACH.aiOut=1;chatPush("c",quotaMsg("ai"))}
  if(aiCan()&&quota("ai").left&&!CHIPS.includes(x)&&!(last&&/^(응|어|네|예|좋아|그래|오케이|ㅇㅋ|ok|시작|할게|하자)[!.~ ]*$/i.test(x))){const kc=kbF(x);aiOK().then(ok=>ok?aiReply(null,{kb:kc}):(chatPush("c","알겠어요! 그럼 지금처럼 정해진 말로 대답할게요. 한 번 더 말씀해 주실래요?"),renderCoach()));renderCoach();return}
@@ -3585,23 +3609,25 @@ function renderCoach(){const e=$("coach");if(!e||!COACH)return;
  chatDay();
  if(!CHAT.list.length){const u=loadUser()||{},sk=streak();
   
-  const fm=flowMission();chatPush("c",`${u.name?esc(u.name)+"님, ":""}안녕하세요!${sk>1?` ${sk}일 연속이에요.`:""} <b>지금 어떤 때예요?</b> 아래 단추를 눌러 주세요.${fm?"<br>특별한 일이 없으면 이것부터 해요.":""}`,fm?fm.id:null);chatSave()}
- if(!COACH.boot){COACH.boot=1;situBoot();const fm=flowMission(),lm=[...CHAT.list].reverse().find(m=>m.mid);if(fm&&!CHAT.pend&&!(CHAT.list.at(-1)||{}).of&&(!lm||lm.mid!==fm.id||CHAT.list.at(-1)!==lm))chatPush("c","다시 오셨네요! 이어서 해요.<br>"+fm.say,fm.id)}
+  if(aiCan()){chatPush("c",`${u.name?esc(u.name)+"님, ":""}안녕하세요!${sk>1?` ${sk}일 연속이에요.`:""} 오늘 무슨 일 있어요? 면접, 발표, 데이트, 영상 찍기… <b>뭐든 편하게 말해 주세요.</b>`);chatSave()}
+  else{const fm=flowMission();chatPush("c",`${u.name?esc(u.name)+"님, ":""}안녕하세요!${sk>1?` ${sk}일 연속이에요.`:""} <b>지금 어떤 때예요?</b> 아래 단추를 눌러 주세요.${fm?"<br>특별한 일이 없으면 이것부터 해요.":""}`,fm?fm.id:null);chatSave()}}
+ if(!COACH.boot){COACH.boot=1;situBoot();memShow();const fm=aiCan()?null:flowMission(),lm=[...CHAT.list].reverse().find(m=>m.mid);if(fm&&!CHAT.pend&&!(CHAT.list.at(-1)||{}).of&&(!lm||lm.mid!==fm.id||CHAT.list.at(-1)!==lm))chatPush("c","다시 오셨네요! 이어서 해요.<br>"+fm.say,fm.id)}
  const D=chatOld(),v=COACH.view=Math.max(0,Math.min(COACH.view||0,D.length)),past=v?D[D.length-v]:null,list=past?past.list:CHAT.list,lastM=past?-1:CHAT.list.reduce((a,m,i)=>m.mid?i:a,-1),lastR=past?-1:CHAT.list.reduce((a,m,i)=>m.rec?i:a,-1),L=aiMissions();
  e.innerHTML=`${D.length?dayBar(v,past,D.length):""}<div class="chat" id="chat-log" aria-live="polite">${list.map((m,i)=>m.w==="u"?`<p class="msg me">${m.t}</p>`
-  :`<div class="msg c">${i===0||list[i-1].w!=="c"?`<img class="say-img" src="${charSrc($("tgt").value)}" alt="">`:`<span class="say-img" style="visibility:hidden"></span>`}<div class="bubble">${i===0||list[i-1].w!=="c"?`<b class="msg-n">${esc(coachName())}</b>`:""}${m.t}${m.x?`<details class="cx"><summary>측정 자세히 보기</summary>${m.x}</details>`:""}${m.rec&&RECK[m.rec]&&i===lastR?recBtn(m.rec):""}${m.ch&&!m.done&&!past?`<div class="chs">${m.ch.map(([id,l])=>`<button type="button" data-ch="${id}" data-i="${i}">${l}</button>`).join("")}</div>`:""}${m.mid&&!past?(()=>{const x=L.find(q=>q.id===m.mid);return x?`<button type="button" class="mis${i===lastM?" now":""}" data-m="${m.mid}"><span class="c">${ICON[x.ico]||ICON.play}</span><span><b>${x.name}</b><small>약 ${x.min} · 누르면 시작</small></span></button>`:m.mid==="d3"?`<span class="mis done">${ICON.check} 했어요</span>`:""})():""}</div></div>`).join("")}</div>${past?`<button type="button" class="btn" data-dv="0" style="align-self:center">오늘 대화로 돌아가기</button>`:`
+  :`<div class="msg c">${i===0||list[i-1].w!=="c"?`<img class="say-img" src="${charSrc($("tgt").value)}" alt="">`:`<span class="say-img" style="visibility:hidden"></span>`}<div class="bubble">${i===0||list[i-1].w!=="c"?`<b class="msg-n">${esc(coachName())}</b>`:""}<div class="mt">${m.t}</div>${m.x?`<details class="cx"><summary>측정 자세히 보기</summary>${m.x}</details>`:""}${m.rec&&RECK[m.rec]&&i===lastR?recBtn(m.rec):""}${m.ch&&!m.done&&!past?`<div class="chs">${m.ch.map(([id,l])=>`<button type="button" data-ch="${id}" data-i="${i}">${l}</button>`).join("")}</div>`:""}${m.mid&&!past?(()=>{const x=L.find(q=>q.id===m.mid);return x?`<button type="button" class="mis${i===lastM?" now":""}" data-m="${m.mid}"><span class="c">${ICON[x.ico]||ICON.play}</span><span><b>${x.name}</b><small>약 ${x.min} · 누르면 시작</small></span></button>`:m.mid==="d3"?`<span class="mis done">${ICON.check} 했어요</span>`:""})():""}</div></div>`).join("")}</div>${past?`<button type="button" class="btn" data-dv="0" style="align-self:center">오늘 대화로 돌아가기</button>`:`
+  ${CHAT.list.length===1&&aiCan()?`<div class="chips sugg" role="group" aria-label="이렇게 말해 보세요">${["내일 면접이 있어요","중요한 대화 미리 연습할래요","오늘 데이트가 있어요","제 목소리 어때요?"].map(q=>`<button type="button" data-q="${q}">${q}</button>`).join("")}</div>`:""}
   ${whenRow()}
   <div class="chat-dock${COACH.kb?" kb":""}" id="chat-dock"><button type="button" class="dock-kb" id="chat-kb" aria-label="${COACH.kb?"목소리로 말하기로":"글로 쓰기"}" aria-pressed="${!!COACH.kb}">${COACH.kb?ICON.wave:ICON.pen}</button>
-   <form class="chat-in" id="chat-in"><input id="chat-tx" enterkeyhint="send" autocomplete="off" placeholder="물어보기 · 말로는 키보드 🎤" aria-label="선생님에게 물어보기"><button type="submit" class="chat-send" aria-label="보내기">${ICON.next}</button></form>
+   <form class="chat-in" id="chat-in"><input id="chat-tx" enterkeyhint="send" autocomplete="off" placeholder="무엇이든 편하게 말해 주세요" aria-label="선생님에게 물어보기"><button type="submit" class="chat-send" aria-label="보내기">${ICON.next}</button></form>
    <button type="button" class="dock-hint" id="chat-say">눌러서 목소리를 들려주세요…</button>
    <button type="button" class="chat-mic" id="chat-mic" aria-label="목소리 들려주기">${MIC}</button></div>`}`;
- const lg=$("chat-log");lg.scrollTop=lg.scrollHeight;requestAnimationFrame(()=>{const c=e.querySelector(".coach-when")||lg.lastElementChild;if(c&&!$("v-today").hidden&&c.getBoundingClientRect().bottom>innerHeight-170)c.scrollIntoView({block:"end"})})}
+ const lg=$("chat-log");lg.scrollTop=lg.scrollHeight;{const k=list.length-1,lm=list[k];if(!past&&lm&&lm.ty){delete lm.ty;chatSave();const b=lg.lastElementChild&&lg.lastElementChild.querySelector(".bubble"),t=b&&b.querySelector(".mt");if(t){b.classList.add("typing");typeIn(t,()=>b.classList.remove("typing"))}}}requestAnimationFrame(()=>{const c=e.querySelector(".coach-when")||lg.lastElementChild;if(c&&!$("v-today").hidden&&c.getBoundingClientRect().bottom>innerHeight-170)c.scrollIntoView({block:"end"})})}
 function dayBar(v,past,n){let t="오늘";if(past){const d=new Date(past.day+"T00:00"),y=new Date();y.setDate(y.getDate()-1);t=(dayKey(y)===past.day?"어제 · ":"")+`${d.getMonth()+1}/${d.getDate()} (${"일월화수목금토"[d.getDay()]})`}
  return`<div class="chat-day" role="group" aria-label="날짜별 대화"><button type="button" data-dv="1"${v>=n?" disabled":""} aria-label="이전 날 대화">${ICON.back}</button><span>${t}<small>${past?"지난 대화 · 보기만 돼요":"옆으로 밀면 지난 대화"}</small></span><button type="button" data-dv="-1"${v?"":" disabled"} aria-label="다음 날 대화">${ICON.back}</button></div>`}
 {let sx=0,sy=0;const c=$("coach");c.addEventListener("touchstart",e=>{const t=e.touches[0];sx=t.clientX;sy=t.clientY},{passive:true});
  c.addEventListener("touchend",e=>{if(!e.target.closest("#chat-log,.chat-day"))return;const t=e.changedTouches[0],dx=t.clientX-sx,dy=t.clientY-sy;if(Math.abs(dx)<60||Math.abs(dx)<2*Math.abs(dy))return;
   const n=chatOld().length,v=COACH.view||0,w=dx>0?Math.min(v+1,n):Math.max(v-1,0);if(w!==v){COACH.view=w;renderCoach()}},{passive:true})}
-$("coach").addEventListener("click",e=>{{const dv=e.target.closest("[data-dv]");if(dv){const n=+dv.dataset.dv;COACH.view=n?(COACH.view||0)+n:0;renderCoach();return}}const c=e.target.closest("[data-ch]");if(c){if(/^fl-/.test(c.dataset.ch))feelAns(+c.dataset.i,c.dataset.ch.slice(3));else if(/^of[yn]$/.test(c.dataset.ch))offerYes(+c.dataset.i,c.dataset.ch==="ofy");else flowChoice(c.dataset.ch,c.textContent,+c.dataset.i);return}const m=e.target.closest("[data-m]");if(m){coachAsk(m.dataset.m);return}const q=e.target.closest("[data-q]");if(q){if(q.dataset.q==="지금 내 목소리 들어 봐"){chatPush("u",q.dataset.q);renderCoach();chatCheck()}else coachReply(q.dataset.q)}if(e.target.closest("[data-vchk]"))chatCheck();{const rb=e.target.closest("[data-rec]");if(rb){recAsk(rb.dataset.rec);return}}if(e.target.closest("#chat-mic,#chat-say"))voiceTalk();if(e.target.closest("#chat-file"))$("chat-fin").click();
+$("coach").addEventListener("click",e=>{{const dv=e.target.closest("[data-dv]");if(dv){const n=+dv.dataset.dv;COACH.view=n?(COACH.view||0)+n:0;renderCoach();return}}const c=e.target.closest("[data-ch]");if(c){if(/^fl-/.test(c.dataset.ch))feelAns(+c.dataset.i,c.dataset.ch.slice(3));else if(/^of[yn]$/.test(c.dataset.ch))offerYes(+c.dataset.i,c.dataset.ch==="ofy");else if(c.dataset.ch==="rhx"){CHAT.list[+c.dataset.i].done=true;coachReply("리허설 그만하고 정리해 줘")}else flowChoice(c.dataset.ch,c.textContent,+c.dataset.i);return}const m=e.target.closest("[data-m]");if(m){coachAsk(m.dataset.m);return}const q=e.target.closest("[data-q]");if(q){if(q.dataset.q==="지금 내 목소리 들어 봐"){chatPush("u",q.dataset.q);renderCoach();chatCheck()}else coachReply(q.dataset.q)}if(e.target.closest("[data-vchk]"))chatCheck();{const rb=e.target.closest("[data-rec]");if(rb){recAsk(rb.dataset.rec);return}}if(e.target.closest("#chat-mic,#chat-say"))voiceTalk();if(e.target.closest("#chat-file"))$("chat-fin").click();
  {const pb=e.target.closest("[data-cplay]");if(pb){const[s,id]=pb.dataset.cplay.split(":");dbAll(s==="v"?"vchk":"rec").then(L=>{const r=L.find(x=>x.id===+id),bl=r&&(s==="v"?r.w:r.w1);if(bl)playBlob(bl,pb);else pb.outerHTML="<small class=\"meta\">녹음이 지워졌어요</small>"})}}if(e.target.closest("#chat-kb")){COACH.kb=!COACH.kb;renderCoach();if(COACH.kb)$("chat-tx").focus()}});
 $("coach").addEventListener("change",e=>{if(e.target.id==="chat-fin"){const f=e.target.files&&e.target.files[0];e.target.value="";chatFile(f)}});
 $("coach").addEventListener("submit",e=>{e.preventDefault();const i=$("chat-tx"),v=i.value;i.value="";coachReply(v);const n=$("chat-tx");if(n&&v.trim())n.focus()});
@@ -3650,6 +3676,26 @@ function askFeel(r,card,line,ai){const bc=baseCmp(r);if(!bc.low.length||feelToda
  catch(e){close();chatPush("c","마이크를 쓸 수 없어요. 브라우저에서 마이크를 허락해 주세요.");renderCoach()}}
 
 const AIM="claude";
+
+const aiLive=()=>aiCan()&&csOn("ai")&&quota("ai").left;
+const WHEN_N={before:"말하기 전",after:"말한 뒤",bad:"목이 안 좋은 날"};
+
+const RH_RULE="[대화 리허설] 사용자가 앞으로 누군가와 나눌 대화(데이트·소개팅·고백·면접·발표 뒤 질문·상사 보고·부탁·사과·거절·고객 통화·첫 만남·가족과 어려운 이야기 등)를 앞두고 '무슨 말을 해야 해?'라고 묻거나 연습하고 싶어 하면: 상황을 모르면 질문은 딱 하나만(누구와·어떤 자리인지) 하고, 알면 바로 첫마디 예시 하나를 주고 '제가 상대가 돼 볼게요. 소리 내서 대답해 보세요'라며 상대의 첫 대사를 따옴표로 말한 뒤 대답 맨 끝에 [[리허설:상대 역할 짧게]]를 붙인다. 리허설 중에는 매번 ① 사용자 대답이 녹음이면 목소리 한 줄(빠르기·크기·높낮이·끝맺음 중 하나), 내용 한 줄 피드백 ② 상대의 다음 대사 한 줄(따옴표) 순서로 짧게 말한다. 3~4번 주고받았거나 사용자가 그만하자고 하면 '기억할 말 3개'와 들어가기 직전에 할 연습 하나로 마무리하고 [[리허설끝]]을 붙인다. 상대 역할은 현실적이고 예의 있게, 너무 쉽지도 공격적이지도 않게. 상대를 조종·압박하는 말, 거짓말, 성적인 내용은 연습시키지 않는다. 목표는 '내가 편하고 진심 있게 들리는 것'이고 정답 대본을 외우게 하지 않는다.";
+const situHint=(w,x)=>`[지금 상황] ${WHEN_N[w]||""}${x?` — 사용자 말: "${String(x).slice(0,80)}"`:""}. 이미 상황을 말했으니 되묻지 말고, 그 자리에서 바로 쓸 수 있는 방법 한두 가지를 그 사람 기록에 맞춰 말한 뒤, 가장 맞는 연습 하나를 '같이 해 볼까요?'로 묻고 [[연습:아이디]]를 붙인다. 면접·상담·통화처럼 상대가 있는 일이면 연습 대신 대화 리허설을 열어도 된다.${w==="bad"?" 목이 안 좋은 날이므로 소리 내는 연습은 권하지 말고 쉬는 법 위주로, 권한다면 sc-quiet만.":""}`;
+let CMEM={};try{CMEM=JSON.parse(localStorage.getItem("tv_mem")||"{}")||{}}catch(e){}
+const memSave=()=>{try{localStorage.setItem("tv_mem",JSON.stringify(CMEM))}catch(e){}memShow()};
+function memShow(){const e=$("mem-t");if(e)e.textContent=CMEM.t||"아직 기억한 게 없어요. 선생님과 이야기를 나누면 여기에 쌓여요."}
+const convOf=L=>L.map(m=>(m.w==="u"?"사용자: ":"선생님: ")+plain(String(m.t).replace(/<button[\s\S]*?<\/button>/g,"")).slice(0,240)).filter(x=>x.length>8).slice(-30).join("\n");
+async function memUpdate(L){if(!aiLive()||!L||L.filter(m=>m.w==="u").length<2)return false;
+ const ctx="[이번 요청] 대화가 아니라 '기억 노트' 정리다. 아래 대화에서 앞으로 목소리 코칭에 도움이 될 사실만 골라 기존 노트와 합쳐 새로 써라. 형식: 짧은 사실을 ' / '로 이어 한 줄, 최대 8개, 200자 이내. 담을 것: 쓰는 곳(직업·상황), 다가오는 일정(날짜와 함께), 자주 겪는 목 상태, 잘 맞았던 연습, 싫어한 것, 목표. 이름·연락처·주소·병명·종교·연애 상대 같은 민감한 개인정보는 쓰지 않는다. 지난 일정은 지운다. 노트 말고 다른 말·인사·질문은 절대 쓰지 마라. 새로 기억할 게 없으면 기존 노트를 그대로 써라.";
+ try{const j=await aiCall("chat",{m:AIM,kind:"chat",ctx,msgs:[{role:"user",content:`[기존 노트] ${CMEM.t||"없음"}\n[대화]\n${convOf(L)}`}]});quota("ai",1);
+  const t=String(j.text||"").replace(/\[\[[^\]]*\]\]/g,"").replace(/\s+/g," ").trim().slice(0,260);if(t&&t!=="없음"&&!/[?？]$/.test(t)){CMEM.t=t;CMEM.at=new Date().toISOString();memSave();return true}}catch(e){}return false}
+
+function memTick(){const y=chatOld().at(-1);if(y&&CMEM.day!==y.day){CMEM.day=y.day;memSave();memUpdate(y.list);return}
+ const n=CHAT.list.filter(m=>m.w==="u").length;if(CMEM.today!==CHAT.day){CMEM.today=CHAT.day;CMEM.n=0}if(n-(CMEM.n||0)>=6){CMEM.n=n;memSave();memUpdate(CHAT.list)}}
+function typeIn(el,done){const W=document.createTreeWalker(el,NodeFilter.SHOW_TEXT),T=[];let n;while((n=W.nextNode()))T.push([n,n.textContent]);if(!T.length){done();return}
+ T.forEach(([x])=>x.textContent="");let i=0,j=0;const lg=$("chat-log");
+ const step=()=>{for(let k=0;k<2&&i<T.length;k++){const[x,s]=T[i];x.textContent=s.slice(0,++j);if(j>=s.length){i++;j=0}}if(lg)lg.scrollTop=lg.scrollHeight;if(i<T.length)requestAnimationFrame(step);else done()};requestAnimationFrame(step)}
 const aiCan=()=>!!AI_URL&&!!TVAuth.info()&&(csOn("ai")||!(CSO.ai&&CSO.ai.v===CS_V));
 const aiOK=()=>csOn("ai")?Promise.resolve(true):needConsent("ai");
 async function aiCall(op,body){const tk=await TVAuth.token();if(!tk)throw new Error("login");
@@ -3687,6 +3733,8 @@ function aiCtx(v){const W=x=>x==null?null:x>=70?"좋음":x>=45?"보통":"낮음"
   `직업(본인이 고름): ${myJobs().map(k=>JOBN[k]).join(", ")||"아직 안 고름"} / 오늘 말한 시간(본인 입력): ${TALK[dayKey()]?TALK[dayKey()]+"시간":"모름"}`,
   td?baseCmp(vc).txt:`평소 기준: '아~' ${baseOf().n}번 모임(${BASE_N}번부터 평소와 비교)`,feelHist(),
   v?(typeof v==="string"?v:`방금 말할 때 목소리(휴대폰 참고값): ${sc(v)||"잘 안 들림"}`):"",
+  CMEM.t?`[선생님이 기억하는 이 사람(지난 대화에서, 본인이 말한 것)] ${CMEM.t} — 필요할 때만 자연스럽게 이어서 쓰고 매번 꺼내지 않는다. 지난 일정은 지났는지 확인하고 말한다.`:"",
+  RH_RULE,CHAT.rh?`[대화 리허설 진행 중] 너는 지금 '${CHAT.rh.who}' 역할도 맡고 있다. 주고받은 횟수 ${CHAT.rh.n||0}번.`:"",
   "[권할 수 있는 연습] 연습을 권할 때는 아래에서 지금 상황에 가장 맞는 하나만 골라 대답 맨 끝에 [[연습:아이디]]를 붙인다(카드가 떠서 바로 시작할 수 있다). 권할 게 없으면 붙이지 않는다. 앞쪽일수록 앱이 오늘 먼저 권하는 것.",
   ...aiMissions().map(m=>`${m.id}: ${plain(m.name)} — ${plain(m.why).slice(0,45)}`)].filter(Boolean).join("\n")}
 
@@ -3697,9 +3745,10 @@ function aiMissions(){const L=coachList(),has=id=>L.some(m=>m.id===id);
  return L}
 
 async function aiReply(v,o){o=o||{};const msgs=aiHist();chatPush("c",`<span class="ai-wait">${o.kind==="voice"?"목소리 듣는 중…":"생각하는 중…"}</span>`);renderCoach();const it=CHAT.list[CHAT.list.length-1];
- try{const ctx=aiCtx(v)+(o.kb?`\n[참고 지식 카드] ${plain(o.kb.q)} — ${plain(o.kb.a).slice(0,600)}`:""),j=await aiCall("chat",{m:AIM,kind:o.kind||"chat",msgs,ctx}),T=String(j.text),mm=T.match(/\[\[연습:([\w-]+)\]\]/),rr=T.match(/\[\[녹음:(아|문장|자유|노래)\]\]/);
-  quota("ai",1);it.t=esc(T.replace(/\[\[[^\]]*\]\]/g,"").trim()).replace(/\n/g,"<br>")+(o.kb?`<br><small class="meta">참고: 터칭보이스 목소리 지식 카드 · ${esc(plain(o.kb.q))}</small>`:"");
-  const of=rr?{rec:{아:"ah",문장:"read",자유:"free",노래:"sing"}[rr[1]]}:mm&&aiMissions().some(x=>x.id===mm[1])?{mid:mm[1]}:null;if(of)offer(it,of)}
+ try{const ctx=aiCtx(v)+(o.kb?`\n[참고 지식 카드] ${plain(o.kb.q)} — ${plain(o.kb.a).slice(0,600)}`:""),j=await aiCall("chat",{m:AIM,kind:o.kind||"chat",msgs,ctx}),T=String(j.text),mm=T.match(/\[\[연습:([\w-]+)\]\]/),rr=T.match(/\[\[녹음:(아|문장|자유|노래)\]\]/),rs=T.match(/\[\[리허설:([^\]]{1,30})\]\]/),re=/\[\[리허설끝\]\]/.test(T);
+  quota("ai",1);it.ty=1;setTimeout(memTick,1500);it.t=esc(T.replace(/\[\[[^\]]*\]\]/g,"").trim()).replace(/\n/g,"<br>")+(o.kb?`<br><small class="meta">참고: 터칭보이스 목소리 지식 카드 · ${esc(plain(o.kb.q))}</small>`:"");
+  const of=rr?{rec:{아:"ah",문장:"read",자유:"free",노래:"sing"}[rr[1]]}:mm&&aiMissions().some(x=>x.id===mm[1])?{mid:mm[1]}:null;if(rs)CHAT.rh={who:rs[1].trim(),n:0};else if(CHAT.rh&&o.kind==="voice")CHAT.rh.n++;if(re){CHAT.rh=null;CHAT.list.forEach(m=>{if(m.rec==="rh")delete m.rec;if(m.ch&&m.ch[0]&&m.ch[0][0]==="rhx")m.done=true})}
+  if(CHAT.rh){CHAT.list.forEach(m=>{if(m.ch&&m.ch[0]&&m.ch[0][0]==="rhx")m.done=true});it.rec="rh";it.ch=[["rhx","리허설 끝내기"]]}else if(of)offer(it,of)}
  catch(e){it.t=AI_ERR[e.message]||"지금은 AI 선생님과 연결이 안 돼요. 잠시 뒤에 다시 말씀해 주세요."}if(o.x)it.x=o.x;chatSave();renderCoach()}
 
 const OFQ={rec:"지금 목소리를 한번 들어 볼까요?",mid:"같이 연습해 볼까요?"},YES=/^(응|네|넵|넹|예|좋아|그래|오케이|ㅇㅋ|ok|해 ?볼게|해 ?봐|할게|할래|하자|시작|고고|콜)/i,NO=/^(아니|아뇨|다음|나중|괜찮|싫|됐어|안 ?할|그만)/;
@@ -3707,12 +3756,13 @@ function offer(it,of){it.of=of;it.ch=[["ofy","네, 해 볼게요"],["ofn","다�
 function offerYes(i,yes,typed){const m=CHAT.list[i];if(!m||!m.of)return;const o=m.of;m.of=null;m.done=true;if(!typed)chatPush("u",yes?"네, 해 볼게요":"다음에요");
  if(!yes)chatPush("c","좋아요. 필요하실 때 언제든 말씀해 주세요.");
  else if(o.rec){chatPush("c","좋아요! 아래 단추를 누르면 바로 들을게요.");CHAT.list.at(-1).rec=o.rec}
- else chatPush("c","좋아요! 아래 단추를 누르면 시작해요.",o.mid);
+ else{chatPush("c","좋아요, 바로 시작할게요!",o.mid);chatSave();renderCoach();missionGo(o.mid);return}
  chatSave();renderCoach()}
+function missionGo(mid){if(SITU_M().some(q=>q.id===mid)){coachAsk(mid);return}const m=aiMissions().find(x=>x.id===mid);if(!m){coachAsk(mid);return}CHAT.pend={mid,snap:coachSnap()};chatSave();m.go()}
 
-const RECK={ah:["'아~' 5초 들려주기","편하게 한 음으로 길게"],read:["문장 하나 읽어 주기","화면에 나오는 문장을 평소처럼"],free:["하고 싶은 말 들려주기","편하게 10~20초"],sing:["노래 한 소절 들려주기","좋아하는 노래 10~20초"]};
+const RECK={rh:["내 대답 소리 내서 말하기","상대에게 하듯 편하게 · 다 말하면 동그라미"],ah:["'아~' 5초 들려주기","편하게 한 음으로 길게"],read:["문장 하나 읽어 주기","화면에 나오는 문장을 평소처럼"],free:["하고 싶은 말 들려주기","편하게 10~20초"],sing:["노래 한 소절 들려주기","좋아하는 노래 10~20초"]};
 const recBtn=k=>`<button type="button" class="mis now" data-rec="${k}"><span class="c">${ICON.mic}</span><span><b>${RECK[k][0]}</b><small>${RECK[k][1]} · 누르면 바로 들어요</small></span></button>`;
-function recAsk(k){if(k==="ah"){chatCheck();return}if(aiCan())aiOK().then(ok=>voiceAI(ok,k));else voiceAI(false,k)}
+function recAsk(k){if(k==="ah"){chatCheck();return}if(k==="rh")k="free";if(aiCan())aiOK().then(ok=>voiceAI(ok,k));else voiceAI(false,k)}
 
 const RKN={free:"하고 싶은 말",read:"문장 읽기",sing:"노래 한 소절",ah:"'아~' 5초",file:"올린 녹음 파일"};
 function voiceLine(kind,line,said){const p=CHAT.lastV,ago=p?Math.round((Date.now()-p.at)/60000):0;CHAT.lastV={at:Date.now(),line,kind};chatSave();
@@ -3741,10 +3791,10 @@ async function voiceParts(t){let s=null,q={};try{SEX=$("sex").value;const x=awai
 async function chatClip(t){try{const id=Date.now();await dbPut("rec",{id,at:new Date().toISOString(),kind:"chat",text:"",m1:null,m2:null,up:0,demo:false,w1:await wav16blob(t)});return id}catch(e){return null}}
 const playBtn=(src,id)=>id?`<button type="button" class="icb cplay" data-cplay="${src}:${id}">${ICON.play1}<small>내 목소리 듣기</small></button>`:"";
 
-async function voiceTake(t,useAI,tag,kind){kind=kind||"free";const sec=Math.round(t.x.length/t.sr),head=`${tag} ${RKN[kind]||""} ${sec}초`;
+async function voiceTake(t,useAI,tag,kind){kind=kind||"free";const sec=Math.round(t.x.length/t.sr),head=`${tag} ${CHAT.rh&&kind==="free"?"내 대답":RKN[kind]||""} ${sec}초`;
   chatPush("u",head);const me=CHAT.list[CHAT.list.length-1];renderCoach();
   await new Promise(r=>setTimeout(r,30));const P=await voiceParts(t),cid=await chatClip(t),pb=playBtn("r",cid);me.t=head+pb;chatSave();renderCoach();
-  if(!P){chatPush("c","목소리가 충분히 잡히지 않았어요. 조용한 곳에서 조금 더 길게 들려주실래요?");CHAT.list[CHAT.list.length-1].rec=kind==="file"?"free":kind;chatSave();renderCoach();return}
+  if(!P){chatPush("c","목소리가 충분히 잡히지 않았어요. 조용한 곳에서 조금 더 길게 들려주실래요?");CHAT.list[CHAT.list.length-1].rec=CHAT.rh&&kind==="free"?"rh":kind==="file"?"free":kind;chatSave();renderCoach();return}
   if(!useAI||!quota("ai").left){chatPush("c",useAI?quotaMsg("ai"):"목소리는 이렇게 들었어요. 궁금한 건 글로 물어봐 주세요!");CHAT.list[CHAT.list.length-1].x=P.card;chatSave();renderCoach();return}
   let x="";if(kind==="free"||kind==="file"){try{const j=await aiCall("stt",{audio:await wav16b64(t)});x=(j.text||"").trim()}catch(e){}}
   if(x){me.t=`${esc(x)}<br><small class="meta">${head}</small>${pb}`;chatSave();renderCoach();if(safeSay(x))return}
@@ -3806,7 +3856,7 @@ function openShort(id){const c=SHORT[id],S=$("sheet");let i=-1,t=0,tm=null;
   $("sc-x").onclick=()=>{clearInterval(tm);S.hidden=true};$("sc-go").onclick=()=>{if(end){S.hidden=true;scDone(id)}else step(i+1)}};
  const step=k=>{clearInterval(tm);i=k;t=i<c[2].length?c[2][i][1]:0;draw();if(i>=c[2].length)return;tm=setInterval(()=>{t--;if(t<=0){step(i+1);return}const b=S.querySelector("li.on b");if(b)b.textContent=t+"초"},1000)};
  S.hidden=false;draw()}
-function scDone(id){chatPush("c",`<b>${SHORT[id][0]}</b> 했어요! ${id==="sc-cool"?"오늘 수고했어요. 남은 시간엔 말을 아껴 주세요.":"몸이 한결 편해졌을 거예요."}`);if(!situNext()){chatSave();renderCoach()}}
+function scDone(id){if(aiLive()){chatPush("u",`✓ ${SHORT[id][0]} 마쳤어요`);aiReply(`[방금 끝낸 연습] ${SHORT[id][0]}. 짧게 알아주고, 아까 말한 상황에 이어서 지금 할 한 가지만 말한다. 연습을 또 권하는 건 꼭 필요할 때만.`);return}chatPush("c",`<b>${SHORT[id][0]}</b> 했어요! ${id==="sc-cool"?"오늘 수고했어요. 남은 시간엔 말을 아껴 주세요.":"몸이 한결 편해졌을 거예요."}`);if(!situNext()){chatSave();renderCoach()}}
 
 const JOB_LINES={teach:["자, 모두 선생님 쪽을 봐 주세요. 지금부터 오늘 배울 내용을 천천히 이야기해 볼게요.","다 같이 숨 한 번 크게 쉬고, 책 스물네 쪽을 펴 볼까요?","좋아요, 방금 발표한 친구에게 다 같이 박수를 보내 줍시다."],
  faith:["오늘 이 자리에 함께해 주셔서 감사합니다. 잠시 마음을 모으고 말씀을 나누겠습니다.","우리는 서로의 짐을 나누어 질 때 더 멀리 갈 수 있습니다.","지친 마음으로 오신 분이 계시다면, 오늘 이 시간이 쉼이 되기를 바랍니다."],
@@ -3832,7 +3882,7 @@ function talkSet(h){TALK[dayKey()]=h;TALK=Object.fromEntries(Object.keys(TALK).s
  chatPush("u",`오늘 ${h>=8?"8시간 이상":h+"시간"} 말했어요`);
  chatPush("c",(big?"오늘은 목을 많이 쓴 날이에요. <b>내일은 쉬어 가는 날</b>로 해요. 연습은 '아~' 체크만 하고, 말은 아껴 주세요.":h>=4?"꽤 많이 썼어요. 오늘은 마무리 1분만 하고 가볍게 끝내요.":"적당히 쓴 날이에요. 하고 싶은 연습을 가볍게 해도 좋아요.")+talkWeek(),h>=4?"sc-cool":null);chatSave();renderCoach()}
 function talkWeek(){const L=[6,5,4,3,2,1,0].map(k=>{const x=new Date();x.setDate(x.getDate()-k);return[x,TALK[dayKey(x)]||0]});if(L.filter(z=>z[1]).length<2)return"";const sum=L.reduce((a,z)=>a+z[1],0),mx=Math.max(...L.map(z=>z[1]),1);
- return`<div class="qcard"><div class="qc-h"><b>이번 주 말한 시간</b><small>합계 ${sum}시간 · 본인이 고른 값이에요</small></div><div class="tw">${L.map(([x,h])=>`<span><i style="height:${Math.round(h/mx*40)+2}px"></i><small>${"일월화수목금토"[x.getDay()]}</small></span>`).join("")}</div></div>`}
+ return`<div class="qcard"><div class="qc-h"><b>이번 주 말한 시간</b><small>합계 ${sum}시간 · 본인이 고른 값이에요</small></div><div class="twk">${L.map(([x,h])=>`<span><i style="height:${Math.round(h/mx*40)+2}px"></i><small>${"일월화수목금토"[x.getDay()]}</small></span>`).join("")}</div></div>`}
 
 let EVTS=[];try{EVTS=JSON.parse(localStorage.getItem("tv_evt")||"[]")||[]}catch(e){}
 function evtAsk(){const d=new Date();d.setDate(d.getDate()+1);return`<form class="evtform"><p>일정을 넣으면 휴대폰 달력이 <b>30분 전</b>에 알려 줘요. 그때 앱을 열면 맞는 카드를 바로 띄워 드려요.</p><div class="chips">${["예배","수업","강의","발표","회의","공연","방송","면접"].map(n=>`<button type="button" data-evn="${n}">${n}</button>`).join("")}</div><input name="n" placeholder="일정 이름 (예: 주일 예배)" maxlength="30" required><div class="evt-r"><input name="d" type="date" value="${dayKey(d)}" required><input name="t" type="time" value="09:00" required></div><label class="evt-w"><input name="w" type="checkbox"> 매주 반복</label><button type="submit" class="btn pri">달력에 넣기</button></form>`}
@@ -3860,7 +3910,7 @@ const SITU_M=()=>{const p=readPick();return[
 $("coach").addEventListener("click",e=>{const jb=e.target.closest("[data-job]");if(jb){jb.setAttribute("aria-pressed",jb.getAttribute("aria-pressed")==="true"?"false":"true");return}
  if(e.target.closest("[data-jobok]")){const box=e.target.closest(".jobpick"),L=[...box.querySelectorAll('[data-job][aria-pressed="true"]')].map(b=>b.dataset.job);if(!L.length){box.querySelector("p").innerHTML="하나 이상 골라 주세요. 잘 모르겠으면 <b>일상</b>을 눌러 주세요.";return}
   setJobs(L);const m=[...CHAT.list].reverse().find(x=>String(x.t).includes('class="jobpick"'));if(m)m.t=`좋아요! <b>${L.map(k=>JOBN[k]).join(" · ")}</b> 기준으로 챙길게요. 바꾸고 싶으면 "직업 바꿀래"라고 말해 주세요.`;const w=SITU.wait;SITU.wait=null;if(w){situ(w,"");return}chatSave();renderCoach();return}
- const wb=e.target.closest("[data-when]");if(wb){chatPush("u",esc(wb.textContent.trim()));situ(wb.dataset.when,"");return}
+ const wb=e.target.closest("[data-when]");if(wb){const w=wb.dataset.when;chatPush("u",esc(wb.textContent.trim()));if(aiLive()){if(w==="bad"){COACH.light=true}aiOK().then(ok=>ok?aiReply(situHint(w,"")):situ(w,""));renderCoach();return}situ(w,"");return}
  const tb=e.target.closest("[data-talk]");if(tb){const m=[...CHAT.list].reverse().find(x=>String(x.t).includes('class="talkpick"'));if(m)m.t="오늘 말한 시간을 남겼어요.";talkSet(+tb.dataset.talk);return}
  const en=e.target.closest("[data-evn]");if(en){const f=en.closest(".evtform");if(f)f.n.value=en.dataset.evn}});
 $("coach").addEventListener("submit",e=>{const f=e.target.closest(".evtform");if(!f)return;e.preventDefault();e.stopImmediatePropagation();evtMake(f)},true);
@@ -3908,6 +3958,8 @@ async function bstTake(t){try{if(!t||t.x.length<t.sr*1.2)throw new Error("조금
  catch(err){$("bst-hint").textContent=(err&&err.message)||"다시 한 번 읽어 주세요";const b=$("bst-mic");if(b){b.disabled=false;b.classList.remove("rec");b.innerHTML=MIC}}}
 
 new MutationObserver(()=>{if(CHAT.pend&&$("bst").hidden)setTimeout(()=>{if(CHAT.pend&&["pm","d3","tr","vc","rd","tp","sc","bst"].every(id=>$(id).hidden))coachReview()},500)}).observe($("bst"),{attributes:true,attributeFilter:["hidden"]});
+
+{const b=$("mem-x");if(b)b.addEventListener("click",()=>{CMEM={day:CMEM.day,today:CMEM.today,n:CMEM.n};memSave()});memShow()}
 
 const spM=spAttach($("mtext"),$("m-sp"));
 
