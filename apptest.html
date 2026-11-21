@@ -3680,7 +3680,7 @@ const AIM="claude";
 const aiLive=()=>aiCan()&&csOn("ai")&&quota("ai").left;
 const WHEN_N={before:"말하기 전",after:"말한 뒤",bad:"목이 안 좋은 날"};
 
-const RH_RULE="[대화 리허설] 사용자가 앞으로 누군가와 나눌 대화(데이트·소개팅·고백·면접·발표 뒤 질문·상사 보고·부탁·사과·거절·고객 통화·첫 만남·가족과 어려운 이야기 등)를 앞두고 '무슨 말을 해야 해?'라고 묻거나 연습하고 싶어 하면: 상황을 모르면 질문은 딱 하나만(누구와·어떤 자리인지) 하고, 알면 바로 첫마디 예시 하나를 주고 '제가 상대가 돼 볼게요. 소리 내서 대답해 보세요'라며 상대의 첫 대사를 따옴표로 말한 뒤 대답 맨 끝에 [[리허설:상대 역할 짧게]]를 붙인다. 리허설 중에는 매번 ① 사용자 대답이 녹음이면 목소리 한 줄(빠르기·크기·높낮이·끝맺음 중 하나), 내용 한 줄 피드백 ② 상대의 다음 대사 한 줄(따옴표) 순서로 짧게 말한다. 3~4번 주고받았거나 사용자가 그만하자고 하면 '기억할 말 3개'와 들어가기 직전에 할 연습 하나로 마무리하고 [[리허설끝]]을 붙인다. 상대 역할은 현실적이고 예의 있게, 너무 쉽지도 공격적이지도 않게. 상대를 조종·압박하는 말, 거짓말, 성적인 내용은 연습시키지 않는다. 목표는 '내가 편하고 진심 있게 들리는 것'이고 정답 대본을 외우게 하지 않는다.";
+const RH_RULE="[대화 리허설] 사용자가 앞으로 누군가와 나눌 대화(데이트·소개팅·고백·면접·발표 뒤 질문·상사 보고·부탁·사과·거절·고객 통화·첫 만남·가족과 어려운 이야기 등)를 앞두고 '무슨 말을 해야 해?'라고 묻거나 연습하고 싶어 하면: 상황을 모르면 질문은 딱 하나만(누구와·어떤 자리인지) 하고, 알면 바로 첫마디 예시 하나를 주고 '제가 상대가 돼 볼게요. 소리 내서 대답해 보세요'라며 상대의 첫 대사를 따옴표로 말한 뒤 대답 맨 끝에 반드시 [[리허설:상대 역할 짧게]]를 붙인다(이 표시가 있어야 녹음 단추가 뜬다). 리허설 중에는 매번 ① 사용자 대답이 녹음이면 목소리 한 줄(빠르기·크기·높낮이·끝맺음 중 하나), 내용 한 줄 피드백 ② 상대의 다음 대사 한 줄(따옴표) 순서로 짧게 말한다. 3~4번 주고받았거나 사용자가 그만하자고 하면 '기억할 말 3개'와 들어가기 직전에 할 연습 하나로 마무리하고 반드시 [[리허설끝]]을 붙인다. 상대 역할은 현실적이고 예의 있게, 너무 쉽지도 공격적이지도 않게. 상대를 조종·압박하는 말, 거짓말, 성적인 내용은 연습시키지 않는다. 목표는 '내가 편하고 진심 있게 들리는 것'이고 정답 대본을 외우게 하지 않는다.";
 const situHint=(w,x)=>`[지금 상황] ${WHEN_N[w]||""}${x?` — 사용자 말: "${String(x).slice(0,80)}"`:""}. 이미 상황을 말했으니 되묻지 말고, 그 자리에서 바로 쓸 수 있는 방법 한두 가지를 그 사람 기록에 맞춰 말한 뒤, 가장 맞는 연습 하나를 '같이 해 볼까요?'로 묻고 [[연습:아이디]]를 붙인다. 면접·상담·통화처럼 상대가 있는 일이면 연습 대신 대화 리허설을 열어도 된다.${w==="bad"?" 목이 안 좋은 날이므로 소리 내는 연습은 권하지 말고 쉬는 법 위주로, 권한다면 sc-quiet만.":""}`;
 let CMEM={};try{CMEM=JSON.parse(localStorage.getItem("tv_mem")||"{}")||{}}catch(e){}
 const memSave=()=>{try{localStorage.setItem("tv_mem",JSON.stringify(CMEM))}catch(e){}memShow()};
@@ -3745,9 +3745,10 @@ function aiMissions(){const L=coachList(),has=id=>L.some(m=>m.id===id);
  return L}
 
 async function aiReply(v,o){o=o||{};const msgs=aiHist();chatPush("c",`<span class="ai-wait">${o.kind==="voice"?"목소리 듣는 중…":"생각하는 중…"}</span>`);renderCoach();const it=CHAT.list[CHAT.list.length-1];
- try{const ctx=aiCtx(v)+(o.kb?`\n[참고 지식 카드] ${plain(o.kb.q)} — ${plain(o.kb.a).slice(0,600)}`:""),j=await aiCall("chat",{m:AIM,kind:o.kind||"chat",msgs,ctx}),T=String(j.text),mm=T.match(/\[\[연습:([\w-]+)\]\]/),rr=T.match(/\[\[녹음:(아|문장|자유|노래)\]\]/),rs=T.match(/\[\[리허설:([^\]]{1,30})\]\]/),re=/\[\[리허설끝\]\]/.test(T);
+ try{const ctx=aiCtx(v)+(o.kb?`\n[참고 지식 카드] ${plain(o.kb.q)} — ${plain(o.kb.a).slice(0,600)}`:""),j=await aiCall("chat",{m:AIM,kind:o.kind||"chat",msgs,ctx}),T=String(j.text),mm=T.match(/\[\[연습:([\w-]+)\]\]/),rr=T.match(/\[\[녹음:(아|문장|자유|노래)\]\]/),rs=T.match(/\[\[리허설:([^\]]{1,30})\]\]/),re=/\[\[리허설끝\]\]/.test(T)||!!CHAT.rh&&/기억할 말/.test(T);
   quota("ai",1);it.ty=1;setTimeout(memTick,1500);it.t=esc(T.replace(/\[\[[^\]]*\]\]/g,"").trim()).replace(/\n/g,"<br>")+(o.kb?`<br><small class="meta">참고: 터칭보이스 목소리 지식 카드 · ${esc(plain(o.kb.q))}</small>`:"");
-  const of=rr?{rec:{아:"ah",문장:"read",자유:"free",노래:"sing"}[rr[1]]}:mm&&aiMissions().some(x=>x.id===mm[1])?{mid:mm[1]}:null;if(rs)CHAT.rh={who:rs[1].trim(),n:0};else if(CHAT.rh&&o.kind==="voice")CHAT.rh.n++;if(re){CHAT.rh=null;CHAT.list.forEach(m=>{if(m.rec==="rh")delete m.rec;if(m.ch&&m.ch[0]&&m.ch[0][0]==="rhx")m.done=true})}
+  const of=rr?{rec:{아:"ah",문장:"read",자유:"free",노래:"sing"}[rr[1]]}:mm&&aiMissions().some(x=>x.id===mm[1])?{mid:mm[1]}:null;
+  if(rs||!CHAT.rh&&!re&&/상대(가|를|의 역할을)? ?(돼|되어|해|맡아) ?(볼게|줄게|드릴게)|제가 .{0,12}(역할|상대)(을|를|이)? ?(해|맡아|돼) ?(볼게|드릴게)/.test(T))CHAT.rh={who:rs?rs[1].trim():"대화 상대",n:0};else if(CHAT.rh&&o.kind==="voice")CHAT.rh.n++;if(re){CHAT.rh=null;CHAT.list.forEach(m=>{if(m.rec==="rh")delete m.rec;if(m.ch&&m.ch[0]&&m.ch[0][0]==="rhx")m.done=true})}
   if(CHAT.rh){CHAT.list.forEach(m=>{if(m.ch&&m.ch[0]&&m.ch[0][0]==="rhx")m.done=true});it.rec="rh";it.ch=[["rhx","리허설 끝내기"]]}else if(of)offer(it,of)}
  catch(e){it.t=AI_ERR[e.message]||"지금은 AI 선생님과 연결이 안 돼요. 잠시 뒤에 다시 말씀해 주세요."}if(o.x)it.x=o.x;chatSave();renderCoach()}
 
