@@ -3748,7 +3748,7 @@ async function aiReply(v,o){o=o||{};const msgs=aiHist();chatPush("c",`<span clas
  try{const ctx=aiCtx(v)+(o.kb?`\n[참고 지식 카드] ${plain(o.kb.q)} — ${plain(o.kb.a).slice(0,600)}`:""),j=await aiCall("chat",{m:AIM,kind:o.kind||"chat",msgs,ctx}),T=String(j.text),mm=T.match(/\[\[연습:([\w-]+)\]\]/),rr=T.match(/\[\[녹음:(아|문장|자유|노래)\]\]/),rs=T.match(/\[\[리허설:([^\]]{1,30})\]\]/),re=/\[\[리허설끝\]\]/.test(T)||!!CHAT.rh&&/기억할 말/.test(T);
   quota("ai",1);it.ty=1;setTimeout(memTick,1500);it.t=esc(T.replace(/\[\[[^\]]*\]\]/g,"").trim()).replace(/\n/g,"<br>")+(o.kb?`<br><small class="meta">참고: 터칭보이스 목소리 지식 카드 · ${esc(plain(o.kb.q))}</small>`:"");
   const of=rr?{rec:{아:"ah",문장:"read",자유:"free",노래:"sing"}[rr[1]]}:mm&&aiMissions().some(x=>x.id===mm[1])?{mid:mm[1]}:null;
-  if(rs||!CHAT.rh&&!re&&/상대(가|를|의 역할을)? ?(돼|되어|해|맡아) ?(볼게|줄게|드릴게)|제가 .{0,12}(역할|상대)(을|를|이)? ?(해|맡아|돼) ?(볼게|드릴게)/.test(T))CHAT.rh={who:rs?rs[1].trim():"대화 상대",n:0};else if(CHAT.rh&&o.kind==="voice")CHAT.rh.n++;if(re){CHAT.rh=null;CHAT.list.forEach(m=>{if(m.rec==="rh")delete m.rec;if(m.ch&&m.ch[0]&&m.ch[0][0]==="rhx")m.done=true})}
+  if(!CHAT.rh&&!re&&(rs||/상대(가|를|의 역할을)? ?(돼|되어|해|맡아) ?(볼게|줄게|드릴게)|제가 .{0,12}(역할|상대)(을|를|이)? ?(해|맡아|돼) ?(볼게|드릴게)/.test(T)))CHAT.rh={who:rs?rs[1].trim():"대화 상대",n:0};else if(CHAT.rh&&o.kind==="voice")CHAT.rh.n++;if(re){CHAT.rh=null;CHAT.list.forEach(m=>{if(m.rec==="rh")delete m.rec;if(m.ch&&m.ch[0]&&m.ch[0][0]==="rhx")m.done=true})}
   if(CHAT.rh){CHAT.list.forEach(m=>{if(m.ch&&m.ch[0]&&m.ch[0][0]==="rhx")m.done=true});it.rec="rh";it.ch=[["rhx","리허설 끝내기"]]}else if(of)offer(it,of)}
  catch(e){it.t=AI_ERR[e.message]||"지금은 AI 선생님과 연결이 안 돼요. 잠시 뒤에 다시 말씀해 주세요."}if(o.x)it.x=o.x;chatSave();renderCoach()}
 
