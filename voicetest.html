@@ -668,8 +668,11 @@ R.info=()=>({top:{back:()=>go("landing"),label:"시작 정보"},html:`
 /* ===== 5. 녹음/* ===== 5. 녹음 ===== */
 const AC=window.AudioContext||window.webkitAudioContext;let ctx=null,rec=null;
 function ensureCtx(){if(!ctx)ctx=new AC();if(ctx.state==="suspended")ctx.resume();return ctx}
-function startRec(){const c=ensureCtx();if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)return Promise.reject(new Error("no mic"));
-  return navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false,voiceIsolation:false,channelCount:1,sampleRate:{ideal:48000}}}).then(stream=>{
+/* 11/25 대표(카페에서 인식 안 됨): 주변 소리 확인에서 시끄러우면(-45dB 넘음) 녹음 때 폰·브라우저의 '주변 소리 줄이기'(노이즈 캔슬링)를 켠다.
+   조용하면 지금처럼 원음(분석이 정확). 주변 소리 확인 자체는 늘 원음으로 잰다(raw). 켜진 녹음은 목소리 기준선을 그 녹음에서 다시 잰다 */
+let NOISY=false;
+function startRec(raw){const c=ensureCtx(),ns=NOISY&&!raw;if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)return Promise.reject(new Error("no mic"));
+  return navigator.mediaDevices.getUserMedia({audio:{echoCancellation:ns,noiseSuppression:ns,autoGainControl:false,voiceIsolation:ns,channelCount:1,sampleRate:{ideal:48000}}}).then(stream=>{
   const src=c.createMediaStreamSource(stream),pr=c.createScriptProcessor(4096,1,1),mute=c.createGain(),an=c.createAnalyser();an.fftSize=2048;mute.gain.value=0;const chunks=[];let peak=0;
   pr.onaudioprocess=e=>{const d=e.inputBuffer.getChannelData(0);chunks.push(new Float32Array(d));for(let i=0;i<d.length;i++){const a=Math.abs(d[i]);if(a>peak)peak=a}};
   src.connect(an);src.connect(pr);pr.connect(mute);mute.connect(c.destination);
@@ -682,7 +685,7 @@ const MIC_SVG=`<svg viewBox="0 0 24 24" width="36" height="36" fill="none" strok
 const STOP_SVG=`<svg viewBox="0 0 24 24" width="30" height="30"><rect x="6" y="6" width="12" height="12" rx="3" fill="currentColor"/></svg>`;
 const micHTML=hint=>`<div class="mic-box"><canvas class="wave" id="wave" width="680" height="144"></canvas><div class="timer" id="timer">0.0초</div>
 <button class="mic" id="mic" aria-label="녹음 시작">${MIC_SVG}</button><p class="mic-msg" id="micmsg">${hint}</p>
-<label class="file-alt">녹음 파일로 하기<input type="file" accept="audio/*" id="file" hidden></label><button class="btn ghost sm" id="micdemo" hidden>마이크 없이 데모 값으로 진행</button></div>`;
+<input type="file" accept="audio/*" id="file" hidden><button class="btn ghost sm" id="micdemo" hidden>마이크 없이 데모 값으로 진행</button></div>`;
 function bindMic({maxSec,minSec=1.5,onDone,onDemo}){const mic=$("#mic"),msg=$("#micmsg"),tm=$("#timer"),cv=$("#wave"),g=cv.getContext("2d");let t0=0,lv=[];
   const col=getComputedStyle(document.documentElement).getPropertyValue("--fam-ui").trim()||"#43227D";
   const draw=()=>{g.clearRect(0,0,cv.width,cv.height);const n=56,w=cv.width/n;for(let i=0;i<n;i++){const v=lv[lv.length-n+i]||0,h=Math.max(6,v*cv.height*2.6);g.fillStyle=col;g.globalAlpha=.35+.65*(i/n);g.beginPath();const x=i*w+w*.2,y=(cv.height-h)/2;if(g.roundRect)g.roundRect(x,y,w*.6,Math.min(h,cv.height),6);else g.rect(x,y,w*.6,Math.min(h,cv.height));g.fill()}g.globalAlpha=1};draw();
@@ -690,7 +693,7 @@ function bindMic({maxSec,minSec=1.5,onDone,onDemo}){const mic=$("#mic"),msg=$("#
     const sec=(performance.now()-t0)/1000;tm.textContent=sec.toFixed(1)+"초";if(sec>maxSec){finish();return}raf=requestAnimationFrame(loop)};
   const finish=()=>{cancelAnimationFrame(raf);document.documentElement.style.setProperty("--lv","0");const r=stopRec();mic.classList.remove("on");mic.innerHTML=MIC_SVG;mic.setAttribute("aria-label","녹음 시작");if(!r)return;const dur=r.x.length/r.sr;
     if(dur<minSec){msg.textContent="너무 짧아요. 다시 녹음해 주세요.";return}msg.textContent=r.peak>0.98?"소리가 너무 커서 찌그러졌을 수 있어요. 다음엔 폰을 조금 멀리 두세요.":"좋아요!";onDone(r)};
-  const fail=()=>{msg.textContent=onDemo?"마이크를 쓸 수 없어요. 녹음 파일을 고르거나 데모 값으로 진행해 주세요.":"마이크를 쓸 수 없어요. 아래에서 녹음 파일을 골라 주세요.";if(onDemo)$("#micdemo").hidden=false};
+  const fail=()=>{msg.textContent="마이크를 쓸 수 없어요. 브라우저 설정에서 마이크를 허용해 주세요.";if(onDemo)$("#micdemo").hidden=false};
   mic.onclick=()=>{if(rec){finish();return}msg.textContent="준비 중…";startRec().then(()=>{t0=performance.now();lv=[];mic.classList.add("on");mic.innerHTML=STOP_SVG;mic.setAttribute("aria-label","녹음 중지");msg.textContent="다 했으면 다시 누르세요";loop()}).catch(fail)};
   $("#file").onchange=e=>{const f=e.target.files[0];if(!f)return;msg.textContent="파일 읽는 중…";decodeFile(f).then(r=>{tm.textContent=(r.x.length/r.sr).toFixed(1)+"초";onDone(r)}).catch(()=>msg.textContent="이 파일은 읽을 수 없어요. wav나 m4a로 해 주세요.")};
   if(onDemo)$("#micdemo").onclick=onDemo}
@@ -703,9 +706,9 @@ R.prep=()=>({top:{back:()=>go("info"),label:"녹음 준비"},html:`
 <button class="btn ghost block" id="again2" hidden>주변 소리 다시 확인</button>`,
  /* 11/5 대표: 주변 소리 확인이 끝나면 같은 버튼이 '녹음하기'로 바뀐다 */
  bind(){let ready=false;const b=$("#noise"),ag=$("#again2"),done=loud=>{ready=true;b.textContent="녹음하기";b.disabled=false;ag.hidden=!loud};const check=()=>{b.disabled=true;ag.hidden=true;ready=false;$("#nmsg").textContent="확인 중… (말하지 마세요)";
-  startRec().then(()=>later(()=>{const r=stopRec();resample(r.x,r.sr).then(x=>{const db=[];frameDb(x,SR,882,441,v=>db.push(v));db.sort((a,c)=>a-c);S.noiseDb=db.length?db[Math.floor(db.length*.5)]:-70;
-   $("#nmsg").textContent=S.noiseDb>-45?`주변이 조금 시끄러워요(${S.noiseDb.toFixed(0)} dB). 더 조용한 곳이면 결과가 정확해져요.`:`좋아요. 조용합니다(${S.noiseDb.toFixed(0)} dB).`;done(S.noiseDb>-45)})},2000))
-  .catch(()=>{$("#nmsg").textContent="마이크를 쓸 수 없어요. 다음 화면에서 녹음 파일로 해 볼 수 있어요.";S.noiseDb=null;done(false)})};
+  startRec(true).then(()=>later(()=>{const r=stopRec();resample(r.x,r.sr).then(x=>{const db=[];frameDb(x,SR,882,441,v=>db.push(v));db.sort((a,c)=>a-c);S.noiseDb=db.length?db[Math.floor(db.length*.5)]:-70;NOISY=S.noiseDb>-45;
+   $("#nmsg").textContent=S.noiseDb>-45?`주변이 시끄러워요(${S.noiseDb.toFixed(0)} dB). 주변 소리 줄이기를 켜고 녹음할게요.`:`좋아요. 조용합니다(${S.noiseDb.toFixed(0)} dB).`;done(S.noiseDb>-45)})},2000))
+  .catch(()=>{$("#nmsg").textContent="마이크를 쓸 수 없어요. 브라우저 설정에서 마이크를 허용해 주세요.";S.noiseDb=null;done(false)})};
     b.onclick=()=>{if(!ready){check();return}
     go("rec1")};ag.onclick=check;}});
 R.rec1=err=>({top:{back:()=>go("prep"),label:"녹음 1 / 2"},html:`
@@ -971,7 +974,7 @@ function pr(d,w){const map={"억양":"tune","음색":"clear","속도":"breath","
 R.wait=()=>({html:`<div class="reveal"><div class="rv-stage" style="width:min(200px,60vw)"><img class="wobble" src="${img.egg}" alt=""></div>
 <h1 class="title">목소리를 듣는 중…</h1><div class="wait-steps" id="ws">${["높이 재는 중","속도 세는 중","숨결 듣는 중","억양 그리는 중","컨디션 살피는 중"].map(t=>`<div><i></i>${t}</div>`).join("")}</div></div>`,
  bind(){const ds=[...view.querySelectorAll("#ws div")];ds.forEach((d,i)=>later(()=>d.classList.add("on"),300+i*450));
-  later(()=>{Promise.all([resample(REC.r1.x,REC.r1.sr),resample(REC.r2.x,REC.r2.sr)]).then(a=>{const nd=S.noiseDb==null?noiseFloor(a[0]):S.noiseDb;
+  later(()=>{Promise.all([resample(REC.r1.x,REC.r1.sr),resample(REC.r2.x,REC.r2.sr)]).then(a=>{const nd=S.noiseDb==null||NOISY?noiseFloor(a[0]):S.noiseDb;
    const s=analyzeSentence(a[0],nd,sylOf(SITS[sitKey()][2])),v=analyzeVowel(a[1],nd);S.m={s,v,noiseDb:nd,c:condMeasure(a[1])};finishTest();go("reveal")}).catch(e=>go("rec1",(e&&e.message?e.message:"분석하지 못했어요")+" — 다시 녹음해 주세요."))},2100)}});
 function finishTest(){const J=judge(S.m);S.J=J;setFam(J.code);save();if(!S.demo){try{localStorage.setItem(RUNS_KEY,String(runs()+1));if(sitKey()==="intro")localStorage.setItem(BASE_KEY,J.code)}catch(e){}}sendRecord()}
 R.reveal=()=>{const J=S.J,T=TYPES[J.code];return{html:`
@@ -1154,7 +1157,7 @@ function serverRecord(){const m=S.m,J=S.J,s=m.s,v=m.v,A=attrScore(m),n=(x,d)=>x=
  return{type:"voicetype",ver:3,src:"web",sit:sitKey(),sitName:SITS[sitKey()][0],at:new Date().toISOString(),sex:S.sex,age:S.age,job:S.job||"",code:J.code,
   f0:n(s.f0,1),stRel:n(J.stRel,2),rangeSt:n(s.rangeSt,2),sdSt:n(s.sdSt,2),rate:n(s.rate,2),syl:s.syl,speakDur:n(s.speakDur,2),dbsd:n(s.dbsd,2),dyn:n(s.dyn,1),snr:n(s.snr,1),endSlope:n(s.endSlope,2),bands:s.bands.map(b=>n(b,1)),
   mpt:n(v.mpt,2),hnr:n(v.hnr,2),regs4:s.regs4?s.regs4.map(x=>n(x,1)):null,vspace:n(s.vspace,0),sylc:n(s.sylc,1),pauses:s.pauses,voiceOnly:true,cpp:n(v.cpp,3),trem:n(v.trem,3),noiseDb:n(m.noiseDb,1),cond:m.c||null,
-  score:J.sc,total:J.total,voice:J.voice,voiceAge:n(J.age,1),attr:A.pct,attrParts:Object.fromEntries(Object.entries(A.parts).map(([k,x])=>[k,n(x,2)])),recQ:recQ()}}
+  score:J.sc,total:J.total,voice:J.voice,voiceAge:n(J.age,1),attr:A.pct,attrParts:Object.fromEntries(Object.entries(A.parts).map(([k,x])=>[k,n(x,2)])),recQ:recQ(),ns:NOISY}}
 /* 11/5 대표: 웹 검사는 이름·녹음 없이 측정 숫자만 익명으로 보낸다(기준 보정용). 녹음은 앱에서 동의(구독 할인)로 */
 function sendRecord(){const run=S;if(!SAVE_URL||run.demo||run.sent)return;let rec;try{rec=serverRecord()}catch(e){return}run.sent=true;save();
  fetch(SAVE_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(rec)}).catch(()=>{if(S===run){run.sent=false;save()}})}
