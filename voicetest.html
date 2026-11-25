@@ -195,9 +195,11 @@ pre{white-space:pre-wrap;font-size:12px;background:var(--bg2);border-radius:12px
 .hc-name{font-size:32px;font-weight:700;margin:0;letter-spacing:-.02em}
 .hc-tag{font-size:16px;font-weight:600;line-height:1.5;text-wrap:balance}
 .hc-pot{margin:4px auto 2px;padding:8px 16px;border-radius:999px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);font-size:16px;font-weight:600}.hc-pot b{font-size:22px;font-weight:800}
+.tv-sign{display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:22px}.tv-sign img{width:150px;height:auto;opacity:.95}.tv-sign span{font-size:15px;font-weight:600;letter-spacing:.04em;color:#E9D9A6}
+.slogan{margin:14px 0 4px;padding:18px 16px;border-radius:20px;text-align:center;background:linear-gradient(135deg,#43227D,#6B3FB0);color:#F5EEE0;display:flex;flex-direction:column;gap:6px}.slogan p{margin:0;font-size:18px;font-weight:700;line-height:1.5;color:#fff}.slogan p b{color:#E9D9A6}.slogan>b{font-size:22px;font-weight:800;letter-spacing:.01em}.slogan>span{font-size:12px;letter-spacing:.32em;color:#A8925A;font-weight:700}
 .pot-big{display:flex;align-items:baseline;gap:6px;font-weight:800}.pot-big b{font-size:44px;line-height:1;color:var(--fam-ui,#43227D)}
 .pot-bar{height:14px;border-radius:99px;background:color-mix(in oklab,currentColor 12%,transparent);overflow:hidden}.pot-bar i{display:block;height:100%;border-radius:99px;background:var(--fam-ui,#43227D)}
-.pot-rows{display:grid;gap:10px}.pot-rows>div{display:grid;grid-template-columns:5.5em 1fr 3em;align-items:center;gap:10px;font-size:14px}.pot-rows>div>span:last-child{text-align:right;font-weight:700}
+.pot-rows{display:grid;gap:10px}.pot-rows>div{display:grid;grid-template-columns:5.5em 1fr 3em;align-items:center;gap:10px;font-size:14px}.pot-rows>div.lo>span{color:#E9D9A6;font-weight:700}.pot-rows>div.lo i{background:#E9D9A6}.pot-rows>div>span:last-child{text-align:right;font-weight:700}
 .hc-line{position:relative;display:inline-block;max-width:92%;margin:6px auto 2px;padding:9px 16px;border-radius:18px;background:#fff;color:var(--fam-deep);font-size:17px;font-weight:700;line-height:1.4;word-break:keep-all;box-shadow:0 6px 16px rgba(0,0,0,.18)}
 .hc-line::before{content:"";position:absolute;left:50%;top:-7px;width:14px;height:14px;background:#fff;transform:translateX(-50%) rotate(45deg);border-radius:2px}
 .cmp{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;text-align:center}
@@ -853,17 +855,29 @@ const balanceLine=b=>({even:"낮은 소리와 높은 소리가 골고루 섞여 
 /* 11/5 대표: 발음은 '목소리 좋은 여배우'(목소리 학습 샘플 C) 기준 — 테스트와 같은 계산으로 18초 4토막 모음 공간 809·1056·1040·1066(중앙 약 1,050), 음절 대비 약 11dB → 만점.
    남자는 성도 길이 차이로 ×0.72. 보통 사람(240~650)이 0점 근처로 몰리지 않게 (내 값/기준)^0.6 — 예: 아내 녹음 347 → 모음 0.51(예전 0) */
 const ART_REF={m:760,f:1050,x:900};
-/* 11/25 대표: '내 목소리 가능성' — 아나운서·성우·가수처럼 목소리를 다 쓰는 사람 = 100%. 판정의 네 점수(숨 길이·소리 맑음·오르내림·고른 크기, 각 25점)를 그대로 쓰고
-   ×0.92·최대 95%로 100%는 쉽게 안 나오게. 검사 기준의 추정치(재미·연습 동기용)이지 '사람은 목소리 20%만 쓴다' 같은 연구 수치가 아니다 — 화면에도 그렇게 쓴다 */
-const potOf=J=>Math.max(10,Math.min(95,Math.round((J.total||0)*.92)));
-const POT_NM={breath:["숨 길이","숨을 길게 쓰는 힘"],clear:["소리 맑음","숨이 새지 않는 깨끗한 소리"],tune:["오르내림","높낮이를 넓게 쓰는 힘"],steady:["고른 크기","크기를 고르게 유지하는 힘"]};
-function potHTML(J){const p=potOf(J),sc=J.sc||{},ks=Object.keys(POT_NM),lo=ks.slice().sort((a,b)=>(sc[a]||0)-(sc[b]||0))[0];
- return`<section class="card"><h2>내 목소리 가능성</h2><div class="pot-big"><b>${p}%</b><span>사용 중</span></div><div class="pot-bar"><i style="width:${p}%"></i></div>
- <p>아나운서·성우·가수처럼 목소리를 끝까지 쓰는 사람을 <b>100%</b>로 봤을 때, 나는 지금 내 목소리의 <b>${p}%</b>를 쓰고 있어요. 남은 <b>${100-p}%</b>는 아직 안 꺼낸 내 목소리예요.</p>
- <div class="pot-rows">${ks.map(k=>`<div><span>${POT_NM[k][0]}</span><div class="pot-bar"><i style="width:${Math.round(4*(sc[k]||0))}%"></i></div><span>${Math.round(4*(sc[k]||0))}%</span></div>`).join("")}</div>
- <p>가장 많이 남은 곳은 <b>${POT_NM[lo][0]}</b>(${POT_NM[lo][1]})이에요. 하루 3분씩 연습하면 이 숫자가 올라가요.</p>
- ${S.demo?"":S.waitlisted?`<div class="target"><span>앱 대기예약</span><b>완료했어요 ✓ 앱이 나오면 알려 드릴게요</b></div>`:`<button class="btn pri block shine" id="wlPot">남은 ${100-p}% 채우는 앱 · 출시 알림 받기</button>`}
- <p class="small muted">이 검사의 네 가지 측정으로 본 추정치예요. 녹음한 곳에 따라 달라질 수 있어요.</p></section>`}
+/* 11/25 대표: '내 목소리 가능성' — 전문가 수준 = 100%, 아무나 100%가 안 나오게 엄격하게(노아 11/25):
+   숨 길이 = '아—' 유지 5초 0% → 남 60·여 50초 100% · 소리 맑음 = 깨끗함(HNR 8→24dB) 반 + 2kHz 영역(1.1~4kHz, 귀 기준 비중 15→55%) 반 ·
+   오르내림 = 높낮이 폭 3→16반음 · 고른 크기 = 크기 흔들림 3dB 이하 100% → 10dB 0%. 네 개 평균. 판정(유형·서버 기록)은 건드리지 않는다.
+   검사 기준의 추정치(재미·연습 동기용)이지 '사람은 목소리 20%만 쓴다' 같은 연구 수치가 아니다 — 화면에도 그렇게 쓴다 */
+const potParts=m=>{const s=m.s,v=m.v,P=x=>Math.round(100*x);return{breath:P(lin(v.mpt,5,S.sex==="f"?50:S.sex==="m"?60:55)),clear:P(.5*lin(v.hnr,8,24)+.5*lin(s.bands[2],15,55)),tune:P(lin(s.rangeSt,3,16)),steady:P(1-lin(s.dbsd,3,10)),art:s.vspace==null?null:P(lin(s.vspace,.25*(POT_ART[S.sex]||POT_ART.x),POT_ART[S.sex]||POT_ART.x))}};
+/* 11/25 대표: 발음 벌어짐(모음 공간 F1폭×F2폭/1000) — 배우 이청아(샘플 C, 약 1,050) = 여 100%. 남은 남자 배우 녹음이 없어 임시 900(노아 시편 790 → 84%, 기존 ART_REF 760이면 노아가 100%라 올림). 그 1/4 이하 0%. 못 잰 녹음은 평균에서 뺀다 */
+const POT_ART={m:900,f:1050,x:975};
+const potOf=()=>{const q=Object.values(potParts(S.m)).filter(v=>v!=null);return Math.max(5,Math.round(q.reduce((a,b)=>a+b,0)/q.length))};
+const POT_NM={breath:["숨 길이","숨을 길게 쓰는 힘"],clear:["소리 맑음","숨이 새지 않는 깨끗한 소리"],tune:["오르내림","높낮이를 넓게 쓰는 힘"],steady:["고른 크기","크기를 고르게 유지하는 힘"],art:["발음 벌어짐","입을 크게 벌려 또렷하게 말하는 힘"]};
+/* 11/25 대표: 한 흐름 — ① 결과 → ② 가능성 → ③ 달라질 목소리 듣기 → ④ 앱 예약 → ⑤ 결과 공유 */
+function wlHTML(J){if(S.demo)return"";const p=potOf();return`<section class="card"><div class="kicker">④ 앱 예약</div><h2>하루 3분, 앱에서 이어 가요</h2>
+ ${S.waitlisted?`<div class="target"><span>앱 대기예약</span><b>완료했어요 ✓ 앱이 나오면 알려 드릴게요</b></div>`:`<button class="btn ${PRESENT?"":"pri "}block shine" id="wlPot">출시 알림 받기 (1분)</button>`}${PRESENT?`<button class="btn pri block shine" id="toApp" style="margin-top:10px">앱으로 바로 이어 하기 →</button>`:""}<div class="tv-sign"><span>Find Your True Voice</span><img src="voicetype_assets/tv_logo_ivory.png" alt="터칭보이스 TOUCHING VOICE" width="160" height="51"></div></section>`}
+/* 11/25 대표: 발표용(present.html 안, ?present) — 검사 결과를 같은 도메인 기기 저장(tv_handoff)에 남기고 앱으로 넘어간다. 앱이 10분 안에 한 번 읽고 지운다 */
+const PRESENT=Q.has("present");
+function toApp(){const q=potParts(S.m),lo=Object.keys(q).filter(k=>q[k]!=null).sort((a,b)=>q[a]-q[b])[0],pk=document.querySelector(".rt.mph.pick");
+ try{localStorage.setItem("tv_handoff",JSON.stringify({at:Date.now(),code:S.J.code,target:pk?pk.dataset.c:S.J.code,pot:potOf(),lo:POT_NM[lo][0],name:S.name||"",sex:S.sex||"",age:S.age||null}))}catch(e){}
+ (window.top||window).location.href="apptest.html?from=test"}
+const shareHTML=()=>`<section class="card"><div class="kicker">${S.demo?"내 결과 알리기":"⑤ 결과 공유"}</div><h2>너는 어떤 목소리야?</h2>${shareRow()}</section>`;
+function potHTML(J){const p=potOf(),sc=potParts(S.m),ks=Object.keys(POT_NM).filter(k=>sc[k]!=null),lo=ks.slice().sort((a,b)=>(sc[a]||0)-(sc[b]||0))[0];
+ return`<section class="card"><div class="kicker">${S.demo?"":"② "}내 목소리 가능성</div><div class="pot-big"><b>${p}%</b><span>사용 중</span></div><div class="pot-bar"><i style="width:${p}%"></i></div>
+ <div class="pot-rows">${ks.map(k=>`<div class="${k===lo?"lo":""}"><span>${POT_NM[k][0]}</span><div class="pot-bar"><i style="width:${sc[k]}%"></i></div><span>${sc[k]}%</span></div>`).join("")}</div>
+ <div class="slogan"><p>남은 <b>${100-p}%</b>를 찾아<br>진짜 내 목소리를 만나 보세요</p></div>
+ <p class="small muted">실제 음성 분석을 통해 만들어졌습니다. 개인차가 발생할 수 있습니다.</p></section>`}
 /* ===== 내 목소리 바꿔 듣기 엔진(11/25, 노아 "저음·숨 중·빠르기·억양을 앱 미리 듣기에") =====
    폰 안에서만 돈다(녹음은 밖으로 안 나감). 11/21 WORLD 시험에서 '내 목소리 그대로 + 높이·숨·빠르기·억양만 바꾸기'가 맞다고 확인 →
    앱에서는 더 가볍고 원래 소리를 덜 망가뜨리는 '한 주기씩 오려 붙이기(PSOLA)'로 한다:
@@ -926,10 +940,10 @@ const MORPH_AX={L:{semi:-2,body:.96,lowDb:3},H:{semi:1.5},A:{speed:1/1.15},U:{sp
 const MPH_FLIP={L:"H",H:"L",A:"U",U:"A",D:"B",B:"D",T:"F",F:"T"},MPH_WORD={L:"더 낮게",H:"더 높게",A:"더 빠르게",U:"더 천천히",B:"숨 섞어 부드럽게",D:"더 또렷하게",T:"억양 크게",F:"억양 담담하게"};
 let MPH=null;
 function morphHTML(J){if(S.demo||!REC.r1)return"";const my=J.code,op=[0,1,2,3].map(i=>{const L=MPH_FLIP[my[i]];return{L,c:my.slice(0,i)+L+my.slice(i+1)}});
- return`<section class="card"><div class="kicker">바꾸고 싶은 목소리</div><h2>내 목소리로 미리 들어 보기</h2><p class="small">방금 읽은 내 목소리에서 한 가지만 바꿔 들려 드려요. 눌러 보세요.</p>
+ return`<section class="card"><div class="kicker">③ 달라질 내 목소리</div><h2>눌러서 들어 보기</h2>
  <div class="rgrid">${op.map(o=>`<button class="rt mph" data-c="${o.c}" data-l="${o.L}"><span><img src="${img.char(o.c)}" alt="" loading="lazy"></span><b>${MPH_WORD[o.L]}</b><small>${nmLN(o.c)}</small></button>`).join("")}</div>
  <div id="mphOut"></div>${pbarHTML("mphMe","지금 내 목소리",REC.r1)}
- <p class="small muted">이렇게 된다는 약속이 아니라, 연습하면 가까워질 방향이에요. 폰 안에서만 만들어요.</p></section>`}
+ <p class="small muted">연습하면 가까워질 방향이에요.</p></section>`}
 function bindMorph(view){const me=$("#mphMe");if(!me)return;mountPlayer(me,REC.r1);const out=$("#mphOut");
  view.querySelectorAll(".rt.mph").forEach(b=>b.onclick=async()=>{view.querySelectorAll(".rt.mph").forEach(x=>x.classList.toggle("pick",x===b));const c=b.dataset.c,L=b.dataset.l;out.innerHTML='<p class="small" style="text-align:center">내 목소리 바꾸는 중…</p>';
   try{const r=REC.r1;if(!MPH||MPH.r!==r){const x=await resample(r.x,r.sr);MPH={r,fr:pitchTrack(x,S.m&&S.m.noiseDb!=null?S.m.noiseDb:noiseFloor(x)),c:{}}}
@@ -1069,26 +1083,27 @@ R.waitlist=()=>({top:{back:()=>go(S.trial?"tryres":"result"),label:"앱 대기�
   S.name=S.name||name;S.waitlisted=phone.slice(0,3)+"-****-"+phone.slice(-4);save();go("waitdone")}}});
 R.waitdone=()=>({html:`
 <div class="win" style="text-align:center"><img class="popin" src="${img.char(S.target||(S.J&&S.J.code)||"HUDT")}" alt="" style="width:150px;border-radius:30px;margin:0 auto"><div class="kicker">대기예약 완료</div><h1 class="title">앱이 나오면<br>문자로 알려 드릴게요</h1><p class="muted">${S.waitlisted||""} 번호로 한 번 보내요.</p></div>
-${shareRow()}
+<section class="card"><div class="kicker">⑤ 결과 공유</div><h2>너는 어떤 목소리야?</h2>${shareRow()}</section>
 <button class="btn ghost block" id="back">결과로 돌아가기</button>`,
  bind(){bindShare(view);$("#back").onclick=()=>go("result")}});
 R.result=()=>{const J=S.J,m=S.m,T=TYPES[J.code],F=FAM[J.code.slice(0,2)],G=TYPES[S.guess]||T,b=m.s.bands,who=S.teacher?"학생들에게는":"남에게는";
  const A=attrScore(m),ageMsg=J.age<S.age-2?`실제보다 ${Math.round(S.age-J.age)}살 어리게 들려요`:J.age>S.age+2?"실제 나이보다 어른스럽게 들려요":"실제 나이와 비슷하게 들려요";
  return{html:`
 ${S.demo?`<section class="card cta" style="flex-direction:row;align-items:center;justify-content:space-between;gap:10px"><div style="min-width:0"><b>예시 결과예요</b><br><small>내 목소리로 하면 3분이면 돼요</small></div><button class="btn pri sm" id="mine">내 목소리로 하기</button></section>`:""}
+${S.demo?"":`<div class="kicker" style="text-align:center">① 내 목소리 유형</div>`}
 <section class="hero-card">
   <div class="hc-top">${S.name&&!S.demo?`<span class="pill-g">${esc(S.name)}님</span>`:""}${sitKey()==="intro"?"":`<span class="pill-g">${SITS[sitKey()][1]}</span>`}<span class="pill-g">${F[0]} · ${F[1]}</span>${S.demo?'<span class="pill-g">예시</span>':""}</div>
   <img class="hc-img popin" src="${img.char(J.code)}" alt="${T[1]}">
   <div class="code">${J.code.split("").map((l,i)=>`<span style="animation-delay:${200+i*110}ms">${l}</span>`).join("")}</div>
   <h1 class="hc-name bi">${nmWords(J.code,500)}</h1>
   <p class="hc-tag">${tagSplit(T[2]).join("<br>")}</p>
-  <p class="hc-pot">지금 내 목소리의 <b>${potOf(J)}%</b>를 쓰고 있어요</p>
   ${codeMeanHTML(J.code,"on-dark")}
   <p class="hc-line">“${LINES[J.code]}”</p>
 </section>
-${shareRow()}
 ${potHTML(J)}
 ${morphHTML(J)}
+${wlHTML(J)}
+${shareHTML()}
 <section class="card cmp-card">
   ${S.guess?`<div class="cmp"><div><img src="${img.char(S.guess)}" alt=""><small>① 내가 생각한 목소리</small><b>${S.guess}</b><small>${codeShort(S.guess)}</small></div><div class="muted" style="font-size:22px">→</div><div><img src="${img.char(J.code)}" alt=""><small>② 듣는 사람이 느끼는</small><b>${J.code}</b><small>${codeShort(J.code)}</small></div></div>
   <p style="text-align:center">${S.guess===J.code?"예상한 그대로예요! 내 목소리를 잘 알고 있어요.":`나는 <b>${G[1]}</b>처럼 생각했지만, ${who} <b>${T[1]}</b>처럼 들려요.`}</p>`:`<p style="text-align:center">${who} <b>${T[1]}</b>처럼 들려요.</p>`}
@@ -1106,7 +1121,6 @@ ${toneCard(b)}
   <div class="target stack"><span>이렇게 하면 더 좋아요!</span><b>${A.tip}</b></div>
   <small>점수는 재미로 봐 주세요. 사람마다 좋아하는 목소리는 달라요.</small></section>
 ${condCard()}
-${`<section class="card"><div class="kicker">내 결과 알리기</div><h2>친구에게도 "너는 어떤 목소리야?"</h2><p class="small">공유 이미지 아래 QR을 찍으면 친구도 바로 검사하고 나와 비교해요.</p>${shareRow()}</section>`}
 ${S.demo?"":goalCTA()}
 ${friendCard()}
 <section class="card"><h2>다른 유형 구경하기${S.demo?" <small>(예시)</small>":""}</h2>${S.demo?"":`<p class="small">16가지 목소리 캐릭터를 눌러서 살펴보세요.</p>`}<div class="rgrid">${Object.keys(TYPES).map(c=>`<button class="rt ${c===J.code?(S.demo?"pick":"me"):""}" data-c="${c}"><span><img src="${img.char(c)}" alt="${TYPES[c][1]}" loading="lazy"></span><b>${c}${c===J.code&&!S.demo?" · 나":""}</b><small>${nmLN(c)}</small></button>`).join("")}</div></section>
@@ -1115,7 +1129,7 @@ ${S.demo?"":`<button class="btn block" id="rerec">다시 녹음하기</button>`}
 <p class="fine">이 결과는 병원 검사가 아니에요. 내 목소리가 남에게 어떻게 들리는지 알아보는 테스트예요. 녹음한 곳에 따라 결과가 달라질 수 있어요.</p>
 ${BIZ}`,
  bind(){later(()=>{view.querySelectorAll(".band i").forEach(i=>i.style.height=i.dataset.h+"%");countUp($("#ageN"),0,J.age,1200);countUp($("#attrN"),0,A.pct,1200)},250);
-  bindShare(view);{const w=$("#wlPot");if(w)w.onclick=()=>go("waitlist")}bindMorph(view);/* 11/25 대표: 결과에서 바로 앱 예약 */const gl=$("#goal");if(gl)gl.onclick=()=>go("goal");const hm=$("#hearMe");if(hm)mountPlayer(hm,REC.r1);
+  bindShare(view);{const w=$("#wlPot");if(w)w.onclick=()=>go("waitlist");const ta=$("#toApp");if(ta)ta.onclick=toApp}bindMorph(view);/* 11/25 대표: 결과에서 바로 앱 예약 */const gl=$("#goal");if(gl)gl.onclick=()=>go("goal");const hm=$("#hearMe");if(hm)mountPlayer(hm,REC.r1);
   const mi=$("#mine");if(mi)mi.onclick=()=>{newRun();go("info")};
   $("#again").onclick=()=>{newRun();go("landing")};const rr=$("#rerec");if(rr)rr.onclick=reRecord;
   view.querySelectorAll(".rgrid .rt:not(.mph)").forEach(p=>p.onclick=()=>S.demo?startDemo(p.dataset.c,true):typeSheet(p.dataset.c))}}};
@@ -1164,14 +1178,12 @@ async function makeCard(){const J=S.J,T=TYPES[J.code],F=FAM[J.code.slice(0,2)],c
  const pills=[...document.querySelectorAll(".hero-card .hc-top .pill-g")].map(e=>e.textContent.trim()).filter(Boolean);if(!pills.length)pills.push(F[0]+" · "+F[1]);
  let pp=34,pw,tot;const pm=()=>{fnt(600,pp);pw=pills.map(t=>g.measureText(t).width+60);tot=pw.reduce((a,b)=>a+b,0)+20*(pills.length-1)};pm();while(tot>960&&pp>24){pp-=1;pm()}
  let x=540-tot/2;pills.forEach((t,i)=>{rr(x,230,pw[i],72,36);g.fillStyle="rgba(255,255,255,.16)";g.fill();g.strokeStyle="rgba(255,255,255,.3)";g.lineWidth=3;g.stroke();g.fillStyle="#fff";g.fillText(t,x+pw[i]/2,267);x+=pw[i]+20});
- const im=await loadImg(img.char(J.code)),iz=320,ix=380,iy=322;/* 11/25 가능성 줄 자리 — 그림 420→320 */g.save();g.shadowColor="rgba(0,0,0,.25)";g.shadowBlur=60;g.shadowOffsetY=26;rr(ix,iy,iz,iz,56);g.fillStyle="#F5EEE0";g.fill();g.restore();g.save();rr(ix,iy,iz,iz,56);g.clip();g.drawImage(im,ix,iy,iz,iz);g.restore();
+ const im=await loadImg(img.char(J.code)),iz=420,ix=330,iy=322;g.save();g.shadowColor="rgba(0,0,0,.25)";g.shadowBlur=60;g.shadowOffsetY=26;rr(ix,iy,iz,iz,56);g.fillStyle="#F5EEE0";g.fill();g.restore();g.save();rr(ix,iy,iz,iz,56);g.clip();g.drawImage(im,ix,iy,iz,iz);g.restore();
  const tw=124,th=136,tg=16,tx=540-(4*tw+3*tg)/2,ty=iy+iz+24;fnt(700,76);J.code.split("").forEach((l,i)=>{rr(tx+i*(tw+tg),ty,tw,th,30);g.fillStyle="rgba(255,255,255,.95)";g.fill();g.fillStyle=F[3];g.fillText(l,tx+i*(tw+tg)+tw/2,ty+th/2+4)});
  g.fillStyle="#fff";let np=84;fnt(700,np);{const w=g.measureText(T[1]).width;if(w>980){np=Math.floor(np*980/w);fnt(700,np)}}const ny=ty+th+62;g.fillText(T[1],540,ny);
  const lines=tagSplit(T[2]);let tp=40;for(;;){fnt(600,tp);if(Math.max(...lines.map(t=>g.measureText(t).width))<=980||tp<=30)break;tp-=2}
  const ly=ny+76;lines.forEach((t,i)=>g.fillText(t,540,ly+i*56));
- const py=ly+(lines.length-1)*56+40;{const a="지금 내 목소리의 ",b=potOf(J)+"%",c2="를 쓰고 있어요";fnt(600,40);const wa=g.measureText(a).width,wc=g.measureText(c2).width;fnt(800,54);const wb=g.measureText(b).width,W=wa+wb+wc+80;
-  rr(540-W/2,py,W,90,45);g.fillStyle="rgba(255,255,255,.95)";g.fill();g.fillStyle=F[3];g.textAlign="left";let x0=540-W/2+40;fnt(600,40);g.fillText(a,x0,py+47);x0+=wa;fnt(800,54);g.fillText(b,x0,py+45);x0+=wb;fnt(600,40);g.fillText(c2,x0,py+47);g.textAlign="center"}
- const cy=py+90+24,cw=481,ch=104,cg=14;codeParts(J.code).forEach((p,i)=>{const cx=50+(i%2)*(cw+cg),y=cy+Math.floor(i/2)*(ch+cg);rr(cx,y,cw,ch,34);g.fillStyle="rgba(255,255,255,.16)";g.fill();g.fillStyle="#fff";fnt(700,42);g.fillText(p[0],cx+cw/2,y+35);fnt(500,30);g.globalAlpha=.95;g.fillText(p[1],cx+cw/2,y+78);g.globalAlpha=1});
+ const cy=ly+(lines.length-1)*56+50,cw=481,ch=104,cg=14;codeParts(J.code).forEach((p,i)=>{const cx=50+(i%2)*(cw+cg),y=cy+Math.floor(i/2)*(ch+cg);rr(cx,y,cw,ch,34);g.fillStyle="rgba(255,255,255,.16)";g.fill();g.fillStyle="#fff";fnt(700,42);g.fillText(p[0],cx+cw/2,y+35);fnt(500,30);g.globalAlpha=.95;g.fillText(p[1],cx+cw/2,y+78);g.globalAlpha=1});
  {const t="“"+LINES[J.code]+"”";let bp=40;fnt(700,bp);let w=g.measureText(t).width;if(w>880){bp=Math.floor(bp*880/w);fnt(700,bp);w=g.measureText(t).width}const by=cy+2*ch+cg+34,bw=w+88,bh=90,bx=540-bw/2;
   g.save();g.shadowColor="rgba(0,0,0,.12)";g.shadowBlur=36;g.shadowOffsetY=14;rr(bx,by,bw,bh,47);g.fillStyle="#fff";g.fill();g.restore();g.beginPath();g.moveTo(520,by+2);g.lineTo(540,by-18);g.lineTo(560,by+2);g.fillStyle="#fff";g.fill();g.fillStyle=F[3];g.fillText(t,540,by+bh/2+3);
   const qs=156,qy=by+bh+26;fnt(700,44);const t1="너는 어떤 목소리야?",t2="QR을 찍으면 나도 바로 검사",t3="touchingvoice.app",tw2=Math.max(g.measureText(t1).width,(fnt(500,30),g.measureText(t2).width)),qx=Math.round(540-(qs+32+tw2)/2);
@@ -1205,7 +1217,7 @@ function storySheet(ig){const app=ig?"인스타그램":"틱톡";
   try{await cardFile();$("#cardBox").innerHTML=`<img class="share-prev" src="${CARD.url}" alt="결과 카드">`}catch(e){$("#cardBox").innerHTML="<small>카드를 만들지 못했어요.</small>"}})}
 function openApp(ig){const t=Date.now();location.href=ig?"instagram://story-camera":"snssdk1233://";setTimeout(()=>{if(!document.hidden&&Date.now()-t<3000)location.href=ig?"https://www.instagram.com/":"https://www.tiktok.com/upload"},1600)}
 const shareURL=()=>location.origin+location.pathname+"?f="+S.J.code;
-function shareText(){const T=TYPES[S.J.code],A=attrScore(S.m);return`${sitKey()==="intro"?"":SITS[sitKey()][1]+" "}나는 ${S.J.code} ${T[1]}, 지금 내 목소리의 ${potOf(S.J)}%를 쓰는 중. 목소리 나이 ${Math.round(S.J.age)}세 · ${A.label} ${A.pct}%. 너는 어떤 목소리야?`}
+function shareText(){const T=TYPES[S.J.code],A=attrScore(S.m);return`${sitKey()==="intro"?"":SITS[sitKey()][1]+" "}나는 ${S.J.code} ${T[1]}, 지금 내 목소리의 ${potOf()}%를 쓰는 중. 목소리 나이 ${Math.round(S.J.age)}세 · ${A.label} ${A.pct}%. 너는 어떤 목소리야?`}
 /* 11/4 대표: 한글 읽기(라디티)와 알파벳 한 글자(L 낮은) 대신 영어 단어로 보여 준다 (단어는 기획서 v2 축 정의) */
 const EN={L:"Low",H:"High",A:"Active",U:"Unhurried",D:"Dry",B:"Breathy",T:"Tuneful",F:"Firm"};
 const enName=c=>c.split("").map(l=>EN[l]).join("-");

@@ -241,7 +241,7 @@ html{background:var(--bg)}body{background:transparent;min-height:100dvh;overflow
 .tp-bar{justify-content:center;gap:14px;row-gap:6px;background:rgba(255,255,255,.04);border-top:1px solid rgba(255,255,255,.08)}
 .tp-bar .rb{color:rgba(244,238,255,.72)}.tp-bar .rb .t{display:none}.tp-bar #tp-pgb{flex-direction:row;gap:8px;padding:0 14px 0 0;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14)}.tp-bar #tp-pgb .t{display:block;font-size:14px;font-weight:700;color:#F4EEFF}.tp-bar #tp-pgb .c{background:none;border:0}.tp-bar .rb .c{width:52px;height:52px}.tp-bar .rb .c{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);color:#F4EEFF;box-shadow:none}
 .tp-bar .rb.pri .c{background:linear-gradient(135deg,#DCCFFF,#A98BEA);color:#1A1230;border:0}
-.tp-speed{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:14px;color:rgba(244,238,255,.8)}.tp-rate-row{display:flex;align-items:center;gap:8px;white-space:nowrap}.tp-pm{width:40px;height:40px;flex:none;border-radius:50%;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.08);color:#F4EEFF;font:inherit;font-size:20px;font-weight:700;line-height:1;cursor:pointer;display:grid;place-items:center}.tp-pm:active{background:rgba(255,255,255,.2)}#tp-num{width:3.6em;text-align:center;font:inherit;font-size:20px;font-weight:700;color:#fff;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:4px 2px;font-variant-numeric:tabular-nums;-moz-appearance:textfield;appearance:textfield}#tp-num::-webkit-inner-spin-button,#tp-num::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}#tp-num:focus{border-color:#B79CF0;outline:none;background:rgba(255,255,255,.14)}
+.tp-speed{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:14px;color:rgba(244,238,255,.8)}.tp-rate-row{display:flex;align-items:center;gap:8px;white-space:nowrap}.tp-fz b{min-width:2.2em;text-align:center;font-size:17px;color:#fff}.tp-pm{width:40px;height:40px;flex:none;border-radius:50%;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.08);color:#F4EEFF;font:inherit;font-size:20px;font-weight:700;line-height:1;cursor:pointer;display:grid;place-items:center}.tp-pm:active{background:rgba(255,255,255,.2)}#tp-num{width:3.6em;text-align:center;font:inherit;font-size:20px;font-weight:700;color:#fff;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:4px 2px;font-variant-numeric:tabular-nums;-moz-appearance:textfield;appearance:textfield}#tp-num::-webkit-inner-spin-button,#tp-num::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}#tp-num:focus{border-color:#B79CF0;outline:none;background:rgba(255,255,255,.14)}
 .tp-speed input[type=range]{width:min(220px,52vw);accent-color:#B79CF0}
 .tp-info{margin:0;font-size:12.5px;color:rgba(244,238,255,.7);font-variant-numeric:tabular-nums;text-align:center;flex-basis:100%}
 
@@ -601,11 +601,7 @@ button svg,.ftag svg,.srch svg{flex:none}
 .bst-top{display:flex;align-items:center;gap:10px;padding:10px 16px}.bst-top b{font-size:16px}
 .bst-body{width:100%;max-width:560px;margin:0 auto;box-sizing:border-box;padding:8px 20px 32px;display:flex;flex-direction:column;align-items:center;gap:16px}
 .bst-body .say{align-self:stretch}.bst-line{margin:0;font-size:22px;font-weight:700;line-height:1.6;text-align:center}
-.bst-bars{align-self:stretch;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;height:120px;align-items:end}
-.bst-bars div{height:100%;display:flex;flex-direction:column-reverse;align-items:center;gap:6px}.bst-bars span{font-size:12px;color:var(--muted);white-space:nowrap}
-.bst-bars i{display:block;width:70%;border-radius:8px 8px 3px 3px;background:color-mix(in oklab,var(--brand) 30%,transparent)}
-.bst-bars div.on i{background:var(--pri-grad)}.bst-bars div.on span{color:var(--brand);font-weight:700}
-.bst-opt{justify-content:center}.bst-g{align-self:stretch;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted)}.bst-g input{flex:1;accent-color:var(--brand)}
+.bst-opt{justify-content:center}
 .bst-ab{display:flex;align-self:stretch;background:var(--soft);border-radius:999px;padding:4px}.bst-ab button{flex:1;border:0;background:none;border-radius:999px;padding:11px 8px;font:inherit;font-size:14px;font-weight:700;color:var(--muted);cursor:pointer}
 .bst-ab button[aria-pressed="true"]{background:var(--pri-grad);color:var(--pri-fg)}
 .bst-note{margin:0;text-align:center;line-height:1.6}
@@ -936,6 +932,9 @@ body:not(.pro) [data-pro]::after{box-shadow:none}
 .bubble.typing .chs,.bubble.typing .mis,.bubble.typing details,.bubble.typing .rbtn{visibility:hidden}
 .chips.sugg{justify-content:flex-start;flex-wrap:wrap;gap:8px;margin:2px 0 6px}
 .chips.sugg button{font-size:14px;opacity:.9;border-style:dashed}
+
+
+.msg.c .pq{display:block;margin:10px 0 2px;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--brand) 14%,transparent);font-weight:600;line-height:1.55}.msg.c .pq small{display:block;font-weight:500;opacity:.7;font-size:.78em;margin-bottom:2px}
 </style>
 <script>try{var TH0=document.documentElement.getAttribute("data-theme")||"",_t=localStorage.getItem("tv_theme");if(_t==="light"||_t==="dark")document.documentElement.setAttribute("data-theme",_t);["rs","rl"].forEach(function(k){var v=+localStorage.getItem("tv_"+k);if(v>=.5&&v<=2)document.documentElement.style.setProperty("--"+k,v)})}catch(e){}</script>
 
@@ -1073,7 +1072,7 @@ body:not(.pro) [data-pro]::after{box-shadow:none}
   <div class="tp-view" id="tp-view"><div class="tp-guide" aria-hidden="true"></div><div class="tp-text" id="tp-text"></div></div>
   <div class="tp-bar"><button type="button" class="rb" id="tp-back" aria-label="처음으로"><span class="c"><span class="ico" data-i="first"></span></span><span class="t">처음</span></button>
     <button type="button" class="rb pri" id="tp-go" aria-label="시작"></button><button type="button" class="rb" id="tp-pgb"></button>
-    <div class="tp-speed" id="tp-speed"><div class="tp-rate-row"><span>1초에</span><button type="button" class="tp-pm" id="tp-dn" aria-label="느리게 (0.1 글자)">−</button><input type="number" id="tp-num" min="1" max="10" step="0.1" value="4.2" inputmode="decimal" aria-label="1초에 몇 글자"><button type="button" class="tp-pm" id="tp-up" aria-label="빠르게 (0.1 글자)">+</button><span>글자</span></div><input type="range" id="tp-rate" min="1" max="10" step="0.1" value="4.2" aria-label="빠르기"></div>
+    <div class="tp-speed" id="tp-speed"><div class="tp-rate-row"><span>1초에</span><button type="button" class="tp-pm" id="tp-dn" aria-label="느리게 (0.1 글자)">−</button><input type="number" id="tp-num" min="1" max="10" step="0.1" value="4.2" inputmode="decimal" aria-label="1초에 몇 글자"><button type="button" class="tp-pm" id="tp-up" aria-label="빠르게 (0.1 글자)">+</button><span>글자</span></div><input type="range" id="tp-rate" min="1" max="10" step="0.1" value="4.2" aria-label="빠르기"><div class="tp-rate-row tp-fz" role="group" aria-label="글자 크기"><span>글자 크기</span><button type="button" class="tp-pm" data-fz="-1" aria-label="글자 작게">−</button><b id="tp-fzv"></b><button type="button" class="tp-pm" data-fz="1" aria-label="글자 크게">+</button></div></div>
     <p class="tp-info" id="tp-info" aria-live="polite"></p><p class="tp-info" id="tp-use"></p>
     <div class="tp-ebar tp-eo" id="tp-ebar" role="group" aria-label="글자 모양"><span class="tp-eg"><i>글자 크기</i><button type="button" class="tp-pm" data-e="fs" data-d="-1" aria-label="글자 작게">−</button><b id="tp-efs"></b><button type="button" class="tp-pm" data-e="fs" data-d="1" aria-label="글자 크게">+</button></span><span class="tp-eg"><i>줄 간격</i><button type="button" class="tp-pm" data-e="lh" data-d="-1" aria-label="줄 간격 좁게">−</button><b id="tp-elh"></b><button type="button" class="tp-pm" data-e="lh" data-d="1" aria-label="줄 간격 넓게">+</button></span><span class="tp-eg"><i>자간</i><button type="button" class="tp-pm" data-e="ls" data-d="-1" aria-label="자간 좁게">−</button><b id="tp-els"></b><button type="button" class="tp-pm" data-e="ls" data-d="1" aria-label="자간 넓게">+</button></span><button type="button" class="tp-emr" id="tp-emr" aria-pressed="false">좌우 반전</button></div></div>
 </div>
@@ -1442,7 +1441,7 @@ const ICON={
  kc:SV(`<path d="M12 2.8l2.8 5.8 6.4.9-4.6 4.5 1.1 6.3L12 17.3l-5.7 3 1.1-6.3L2.8 9.5l6.4-.9z"${IG}/>`)};
 const MIC=ICON.mic,STOP=ICON.stop;
 const PM={};
-function openPractice(src){Object.keys(PM).forEach(k=>delete PM[k]);Object.assign(PM,src,{step:1,demo:false});
+function openPractice(src){if(!src.flow&&$("ob").hidden)trPend();Object.keys(PM).forEach(k=>delete PM[k]);Object.assign(PM,src,{step:1,demo:false});
  PM.plain=strip(PM.text);{const n=sylOf(PM.plain);REC.quiet=n>80?3:1.8;REC.max=Math.min(300,Math.max(40,n/2.5+15))*1000}$("pm").hidden=false;document.body.style.overflow="hidden";renderPM()}
 function closePractice(){pmRecOff();recCancel();stopPlay();stopAud();$("pm").hidden=true;document.body.style.overflow=$("rd").hidden&&$("sc").hidden?"":"hidden"}
 function dots(s){const n=s<3?1:s===3?2:3;[...$("pm-dots").children].forEach((d,i)=>d.classList.toggle("on",i<n));$("pm-n").textContent=n+" / 3"}
@@ -1469,9 +1468,11 @@ function renderPM(){const s=PM.step;
   <p class="hint" style="text-align:left">${up?"처음과 다시 읽은 목소리를 이어서 들어 보세요.":"처음엔 원래 버릇이 나와요. 한 번 더 해 보면 달라져요."}${PM.demo?" (데모 숫자)":""}</p>
   <p class="saved-note" id="svd">${ICON.check}기록에 저장하는 중…</p>
   <div class="cmp">${R.rows.map(r=>`<div class="r"><div><b>${r.name}</b><small>${r.sub}</small></div><div class="v">${r.a}<i>→</i>${r.b}</div><span class="tag ${r.k}">${r.k==="up"?"좋아짐":r.k==="down"?"아쉬움":"비슷"}</span></div>`).join("")}</div>${!ASR_ON&&!PM.demo&&(window.SpeechRecognition||window.webkitSpeechRecognition)?`<button type="button" class="lockline" id="pm-asr">발음 정확도도 보기 · 음성 인식 켜기</button>`:""}`;
-  A.innerHTML=`<div class="iconrow"><button type="button" class="ib" id="pa" aria-label="처음 녹음 듣기">${ICON.play1}처음</button><button type="button" class="ib" id="pb" aria-label="다시 읽은 녹음 듣기">${ICON.play2}다시</button><button type="button" class="ib pri" id="sh" aria-label="공유 이미지">${ICON.share}공유</button><button type="button" class="ib" id="again" aria-label="한 번 더 하기">${ICON.again}한 번 더</button></div>`;
+  A.innerHTML=`<div class="iconrow"><button type="button" class="ib" id="pa" aria-label="처음 녹음 듣기">${ICON.play1}처음</button><button type="button" class="ib" id="pb" aria-label="다시 읽은 녹음 듣기">${ICON.play2}다시</button><button type="button" class="ib" id="again" aria-label="한 번 더 하기">${ICON.again}한 번 더</button></div>`;
   $("pa").disabled=$("pb").disabled=PM.demo;$("pa").onclick=e=>play(PM.take1,e.currentTarget,true);$("pb").onclick=e=>play(PM.take2,e.currentTarget,true);
-  $("sh").onclick=shareCard;{const pa=$("pm-asr");if(pa)pa.onclick=()=>askAsr(()=>{pa.textContent="켰어요 · 다음 읽기부터 '알아들은 비율'이 나와요";pa.disabled=true})}$("again").onclick=()=>{PM.saved=false;PM.step=4;renderPM()};PM.result=R;if(!PM.saved){PM.saved=true;saveRec()}
+  {const pa=$("pm-asr");if(pa)pa.onclick=()=>askAsr(()=>{pa.textContent="켰어요 · 다음 읽기부터 '알아들은 비율'이 나와요";pa.disabled=true})}$("again").onclick=()=>{PM.saved=false;PM.step=4;renderPM()};PM.result=R;if(!PM.saved){PM.saved=true;saveRec()}
+  
+  if(!PM.flow){A.insertAdjacentHTML("beforeend",`<button type="button" class="big" id="pm-ok">${ICON.check} 확인</button>`);$("pm-ok").onclick=()=>{closePractice();tab("today");setTimeout(()=>{const l=$("chat-log");if(l&&l.lastElementChild)l.lastElementChild.scrollIntoView({block:"end",behavior:"smooth"})},900)}}
   if(PM.flow){A.insertAdjacentHTML("beforeend",`<button type="button" class="big" id="pm-flow">다음: 마무리 한마디 ${ICON.next}</button>`);$("pm-flow").onclick=()=>{closePractice();saveDay({steps:{read:1}});openD3(4)}}}
  $("pm-body").scrollTop=0}
 function recUI(h){return`<button type="button" class="mic" id="mic" aria-label="녹음 시작">${MIC}</button><div class="lvl" aria-hidden="true"><s id="lv"></s></div><p class="hint" id="rh">${h}</p><button type="button" class="link" id="demo">마이크 없이 데모로 보기</button>`}
@@ -1674,7 +1675,7 @@ function armDel(b){if(b.dataset.armed)return true;b.dataset.armed=1;b.classList.
 
 const TP={g:null,mode:"auto",run:false,raf:0,pos:0,rec:null,ms:0,t0:0};let TPH="",TPW=[],TPS=1;
 let TP_MIR=false;try{TP_MIR=localStorage.getItem("tv_tpmr")==="1"}catch(e){}
-function openTP(g){TP.g=g;TP.used=false;Object.assign(TPR,{ch:[],n:0,seg:[],p0:null,cap:null,mr:null,bl:[]});TP.ms=0;TP.t0=0;Object.assign(VW,{fr:[],skip:0,warned:-1e9,chk:0,fail:false});$("tp-warn").hidden=true;$("tp-vw").setAttribute("aria-pressed",VW_ON);try{const l=+localStorage.getItem("tv_tplh");if(l)$("tp-text").style.setProperty("--tplh",l);const k=localStorage.getItem("tv_tpls");if(k!=null)$("tp-text").style.setProperty("--tpls",(+k/100)+"em")}catch(e){}TP.pos=0;let j=0,h=0;const n=g.ss.reduce((a,x)=>a+x.split(/\s+/).length,0);
+function openTP(g){TP.g=g;TP.used=false;Object.assign(TPR,{ch:[],n:0,seg:[],p0:null,cap:null,mr:null,bl:[]});TP.ms=0;TP.t0=0;Object.assign(VW,{fr:[],skip:0,warned:-1e9,chk:0,fail:false});$("tp-warn").hidden=true;$("tp-fzv").textContent=tpLk("fs");$("tp-vw").setAttribute("aria-pressed",VW_ON);try{const l=+localStorage.getItem("tv_tplh");if(l)$("tp-text").style.setProperty("--tplh",l);const k=localStorage.getItem("tv_tpls");if(k!=null)$("tp-text").style.setProperty("--tpls",(+k/100)+"em")}catch(e){}TP.pos=0;let j=0,h=0;const n=g.ss.reduce((a,x)=>a+x.split(/\s+/).length,0);
  $("tp-text").innerHTML=g.ss.map((x,si)=>`<span class="sn${stCls(g,si)}">${x.split(/\s+/).map(w=>{const k=j++;h+=hangul(w).length;const q=g.ps[k];
   return`<span class="tw" data-h="${h}">${g.on.has(k)?`<b>${esc(w)}</b>`:esc(w)}</span>${q&&k<n-1?` <span class="p">${q===2?"//":"/"}</span>`:""}`}).join(" ")}</span>`).join("");
  TPH=hangul(g.ss.join(" "));TPS=LANG==="en"?sylOf(g.ss.join(" ")):TPH.length;TPW=[...$("tp-text").querySelectorAll(".tw")];
@@ -1780,7 +1781,7 @@ $("tp-vw").onclick=()=>{VW_ON=!VW_ON;try{localStorage.setItem("tv_vw",VW_ON?"1":
 
 const TP_LK={fs:["tv_tpfs",40,20,120,4,"--tpfs",v=>v+"px",v=>v],lh:["tv_tplh",1.7,1.2,3,.1,"--tplh",v=>v,v=>v.toFixed(1)],ls:["tv_tpls",2,-3,15,1,"--tpls",v=>(v/100)+"em",v=>v>0?"+"+v:String(v)]};
 const tpLk=k=>{const c=TP_LK[k];try{const x=localStorage.getItem(c[0]);if(x!=null&&x!==""&&Number.isFinite(+x))return +x}catch(e){}return c[1]};
-function tpLookDraw(){for(const k in TP_LK)$("tp-e"+k).textContent=TP_LK[k][7](tpLk(k));$("tp-emr").setAttribute("aria-pressed",TP_MIR)}
+function tpLookDraw(){for(const k in TP_LK)$("tp-e"+k).textContent=TP_LK[k][7](tpLk(k));$("tp-fzv").textContent=tpLk("fs");$("tp-emr").setAttribute("aria-pressed",TP_MIR)}
 const tpTaFit=()=>{const ta=$("tp-ta");if(ta){ta.style.height="auto";ta.style.height=ta.scrollHeight+"px"}};
 
 function vvFit(){const t=$("tp"),vv=window.visualViewport;if(!TP.edit||!vv){t.style.top=t.style.bottom=t.style.height="";return}t.style.top=vv.offsetTop+"px";t.style.bottom="auto";t.style.height=vv.height+"px"}
@@ -1792,6 +1793,8 @@ function tpEditDone(save){if(!TP.edit)return;const g=TP.g,ta=$("tp-ta");
  if(save&&ta){const fm=fromMark(ta.value),nss=fm.ss;if(!nss.length){ta.focus();return}
   const words=a=>a.join(" ").split(/\s+/).join(" ");if(words(nss)!==words(g.ss)){g.on=new Set();g.ps={}}g.ss=nss;g.st=fm.st;saveG(g);renderSents()}
  TP.edit=false;$("tp").classList.remove("edit","typing");vvFit();const keep=TP.keep||0,u=TP.used,ms=TP.ms,fr=VW.fr;openTP(g);TP.used=u;TP.ms=ms;VW.fr=fr;$("tp-view").scrollTop=keep;tpInfo()}
+
+$("tp-speed").addEventListener("click",e=>{const b=e.target.closest("[data-fz]");if(!b)return;const c=TP_LK.fs,v=Math.max(c[2],Math.min(c[3],tpLk("fs")+ +b.dataset.fz*c[4]));try{localStorage.setItem(c[0],v)}catch(_){}$("tp-text").style.setProperty(c[5],c[6](v));tpLookDraw()});
 $("tp-ebar").onclick=e=>{const b=e.target.closest("button");if(!b)return;if(b.id==="tp-emr"){TP_MIR=!TP_MIR;try{localStorage.setItem("tv_tpmr",TP_MIR?"1":"0")}catch(_){}}
  else{const k=b.dataset.e,c=TP_LK[k],v=Math.max(c[2],Math.min(c[3],Math.round((tpLk(k)+ +b.dataset.d*c[4])*10)/10));try{localStorage.setItem(c[0],v)}catch(_){}$("tp-text").style.setProperty(c[5],c[6](v))}
  tpLookDraw();tpTaFit()};
@@ -2674,27 +2677,6 @@ document.addEventListener("click",async e=>{const b=e.target.closest("[data-play
  else if("rdel" in b.dataset){if(armDel(b)){stopAud();await dbDel("rec",r.id);await loadAll()}}
  else openPractice({text:r.raw||r.text,src:r.src||"",mid:r.mid||undefined,bold:r.bold?new Set(r.bold):undefined})});
 
-async function shareCard(){const R=PM.result,up=R.rows.filter(r=>r.k==="up").length,c=document.createElement("canvas");c.width=1080;c.height=1350;const g=c.getContext("2d"),F="Paperlogy,'Apple SD Gothic Neo',sans-serif";
- try{await Promise.all(["700 64px","600 40px","500 36px"].map(x=>document.fonts.load(x+" Paperlogy")))}catch(e){}
- const gr=g.createLinearGradient(0,0,1080,1350);gr.addColorStop(0,"#6B45BC");gr.addColorStop(1,"#2B1459");g.fillStyle=gr;g.fillRect(0,0,1080,1350);
- g.fillStyle="rgba(255,255,255,.12)";g.beginPath();g.arc(940,150,260,0,7);g.fill();
- g.fillStyle="#F5EEE0";g.font=`600 34px ${F}`;g.fillText("터칭보이스 읽기 연습",80,130);
- g.fillStyle="#fff";g.font=`700 70px ${F}`;g.fillText(up?`${up}가지가 좋아졌어요`:"오늘도 한 번 더 읽었어요",80,230);
- g.font=`500 38px ${F}`;g.fillStyle="rgba(255,255,255,.9)";let y=330;const words=PM.plain.split(" ");let ln="",lines=[];words.forEach(w=>{const t=ln?ln+" "+w:w;if(g.measureText(t).width>900){lines.push(ln);ln=w}else ln=t});if(ln)lines.push(ln);
- lines.slice(0,4).forEach((l,i)=>g.fillText(i===3&&lines.length>4?l+" …":l,80,y+i*56));y+=Math.min(4,lines.length)*56+50;
- R.rows.slice(0,5).forEach((r,i)=>{const yy=y+i*118;g.fillStyle="rgba(255,255,255,.12)";g.beginPath();g.roundRect(70,yy,940,96,24);g.fill();
-  g.fillStyle="#fff";g.font=`600 38px ${F}`;g.fillText(r.name,110,yy+60);g.font=`700 40px ${F}`;g.textAlign="right";g.fillText(`${r.a}  →  ${r.b}`,800,yy+62);
-  g.fillStyle=r.k==="up"?"#9FE3C0":r.k==="down"?"#F7B39F":"#D9CFF2";g.font=`700 30px ${F}`;g.fillText(r.k==="up"?"좋아짐":r.k==="down"?"아쉬움":"비슷",975,yy+60);g.textAlign="left"});
- g.fillStyle="#F5EEE0";g.font=`600 32px ${F}`;g.fillText("touchingvoice.app",80,1270);
- const blob=await new Promise(r=>c.toBlob(r,"image/png")),url=URL.createObjectURL(blob);
- const dl=await (window.claude?.use?window.claude.use("downloads").catch(()=>null):Promise.resolve(null));
- const canShare=navigator.canShare&&navigator.canShare({files:[new File([blob],"tv.png",{type:"image/png"})]});
- $("sheet").innerHTML=`<div><img src="${url}" alt="연습 결과 공유 이미지"><p class="hint">이미지를 길게 눌러 저장할 수도 있어요.</p>
-  <div class="rrow">${canShare?`<button type="button" class="rb pri" id="s-share" aria-label="공유하기"><span class="c">${ICON.share}</span><span class="t">공유</span></button>`:""}${dl?`<button type="button" class="rb${canShare?"":" pri"}" id="s-save" aria-label="이미지 저장"><span class="c">${ICON.save}</span><span class="t">저장</span></button>`:""}<button type="button" class="rb" id="s-close" aria-label="닫기"><span class="c">${ICON.close}</span><span class="t">닫기</span></button></div></div>`;
- $("sheet").hidden=false;$("s-close").onclick=()=>{$("sheet").hidden=true;URL.revokeObjectURL(url)};
- if(canShare)$("s-share").onclick=()=>navigator.share({files:[new File([blob],"touchingvoice.png",{type:"image/png"})],text:"터칭보이스 읽기 연습"}).catch(()=>{});
- if(dl)$("s-save").onclick=()=>dl.save({filename:"터칭보이스_읽기연습.png",data:blob}).then(()=>{$("s-save").querySelector(".t").textContent="저장했어요"}).catch(e=>{$("s-save").querySelector(".t").textContent=e&&e.code==="declined"?"저장 안 함":"저장 못 함"})}
-
 const extOf=n=>(String(n).split(".").pop()||"").toLowerCase();
 
 const unbox=t=>String(t).replace(/[\u2500-\u257F\u25A0-\u25A3\u25AA-\u25AB\u25FB-\u25FE\u2610-\u2612\u274F-\u2752]/g," ").split("\n").map(x=>x.replace(/[ \t\u00A0\u3000]+/g," ").trim()).join("\n").replace(/\n{3,}/g,"\n\n").trim();
@@ -3413,6 +3395,59 @@ function kbSelfCheck(){
 }
 
 
+function bq(x,sr,type,f0,db,Q){const A=Math.pow(10,(db||0)/40),w=2*Math.PI*f0/sr,c=Math.cos(w),s=Math.sin(w),al=s/(2*(Q||.7071)),sA=2*Math.sqrt(A)*al;let b0,b1,b2,a0,a1,a2;
+ if(type==="peak"){b0=1+al*A;b1=-2*c;b2=1-al*A;a0=1+al/A;a1=-2*c;a2=1-al/A}
+ else if(type==="low"){b0=A*((A+1)-(A-1)*c+sA);b1=2*A*((A-1)-(A+1)*c);b2=A*((A+1)-(A-1)*c-sA);a0=(A+1)+(A-1)*c+sA;a1=-2*((A-1)+(A+1)*c);a2=(A+1)+(A-1)*c-sA}
+ else if(type==="high"){b0=A*((A+1)+(A-1)*c+sA);b1=-2*A*((A-1)+(A+1)*c);b2=A*((A+1)+(A-1)*c-sA);a0=(A+1)-(A-1)*c+sA;a1=2*((A-1)-(A+1)*c);a2=(A+1)-(A-1)*c-sA}
+ else{b0=(1+c)/2;b1=-(1+c);b2=(1+c)/2;a0=1+al;a1=-2*c;a2=1-al}
+ const y=new Float32Array(x.length);let x1=0,x2=0,y1=0,y2=0;for(let i=0;i<x.length;i++){const v=(b0*x[i]+b1*x1+b2*x2-a1*y1-a2*y2)/a0;x2=x1;x1=x[i];y2=y1;y1=v;y[i]=v}return y}
+function lpcOf(f,p){const r=new Float64Array(p+1);for(let k=0;k<=p;k++){let s=0;for(let j=k;j<f.length;j++)s+=f[j]*f[j-k];r[k]=s}r[0]*=1.0001;if(!(r[0]>1e-12))return null;
+ const a=new Float64Array(p+1);a[0]=1;let e=r[0];for(let i=1;i<=p;i++){let q=r[i];for(let j=1;j<i;j++)q+=a[j]*r[i-j];const k=-q/e,t=a.slice();for(let j=1;j<i;j++)a[j]=t[j]+k*t[i-j];a[i]=k;e*=1-k*k;if(e<=1e-12)break}return a}
+
+function lpcNoise(a,n){const p=a.length-1,v=new Float64Array(n+p*4),o=new Float32Array(n);let ss=0;
+ for(let j=0;j<v.length;j++){let s=(Math.random()+Math.random()+Math.random()-1.5)*2;for(let i=1;i<=p&&i<=j;i++)s-=a[i]*v[j-i];v[j]=s}
+ for(let j=0;j<n;j++){o[j]=v[j+p*4];ss+=o[j]*o[j]}const g=1/Math.sqrt(ss/n||1);for(let j=0;j<n;j++)o[j]*=g;return o}
+function rmsOf(x,a,b){let s=0,c=0;for(let i=Math.max(0,a);i<Math.min(x.length,b);i++){s+=x[i]*x[i];c++}return c?Math.sqrt(s/c):0}
+
+function voxMorph(x,sr,fr,frSr,o){const n=x.length,hop=fr.length>1?fr[1].i-fr[0].i:Math.round(.01*frSr),c0=Math.round(.0125*frSr);
+ 
+ const f=fr.map(z=>z.f0>0?z.f0:0),vv=f.filter(Boolean);if(vv.length<20)throw new Error("목소리가 충분히 잡히지 않았어요");
+ const md0=vv.slice().sort((a,b)=>a-b)[vv.length>>1];for(let k=0;k<f.length;k++){if(!f[k])continue;const d=12*Math.log2(f[k]/md0);if(d>9)f[k]/=2;else if(d<-9)f[k]*=2}
+ const g=f.map((v,k)=>{if(!v)return 0;const w=[f[k-1],v,f[k+1]].filter(Boolean).sort((a,b)=>a-b);return w.length<2&&!f[k-2]&&!f[k+2]?0:w[w.length>>1]});
+ const med=g.filter(Boolean).sort((a,b)=>a-b)[g.filter(Boolean).length>>1];
+ const perAt=i=>{const k=Math.round((i/sr*frSr-c0)/hop);return k>=0&&k<g.length&&g[k]?sr/g[k]:0};
+ 
+ const L=Math.max(1,Math.round(sr/1500)),lp=new Float32Array(n);{let s=0;for(let i=0;i<n;i++){s+=x[i];if(i>=L)s-=x[i-L];lp[i]=s}}
+ const uv=Math.round(.005*sr),M=[],P=[],V=[];let m=0,pv=false;
+ while(m<n){const p=perAt(m);if(p>0){const a=pv?m-Math.round(.2*p):m,b=pv?m+Math.round(.2*p):m+Math.round(p);let best=Math.max(0,a);for(let j=Math.max(0,a);j<Math.min(n,b);j++)if(lp[j]>lp[best])best=j;
+   if(M.length&&best<=M[M.length-1])best=M[M.length-1]+Math.round(p);M.push(best);P.push(p);V.push(1);m=best+Math.round(p);pv=true}
+  else{M.push(m);P.push(uv);V.push(0);m+=uv;pv=false}}
+ 
+ for(let k=0;k+1<M.length;k++)P[k]=M[k+1]-M[k];
+ 
+ const S=o.speed||1,r0=Math.pow(2,(o.semi||0)/12),I=o.int||1,B=o.body||1,N=Math.ceil(n*S),y=new Float32Array(N+4*uv+2*sr/50);
+ let ts=0,k=0;const at=q=>{const i=Math.floor(q),t=q-i;return i<0||i+1>=n?0:x[i]*(1-t)+x[i+1]*t};
+ while(ts<N){const ta=ts/S;while(k+1<M.length&&Math.abs(M[k+1]-ta)<=Math.abs(M[k]-ta))k++;const mk=M[k],p=P[k];let po=p;
+  if(V[k]){const fq=sr/p,fn=Math.exp(Math.log(med)+I*(Math.log(fq)-Math.log(med)))*r0;po=sr/Math.min(Math.max(fn,50),900)}
+  const h=Math.round(p/B),c=Math.round(ts);for(let j=-h;j<=h;j++){const q=c+j;if(q<0||q>=y.length)continue;y[q]+=at(mk+j*B)*(.5+.5*Math.cos(Math.PI*j/h))}
+  ts+=Math.max(po,8)}
+ let z=y.subarray(0,N);
+ if(o.lowDb)z=bq(z,sr,"low",300,o.lowDb);if(o.clearDb)z=bq(z,sr,"peak",3000,o.clearDb,.8);
+ const kb=Math.min(o.breath||0,.65);if(kb>0){const on=[];for(let i=1;i<g.length;i++)if(g[i]&&!g.slice(Math.max(0,i-12),i).some(Boolean))on.push(Math.round((fr[i].i+c0)/frSr*sr*S));z=breathMix(z,sr,kb,on)}
+ 
+ const ro=rmsOf(x,0,n),ry=rmsOf(z,0,z.length)||1,gg=ro/ry*Math.sqrt(z.length/N);for(let i=0;i<z.length;i++)z[i]*=gg;return z}
+function breathMix(y,sr,k,on){const n=y.length;let v=bq(bq(y,sr,"high",1800,-8*k),sr,"low",300,2.5*k);
+ const W=Math.round(.024*sr)&~1,H=W/2,p=Math.min(24,Math.round(sr/2000)+4),nz=new Float32Array(n),win=new Float32Array(W);for(let j=0;j<W;j++)win[j]=.5-.5*Math.cos(2*Math.PI*j/W);
+ const lpcAt=s=>{const fm=new Float64Array(W);let prev=0;for(let j=0;j<W;j++){const u=s+j<n?y[s+j]:0;fm[j]=(u-.94*prev)*win[j];prev=u}return lpcOf(fm,p)};
+ for(let s=0;s+W<=n;s+=H){const r=rmsOf(y,s,s+W);if(r<1e-5)continue;const a=lpcAt(s);if(!a)continue;const e=lpcNoise(a,W),gn=.42*k*r;for(let j=0;j<W;j++)nz[s+j]+=e[j]*gn*win[j]}
+ 
+ for(const s0 of on){const a=lpcAt(Math.min(n-W-1,s0+Math.round(.03*sr)));if(!a)continue;const len=Math.round((.07+.06*k)*sr),st=s0-len;if(st<0)continue;
+  const e=lpcNoise(a,len),r=rmsOf(y,s0,s0+Math.round(.06*sr))*.3*(.5+k);for(let j=0;j<len;j++){const w=j/len;nz[st+j]+=e[j]*r*w*w*Math.min(1,(len-j)/(.01*sr)+.6)}}
+ const hn=bq(bq(nz,sr,"hp",1100),sr,"hp",1100);for(let i=0;i<n;i++)v[i]+=hn[i];return v}
+
+const MORPH_AX={L:{semi:-2,body:.96,lowDb:3},H:{semi:1.5},A:{speed:1/1.15},U:{speed:1.15},B:{breath:.65},D:{clearDb:4},T:{int:1.45},F:{int:.7}};
+
+
 
 const AI_URL="https://script.google.com/macros/s/AKfycbzVbvxWeG-CbYMc98UovhrwL3l08KYpGlyGQgxeDChHe1Gjq8lxW9Gtq2i20sSfYa2E/exec";
 var COACH=null;  
@@ -3453,7 +3488,7 @@ function coachList(){const t=today(),st=t?.steps||{},done=D3.filter(x=>st[x[0]])
  if(COACH.short&&done<4)L.push({id:"short",name:"목소리 체크",min:"1분",ico:"mic",say:"그럼 1분만 해요! <b>목소리 체크</b>만 하고 가요.",why:"하루 한 번 '아~'만 해도 내 기준이 쌓여요.",go:()=>openD3(1)});
  if(done<4&&!(t&&t.flow)){const nx=D3.findIndex(x=>!st[x[0]]);L.push({id:"d3",name:"오늘의 3분",min:"3분",ico:"play",say:done?`오늘의 3분, ${done}단계까지 했어요! <b>${D3[nx][1]}</b>부터 이어서 가 봐요.`:"오늘의 3분부터 해요. 목소리 체크 → 기초 연습 → 읽기 → 마무리 한마디, 제가 순서대로 안내할게요.",why:"매일 같은 3분이 쌓여야 내 목소리 기준이 생겨요.",go:()=>openD3(done?nx+1:1)})}
  if(BRK&&(BRK.step||0)<BRK_STEPS.length){const i=Math.min(BRK.step||0,BRK_STEPS.length-1);L.push({id:"brk",name:"걸린 음 연습 · "+noteLabel(BRK.st),min:"2분",ico:"stairs",say:`지난번 <b>${noteLabel(BRK.st)}</b>에서 소리가 걸렸죠? 오늘은 '${BRK_STEPS[i][2]}' 단계(${i+1}/${BRK_STEPS.length})로 가 봐요.`,why:"소리를 키워서 넘기지 않아요. 작게, 한 걸음씩 다가가면 그 음이 편해져요.",go:()=>openGen(brkPlan(),i)})}
- if(typeof BST==="object"&&BST&&BST.day!==dayKey()&&!COACH.light)L.push({id:"boost",name:"내 목소리 미리 듣기",min:"1분",ico:"wave",say:"한 문장만 읽어 주세요. 목소리에서 <b>살짝 키우면 좋은 소리</b>를 찾아서, 연습하면 가까워질 방향을 들려 드릴게요.",why:"되고 싶은 목소리가 귀로 들리면 연습 방향이 분명해져요.",go:openBoost});
+ if(typeof BST==="object"&&BST&&BST.day!==dayKey()&&!COACH.light)L.push({id:"boost",name:"내 목소리 미리 듣기",min:"1분",ico:"wave",say:"한 문장만 읽어 주세요. <b>내 목소리 그대로</b> 높이·빠르기·숨·억양을 살짝 바꿔서, 연습하면 가까워질 방향을 들려 드릴게요.",why:"되고 싶은 목소리가 귀로 들리면 연습 방향이 분명해져요.",go:openBoost});
  if(COACH.want){const p=genPlan(COACH.want),i=p.steps.findIndex((_,j)=>genBest(p.id,j)<60);L.unshift({id:"want",name:GEN_G[COACH.want][0],min:"2분",ico:"stairs",say:`방금 들은 그 소리 쪽으로! <b>${GEN_G[COACH.want][0]}</b> 해 봐요.`,why:GEN_G[COACH.want][1],go:()=>openGen(p,i<0?p.steps.length-1:i)})}
  const rc=profRec();if(rc){const p=genPlan(rc[0]),i=p.steps.findIndex((_,j)=>genBest(p.id,j)<60);L.push({id:"gen",name:GEN_G[rc[0]][0],min:"2분",ico:"stairs",say:`<b>${GEN_G[rc[0]][0]}</b> 해 볼까요? ${rc[1]}.`,why:GEN_G[rc[0]][1],go:()=>openGen(p,i<0?p.steps.length-1:i)})}
  const nt=["breath","scale","power"].flatMap(trkLevels).find(x=>bestOf(x)<60);if(nt)L.push({id:"trk",name:esc(nt.name),min:"3분",ico:"music",say:`반주에 맞춰 <b>${esc(nt.name)}</b> 해 봐요. 60%만 넘으면 다음 단계예요.${nt.g==="breath"?"<br>호흡 연습은 <b>첫 음표에서 숨을 들이마시고, 다음 음표에서 내쉬세요.</b> 화면에도 그때그때 알려 드릴게요.":""}`,why:TRK_G[nt.g][1],go:()=>openTrk(nt)});
@@ -3543,7 +3578,7 @@ function coachReview(){const p=CHAT.pend;if(!p)return;CHAT.pend=null;if(flowRevi
  if(a.vc>b.vc){const x=VCHKS[0];if(x)out.push(`오늘 소리는 평소와 견줘 '${LV[lvOf(x)][0]}'.${lvOf(x)?" 오늘은 작게, 쉬어 가면서 해요.":" 좋아요!"}`)}
  if(a.rec>b.rec)out.push("읽기 기록 남겼어요. 기록 탭에서 다시 들어 볼 수 있어요.");
  if(a.mine>b.mine)out.push("대본 넣었어요! 다음엔 이걸로 같이 읽어 봐요.");
- if(p.mid==="boost"&&BST.done){const o=BST_OPT.find(x=>x[0]===BST.k);out.push(`'${o[1]}' 쪽을 들어 봤죠? 그 소리에 가까워지려면 <b>${o[6]}</b>가 좋아요.`);COACH.want=o[7]}
+ if(p.mid==="boost"&&BST.done){const o=BST_LET[bstL(BST.on[0])];out.push(`'${o[0]}' 바꾼 내 목소리 들어 봤죠? 그 소리에 가까워지려면 <b>${o[1]}</b>가 좋아요.`);COACH.want=o[2]}
  if(p.mid==="train"&&!out.length&&!rc.length){renderCoach();return}
  if(out.length&&aiLive()){const nm=(aiMissions().find(x=>x.id===p.mid)||{}).name||"연습";chatPush("u",`✓ ${plain(nm)} 마쳤어요`);COACH.skip=0;aiReply(`[방금 끝낸 연습과 결과] ${plain(nm)} — ${plain(out.join(" "))}${rc.length?" (결과 그래프는 위에 보여 줬음)":""}. 결과를 숫자 대신 말로 한두 문장 풀어 주고, 아까 말한 상황과 이어서 다음 한 가지만 말한다.`);return}
  chatPush("c",out.length?out.join("<br>"):"도중에 멈췄네요. 괜찮아요, 준비되면 이어서 해요.");
@@ -3584,7 +3619,7 @@ function coachReply(txt){const x=txt.replace(/\s+/g," ").trim();if(!x)return;cha
   chatPush("c",c.html);if(c.drop){COACH.light=true;COACH.skip=0;giveMission("어제보다 조금 지쳐 있어요. 오늘은 작게, 짧게 가요.")}else{COACH.skip=0;giveMission("좋아요, 이 컨디션이면 연습해도 괜찮아요.")}renderCoach();return}
  if(/이번 ?주|일주일|한 ?주|요즘/.test(x)){chatPush("c",cardWeek());giveMission("이번 주 흐름 이어서, 오늘은 이걸 해요.");renderCoach();return}
  if(/유형|어떤 목소리|내 목소리는|되고 싶은/.test(x)){chatPush("c",cardType());giveMission("원하는 목소리 쪽으로 오늘 한 걸음!");renderCoach();return}
- if(/미리 ?(듣|들)|보강|부스트|좋게 들|바뀐 (내 )?목소리|어떻게 들/.test(x)){chatPush("c","좋아요! 한 문장만 읽어 주시면 <b>살짝 키운 목소리</b>를 들려 드릴게요.","boost");renderCoach();return}
+ if(/미리 ?(듣|들)|보강|부스트|좋게 들|바뀐 (내 )?목소리|어떻게 들/.test(x)){chatPush("c","좋아요! 한 문장만 읽어 주시면 <b>살짝 바꾼 내 목소리</b>를 들려 드릴게요.","boost");renderCoach();return}
  if(/뭐 ?(하|할|해)|뭘 ?(하|할|해)|추천|오늘 할|연습할|미션/.test(x)){COACH.skip=0;giveMission("오늘은 이것부터 해 봐요.");renderCoach();return}
  if(/쉬었|쉰 |쉬어|피곤|아파|아프|힘들|지쳤|목이/.test(x)){COACH.light=true;COACH.skip=0;giveMission("그랬군요. 무리하지 말아요.")}
  else if(/시간|바빠|바쁘|1분|짧게|조금만/.test(x)){COACH.short=true;COACH.skip=0;giveMission("좋아요, 짧게 가요.")}
@@ -3615,7 +3650,7 @@ function renderCoach(){const e=$("coach");if(!e||!COACH)return;
  const D=chatOld(),v=COACH.view=Math.max(0,Math.min(COACH.view||0,D.length)),past=v?D[D.length-v]:null,list=past?past.list:CHAT.list,lastM=past?-1:CHAT.list.reduce((a,m,i)=>m.mid?i:a,-1),lastR=past?-1:CHAT.list.reduce((a,m,i)=>m.rec?i:a,-1),L=aiMissions();
  e.innerHTML=`${D.length?dayBar(v,past,D.length):""}<div class="chat" id="chat-log" aria-live="polite">${list.map((m,i)=>m.w==="u"?`<p class="msg me">${m.t}</p>`
   :`<div class="msg c">${i===0||list[i-1].w!=="c"?`<img class="say-img" src="${charSrc($("tgt").value)}" alt="">`:`<span class="say-img" style="visibility:hidden"></span>`}<div class="bubble">${i===0||list[i-1].w!=="c"?`<b class="msg-n">${esc(coachName())}</b>`:""}<div class="mt">${m.t}</div>${m.x?`<details class="cx"><summary>측정 자세히 보기</summary>${m.x}</details>`:""}${m.rec&&RECK[m.rec]&&i===lastR?recBtn(m.rec):""}${m.ch&&!m.done&&!past?`<div class="chs">${m.ch.map(([id,l])=>`<button type="button" data-ch="${id}" data-i="${i}">${l}</button>`).join("")}</div>`:""}${m.mid&&!past?(()=>{const x=L.find(q=>q.id===m.mid);return x?`<button type="button" class="mis${i===lastM?" now":""}" data-m="${m.mid}"><span class="c">${ICON[x.ico]||ICON.play}</span><span><b>${x.name}</b><small>약 ${x.min} · 누르면 시작</small></span></button>`:m.mid==="d3"?`<span class="mis done">${ICON.check} 했어요</span>`:""})():""}</div></div>`).join("")}</div>${past?`<button type="button" class="btn" data-dv="0" style="align-self:center">오늘 대화로 돌아가기</button>`:`
-  ${CHAT.list.length===1&&aiCan()?`<div class="chips sugg" role="group" aria-label="이렇게 말해 보세요">${["내일 면접이 있어요","중요한 대화 미리 연습할래요","오늘 데이트가 있어요","제 목소리 어때요?"].map(q=>`<button type="button" data-q="${q}">${q}</button>`).join("")}</div>`:""}
+  ${CHAT.list.length===1&&aiCan()?`<div class="chips sugg" role="group" aria-label="이렇게 말해 보세요">${[JOB_CHIP[myJobs()[0]]||"내일 면접이 있어요","중요한 대화 미리 연습할래요","오늘 데이트가 있어요","제 목소리 어때요?"].map(q=>`<button type="button" data-q="${q}">${q}</button>`).join("")}</div>`:""}
   ${whenRow()}
   <div class="chat-dock${COACH.kb?" kb":""}" id="chat-dock"><button type="button" class="dock-kb" id="chat-kb" aria-label="${COACH.kb?"목소리로 말하기로":"글로 쓰기"}" aria-pressed="${!!COACH.kb}">${COACH.kb?ICON.wave:ICON.pen}</button>
    <form class="chat-in" id="chat-in"><input id="chat-tx" enterkeyhint="send" autocomplete="off" placeholder="무엇이든 편하게 말해 주세요" aria-label="선생님에게 물어보기"><button type="submit" class="chat-send" aria-label="보내기">${ICON.next}</button></form>
@@ -3680,8 +3715,11 @@ const AIM="claude";
 const aiLive=()=>aiCan()&&csOn("ai")&&quota("ai").left;
 const WHEN_N={before:"말하기 전",after:"말한 뒤",bad:"목이 안 좋은 날"};
 
+
+const JOB_CHIP={teach:"곧 수업이 있어요",faith:"곧 설교가 있어요",lect:"강의 전이라 떨려요",coach:"곧 운동 지도가 있어요",call:"곧 상담 전화가 있어요",office:"발표가 있어요",cast:"곧 방송이 있어요",sing:"곧 공연이 있어요",study:"내일 면접이 있어요"};
+const LN_RULE="[연습 문장] 사용자가 앞둔 일이나 상황(면접·수업·강의·설교·발표·회의·상담 전화·방송·공연 멘트·데이트·축사·건배사 등)을 말하면, 그 자리에서 실제로 첫머리에 할 법한 말을 연습 문장 하나로 만들어 대답 맨 끝에 [[문장:연습 문장]]으로 붙인다. 1~2문장, 40~90자, 소리 내 읽기 편한 쉬운 말, 실제 사람·회사·학교 이름은 ○○로. 이 사람의 직업·기억 노트·방금 말한 내용(예: 지원 분야, 강의 주제)에 맞춘다. 이 문장을 읽어 보자고 권할 때는 [[연습:rd]]를 쓴다(읽기 연습이 이 문장으로 열린다). 같은 날 같은 상황이면 새로 만들지 않아도 된다.";
 const RH_RULE="[대화 리허설] 사용자가 앞으로 누군가와 나눌 대화(데이트·소개팅·고백·면접·발표 뒤 질문·상사 보고·부탁·사과·거절·고객 통화·첫 만남·가족과 어려운 이야기 등)를 앞두고 '무슨 말을 해야 해?'라고 묻거나 연습하고 싶어 하면: 상황을 모르면 질문은 딱 하나만(누구와·어떤 자리인지) 하고, 알면 바로 첫마디 예시 하나를 주고 '제가 상대가 돼 볼게요. 소리 내서 대답해 보세요'라며 상대의 첫 대사를 따옴표로 말한 뒤 대답 맨 끝에 반드시 [[리허설:상대 역할 짧게]]를 붙인다(이 표시가 있어야 녹음 단추가 뜬다). 리허설 중에는 매번 ① 사용자 대답이 녹음이면 목소리 한 줄(빠르기·크기·높낮이·끝맺음 중 하나), 내용 한 줄 피드백 ② 상대의 다음 대사 한 줄(따옴표) 순서로 짧게 말한다. 3~4번 주고받았거나 사용자가 그만하자고 하면 '기억할 말 3개'와 들어가기 직전에 할 연습 하나로 마무리하고 반드시 [[리허설끝]]을 붙인다. 상대 역할은 현실적이고 예의 있게, 너무 쉽지도 공격적이지도 않게. 상대를 조종·압박하는 말, 거짓말, 성적인 내용은 연습시키지 않는다. 목표는 '내가 편하고 진심 있게 들리는 것'이고 정답 대본을 외우게 하지 않는다.";
-const situHint=(w,x)=>`[지금 상황] ${WHEN_N[w]||""}${x?` — 사용자 말: "${String(x).slice(0,80)}"`:""}. 이미 상황을 말했으니 되묻지 말고, 그 자리에서 바로 쓸 수 있는 방법 한두 가지를 그 사람 기록에 맞춰 말한 뒤, 가장 맞는 연습 하나를 '같이 해 볼까요?'로 묻고 [[연습:아이디]]를 붙인다. 면접·상담·통화처럼 상대가 있는 일이면 연습 대신 대화 리허설을 열어도 된다.${w==="bad"?" 목이 안 좋은 날이므로 소리 내는 연습은 권하지 말고 쉬는 법 위주로, 권한다면 sc-quiet만.":""}`;
+const situHint=(w,x)=>`[지금 상황] ${WHEN_N[w]||""}${x?` — 사용자 말: "${String(x).slice(0,80)}"`:""}. 이미 상황을 말했으니 되묻지 말고, 그 자리에서 바로 쓸 수 있는 방법 한두 가지를 그 사람 기록에 맞춰 말한 뒤, 가장 맞는 연습 하나를 '같이 해 볼까요?'로 묻고 [[연습:아이디]]를 붙인다. 이 상황에 맞는 연습 문장 [[문장:…]]도 함께 붙이고, 읽기 연습이 가장 맞으면 [[연습:rd]]로 권한다. 면접·상담·통화처럼 상대가 있는 일이면 연습 대신 대화 리허설을 열어도 된다.${w==="bad"?" 목이 안 좋은 날이므로 소리 내는 연습은 권하지 말고 쉬는 법 위주로, 권한다면 sc-quiet만.":""}`;
 let CMEM={};try{CMEM=JSON.parse(localStorage.getItem("tv_mem")||"{}")||{}}catch(e){}
 const memSave=()=>{try{localStorage.setItem("tv_mem",JSON.stringify(CMEM))}catch(e){}memShow()};
 function memShow(){const e=$("mem-t");if(e)e.textContent=CMEM.t||"아직 기억한 게 없어요. 선생님과 이야기를 나누면 여기에 쌓여요."}
@@ -3734,7 +3772,7 @@ function aiCtx(v){const W=x=>x==null?null:x>=70?"좋음":x>=45?"보통":"낮음"
   td?baseCmp(vc).txt:`평소 기준: '아~' ${baseOf().n}번 모임(${BASE_N}번부터 평소와 비교)`,feelHist(),
   v?(typeof v==="string"?v:`방금 말할 때 목소리(휴대폰 참고값): ${sc(v)||"잘 안 들림"}`):"",
   CMEM.t?`[선생님이 기억하는 이 사람(지난 대화에서, 본인이 말한 것)] ${CMEM.t} — 필요할 때만 자연스럽게 이어서 쓰고 매번 꺼내지 않는다. 지난 일정은 지났는지 확인하고 말한다.`:"",
-  RH_RULE,CHAT.rh?`[대화 리허설 진행 중] 너는 지금 '${CHAT.rh.who}' 역할도 맡고 있다. 주고받은 횟수 ${CHAT.rh.n||0}번.`:"",
+  LN_RULE,RH_RULE,CHAT.rh?`[대화 리허설 진행 중] 너는 지금 '${CHAT.rh.who}' 역할도 맡고 있다. 주고받은 횟수 ${CHAT.rh.n||0}번.`:"",
   "[권할 수 있는 연습] 연습을 권할 때는 아래에서 지금 상황에 가장 맞는 하나만 골라 대답 맨 끝에 [[연습:아이디]]를 붙인다(카드가 떠서 바로 시작할 수 있다). 권할 게 없으면 붙이지 않는다. 앞쪽일수록 앱이 오늘 먼저 권하는 것.",
   ...aiMissions().map(m=>`${m.id}: ${plain(m.name)} — ${plain(m.why).slice(0,45)}`)].filter(Boolean).join("\n")}
 
@@ -3745,15 +3783,16 @@ function aiMissions(){const L=coachList(),has=id=>L.some(m=>m.id===id);
  return L}
 
 async function aiReply(v,o){o=o||{};const msgs=aiHist();chatPush("c",`<span class="ai-wait">${o.kind==="voice"?"목소리 듣는 중…":"생각하는 중…"}</span>`);renderCoach();const it=CHAT.list[CHAT.list.length-1];
- try{const ctx=aiCtx(v)+(o.kb?`\n[참고 지식 카드] ${plain(o.kb.q)} — ${plain(o.kb.a).slice(0,600)}`:""),j=await aiCall("chat",{m:AIM,kind:o.kind||"chat",msgs,ctx}),T=String(j.text),mm=T.match(/\[\[연습:([\w-]+)\]\]/),rr=T.match(/\[\[녹음:(아|문장|자유|노래)\]\]/),rs=T.match(/\[\[리허설:([^\]]{1,30})\]\]/),re=/\[\[리허설끝\]\]/.test(T)||!!CHAT.rh&&/기억할 말/.test(T);
+ try{const ctx=aiCtx(v)+(o.kb?`\n[참고 지식 카드] ${plain(o.kb.q)} — ${plain(o.kb.a).slice(0,600)}`:""),j=await aiCall("chat",{m:AIM,kind:o.kind||"chat",msgs,ctx}),T=String(j.text),mm=T.match(/\[\[연습:([\w-]+)\]\]/),rr=T.match(/\[\[녹음:(아|문장|자유|노래)\]\]/),ln=T.match(/\[\[문장:([^\]]{4,200})\]\]/),rs=T.match(/\[\[리허설:([^\]]{1,30})\]\]/),re=/\[\[리허설끝\]\]/.test(T)||!!CHAT.rh&&/기억할 말/.test(T);
   quota("ai",1);it.ty=1;setTimeout(memTick,1500);it.t=esc(T.replace(/\[\[[^\]]*\]\]/g,"").trim()).replace(/\n/g,"<br>")+(o.kb?`<br><small class="meta">참고: 터칭보이스 목소리 지식 카드 · ${esc(plain(o.kb.q))}</small>`:"");
   const of=rr?{rec:{아:"ah",문장:"read",자유:"free",노래:"sing"}[rr[1]]}:mm&&aiMissions().some(x=>x.id===mm[1])?{mid:mm[1]}:null;
+  if(ln){const x=ln[1].trim().replace(/^["“'‘]|["”'’]$/g,"");SITU.pre={text:x,src:"선생님이 만든 연습 문장",k:"ai",at:Date.now()};SITU.fresh=false;try{localStorage.setItem("tv_pre",JSON.stringify(SITU.pre))}catch(e){}}
   if(!CHAT.rh&&!re&&(rs||/상대(가|를|의 역할을)? ?(돼|되어|해|맡아) ?(볼게|줄게|드릴게)|제가 .{0,12}(역할|상대)(을|를|이)? ?(해|맡아|돼) ?(볼게|드릴게)/.test(T)))CHAT.rh={who:rs?rs[1].trim():"대화 상대",n:0};else if(CHAT.rh&&o.kind==="voice")CHAT.rh.n++;if(re){CHAT.rh=null;CHAT.list.forEach(m=>{if(m.rec==="rh")delete m.rec;if(m.ch&&m.ch[0]&&m.ch[0][0]==="rhx")m.done=true})}
-  if(CHAT.rh){CHAT.list.forEach(m=>{if(m.ch&&m.ch[0]&&m.ch[0][0]==="rhx")m.done=true});it.rec="rh";it.ch=[["rhx","리허설 끝내기"]]}else if(of)offer(it,of)}
+  if(CHAT.rh){CHAT.list.forEach(m=>{if(m.ch&&m.ch[0]&&m.ch[0][0]==="rhx")m.done=true});it.rec="rh";it.ch=[["rhx","리허설 끝내기"]]}else if(of||ln)offer(it,of||{mid:"rd"});if(ln)it.t+=`<div class="pq"><small>연습 문장</small>${esc(SITU.pre.text)}</div>`}
  catch(e){it.t=AI_ERR[e.message]||"지금은 AI 선생님과 연결이 안 돼요. 잠시 뒤에 다시 말씀해 주세요."}if(o.x)it.x=o.x;chatSave();renderCoach()}
 
 const OFQ={rec:"지금 목소리를 한번 들어 볼까요?",mid:"같이 연습해 볼까요?"},YES=/^(응|네|넵|넹|예|좋아|그래|오케이|ㅇㅋ|ok|해 ?볼게|해 ?봐|할게|할래|하자|시작|고고|콜)/i,NO=/^(아니|아뇨|다음|나중|괜찮|싫|됐어|안 ?할|그만)/;
-function offer(it,of){it.of=of;it.ch=[["ofy","네, 해 볼게요"],["ofn","다음에요"]];if(!/[?？]\s*$/.test(plain(it.t)))it.t+=`<br><b>${OFQ[of.rec?"rec":"mid"]}</b>`}
+function offer(it,of){it.of=of;it.ch=[["ofy","네, 해 볼게요"],["ofn","다음에요"]];if(!/[?？]\s*$/.test(plain(it.t)))it.t+=`<br><b>${of.mid==="rd"?"이 문장으로 한번 읽어 볼까요?":OFQ[of.rec?"rec":"mid"]}</b>`}
 function offerYes(i,yes,typed){const m=CHAT.list[i];if(!m||!m.of)return;const o=m.of;m.of=null;m.done=true;if(!typed)chatPush("u",yes?"네, 해 볼게요":"다음에요");
  if(!yes)chatPush("c","좋아요. 필요하실 때 언제든 말씀해 주세요.");
  else if(o.rec){chatPush("c","좋아요! 아래 단추를 누르면 바로 들을게요.");CHAT.list.at(-1).rec=o.rec}
@@ -3919,48 +3958,54 @@ COACH={light:false,short:false,skip:0,kb:true};
 
 {const i=$("coach-nm");if(i){i.value=((loadUser()||{}).coach)||"";i.addEventListener("change",()=>{if(coachSetName(i.value)){CHAT.ask=null;chatSave();renderCoach()}})}}
 
-const BST_OPT=[["deep","깊게",180,.9,0,"낮은 울림","저음 연습 '으'","low"],["warm","따뜻하게",400,.9,1,"부드러운 몸통","중음 연습 '아'","mid"],["bright","밝게",2000,.9,2,"밝은 쪽","고음 연습 '이'","high"],["clear","또렷하게",3200,1.1,2,"또렷한 앞쪽","고음 연습 '이'","high"]];
+const BST_LET={L:["낮고 굵게","저음 연습 '으'","low"],H:["조금 높게","고음 연습 '이'","high"],A:["조금 빠르게","중음 연습 '아'","mid"],U:["조금 천천히","중음 연습 '아'","mid"],B:["숨 섞어","중음 연습 '아'","mid"],D:["또렷하게","고음 연습 '이'","high"],T:["억양 크게","중음 연습 '아'","mid"],F:["차분하게","저음 연습 '으'","low"]};
 const BST_LINE="안녕하세요. 오늘도 제 목소리로 하루를 시작합니다.";
-const bstRec=()=>{const t=$("tgt").value||"";return t[2]==="D"?"clear":t[2]==="B"?"warm":t[0]==="H"?"bright":"deep"};
-var BST={take:null,a:null,k:"clear",g:5,on:true,ctx:null,done:false,day:""};
+const bstL=i=>{const t=$("tgt").value||"";return BST_LET[t[i]]?t[i]:"LUBT"[i]};
+const bstDef=()=>{const c=$("cur").value||"",t=$("tgt").value||"";let on=[0,1,2,3].filter(i=>c[i]&&t[i]&&c[i]!==t[i]);if(!on.length)on=[[2,"B"],[3,"T"],[0,"L"]].filter(([i,l])=>t[i]===l).map(x=>x[0]).slice(0,1);return on.length?on:[0]};
+var BST={take:null,a:null,fr:null,buf:null,on:[0],play:"b",ctx:null,done:false,day:""};
 document.body.insertAdjacentHTML("beforeend",`<div class="bst" id="bst" hidden role="dialog" aria-modal="true" aria-labelledby="bst-h"></div>`);
-function openBoost(){BST.k=bstRec();BST.done=false;BST.take=null;BST.a=null;$("bst").hidden=false;document.body.style.overflow="hidden";bstDraw()}
+function openBoost(){Object.assign(BST,{on:bstDef(),play:"b",done:false,take:null,a:null,fr:null,buf:null});$("bst").hidden=false;document.body.style.overflow="hidden";bstDraw()}
 function closeBoost(){bstStop();if(REC.on)recStop();$("bst").hidden=true;document.body.style.overflow=""}
-function bstStop(){if(BST.ctx){try{BST.src.stop()}catch(e){}BST.ctx.close().catch(()=>{});BST.ctx=null}const b=$("bst-play");if(b){b.innerHTML=ICON.play;b.setAttribute("aria-label","들어 보기")}}
-function bstSet(){if(!BST.ctx)return;const t=BST.ctx.currentTime,o=BST_OPT.find(x=>x[0]===BST.k);BST.fl.frequency.setTargetAtTime(o[2],t,.02);BST.fl.Q.setTargetAtTime(o[3],t,.02);BST.fl.gain.setTargetAtTime(BST.on?BST.g:0,t,.03);BST.gn.gain.setTargetAtTime(BST.on?Math.pow(10,-BST.g/40):1,t,.03);if(BST.on){BST.done=true;BST.day=dayKey()}}
-function bstPlay(){if(BST.ctx){bstStop();return}const t=BST.take,ac=new(window.AudioContext||window.webkitAudioContext)();let pk=0;for(const v of t.x)pk=Math.max(pk,Math.abs(v));const x=t.x.map(v=>v*(pk>0?.8/pk:1));
- const buf=ac.createBuffer(1,x.length,t.sr);buf.copyToChannel(x,0);const s=ac.createBufferSource();s.buffer=buf;s.loop=true;const f=ac.createBiquadFilter();f.type="peaking";const g=ac.createGain();
- s.connect(f);f.connect(g);g.connect(ac.destination);Object.assign(BST,{ctx:ac,src:s,fl:f,gn:g});bstSet();ac.resume().then(()=>s.start());const b=$("bst-play");if(b){b.innerHTML=ICON.stop;b.setAttribute("aria-label","멈추기")}}
-function bstDraw(){const e=$("bst"),o=BST_OPT.find(x=>x[0]===BST.k),rec=bstRec(),tg=$("tgt").value;
+function bstStop(){if(BST.ctx){try{BST.src.onended=null;BST.src.stop()}catch(e){}BST.ctx.close().catch(()=>{});BST.ctx=null}const b=$("bst-play");if(b){b.innerHTML=ICON.play;b.setAttribute("aria-label","들어 보기")}}
+
+function bstPlay(){bstStop();const t=BST.take,x=BST.play==="a"?t.x:BST.buf;if(!x)return;let pk=0;for(const y of[t.x,BST.buf])if(y)for(let i=0;i<y.length;i++)pk=Math.max(pk,Math.abs(y[i]));
+ const ac=new(window.AudioContext||window.webkitAudioContext)(),buf=ac.createBuffer(1,x.length,t.sr),g=pk>0?.8/pk:1,z=new Float32Array(x.length);for(let i=0;i<x.length;i++)z[i]=x[i]*g;buf.copyToChannel(z,0);
+ const s=ac.createBufferSource();s.buffer=buf;s.connect(ac.destination);s.onended=()=>{if(BST.src===s)bstStop()};Object.assign(BST,{ctx:ac,src:s});ac.resume().then(()=>s.start());
+ if(BST.play==="b"){BST.done=true;BST.day=dayKey()}const b=$("bst-play");if(b){b.innerHTML=ICON.stop;b.setAttribute("aria-label","멈추기")}}
+function bstMake(){const o=Object.assign({},...BST.on.map(i=>MORPH_AX[bstL(i)]));BST.buf=voxMorph(BST.take.x,BST.take.sr,BST.fr,SR,o)}
+function bstDraw(){const e=$("bst"),tg=$("tgt").value;
  const top=`<div class="bst-top"><button type="button" class="pm-x" id="bst-x" aria-label="닫기">${ICON.close}</button><b id="bst-h">내 목소리 미리 듣기</b></div>`;
- if(!BST.a){e.innerHTML=`${top}<div class="bst-body">${say("이 문장을 편하게 읽어 주세요. 목소리에서 살짝 키우면 좋은 소리를 찾아서, 연습하면 가까워질 방향을 들려 드릴게요.",{size:"s",pop:false})}
+ if(!BST.buf){e.innerHTML=`${top}<div class="bst-body">${say("이 문장을 편하게 읽어 주세요. 내 목소리 그대로 높이·빠르기·숨·억양을 살짝 바꿔서, 연습하면 가까워질 방향을 들려 드릴게요.",{size:"s",pop:false})}
   <p class="bst-line">${BST_LINE}</p><button type="button" class="mic" id="bst-mic" aria-label="녹음 시작">${MIC}</button><p class="hint" id="bst-hint">누르고 읽은 뒤 다시 눌러요 · 녹음은 저장하지 않아요</p></div>`;
   $("bst-x").onclick=closeBoost;$("bst-mic").onclick=bstRecord;return}
- const B=["낮은 소리","중간 아래","중간 위","높은 소리"],mx=Math.max(...BST.a.bands);
- e.innerHTML=`${top}<div class="bst-body">${say(`<b>${o[1]}</b> — ${o[5]}을 살짝 키운 소리예요. 위아래 단추로 지금 소리와 번갈아 들어 보세요.`,{size:"s",pop:false})}
-  <div class="bst-bars" aria-label="내 소리 대역 비중">${B.map((n,i)=>`<div class="${i===o[4]?"on":""}"><span>${n}</span><i style="height:${Math.max(6,BST.a.bands[i]/mx*100)}%"></i></div>`).join("")}</div>
-  <div class="chips bst-opt" role="group" aria-label="키울 쪽">${BST_OPT.map(x=>`<button type="button" data-k="${x[0]}" aria-pressed="${x[0]===BST.k}">${x[1]}${x[0]===rec?" · 추천":""}</button>`).join("")}</div>
-  <label class="bst-g">얼마나 <input type="range" id="bst-g" min="2" max="8" step="1" value="${BST.g}" aria-label="키우는 정도"><small>살짝 ↔ 조금 더</small></label>
-  <div class="seg bst-ab" role="group" aria-label="비교해 듣기"><button type="button" id="bst-a" aria-pressed="${!BST.on}">지금 내 소리</button><button type="button" id="bst-b" aria-pressed="${BST.on}">연습하면 이 방향</button></div>
+ const l0=bstL(BST.on[0]);
+ e.innerHTML=`${top}<div class="bst-body">${say(`<b>${esc(TYPES[tg]||"되고 싶은 목소리")}</b> 쪽으로 내 목소리를 살짝 바꿔 봤어요. 두 단추로 번갈아 들어 보세요.`,{size:"s",pop:false})}
+  <div class="chips bst-opt" role="group" aria-label="바꿀 쪽">${[0,1,2,3].map(i=>`<button type="button" data-i="${i}" aria-pressed="${BST.on.includes(i)}">${BST_LET[bstL(i)][0]}</button>`).join("")}</div>
+  <div class="seg bst-ab" role="group" aria-label="비교해 듣기"><button type="button" id="bst-a" aria-pressed="${BST.play==="a"}">지금 내 소리</button><button type="button" id="bst-b" aria-pressed="${BST.play==="b"}">바뀐 내 목소리</button></div>
   <button type="button" class="mic" id="bst-play" aria-label="${BST.ctx?"멈추기":"들어 보기"}">${BST.ctx?ICON.stop:ICON.play}</button>
-  <p class="meta bst-note">'되고 싶은 목소리'(${esc(TYPES[tg]||"")}) 쪽으로 가는 방향이에요. 이렇게 된다는 약속이 아니라, 연습할 때 귀로 잡을 목표예요. 이 소리에 가까워지는 연습은 <b>${o[6]}</b>.</p>
+  <p class="meta bst-note">'되고 싶은 목소리' 쪽으로 가는 방향이에요. 이렇게 된다는 약속이 아니라, 연습할 때 귀로 잡을 목표예요. 이 소리에 가까워지는 연습은 <b>${BST_LET[l0][1]}</b>.</p>
   <button type="button" class="link" id="bst-re">다시 녹음하기</button></div>`;
- $("bst-x").onclick=closeBoost;$("bst-play").onclick=bstPlay;$("bst-re").onclick=()=>{bstStop();BST.a=null;BST.take=null;bstDraw()};
- $("bst-a").onclick=()=>{BST.on=false;bstSet();$("bst-a").setAttribute("aria-pressed","true");$("bst-b").setAttribute("aria-pressed","false")};
- $("bst-b").onclick=()=>{BST.on=true;bstSet();$("bst-a").setAttribute("aria-pressed","false");$("bst-b").setAttribute("aria-pressed","true")};
- $("bst-g").oninput=ev=>{BST.g=+ev.target.value;bstSet()};
- e.querySelector(".bst-opt").onclick=ev=>{const b=ev.target.closest("[data-k]");if(!b)return;BST.k=b.dataset.k;const play=!!BST.ctx;bstDraw();if(play){bstSet()}}}
+ $("bst-x").onclick=closeBoost;$("bst-play").onclick=()=>BST.ctx?bstStop():bstPlay();$("bst-re").onclick=()=>{bstStop();Object.assign(BST,{take:null,a:null,fr:null,buf:null});bstDraw()};
+ const pick=w=>{BST.play=w;$("bst-a").setAttribute("aria-pressed",w==="a");$("bst-b").setAttribute("aria-pressed",w==="b");bstPlay()};
+ $("bst-a").onclick=()=>pick("a");$("bst-b").onclick=()=>pick("b");
+ e.querySelector(".bst-opt").onclick=ev=>{const b=ev.target.closest("[data-i]");if(!b)return;const i=+b.dataset.i,k=BST.on.indexOf(i);if(k<0)BST.on.push(i);else if(BST.on.length>1)BST.on.splice(k,1);else return;
+  bstStop();b.setAttribute("aria-pressed",BST.on.includes(i));setTimeout(()=>{bstMake();BST.play="b";bstDraw();bstPlay()},30)}}
 async function bstRecord(){const b=$("bst-mic");
- if(REC.on){b.disabled=true;const t=recStop();$("bst-hint").textContent="듣는 중…";await bstTake(t);return}
+ if(REC.on){b.disabled=true;const t=recStop();$("bst-hint").textContent="내 목소리를 바꾸는 중…";await bstTake(t);return}
  try{await recStart(()=>{},()=>{if(REC.on)b.click()},false);b.classList.add("rec");b.innerHTML=STOP;b.setAttribute("aria-label","녹음 끝내기");$("bst-hint").textContent="듣고 있어요… 다 읽으면 눌러 주세요"}
  catch(e){$("bst-hint").textContent="마이크를 쓸 수 없어요"}}
-async function bstTake(t){try{if(!t||t.x.length<t.sr*1.2)throw new Error("조금 더 길게 읽어 주세요");SEX=$("sex").value;const x=await resample(t.x,t.sr),a=analyzeSentence(x,noiseFloor(x),1);
-  BST.take=t;BST.a=a;profAdd({f0:a.f0,bands:a.bands,regs4:a.regs4,vsp:a.vspace});BST.on=true;bstDraw();bstPlay()}
- catch(err){$("bst-hint").textContent=(err&&err.message)||"다시 한 번 읽어 주세요";const b=$("bst-mic");if(b){b.disabled=false;b.classList.remove("rec");b.innerHTML=MIC}}}
+async function bstTake(t){try{if(!t||t.x.length<t.sr*1.2)throw new Error("조금 더 길게 읽어 주세요");SEX=$("sex").value;const x=await resample(t.x,t.sr),nf=noiseFloor(x),a=analyzeSentence(x,nf,1);
+  BST.take=t;BST.a=a;BST.fr=pitchTrack(x,nf);profAdd({f0:a.f0,bands:a.bands,regs4:a.regs4,vsp:a.vspace});await new Promise(r=>setTimeout(r,30));bstMake();BST.play="b";bstDraw();bstPlay()}
+ catch(err){BST.buf=null;$("bst-hint").textContent=(err&&err.message)||"다시 한 번 읽어 주세요";const b=$("bst-mic");if(b){b.disabled=false;b.classList.remove("rec");b.innerHTML=MIC}}}
 
 new MutationObserver(()=>{if(CHAT.pend&&$("bst").hidden)setTimeout(()=>{if(CHAT.pend&&["pm","d3","tr","vc","rd","tp","sc","bst"].every(id=>$(id).hidden))coachReview()},500)}).observe($("bst"),{attributes:true,attributeFilter:["hidden"]});
 
 {const b=$("mem-x");if(b)b.addEventListener("click",()=>{CMEM={day:CMEM.day,today:CMEM.today,n:CMEM.n};memSave()});memShow()}
+
+{let n=0;const hf=()=>{let h=null;try{h=JSON.parse(localStorage.getItem("tv_handoff")||"null")}catch(e){}if(!h||Date.now()-h.at>6e5)return;
+ if(!$("ob").hidden||!COACH){if(++n<240)setTimeout(hf,1000);return}try{localStorage.removeItem("tv_handoff")}catch(e){}
+ chatPush("c",`목소리 검사 결과를 이어 받았어요!<br><b>${esc(h.code)} ${esc(TYPES[h.code]||"")}</b> · 지금 내 목소리의 <b>${+h.pot||0}%</b>를 쓰고 있어요.<br>가장 많이 남은 곳은 <b>${esc(h.lo||"")}</b>예요. 남은 ${100-(+h.pot||0)}%를 같이 찾아 볼까요?`);
+ offer(CHAT.list[CHAT.list.length-1],{mid:"boost"});chatSave();renderCoach();if(typeof tab==="function")tab("today")};setTimeout(hf,800)}
 
 const spM=spAttach($("mtext"),$("m-sp"));
 
