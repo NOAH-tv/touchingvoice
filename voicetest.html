@@ -312,7 +312,7 @@ pre{white-space:pre-wrap;font-size:12px;background:var(--bg2);border-radius:12px
 .megoal .av img{width:100%;height:100%;object-fit:cover}.megoal .av.goal{box-shadow:0 0 0 3px var(--ring),var(--shadow)}
 .fam-legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--muted);font-weight:600}
 .fam-legend i{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--c);margin-right:5px}
-.rgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px 10px}
+.rgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px 10px}.rgrid.mph2{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;padding:0 12%}.rgrid.mph2 .rt b{font-size:15px}.rgrid.mph2 .rt small{font-size:12px}
 .rt{border:0;background:transparent;padding:0;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;color:var(--fg);min-width:0;font:inherit}
 .rt span{width:100%;aspect-ratio:1;border-radius:22px;overflow:hidden;display:block;transition:transform .15s}
 .rt:active span{transform:scale(.95)}.rt img{width:100%;height:100%;object-fit:cover}
@@ -825,7 +825,8 @@ function bandBalance(b){const tot=b.reduce((a,x)=>a+x,0)||1,hi=100*(b[2]+b[3])/t
    음 이름은 G2·C3 같은 국제 표기로 쓴다 — '솔2'처럼 쓰면 노래하는 사람은 '2옥타브 솔'(=G4)로 읽어 두 옥타브 헷갈린다 */
 const RM={m:[98,130.81,261.63,392,587.33],f:[146.83,196,392,587.33,880]};RM.x=RM.m.map(h=>h*Math.pow(2,3.5/12));
 const RM_LAB={m:["G2~C3","C3~C4","C4~G4","G4~D5"],f:["D3~G3","G3~G4","G4~D5","D5~A5"],x:["","","",""]};
-function rmPos(hz){const E=RM[S.sex]||RM.x;if(!(hz>0))return 0;for(let k=0;k<4;k++)if(hz<E[k+1])return cl((k+Math.max(0,Math.log(hz/E[k]))/Math.log(E[k+1]/E[k]))/4,0,1);return 1}
+/* 11/25 대표: 성별 평균 높이를 가운데 — 평균에서 ±12반음(한 옥타브)을 양 끝으로, 네 칸 = 6반음씩(낮은·조금 낮은 | 조금 높은·높은) */
+function rmPos(hz){if(!(hz>0))return 0;const ref=S.age>0&&S.age<13?REF_KID:REF_F0[S.sex]||REF_F0.x;return cl(.5+Math.log2(hz/ref)/2,0,1)}
 const NOTE=["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
 function noteName(hz){const n=Math.round(69+12*Math.log2(hz/440));return NOTE[(n%12+12)%12]+(Math.floor(n/12)-1)}
 /* 11/5 대표: '목소리 톤' = 소리의 Hz 성분 — 높낮이(음역 지도)와 따로 보여 준다. 4대역 에너지를 귀 기준 dB로, 가장 센 대역이 꽉 찬 막대 */
@@ -942,16 +943,17 @@ const MORPH_AX={L:{semi:-2,body:.96,lowDb:3},H:{semi:1.5},A:{speed:1/1.15},U:{sp
 /* 11/25 대표: 결과에서 '바꾸고 싶은 목소리' 예시까지 바로 — 방금 읽은 내 녹음(기기 안)을 한 글자(한 가지)만 바꾼 4유형으로 들려준다. 녹음은 밖으로 안 나감 */
 const MPH_FLIP={L:"H",H:"L",A:"U",U:"A",D:"B",B:"D",T:"F",F:"T"},MPH_WORD={L:"더 낮게",H:"더 높게",A:"더 빠르게",U:"더 천천히",B:"숨 섞어 부드럽게",D:"더 또렷하게",T:"억양 크게",F:"억양 담담하게"};
 let MPH=null;
-function morphHTML(J){if(S.demo||!REC.r1)return"";const my=J.code,op=[0,1,2,3].map(i=>{const L=MPH_FLIP[my[i]];return{L,c:my.slice(0,i)+L+my.slice(i+1)}});
+/* 11/25 대표: 미리 듣기는 2가지 — 완전 반대 스타일(네 글자 모두 뒤집기) · 완전 강조 스타일(내 네 글자를 모두 더 세게). 네 가지를 한꺼번에 바꾼다 */
+function morphHTML(J){if(S.demo||!REC.r1)return"";const my=J.code,opp=[...my].map(l=>MPH_FLIP[l]).join(""),op=[{L:opp,c:opp,w:"완전 반대 스타일"},{L:my,c:my,w:"완전 강조 스타일"}];
  return`<section class="card"><div class="kicker">③ 달라질 내 목소리</div><h2>눌러서 들어 보기</h2>
- <div class="rgrid">${op.map(o=>`<button class="rt mph" data-c="${o.c}" data-l="${o.L}"><span><img src="${img.char(o.c)}" alt="" loading="lazy"></span><b>${MPH_WORD[o.L]}</b><small>${nmLN(o.c)}</small></button>`).join("")}</div>
+ <div class="rgrid mph2">${op.map(o=>`<button class="rt mph" data-c="${o.c}" data-l="${o.L}"><span><img src="${img.char(o.c)}" alt="" loading="lazy"></span><b>${o.w}</b><small>${nmLN(o.c)}</small></button>`).join("")}</div>
  <div id="mphOut"></div>${pbarHTML("mphMe","지금 내 목소리",REC.r1)}
  <p class="small muted">연습하면 가까워질 방향이에요.</p></section>`}
 function bindMorph(view){const me=$("#mphMe");if(!me)return;mountPlayer(me,REC.r1);const out=$("#mphOut");
  view.querySelectorAll(".rt.mph").forEach(b=>b.onclick=async()=>{view.querySelectorAll(".rt.mph").forEach(x=>x.classList.toggle("pick",x===b));const c=b.dataset.c,L=b.dataset.l;out.innerHTML='<p class="small" style="text-align:center">내 목소리 바꾸는 중…</p>';
   try{const r=REC.r1;if(!MPH||MPH.r!==r){const x=await resample(r.x,r.sr);MPH={r,fr:pitchTrack(x,S.m&&S.m.noiseDb!=null?S.m.noiseDb:noiseFloor(x)),c:{}}}
-   if(!MPH.c[L])MPH.c[L]={x:voxMorph(r.x,r.sr,MPH.fr,SR,MORPH_AX[L]),sr:r.sr};
-   out.innerHTML=pbarHTML("mphP",`${TYPES[c][1]}처럼 바뀐 내 목소리`,MPH.c[L]);const el=$("#mphP");mountPlayer(el,MPH.c[L]);el.querySelector(".pb-btn").click()}
+   if(!MPH.c[L])MPH.c[L]={x:voxMorph(r.x,r.sr,MPH.fr,SR,Object.assign({},...[...L].map(l=>MORPH_AX[l]))),sr:r.sr};
+   out.innerHTML=pbarHTML("mphP",c===S.J.code?"더 강조된 내 목소리":`${TYPES[c][1]}처럼 바뀐 내 목소리`,MPH.c[L]);const el=$("#mphP");mountPlayer(el,MPH.c[L]);el.querySelector(".pb-btn").click()}
   catch(e){out.innerHTML='<p class="small" style="text-align:center">이 녹음으로는 만들기 어려워요. 다시 녹음하면 들을 수 있어요.</p>'}})}
 function attrScore(m){const s=m.s,v=m.v,bb=bandBalance(s.bands),aref=ART_REF[S.sex]||ART_REF.x;
  const pz=s.pauses==null?1:s.pauses===0?0.6:s.pauses>3?0.7:1;
@@ -1103,19 +1105,13 @@ ${S.demo?"":`<div class="kicker" style="text-align:center">① 내 목소리 유
   ${codeMeanHTML(J.code,"on-dark")}
   <p class="hc-line">“${LINES[J.code]}”</p>
 </section>
-${potHTML(J)}
-${morphHTML(J)}
-${wlHTML(J)}
-${shareHTML()}
+<!-- 11/25 대표 순서: ①카드 → 남에게 이렇게 들려요 → 재미로 보는 두 가지 → ②가능성 → ③바뀐 목소리 → 네 가지 → 높낮이 → 톤 → 컨디션 → ④앱 예약 → ⑤공유 → 다른 유형 -->
 <section class="card cmp-card">
   ${S.guess?`<div class="cmp"><div><img src="${img.char(S.guess)}" alt=""><small>① 내가 생각한 목소리</small><b>${S.guess}</b><small>${codeShort(S.guess)}</small></div><div class="muted" style="font-size:22px">→</div><div><img src="${img.char(J.code)}" alt=""><small>② 듣는 사람이 느끼는</small><b>${J.code}</b><small>${codeShort(J.code)}</small></div></div>
   <p style="text-align:center">${S.guess===J.code?"예상한 그대로예요! 내 목소리를 잘 알고 있어요.":`나는 <b>${G[1]}</b>처럼 생각했지만, ${who} <b>${T[1]}</b>처럼 들려요.`}</p>`:`<p style="text-align:center">${who} <b>${T[1]}</b>처럼 들려요.</p>`}
   ${(()=>{const k=sitKey(),b=lsGet(BASE_KEY);return k==="intro"?"":`<p class="small" style="text-align:center">${SITS[k][1]} 내 목소리예요.${TYPES[b]?` 자기소개할 때는 <b>${b} ${TYPES[b][1]}</b>였어요.`:""} 내 유형이 바뀐 게 아니라, 이럴 때는 이렇게 들린다는 뜻이에요.</p>`})()}
   ${REC.r1?pbarHTML("hearMe","방금 녹음한 내 목소리",REC.r1):""}
 </section>
-<section class="card"><h2>내 목소리 네 가지</h2><div class="axes">${J.code.split("").map(L=>`<div class="axis"><div class="axis-top">${AXD[LET[L].ax]}<b>${EN[L]}</b></div><strong>${LET[L].ax==="높이"&&Math.abs(J.stRel)<1?(L==="H"?"평균보다 조금 높은":"평균보다 조금 낮은"):LET[L].nm}</strong><small class="num">${axisVal(L,m,J)}</small><p>${LET[L].imp}</p></div>`).join("")}</div></section>
-${m.s.regs4?regCard(m.s.regs4,m.s):""}
-${toneCard(b)}
 <section class="card"><div class="kicker">재미로 보는 두 가지</div>
   <div class="fun2"><div><small>목소리 나이</small><div class="big-num"><span id="ageN">0</span><small style="font-size:18px;color:var(--fg)">세</small></div><p class="small">${ageBand(J.age)} · ${ageMsg}</p></div>
   <div><small>${A.label}</small><div class="big-num" style="color:var(--fam-ui)"><span id="attrN">0</span><small style="font-size:18px;color:var(--fg)">%</small></div><p class="small">${A.line}</p></div></div>
@@ -1123,8 +1119,14 @@ ${toneCard(b)}
   <div class="ap">${Object.keys(A.W).map(k=>`<div><small>${A.names[k]}</small><b class="num">${Math.round(100*A.parts[k])}</b><i><s style="width:${Math.round(100*A.parts[k])}%"></s></i><em>${A.descs[k]}</em></div>`).join("")}</div>
   <div class="target stack"><span>이렇게 하면 더 좋아요!</span><b>${A.tip}</b></div>
   <small>점수는 재미로 봐 주세요. 사람마다 좋아하는 목소리는 달라요.</small></section>
+${potHTML(J)}
+${morphHTML(J)}
+<section class="card"><h2>내 목소리 네 가지</h2><div class="axes">${J.code.split("").map(L=>`<div class="axis"><div class="axis-top">${AXD[LET[L].ax]}<b>${EN[L]}</b></div><strong>${LET[L].ax==="높이"&&Math.abs(J.stRel)<1?(L==="H"?"평균보다 조금 높은":"평균보다 조금 낮은"):LET[L].nm}</strong><small class="num">${axisVal(L,m,J)}</small><p>${LET[L].imp}</p></div>`).join("")}</div></section>
+${m.s.regs4?regCard(m.s.regs4,m.s):""}
+${toneCard(b)}
 ${condCard()}
-${S.demo?"":goalCTA()}
+${wlHTML(J)}
+${shareHTML()}
 ${friendCard()}
 <section class="card"><h2>다른 유형 구경하기${S.demo?" <small>(예시)</small>":""}</h2>${S.demo?"":`<p class="small">16가지 목소리 캐릭터를 눌러서 살펴보세요.</p>`}<div class="rgrid">${Object.keys(TYPES).map(c=>`<button class="rt ${c===J.code?(S.demo?"pick":"me"):""}" data-c="${c}"><span><img src="${img.char(c)}" alt="${TYPES[c][1]}" loading="lazy"></span><b>${c}${c===J.code&&!S.demo?" · 나":""}</b><small>${nmLN(c)}</small></button>`).join("")}</div></section>
 ${S.demo?"":`<button class="btn block" id="rerec">다시 녹음하기</button>`}
