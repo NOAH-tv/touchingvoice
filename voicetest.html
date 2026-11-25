@@ -1074,7 +1074,9 @@ ${REC.r1?pbarHTML("hearA","처음 테스트 목소리",REC.r1):""}${REC.t?pbarHT
 <button class="btn block" id="again">한 번 더 체험하기</button>
 <button class="btn ghost block" id="back">결과로 돌아가기</button>`,
  bind(){const a=$("#hearA");if(a)mountPlayer(a,REC.r1);const b=$("#hearB");if(b)mountPlayer(b,REC.t);const w=$("#wl");if(w)w.onclick=()=>go("waitlist");$("#again").onclick=()=>go("try");$("#back").onclick=()=>go("result")}}};
-R.waitlist=()=>({top:{back:()=>go(S.trial?"tryres":"result"),label:"앱 대기예약"},html:`
+/* 11/25 대표: 앱 예약만 따로 받는 QR — voicetest.html?wl 로 열면 검사 없이 예약 화면부터(시트 src="qr"로 구분) */
+const WL_ONLY=Q.has("wl");
+R.waitlist=()=>({top:{back:()=>go(S.J?(S.trial?"tryres":"result"):"landing"),label:"앱 대기예약"},html:`
 <div><div class="kicker">앱 대기예약</div><h1 class="title">앱이 나오면<br>가장 먼저 알려 드릴게요</h1></div>
 <section class="card"><p>하루 3분, 병아리와 함께 연습하면 나도 원하는 목소리가 될 수 있어요. 목 풀기·문장 읽기·발음 연습을 내 목소리에 맞춰 해요.</p>
  <label class="lbl">이름<input class="inp" id="wn" maxlength="20" value="${esc(S.name||"")}"></label>
@@ -1084,13 +1086,13 @@ R.waitlist=()=>({top:{back:()=>go(S.trial?"tryres":"result"),label:"앱 대기�
 <button class="btn pri block" id="wgo">대기예약 하기</button>`,
  bind(){$("#wgo").onclick=()=>{const name=$("#wn").value.trim(),phone=$("#wp").value.replace(/\D/g,""),e=$("#werr");
   if(!name){e.textContent="이름을 적어 주세요";return}if(!/^01[016789]\d{7,8}$/.test(phone)){e.textContent="휴대폰 번호를 확인해 주세요";return}if(!$("#wc").checked){e.textContent="동의에 체크해 주세요";return}
-  if(SAVE_URL)fetch(SAVE_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({type:"waitlist",src:"web",name,phone,sex:S.sex||"",age:S.age||null,code:S.J?S.J.code:"",target:S.target||"",trial:trialSummary(),agree:true})}).catch(()=>{});
+  if(SAVE_URL)fetch(SAVE_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({type:"waitlist",src:WL_ONLY?"qr":"web",name,phone,sex:S.sex||"",age:S.age||null,code:S.J?S.J.code:"",target:S.target||"",trial:trialSummary(),agree:true})}).catch(()=>{});
   S.name=S.name||name;S.waitlisted=phone.slice(0,3)+"-****-"+phone.slice(-4);save();go("waitdone")}}});
 R.waitdone=()=>({html:`
 <div class="win" style="text-align:center"><img class="popin" src="${img.char(S.target||(S.J&&S.J.code)||"HUDT")}" alt="" style="width:150px;border-radius:30px;margin:0 auto"><div class="kicker">대기예약 완료</div><h1 class="title">앱이 나오면<br>문자로 알려 드릴게요</h1><p class="muted">${S.waitlisted||""} 번호로 한 번 보내요.</p></div>
-<section class="card"><div class="kicker">⑤ 결과 공유</div><h2>너는 어떤 목소리야?</h2>${shareRow()}</section>
-<button class="btn ghost block" id="back">결과로 돌아가기</button>`,
- bind(){bindShare(view);$("#back").onclick=()=>go("result")}});
+${S.J?`<section class="card"><div class="kicker">⑤ 결과 공유</div><h2>너는 어떤 목소리야?</h2>${shareRow()}</section>`:""}
+<button class="btn ${S.J?"ghost":"pri"} block" id="back">${S.J?"결과로 돌아가기":"내 목소리 검사도 해 보기 (3분)"}</button>`,
+ bind(){if(S.J)bindShare(view);$("#back").onclick=()=>S.J?go("result"):(newRun(),go("landing"))}});
 R.result=()=>{const J=S.J,m=S.m,T=TYPES[J.code],F=FAM[J.code.slice(0,2)],G=TYPES[S.guess]||T,b=m.s.bands,who=S.teacher?"학생들에게는":"남에게는";
  const A=attrScore(m),ageMsg=J.age<S.age-2?`실제보다 ${Math.round(S.age-J.age)}살 어리게 들려요`:J.age>S.age+2?"실제 나이보다 어른스럽게 들려요":"실제 나이와 비슷하게 들려요";
  return{html:`
@@ -1244,7 +1246,8 @@ function startDemo(code,stay){const tc=Q.has("teacher");S={demo:true,friend:S.fr
 /* 시작 — ?f=코드(친구 링크) · 시안 확인용 ?demo=HUDT&view=result&teacher&shot */
 if(Q.has("shot"))document.documentElement.classList.add("noanim");
 {const qf=(Q.get("f")||"").toUpperCase(),qd=(Q.get("demo")||"").toUpperCase();if(TYPES[qf]){S.friend=qf;save()}
- if(TYPES[qd]){startDemo(qd,true);const v=Q.get("view")||"result";go(v==="guess"||!Object.hasOwn(R,v)?"result":v)}
+ if(WL_ONLY)go(S.waitlisted?"waitdone":"waitlist");
+ else if(TYPES[qd]){startDemo(qd,true);const v=Q.get("view")||"result";go(v==="guess"||!Object.hasOwn(R,v)?"result":v)}
  /* 11/5 대표: 예시 결과를 먼저 보여 주지 않는다 — 예전에 예시를 열어 둔 기기도 첫 화면부터 */
  else if(S.J&&!S.demo){setFam(S.J.code);go("result")}else{if(S.demo)newRun();go("landing")}}
 document.fonts&&document.fonts.ready.then(()=>fitLn(document));
