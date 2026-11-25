@@ -869,12 +869,12 @@ const POT_ART={m:900,f:1050,x:975};
 const potOf=()=>{const q=Object.values(potParts(S.m)).filter(v=>v!=null);return Math.max(5,Math.round(q.reduce((a,b)=>a+b,0)/q.length))};
 const POT_NM={breath:["숨 길이","숨을 길게 쓰는 힘"],clear:["소리 맑음","숨이 새지 않는 깨끗한 소리"],tune:["오르내림","높낮이를 넓게 쓰는 힘"],steady:["고른 크기","크기를 고르게 유지하는 힘"],art:["발음 벌어짐","입을 크게 벌려 또렷하게 말하는 힘"]};
 /* 11/25 대표: 한 흐름 — ① 결과 → ② 가능성 → ③ 달라질 목소리 듣기 → ④ 앱 예약 → ⑤ 결과 공유 */
-function wlHTML(J){if(S.demo)return"";const p=potOf();return`<section class="card"><div class="kicker">④ 앱 예약</div><h2>하루 3분, 앱에서 이어 가요</h2>
+function wlHTML(J){if(S.demo)return"";const p=potOf();return`<section class="card"><div class="kicker">④ 앱 예약</div><h2>남은 ${100-p}%, 하루 3분씩 채워 가요</h2>
  ${S.waitlisted?`<div class="target"><span>앱 대기예약</span><b>완료했어요 ✓ 앱이 나오면 알려 드릴게요</b></div>`:`<button class="btn ${PRESENT?"":"pri "}block shine" id="wlPot">출시 알림 받기 (1분)</button>`}${PRESENT?`<button class="btn pri block shine" id="toApp" style="margin-top:10px">앱으로 바로 이어 하기 →</button>`:""}<div class="tv-sign"><span>Find Your True Voice</span><img src="voicetype_assets/tv_logo_ivory.png" alt="터칭보이스 TOUCHING VOICE" width="160" height="51"></div></section>`}
 /* 11/25 대표: 발표용(present.html 안, ?present) — 검사 결과를 같은 도메인 기기 저장(tv_handoff)에 남기고 앱으로 넘어간다. 앱이 10분 안에 한 번 읽고 지운다 */
 const PRESENT=Q.has("present");
 function toApp(){const q=potParts(S.m),lo=Object.keys(q).filter(k=>q[k]!=null).sort((a,b)=>q[a]-q[b])[0],pk=document.querySelector(".rt.mph.pick");
- try{localStorage.setItem("tv_handoff",JSON.stringify({at:Date.now(),code:S.J.code,target:pk?pk.dataset.c:S.J.code,pot:potOf(),lo:POT_NM[lo][0],name:S.name||"",sex:S.sex||"",age:S.age||null}))}catch(e){}
+ try{localStorage.setItem("tv_handoff",JSON.stringify({at:Date.now(),code:S.J.code,target:pk?pk.dataset.c:S.J.code,pot:potOf(),lo:POT_NM[lo][0],name:S.name||"",sex:S.sex||"",age:S.age||null,m:{f0:S.m.s.f0,rate:S.m.s.rate,range:S.m.s.rangeSt,hnr:S.m.v.hnr}}))}catch(e){}
  (window.top||window).location.href="apptest.html?from=test"}
 const shareHTML=()=>`<section class="card"><div class="kicker">${S.demo?"내 결과 알리기":"⑤ 결과 공유"}</div><h2>너는 어떤 목소리야?</h2>${shareRow()}</section>`;
 function potHTML(J){const p=potOf(),sc=potParts(S.m),ks=Object.keys(POT_NM).filter(k=>sc[k]!=null),lo=ks.slice().sort((a,b)=>(sc[a]||0)-(sc[b]||0))[0];
@@ -945,7 +945,7 @@ const MPH_FLIP={L:"H",H:"L",A:"U",U:"A",D:"B",B:"D",T:"F",F:"T"},MPH_WORD={L:"�
 let MPH=null;
 /* 11/25 대표: 미리 듣기는 2가지 — 완전 반대 스타일(네 글자 모두 뒤집기) · 완전 강조 스타일(내 네 글자를 모두 더 세게). 네 가지를 한꺼번에 바꾼다 */
 function morphHTML(J){if(S.demo||!REC.r1)return"";const my=J.code,opp=[...my].map(l=>MPH_FLIP[l]).join(""),op=[{L:opp,c:opp,w:"완전 반대 스타일"},{L:my,c:my,w:"완전 강조 스타일"}];
- return`<section class="card"><div class="kicker">③ 달라질 내 목소리</div><h2>눌러서 들어 보기</h2>
+ return`<section class="card"><div class="kicker">③ 이런 목소리도 가능해요</div><h2>눌러서 들어 보기</h2>
  <div class="rgrid mph2">${op.map(o=>`<button class="rt mph" data-c="${o.c}" data-l="${o.L}"><span><img src="${img.char(o.c)}" alt="" loading="lazy"></span><b>${o.w}</b><small>${nmLN(o.c)}</small></button>`).join("")}</div>
  <div id="mphOut"></div>${pbarHTML("mphMe","지금 내 목소리",REC.r1)}
  <p class="small muted">연습하면 가까워질 방향이에요.</p></section>`}
@@ -1095,7 +1095,7 @@ R.result=()=>{const J=S.J,m=S.m,T=TYPES[J.code],F=FAM[J.code.slice(0,2)],G=TYPES
  const A=attrScore(m),ageMsg=J.age<S.age-2?`실제보다 ${Math.round(S.age-J.age)}살 어리게 들려요`:J.age>S.age+2?"실제 나이보다 어른스럽게 들려요":"실제 나이와 비슷하게 들려요";
  return{html:`
 ${S.demo?`<section class="card cta" style="flex-direction:row;align-items:center;justify-content:space-between;gap:10px"><div style="min-width:0"><b>예시 결과예요</b><br><small>내 목소리로 하면 3분이면 돼요</small></div><button class="btn pri sm" id="mine">내 목소리로 하기</button></section>`:""}
-${S.demo?"":`<div class="kicker" style="text-align:center">① 내 목소리 유형</div>`}
+${S.demo?"":`<div class="kicker" style="text-align:center">① 지금 내 목소리</div>`}
 <section class="hero-card">
   <div class="hc-top">${S.name&&!S.demo?`<span class="pill-g">${esc(S.name)}님</span>`:""}${sitKey()==="intro"?"":`<span class="pill-g">${SITS[sitKey()][1]}</span>`}<span class="pill-g">${F[0]} · ${F[1]}</span>${S.demo?'<span class="pill-g">예시</span>':""}</div>
   <img class="hc-img popin" src="${img.char(J.code)}" alt="${T[1]}">

@@ -907,6 +907,7 @@ body:not(.pro) [data-pro]::after{box-shadow:none}
 .bubble>.qcard.sos{background:none;padding:0 0 0 12px;border-radius:0}
 
 
+.coach-sit{margin-bottom:6px}.coach-sit button{font-weight:700}
 .coach-when{margin-bottom:6px}.coach-when button{font-weight:700}.coach-when button svg{width:16px;height:16px;vertical-align:-3px;margin-right:4px}
 .jobpick .chips,.talkpick .chips,.evtform .chips{margin:8px 0}.jobpick .btn{margin-top:4px}
 .sc-steps{margin:10px 0;padding-left:22px;display:grid;gap:10px;font-size:17px;line-height:1.5;text-align:left;align-self:stretch}.sc-steps li.on{font-weight:700;color:var(--brand)}.sc-steps li.on b{margin-left:4px}.sc-steps li.done{opacity:.45}
@@ -3488,7 +3489,7 @@ function coachList(){const t=today(),st=t?.steps||{},done=D3.filter(x=>st[x[0]])
  if(COACH.short&&done<4)L.push({id:"short",name:"목소리 체크",min:"1분",ico:"mic",say:"그럼 1분만 해요! <b>목소리 체크</b>만 하고 가요.",why:"하루 한 번 '아~'만 해도 내 기준이 쌓여요.",go:()=>openD3(1)});
  if(done<4&&!(t&&t.flow)){const nx=D3.findIndex(x=>!st[x[0]]);L.push({id:"d3",name:"오늘의 3분",min:"3분",ico:"play",say:done?`오늘의 3분, ${done}단계까지 했어요! <b>${D3[nx][1]}</b>부터 이어서 가 봐요.`:"오늘의 3분부터 해요. 목소리 체크 → 기초 연습 → 읽기 → 마무리 한마디, 제가 순서대로 안내할게요.",why:"매일 같은 3분이 쌓여야 내 목소리 기준이 생겨요.",go:()=>openD3(done?nx+1:1)})}
  if(BRK&&(BRK.step||0)<BRK_STEPS.length){const i=Math.min(BRK.step||0,BRK_STEPS.length-1);L.push({id:"brk",name:"걸린 음 연습 · "+noteLabel(BRK.st),min:"2분",ico:"stairs",say:`지난번 <b>${noteLabel(BRK.st)}</b>에서 소리가 걸렸죠? 오늘은 '${BRK_STEPS[i][2]}' 단계(${i+1}/${BRK_STEPS.length})로 가 봐요.`,why:"소리를 키워서 넘기지 않아요. 작게, 한 걸음씩 다가가면 그 음이 편해져요.",go:()=>openGen(brkPlan(),i)})}
- if(typeof BST==="object"&&BST&&BST.day!==dayKey()&&!COACH.light)L.push({id:"boost",name:"내 목소리 미리 듣기",min:"1분",ico:"wave",say:"한 문장만 읽어 주세요. <b>내 목소리 그대로</b> 높이·빠르기·숨·억양을 살짝 바꿔서, 연습하면 가까워질 방향을 들려 드릴게요.",why:"되고 싶은 목소리가 귀로 들리면 연습 방향이 분명해져요.",go:openBoost});
+ if(typeof BST==="object"&&BST&&BST.day!==dayKey()&&!COACH.light)L.push({id:"boost",name:"이런 목소리도 가능해요",min:"1분",ico:"wave",say:"한 문장만 읽어 주세요. <b>내 목소리 그대로</b> 높이·빠르기·숨·억양을 살짝 바꿔서, 연습하면 가까워질 방향을 들려 드릴게요.",why:"되고 싶은 목소리가 귀로 들리면 연습 방향이 분명해져요.",go:openBoost});
  if(COACH.want){const p=genPlan(COACH.want),i=p.steps.findIndex((_,j)=>genBest(p.id,j)<60);L.unshift({id:"want",name:GEN_G[COACH.want][0],min:"2분",ico:"stairs",say:`방금 들은 그 소리 쪽으로! <b>${GEN_G[COACH.want][0]}</b> 해 봐요.`,why:GEN_G[COACH.want][1],go:()=>openGen(p,i<0?p.steps.length-1:i)})}
  const rc=profRec();if(rc){const p=genPlan(rc[0]),i=p.steps.findIndex((_,j)=>genBest(p.id,j)<60);L.push({id:"gen",name:GEN_G[rc[0]][0],min:"2분",ico:"stairs",say:`<b>${GEN_G[rc[0]][0]}</b> 해 볼까요? ${rc[1]}.`,why:GEN_G[rc[0]][1],go:()=>openGen(p,i<0?p.steps.length-1:i)})}
  const nt=["breath","scale","power"].flatMap(trkLevels).find(x=>bestOf(x)<60);if(nt)L.push({id:"trk",name:esc(nt.name),min:"3분",ico:"music",say:`반주에 맞춰 <b>${esc(nt.name)}</b> 해 봐요. 60%만 넘으면 다음 단계예요.${nt.g==="breath"?"<br>호흡 연습은 <b>첫 음표에서 숨을 들이마시고, 다음 음표에서 내쉬세요.</b> 화면에도 그때그때 알려 드릴게요.":""}`,why:TRK_G[nt.g][1],go:()=>openTrk(nt)});
@@ -3651,7 +3652,7 @@ function renderCoach(){const e=$("coach");if(!e||!COACH)return;
  e.innerHTML=`${D.length?dayBar(v,past,D.length):""}<div class="chat" id="chat-log" aria-live="polite">${list.map((m,i)=>m.w==="u"?`<p class="msg me">${m.t}</p>`
   :`<div class="msg c">${i===0||list[i-1].w!=="c"?`<img class="say-img" src="${charSrc($("tgt").value)}" alt="">`:`<span class="say-img" style="visibility:hidden"></span>`}<div class="bubble">${i===0||list[i-1].w!=="c"?`<b class="msg-n">${esc(coachName())}</b>`:""}<div class="mt">${m.t}</div>${m.x?`<details class="cx"><summary>측정 자세히 보기</summary>${m.x}</details>`:""}${m.rec&&RECK[m.rec]&&i===lastR?recBtn(m.rec):""}${m.ch&&!m.done&&!past?`<div class="chs">${m.ch.map(([id,l])=>`<button type="button" data-ch="${id}" data-i="${i}">${l}</button>`).join("")}</div>`:""}${m.mid&&!past?(()=>{const x=L.find(q=>q.id===m.mid);return x?`<button type="button" class="mis${i===lastM?" now":""}" data-m="${m.mid}"><span class="c">${ICON[x.ico]||ICON.play}</span><span><b>${x.name}</b><small>약 ${x.min} · 누르면 시작</small></span></button>`:m.mid==="d3"?`<span class="mis done">${ICON.check} 했어요</span>`:""})():""}</div></div>`).join("")}</div>${past?`<button type="button" class="btn" data-dv="0" style="align-self:center">오늘 대화로 돌아가기</button>`:`
   ${CHAT.list.length===1&&aiCan()?`<div class="chips sugg" role="group" aria-label="이렇게 말해 보세요">${[JOB_CHIP[myJobs()[0]]||"내일 면접이 있어요","중요한 대화 미리 연습할래요","오늘 데이트가 있어요","제 목소리 어때요?"].map(q=>`<button type="button" data-q="${q}">${q}</button>`).join("")}</div>`:""}
-  ${whenRow()}
+  ${sitRow()}${whenRow()}
   <div class="chat-dock${COACH.kb?" kb":""}" id="chat-dock"><button type="button" class="dock-kb" id="chat-kb" aria-label="${COACH.kb?"목소리로 말하기로":"글로 쓰기"}" aria-pressed="${!!COACH.kb}">${COACH.kb?ICON.wave:ICON.pen}</button>
    <form class="chat-in" id="chat-in"><input id="chat-tx" enterkeyhint="send" autocomplete="off" placeholder="무엇이든 편하게 말해 주세요" aria-label="선생님에게 물어보기"><button type="submit" class="chat-send" aria-label="보내기">${ICON.next}</button></form>
    <button type="button" class="dock-hint" id="chat-say">눌러서 목소리를 들려주세요…</button>
@@ -3858,8 +3859,8 @@ const JOBS=[["sing","노래·공연"],["teach","교사"],["faith","종교 지도
 const JOBN=Object.fromEntries(JOBS);
 function myJobs(){const j=(loadUser()||{}).jobs;return Array.isArray(j)?j.filter(k=>JOBN[k]):[]}
 function setJobs(L){const u=loadUser()||{};u.jobs=L;u.jobAsked=1;saveUser(u)}
-const JOB_RE={faith:/예배|설교|미사|법회|강론|기도회|찬양 ?인도/,sing:/노래|공연|무대|레슨|합창|찬양|뮤지컬|오디션|녹음/,teach:/수업|교실|학교|아이들|애들|조회|종례/,lect:/강의|강연|특강|세미나/,coach:/운동|트레이닝|피티|훈련|코칭|타임|세트/,call:/상담|콜|통화|고객|매장|근무/,office:/회의|발표|미팅|보고|피칭|프레젠/,cast:/방송|라이브|촬영|녹화|스트리밍/,study:/면접|수행평가|시험|자기소개/,daily:/동화|낭독|소개팅/};
-function pickJob(x){const J=myJobs();if(x)for(const k of J)if(JOB_RE[k].test(x))return k;if(J.length)return J[0];if(x)for(const k in JOB_RE)if(JOB_RE[k].test(x))return k;return"daily"}
+const JOB_RE={faith:/예배|설교|미사|법회|강론|기도회|찬양 ?인도/,sing:/노래|공연|무대|레슨|합창|찬양|뮤지컬|오디션|녹음/,teach:/수업|교실|학교|아이들|애들|조회|종례/,lect:/강의|강연|특강|세미나/,coach:/운동|트레이닝|피티|훈련|코칭|타임|세트/,call:/상담|콜|통화|고객|매장|근무/,office:/회의|발표|미팅|보고|피칭|프레젠/,cast:/방송|라이브|촬영|녹화|스트리밍/,study:/면접|수행평가|시험|자기소개/,daily:/동화|낭독|소개팅|일상/};
+function pickJob(x){const J=myJobs();if(x)for(const k of J)if(JOB_RE[k].test(x))return k;if(x)for(const k in JOB_RE)if(JOB_RE[k].test(x))return k;if(J.length)return J[0];return"daily"}
 const EVT_RE=/수업|강의|강연|특강|예배|설교|미사|법회|발표|회의|미팅|면접|방송|라이브|공연|무대|노래|레슨|촬영|녹음|녹화|상담|통화|근무|출근|시험|행사|피칭|수행평가|운동|훈련|콜|세미나|오디션|타임/;
 function whenOf(x){if(!EVT_RE.test(x))return null;
  if(/끝났|끝나고|끝내고|끝났어|마쳤|마치고|하고 ?왔|다녀왔|직후|끝!|끝$|끝 |끝ㅠ|끝남/.test(x))return"after";
@@ -3886,6 +3887,9 @@ function situ(when,x){x=x||"";SITU.next=null;if(!myJobs().length&&!x){SITU.wait=
   SITU.next=later?"evt":s[1][1]||null}
  chatSave();renderCoach()}
 function jobAsk(){const J=myJobs();return`<div class="jobpick"><p>목소리를 주로 어디에 쓰세요? <b>여러 개</b> 골라도 돼요. 고르면 '말하기 전·말한 뒤'에 딱 맞는 걸 바로 띄워 드려요.</p><div class="chips">${JOBS.map(([k,n])=>`<button type="button" data-job="${k}" aria-pressed="${J.includes(k)}">${n}</button>`).join("")}</div><button type="button" class="btn pri" data-jobok>이렇게 할게요</button></div>`}
+
+const SIT_PICK=[["면접","면접"],["발표","발표·회의"],["수업","강의·수업"],["통화","상담·통화"],["일상","일상"]];
+const sitRow=()=>`<div class="chips coach-sit" role="group" aria-label="오늘 준비할 상황">${SIT_PICK.map(([k,n])=>`<button type="button" data-sit="${k}">${n}</button>`).join("")}</div>`;
 const whenRow=()=>`<div class="chips coach-when" role="group" aria-label="지금은"><button type="button" data-when="before">${ICON.play}말하기 전</button><button type="button" data-when="after">${ICON.check}말한 뒤</button><button type="button" data-when="bad">${ICON.wind}목이 안 좋아요</button></div>`;
 
 const SHORT={"sc-quiet":["소리 없이 30초","어디서든 소리 내지 않고",[["어깨를 귀까지 올렸다가 툭 떨어뜨려요",8],["입을 살짝 벌리고 턱 힘을 빼요",7],["코로 들이쉬고, 입으로 길게 '후~' 내쉬어요",15]]],
@@ -3950,6 +3954,7 @@ const SITU_M=()=>{const p=readPick();return[
 $("coach").addEventListener("click",e=>{const jb=e.target.closest("[data-job]");if(jb){jb.setAttribute("aria-pressed",jb.getAttribute("aria-pressed")==="true"?"false":"true");return}
  if(e.target.closest("[data-jobok]")){const box=e.target.closest(".jobpick"),L=[...box.querySelectorAll('[data-job][aria-pressed="true"]')].map(b=>b.dataset.job);if(!L.length){box.querySelector("p").innerHTML="하나 이상 골라 주세요. 잘 모르겠으면 <b>일상</b>을 눌러 주세요.";return}
   setJobs(L);const m=[...CHAT.list].reverse().find(x=>String(x.t).includes('class="jobpick"'));if(m)m.t=`좋아요! <b>${L.map(k=>JOBN[k]).join(" · ")}</b> 기준으로 챙길게요. 바꾸고 싶으면 "직업 바꿀래"라고 말해 주세요.`;const w=SITU.wait;SITU.wait=null;if(w){situ(w,"");return}chatSave();renderCoach();return}
+ const sb=e.target.closest("[data-sit]");if(sb){const x=sb.dataset.sit+" 준비";chatPush("u",esc(sb.textContent.trim())+" 준비할래요");if(aiLive()){aiOK().then(ok=>ok?aiReply(situHint("before",x)):situ("before",x));renderCoach();return}situ("before",x);return}
  const wb=e.target.closest("[data-when]");if(wb){const w=wb.dataset.when;chatPush("u",esc(wb.textContent.trim()));if(aiLive()){if(w==="bad"){COACH.light=true}aiOK().then(ok=>ok?aiReply(situHint(w,"")):situ(w,""));renderCoach();return}situ(w,"");return}
  const tb=e.target.closest("[data-talk]");if(tb){const m=[...CHAT.list].reverse().find(x=>String(x.t).includes('class="talkpick"'));if(m)m.t="오늘 말한 시간을 남겼어요.";talkSet(+tb.dataset.talk);return}
  const en=e.target.closest("[data-evn]");if(en){const f=en.closest(".evtform");if(f)f.n.value=en.dataset.evn}});
@@ -3974,7 +3979,7 @@ function bstPlay(){bstStop();const t=BST.take,x=BST.play==="a"?t.x:BST.buf;if(!x
  if(BST.play==="b"){BST.done=true;BST.day=dayKey()}const b=$("bst-play");if(b){b.innerHTML=ICON.stop;b.setAttribute("aria-label","멈추기")}}
 function bstMake(){const o=Object.assign({},...BST.on.map(i=>MORPH_AX[bstL(i)]));BST.buf=voxMorph(BST.take.x,BST.take.sr,BST.fr,SR,o)}
 function bstDraw(){const e=$("bst"),tg=$("tgt").value;
- const top=`<div class="bst-top"><button type="button" class="pm-x" id="bst-x" aria-label="닫기">${ICON.close}</button><b id="bst-h">내 목소리 미리 듣기</b></div>`;
+ const top=`<div class="bst-top"><button type="button" class="pm-x" id="bst-x" aria-label="닫기">${ICON.close}</button><b id="bst-h">이런 목소리도 가능해요</b></div>`;
  if(!BST.buf){e.innerHTML=`${top}<div class="bst-body">${say("이 문장을 편하게 읽어 주세요. 내 목소리 그대로 높이·빠르기·숨·억양을 살짝 바꿔서, 연습하면 가까워질 방향을 들려 드릴게요.",{size:"s",pop:false})}
   <p class="bst-line">${BST_LINE}</p><button type="button" class="mic" id="bst-mic" aria-label="녹음 시작">${MIC}</button><p class="hint" id="bst-hint">누르고 읽은 뒤 다시 눌러요 · 녹음은 저장하지 않아요</p></div>`;
   $("bst-x").onclick=closeBoost;$("bst-mic").onclick=bstRecord;return}
@@ -4004,8 +4009,12 @@ new MutationObserver(()=>{if(CHAT.pend&&$("bst").hidden)setTimeout(()=>{if(CHAT.
 
 {let n=0;const hf=()=>{let h=null;try{h=JSON.parse(localStorage.getItem("tv_handoff")||"null")}catch(e){}if(!h||Date.now()-h.at>6e5)return;
  if(!$("ob").hidden||!COACH){if(++n<240)setTimeout(hf,1000);return}try{localStorage.removeItem("tv_handoff")}catch(e){}
- chatPush("c",`목소리 검사 결과를 이어 받았어요!<br><b>${esc(h.code)} ${esc(TYPES[h.code]||"")}</b> · 지금 내 목소리의 <b>${+h.pot||0}%</b>를 쓰고 있어요.<br>가장 많이 남은 곳은 <b>${esc(h.lo||"")}</b>예요. 남은 ${100-(+h.pot||0)}%를 같이 찾아 볼까요?`);
- offer(CHAT.list[CHAT.list.length-1],{mid:"boost"});chatSave();renderCoach();if(typeof tab==="function")tab("today")};setTimeout(hf,800)}
+ 
+ const u=loadUser()||{},nf=(x,d)=>x==null||!isFinite(x)?null:+(+x).toFixed(d);if(TYPES[h.code]){if(!u.tgt||u.tgt===u.cur)u.tgt=TYPES[h.target]?h.target:h.code;u.cur=h.code}
+ if(h.sex==="m"||h.sex==="f")u.sex=h.sex;if(h.m&&h.m.f0>0){u.m={f0:Math.round(h.m.f0),rate:nf(h.m.rate,2),range:nf(h.m.range,1),hnr:nf(h.m.hnr,1)};try{u.now=fixSide(nowOfM(u.m,u.sex),u.cur)}catch(e){}}
+ u.test={at:new Date(h.at).toISOString(),pot:+h.pot||0,lo:h.lo||""};saveUser(u);applyUser(u);
+ chatPush("c",`목소리 검사 결과를 내 정보에 저장했어요.<br>오늘은 어떤 상황을 준비할까요? 아래에서 골라 주세요.`);chatSave();renderCoach();if(typeof tab==="function")tab("today")};setTimeout(hf,800)}
+
 
 const spM=spAttach($("mtext"),$("m-sp"));
 
