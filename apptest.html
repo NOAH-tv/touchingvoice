@@ -1017,6 +1017,10 @@ html:not(.demo-ok) #demo,html:not(.demo-ok) #ob-demo,html:not(.demo-ok) #d3demo,
 
 .pm-text.anim b{animation:none}.tag.in{background:var(--soft);color:var(--ink)}
 .sg-quick{grid-template-columns:1fr}
+
+.pbw{display:contents}
+.cx-top{margin:2px 0 0}.mt.mt-note{display:block;margin-top:10px;padding-top:10px;border-top:1px solid var(--line);font-size:15px;color:var(--muted);line-height:1.55}
+.msg.c .mt.mt-note{display:block!important}
 </style>
 <script>try{var TH0=document.documentElement.getAttribute("data-theme")||"",_t=localStorage.getItem("tv_theme");if(_t==="light"||_t==="dark")document.documentElement.setAttribute("data-theme",_t);["rs","rl"].forEach(function(k){var v=+localStorage.getItem("tv_"+k);if(v>=.5&&v<=2)document.documentElement.style.setProperty("--"+k,v)})}catch(e){}</script>
 
@@ -1558,7 +1562,7 @@ function renderPM(){const s=PM.step;try{window.speechSynthesis&&speechSynthesis.
   B.innerHTML=`<div class="pm-kick">${s===3?"코치 표시":"다시 읽기"}</div><h2 class="pm-title" id="pm-title">${s===3?"이렇게 읽어 볼까요":"표시를 보며 다시 읽어 보세요"}</h2>
   <p class="pm-legend">/ 짧게 쉼 · // 길게 쉼 · ↘ 끝을 내려요 · <b>굵게</b> 힘 주기</p><p class="pm-text${s===3?" anim":""}" id="pmt">${c.html}</p>${srcLine}${s===3?`<ul class="tips"><li>${c.tips[0]}</li></ul>${c.more?`<button type="button" class="lockline" data-up>${ICON.lock}자세한 코칭 ${c.more}가지 더 보기 · 구독</button>`:""}`:""}`;
   if(s===3){[...$("pmt").querySelectorAll(".p,b,.end,.cue")].forEach((e,i)=>e.style.animationDelay=(0.25+i*0.18)+"s");
-   A.innerHTML=`<button type="button" class="mic" id="nx" aria-label="표시대로 다시 읽기 (누르면 바로 녹음)">${MIC}</button><p class="hint">누르면 바로 녹음돼요 · 표시대로 다시 읽어 보세요</p>${PM.demo?"":`<button type="button" class="link" id="pl1">방금 읽은 내 목소리 듣기</button>`}`;$("nx").onclick=()=>{stopPlay();PM.step=4;renderPM();if(!PM.demo)$("mic").click()};{const p=$("pl1");if(p)p.onclick=e=>play(PM.take1,e.currentTarget,true)}}
+   A.innerHTML=`<button type="button" class="mic" id="nx" aria-label="표시대로 다시 읽기 (누르면 바로 녹음)">${MIC}</button><p class="hint">누르면 바로 녹음돼요 · 표시대로 다시 읽어 보세요</p>${PM.demo?"":pbarNow("pl1",ke("방금 읽은 내 목소리","My first take"),PM.take1)}`;$("nx").onclick=()=>{stopPlay();PM.step=4;renderPM();if(!PM.demo)$("mic").click()};{const p=$("pl1");if(p)p.onclick=e=>play(PM.take1,e.currentTarget,true)}}
   else{A.innerHTML=recUI("/ 에서 쉬고, 굵은 말에 힘을 주세요");bindRec(2)}}
  else if(s===5){const R=compare(PM,tgt),up=R.rows.filter(r=>r.k==="up").length;
   B.innerHTML=`<div class="pm-kick">얼마나 나아졌을까</div><h2 class="verdict" id="pm-title">${up?`${up}가지가 좋아졌어요!`:"비슷하게 읽었어요"}</h2>${say(up>=3?"처음보다 훨씬 좋아졌어요!":up?"좋아지고 있어요. 한 번 더 하면 더 좋아져요.":"처음엔 다 그래요. 표시대로 한 번 더 해 봐요.",{size:"s"})}
@@ -1663,6 +1667,10 @@ function pbar(btn,o){const host=btn.closest(".iconrow,.rrow,.rec-a")||(btn.close
  r.oninput=()=>{if(!drag){drag=true;o.pause()}show(+r.value)};r.onchange=()=>{drag=false;o.seek(+r.value)};
  pb.onclick=()=>{if(o.cur()!=null){o.pause();pb.innerHTML=ICON.play}else o.seek(+r.value>=o.dur-.1?0:+r.value)};
  const tick=()=>{const t=o.cur();if(!bar.isConnected)return;if(t==null){if(!drag)pb.innerHTML=ICON.play;return}if(!drag)show(Math.min(o.dur,t));requestAnimationFrame(tick)};requestAnimationFrame(tick)}
+
+function pbarNow(id,label,take){const d=take&&take.x?take.x.length/take.sr:0,f=x=>`${Math.floor(x/60)}:${String(Math.floor(x%60)).padStart(2,"0")}`;
+ return`<div class="pbw"><button type="button" id="${id}" aria-label="${label}" hidden></button></div><div class="pbar"><button type="button" class="pbar-b" data-pgo aria-label="${ke("듣기","Play")}">${ICON.play}</button><div class="pbar-m"><b>${label}</b><input type="range" min="0" max="${d.toFixed(2)}" step="0.01" value="0" aria-label="${ke("재생 위치","Playback position")}" disabled></div><span>0:00 / ${f(d)}</span></div>`}
+document.addEventListener("click",e=>{const g=e.target.closest("[data-pgo]");if(!g||g.onclick)return;const bar=g.closest(".pbar"),w=bar&&bar.previousElementSibling,b=w&&w.querySelector("button[hidden]");if(b){bar.querySelector("input").disabled=false;b.click()}});
 
 function hangul(t){const k=(t.match(/[가-힣0-9]/g)||[]).join("");return/[가-힣]/.test(k)?k:(t.toLowerCase().match(/[a-z0-9]/g)||[]).join("")}
 function lcs(a,b){const d=new Array(b.length+1).fill(0);for(let i=1;i<=a.length;i++){let prev=0;for(let j=1;j<=b.length;j++){const t=d[j];d[j]=a[i-1]===b[j-1]?prev+1:Math.max(d[j],d[j-1]);prev=t}}return d[b.length]}
@@ -2680,7 +2688,7 @@ function rdResHtml(g){const R=RD_RES,m=R.m,k=rdGoalOf(g),G=RD_GOAL[k],z=(v,[a,b]
   <li><span>목소리 상태<small>${R.cond[0]}</small></span>${R.cond[1]?`<b class="${R.cond[1]}">${R.cond[1]==="up"?"맑음":"쉬어 가요"}</b>`:""}</li></ul>
   ${m.match==null&&(window.SpeechRecognition||window.webkitSpeechRecognition)?`<button type="button" class="lockline" id="rd-asr">어떤 글자를 어떻게 읽었는지 보기 · 음성 인식 켜기</button>`:R.diff&&Object.keys(R.diff).length?`<p class="meta">물결 밑줄 = 기계가 다르게 알아들은 말이에요. 위 작은 글자가 들린 말.</p>`:""}
   <p class="meta">목소리 상태는 의료 진단이 아니에요 · 같은 방식으로 읽은 내 녹음끼리 견준 값이에요. 기준 숫자는 시험용이에요.</p></div>${pitchCard(m.f0,m.f0lo,m.f0hi)}`}
-function rdResAct(g){$("rd-act").innerHTML=`<div class="iconrow"><button type="button" class="ib" id="rd-pl" aria-label="내 목소리 듣기">${ICON.play}듣기</button><button type="button" class="ib pri" id="rd-go" aria-label="다시 녹음">${ICON.mic}다시 녹음</button><button type="button" class="ib" id="rd-co" aria-label="코치 표시로 연습">${ICON.spark}코치 연습</button><button type="button" class="ib" id="rd-done" aria-label="결과 닫기">${ICON.check}완료</button></div>`;
+function rdResAct(g){$("rd-act").innerHTML=pbarNow("rd-pl",ke("방금 읽은 내 목소리","My reading"),RD_RES&&RD_RES.take)+`<div class="iconrow"><button type="button" class="ib pri" id="rd-go" aria-label="다시 녹음">${ICON.mic}다시 녹음</button><button type="button" class="ib" id="rd-co" aria-label="코치 표시로 연습">${ICON.spark}코치 연습</button><button type="button" class="ib" id="rd-done" aria-label="결과 닫기">${ICON.check}완료</button></div>`;
  $("rd-pl").onclick=e=>play(RD_RES.take,e.currentTarget,true);$("rd-go").onclick=rdRec;$("rd-done").onclick=()=>{stopPlay();RD_RES=null;renderRd()};
  $("rd-co").onclick=()=>{stopPlay();openPractice({text:markupOf(g),src:"",mid:g.id,bold:g.on})};
  $("rd-body").querySelectorAll("[data-goal]").forEach(b=>b.onclick=()=>{g.goal=b.dataset.goal;saveG(g);renderRd()});
@@ -3759,7 +3767,7 @@ function renderCoach(){const e=$("coach");if(!e||!COACH)return;
  if(!COACH.boot){COACH.boot=1;situBoot();memShow();const fm=aiCan()?null:flowMission(),lm=[...CHAT.list].reverse().find(m=>m.mid);if(fm&&!CHAT.pend&&!(CHAT.list.at(-1)||{}).of&&(!lm||lm.mid!==fm.id||CHAT.list.at(-1)!==lm))chatPush("c","다시 오셨네요! 이어서 해요.<br>"+fm.say,fm.id)}
  const D=chatOld(),v=COACH.view=Math.max(0,Math.min(COACH.view||0,D.length)),past=v?D[D.length-v]:null,list=past?past.list:CHAT.list,lastM=past?-1:CHAT.list.reduce((a,m,i)=>m.mid?i:a,-1),lastR=past?-1:CHAT.list.reduce((a,m,i)=>m.rec?i:a,-1),L=aiMissions();
  e.innerHTML=`${D.length?dayBar(v,past,D.length):""}<div class="chat" id="chat-log" aria-live="polite">${list.map((m,i)=>m.w==="u"?`<p class="msg me">${m.t}</p>`
-  :`<div class="msg c">${i===0||list[i-1].w!=="c"?`<img class="say-img" src="${charSrc($("tgt").value)}" alt="">`:`<span class="say-img" style="visibility:hidden"></span>`}<div class="bubble">${i===0||list[i-1].w!=="c"?`<b class="msg-n">${esc(coachName())}</b>`:""}<div class="mt">${m.t}</div>${m.x?`<details class="cx"><summary>측정 자세히 보기</summary>${m.x}</details>`:""}${m.rec&&RECK[m.rec]&&i===lastR?recBtn(m.rec):""}${m.ch&&!m.done&&!past?`<div class="chs">${m.ch.map(([id,l])=>`<button type="button" data-ch="${id}" data-i="${i}">${l}</button>`).join("")}</div>`:""}${m.mid&&!past?(()=>{const x=L.find(q=>q.id===m.mid);return x?`<button type="button" class="mis${i===lastM?" now":""}" data-m="${m.mid}"><span class="c">${ICON[x.ico]||ICON.play}</span><span><b>${x.name}</b><small>약 ${x.min} · 누르면 시작</small></span></button>`:m.mid==="d3"?`<span class="mis done">${ICON.check} 했어요</span>`:""})():""}</div></div>`).join("")}</div>${past?`<button type="button" class="btn" data-dv="0" style="align-self:center">오늘 대화로 돌아가기</button>`:`
+  :`<div class="msg c">${i===0||list[i-1].w!=="c"?`<img class="say-img" src="${charSrc($("tgt").value)}" alt="">`:`<span class="say-img" style="visibility:hidden"></span>`}<div class="bubble">${i===0||list[i-1].w!=="c"?`<b class="msg-n">${esc(coachName())}</b>`:""}${m.x?`<div class="cx cx-top">${m.x}</div>`:""}<div class="mt${m.x?" mt-note":""}">${m.t}</div>${m.rec&&RECK[m.rec]&&i===lastR?recBtn(m.rec):""}${m.ch&&!m.done&&!past?`<div class="chs">${m.ch.map(([id,l])=>`<button type="button" data-ch="${id}" data-i="${i}">${l}</button>`).join("")}</div>`:""}${m.mid&&!past?(()=>{const x=L.find(q=>q.id===m.mid);return x?`<button type="button" class="mis${i===lastM?" now":""}" data-m="${m.mid}"><span class="c">${ICON[x.ico]||ICON.play}</span><span><b>${x.name}</b><small>약 ${x.min} · 누르면 시작</small></span></button>`:m.mid==="d3"?`<span class="mis done">${ICON.check} 했어요</span>`:""})():""}</div></div>`).join("")}</div>${past?`<button type="button" class="btn" data-dv="0" style="align-self:center">오늘 대화로 돌아가기</button>`:`
   ${CHAT.list.length===1&&aiCan()?`<div class="chips sugg" role="group" aria-label="이렇게 말해 보세요">${[JOB_CHIP[myJobs()[0]]||"내일 면접이 있어요","중요한 대화 미리 연습할래요","오늘 데이트가 있어요","제 목소리 어때요?"].map(q=>`<button type="button" data-q="${q}">${q}</button>`).join("")}</div>`:""}
   
   <div class="chat-dock${COACH.kb?" kb":""}" id="chat-dock"><button type="button" class="dock-kb" id="chat-kb" aria-label="${COACH.kb?"목소리로 말하기로":"글로 쓰기"}" aria-pressed="${!!COACH.kb}">${COACH.kb?ICON.wave:ICON.pen}</button>
